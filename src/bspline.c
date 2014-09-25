@@ -11,8 +11,8 @@ int bspline_new_clamped(
         return -1;
     }
     
-    const size_t n_knots = n_ctrlp + deg + 1; // <- for convenience
-    const size_t order = deg + 1;             // <- for convenience
+    const size_t order   = deg + 1;         // <- for convenience
+    const size_t n_knots = n_ctrlp + order; // <- for convenience
     
     // setup fields
     bspline->deg     = deg;

@@ -31,6 +31,16 @@ int bspline_new_clamped(
 
 void bspline_free(BSpline* bspline);
 
+// 0  = de boor net
+// 1  = discontinuous, first/last control point
+// 2  = discontinuous, two control points
+// -1 = b-spline is not defined at u
+// -2 = u has multiplicity > order
+int bspline_evaluate(
+    const BSpline* bspline, float u, 
+    float* point
+);
+
 
 #ifdef	__cplusplus
 }

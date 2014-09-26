@@ -1,5 +1,9 @@
 #include "bspline.h"
+
 #include <stdlib.h>
+#include <float.h>
+#include <math.h>
+#include <string.h>
 
 int bspline_new_clamped(
     const size_t deg, const size_t dim, const size_t n_ctrlp, 
@@ -66,5 +70,78 @@ void bspline_free(BSpline* bspline)
     
     if (bspline->knots != NULL) {
         free(bspline->knots);
+    }
+}
+
+int bspline_evaluate(
+    const BSpline* bspline, float u, 
+    float* point
+)
+{
+    if (u < 0.0f || u > 1.0f) {
+        return -1;
+    }
+    
+    // find [u_k, u_k+1)
+    int k = 0; // <- the index
+    int s = 0; // <- the multiplicity of u_k
+    int h = 0; // <- how many times do we need to insert u
+    for (; k < bspline->n_knots; k++) {
+        const float uk     = bspline->knots[k];
+        const float e_u_uk = fabs(u - uk);
+
+        if (e_u_uk < FLT_EPSILON) { // u == u_k
+            s++;
+        } else if (u < uk) {
+            break;
+        }
+    }
+    k--;
+    h = bspline->deg - s; 
+
+    // 1. Check for multiplicity > order.
+    //    This is not allowed for any control point.
+    // 2. Check for multiplicity = order.
+    //    Take the two points k-s and (k-s) + 1. If one of
+    //    them doesn't exist, take only the other.
+    // 3. Use de boor algorithm to find point P(u).
+    if (s > bspline->order) {
+        return -2;
+    } else if (s == bspline->order) {
+        const int ctrlp_i = k-s;
+        // spacial case: first control point
+        if (ctrlp_i < 0) { 
+            memcpy(point, bspline->ctrlp, bspline->dim * sizeof(float));
+            return 1;
+        // spacial case: last control point
+        } else if (ctrlp_i + 1 >= bspline->n_ctrlp) { 
+            memcpy(point, &bspline->ctrlp[ctrlp_i], bspline->dim * sizeof(float));
+            return 1;
+        // inner control points
+        } else {
+            memcpy(point, bspline->ctrlp, bspline->dim * sizeof(float) * 2);
+            return 2;
+        }
+    } else {
+        // s <= bspline->deg
+        const int lower = k - bspline->deg;
+        const int upper = k-s; // inclusive
+        if (lower < 0 || upper >= bspline->n_ctrlp) {
+            return -1;
+        }
+        
+        const int amount   = (upper - lower) + 1;
+        float* accumulator = (float*) malloc(amount * bspline->deg * sizeof(float));
+        memcpy(accumulator, &bspline->ctrlp[lower], amount * sizeof(float));
+        
+        int r = 1;
+        for (;r <= h; r++) {
+            int i = (k - bspline->deg) + r;
+            for (; i <= upper; i++) {
+                float ui = bspline->knots[i];
+                float a  = (u - ui) / (bspline->knots[i + bspline->deg - r + 1] - ui);
+            }
+        }
+        return 0;
     }
 }

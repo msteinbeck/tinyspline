@@ -17,7 +17,7 @@ typedef struct
                     //    a polynomial of degree n with n + 1.
     size_t dim;     // <- dimension of a control point
     size_t n_ctrlp; // <- number of control points
-    size_t n_knots; // <- number of knots (n_ctrlp + k + 1)
+    size_t n_knots; // <- number of knots (n_ctrlp + deg + 1)
     float* ctrlp;   // <- the control points of the spline
     float* knots;   // <- the knot vector of the spline 
                     //    each value is within [0.0, 1.0]
@@ -31,14 +31,45 @@ int bspline_new_clamped(
 
 void bspline_free(BSpline* bspline);
 
-// 0  = de boor net
-// 1  = discontinuous, first/last control point
-// 2  = discontinuous, two control points
-// -1 = b-spline is not defined at u
-// -2 = u has multiplicity > order
+
+/**
+ * Returns the de boor net at u if the given spline is continuous at u.
+ * The last control point of the returned array contains the point 
+ * on the spline.
+ * 
+ * If the given spline in discontinuous at u because u refers the
+ * first/last control point, one of them is returned.
+ * 
+ * If the given spline is discontinuous at u and refers an internal 
+ * control point instead the first/last, the two control points laying on
+ * u are returned.
+ * 
+ * @param bspline
+ *      The spline to evaluate
+ * @param u
+ *      The element of the knot vector to evaluate.
+ * @param n_points
+ *      The number of returned points.
+ * @param points
+ *      Either the points of the de boor net, 
+ *      or the point(s) directly referred by u.
+ * @return
+ *      A positive (inclusive 0) value on success, a negative on failure.
+ * 
+ *      0 = The returned points are the de boor net at u.
+ *      1 = The spline is discontinuous at u and points to the 
+ *          first/last control point.
+ *      2 = The spline is discontinuous at u and points to two control points.
+ *          (both must be inner control points)
+ * 
+ *      -1 = If the spline is not defined at u.
+ *      -2 = If u has multiplicity of > order, thus the knot vector of the given
+ *           spline is corrupted.
+ *      -3 = If malloc failed.
+ */
 int bspline_evaluate(
-    const BSpline* bspline, float u, 
-    float* point
+    const BSpline* bspline, const float u, 
+    size_t* n_points, float** points
 );
 
 

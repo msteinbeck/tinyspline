@@ -15,8 +15,9 @@ int bspline_new_clamped(
         return -1;
     }
     
-    const size_t order   = deg + 1;         // <- for convenience
-    const size_t n_knots = n_ctrlp + order; // <- for convenience
+    // for convenience
+    const size_t order   = deg + 1;
+    const size_t n_knots = n_ctrlp + order;
     
     // setup fields
     bspline->deg     = deg;
@@ -74,13 +75,20 @@ void bspline_free(BSpline* bspline)
 }
 
 int bspline_evaluate(
-    const BSpline* bspline, float u, 
-    float* point
+    const BSpline* bspline, const float u, 
+    size_t* n_points, float** points
 )
 {
+    // u must be within [0, 1]
     if (u < 0.0f || u > 1.0f) {
+        *n_points = 0;
         return -1;
     }
+    
+    // for convenience
+    const size_t dim = bspline->dim;
+    const size_t p   = bspline->deg;
+    const size_t size_ctrlp = sizeof(float) * dim; // <- size of one control point
     
     // find [u_k, u_k+1)
     int k = 0; // <- the index
@@ -97,51 +105,85 @@ int bspline_evaluate(
         }
     }
     k--;
-    h = bspline->deg - s; 
+    h = p-s; 
 
     // 1. Check for multiplicity > order.
     //    This is not allowed for any control point.
     // 2. Check for multiplicity = order.
-    //    Take the two points k-s and (k-s) + 1. If one of
+    //    Take the two points k-s and k-s + 1. If one of
     //    them doesn't exist, take only the other.
     // 3. Use de boor algorithm to find point P(u).
     if (s > bspline->order) {
+        *n_points = 0;
         return -2;
     } else if (s == bspline->order) {
-        const int ctrlp_i = k-s;
-        // spacial case: first control point
-        if (ctrlp_i < 0) { 
-            memcpy(point, bspline->ctrlp, bspline->dim * sizeof(float));
+        const int fst = k-s;   // <- the index k-s
+        const int snd = fst+1; // <- the index k-s + 1
+        // only one of the two control points exists
+        if (fst < 0 || snd >= bspline->n_ctrlp) {
+            *n_points = 1;
+            *points = (float*) malloc(size_ctrlp);
+            // error handling
+            if (*points == NULL) {
+                *n_points = 0;
+                return -3;
+            }
+            // copy only first control point
+            if (fst < 0) {
+                memcpy(*points, bspline->ctrlp, size_ctrlp);
+            // copy only last control point
+            } else {
+                memcpy(*points, &bspline->ctrlp[fst * dim], size_ctrlp);
+            }
             return 1;
-        // spacial case: last control point
-        } else if (ctrlp_i + 1 >= bspline->n_ctrlp) { 
-            memcpy(point, &bspline->ctrlp[ctrlp_i], bspline->dim * sizeof(float));
-            return 1;
-        // inner control points
+        // must be an inner control points, copy both
         } else {
-            memcpy(point, bspline->ctrlp, bspline->dim * sizeof(float) * 2);
+            *n_points = 2;
+            *points = (float*) malloc(size_ctrlp * *n_points);
+            memcpy(*points, bspline->ctrlp, size_ctrlp * *n_points);
             return 2;
         }
     } else {
-        // s <= bspline->deg
-        const int lower = k - bspline->deg;
-        const int upper = k-s; // inclusive
-        if (lower < 0 || upper >= bspline->n_ctrlp) {
+        const int fst = k-p; // <- first affected control point, inclusive
+        const int lst = k-s; // <- last affected control point, inclusive
+        
+        // spline is not defined at u
+        if (fst < 0 || lst >= bspline->n_ctrlp) {
+            *n_points = 0;
             return -1;
         }
         
-        const int amount   = (upper - lower) + 1;
-        float* accumulator = (float*) malloc(amount * bspline->deg * sizeof(float));
-        memcpy(accumulator, &bspline->ctrlp[lower], amount * sizeof(float));
+        const size_t n_affected = lst-fst + 1;
+        *n_points = (1.f/2.f) * n_affected * (n_affected + 1);
+        *points   = (float*) malloc(*n_points * size_ctrlp);
+        // error handling
+        if (*points == NULL) {
+            *n_points = 0;
+            return -3;
+        }
+        memcpy(*points, &bspline->ctrlp[fst * dim], n_affected * size_ctrlp);
+        
+        int idx_l  = 0; // <- the current left index
+        int idx_r  = idx_l + dim; // <- the current right index
+        int idx_to = n_affected * dim; // <- the current to index
         
         int r = 1;
         for (;r <= h; r++) {
-            int i = (k - bspline->deg) + r;
-            for (; i <= upper; i++) {
-                float ui = bspline->knots[i];
-                float a  = (u - ui) / (bspline->knots[i + bspline->deg - r + 1] - ui);
+            int i = fst + r;
+            for (; i <= lst; i++) {
+                const float ui = bspline->knots[i];
+                const float a  = (u - ui) / (bspline->knots[i+p-r+1] - ui);
+                const float a_hat = 1-a;
+                size_t counter;
+                for (counter = 0; counter < dim; counter++) {
+                    (*points)[idx_to++] = 
+                            a_hat * (*points)[idx_l++] + 
+                                a * (*points)[idx_r++];
+                }
             }
-        }
+            idx_l += dim; 
+            idx_r += dim;
+        }        
         return 0;
     }
 }

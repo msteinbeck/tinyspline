@@ -30,7 +30,7 @@ typedef struct
 
 
 int bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, BSplineType type,
+    const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 );
 
@@ -74,7 +74,7 @@ void bspline_free(BSpline* bspline);
  */
 int bspline_evaluate(
     const BSpline* bspline, const float u, 
-    size_t* n_points, float** points
+    size_t* n_affected, size_t* n_points, float** points
 );
 
 

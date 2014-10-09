@@ -6,7 +6,7 @@
 #include <string.h>
 
 int bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, BSplineType type,
+    const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 )
 {
@@ -91,12 +91,12 @@ void bspline_free(BSpline* bspline)
 
 int bspline_evaluate(
     const BSpline* bspline, const float u, 
-    size_t* n_points, float** points
+    size_t* n_affected, size_t* n_points, float** points
 )
 {
     // u must be within [0, 1]
     if (u < 0.0f || u > 1.0f) {
-        *n_points = 0;
+        *n_affected = *n_points = 0;
         return -1;
     }
     
@@ -129,18 +129,18 @@ int bspline_evaluate(
     //    them doesn't exist, take only the other.
     // 3. Use de boor algorithm to find point P(u).
     if (s > bspline->order) {
-        *n_points = 0;
+        *n_affected = *n_points = 0;
         return -2;
     } else if (s == bspline->order) {
         const int fst = k-s;   // <- the index k-s
         const int snd = fst+1; // <- the index k-s + 1
         // only one of the two control points exists
         if (fst < 0 || snd >= bspline->n_ctrlp) {
-            *n_points = 1;
+            *n_affected = *n_points = 1;
             *points = (float*) malloc(size_ctrlp);
             // error handling
             if (*points == NULL) {
-                *n_points = 0;
+                *n_affected = *n_points = 0;
                 return -3;
             }
             // copy only first control point
@@ -153,7 +153,7 @@ int bspline_evaluate(
             return 1;
         // must be an inner control points, copy both
         } else {
-            *n_points = 2;
+            *n_affected = *n_points = 2;
             *points = (float*) malloc(size_ctrlp * *n_points);
             memcpy(*points, bspline->ctrlp, size_ctrlp * *n_points);
             return 2;
@@ -164,23 +164,23 @@ int bspline_evaluate(
         
         // spline is not defined at u
         if (fst < 0 || lst >= bspline->n_ctrlp) {
-            *n_points = 0;
+            *n_affected = *n_points = 0;
             return -1;
         }
         
-        const size_t n_affected = lst-fst + 1;
-        *n_points = (1.f/2.f) * n_affected * (n_affected + 1);
-        *points   = (float*) malloc(*n_points * size_ctrlp);
+        *n_affected = lst-fst + 1;
+        *n_points   = *n_affected * (*n_affected + 1) * 0.5f;
+        *points     = (float*) malloc(*n_points * size_ctrlp);
         // error handling
         if (*points == NULL) {
             *n_points = 0;
             return -3;
         }
-        memcpy(*points, &bspline->ctrlp[fst * dim], n_affected * size_ctrlp);
+        memcpy(*points, &bspline->ctrlp[fst * dim], *n_affected * size_ctrlp);
         
         int idx_l  = 0; // <- the current left index
         int idx_r  = idx_l + dim; // <- the current right index
-        int idx_to = n_affected * dim; // <- the current to index
+        int idx_to = *n_affected * dim; // <- the current to index
         
         int r = 1;
         for (;r <= h; r++) {

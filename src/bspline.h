@@ -7,6 +7,11 @@
 extern "C" {
 #endif
 
+typedef enum {
+    OPENED = 0, 
+    CLAMPED
+} BSplineType;
+
 /** A B-Spline curve. */
 typedef struct
 {
@@ -24,8 +29,8 @@ typedef struct
 } BSpline;
 
 
-int bspline_new_clamped(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, 
+int bspline_new(
+    const size_t deg, const size_t dim, const size_t n_ctrlp, BSplineType type,
     BSpline* bspline
 );
 

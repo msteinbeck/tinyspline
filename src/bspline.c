@@ -5,13 +5,13 @@
 #include <math.h>
 #include <string.h>
 
-int bspline_new_clamped(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, 
+int bspline_new(
+    const size_t deg, const size_t dim, const size_t n_ctrlp, BSplineType type,
     BSpline* bspline
 )
 {
     // check input parameter
-    if (deg >= n_ctrlp) {
+    if (deg < 1 || n_ctrlp < 2 || deg >= n_ctrlp || dim < 1) {
         return -1;
     }
     
@@ -28,38 +28,53 @@ int bspline_new_clamped(
     
     bspline->ctrlp = (float*) malloc(n_ctrlp * dim * sizeof(float));
     if (bspline->ctrlp == NULL) {
-        return -1;
+        return -2;
     }
     
     bspline->knots   = (float*) malloc(n_knots * sizeof(float));
     if (bspline->knots == NULL) {
         // do not forget to free already allocated arrays
         free(bspline->ctrlp);
-        return -1;
+        return -2;
     }
     
-    // setup knot vector with:
+    // for clamped b-splines setup knot vector with:
     // [multiplicity order, uniformly spaced, multiplicity order]
-    // to provide a clamped, uniformly spaced b-spline.
-    size_t current = 0, end = 0; // <- used by loops
+    // for opened b-splines setup knot vector with:
+    // [uniformly spaced]
+    size_t current, end; // <- used by loops
+    size_t numerator, dominator; // <- to fill uniformly spaced elements
+    
+    if (type == OPENED) {
+        current = numerator = 0;
+        end = n_knots;
+        dominator = n_knots - 1;
+        for (;current < end; current++, numerator++) {
+            bspline->knots[current] = (float) numerator / dominator;
+        }
+    } else {
+        current = 0;
+        end = order;
 
-    end = order;
-    for (;current < end; current++) {
-        bspline->knots[current] = 0.f;
+        // fill first knots with 0
+        for (;current < end; current++) {
+            bspline->knots[current] = 0.f;
+        }
+        
+        // uniformly spaced between 0 and 1
+        end = n_knots - order;
+        numerator = 1;
+        dominator = n_knots - (2 * deg) - 1;
+        for (;current < end; current++, numerator++) {
+            bspline->knots[current] = (float) numerator / dominator;
+        }
+        
+        // fill last knots with 1
+        end = n_knots;
+        for (;current < end; current++) {
+            bspline->knots[current] = 1.f;
+        }
     }
-    
-    end = n_knots - order;
-    size_t numerator = 1;
-    size_t dominator = n_knots - (2 * deg) - 1;
-    for (;current < end; current++, numerator++) {
-        bspline->knots[current] = (float) numerator / dominator;
-    }
-    
-    end = n_knots;
-    for (;current < end; current++) {
-        bspline->knots[current] = 1.f;
-    }
-    
     return 0;
 }
 

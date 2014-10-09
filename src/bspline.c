@@ -162,7 +162,7 @@ int bspline_evaluate(
         const int fst = k-p; // <- first affected control point, inclusive
         const int lst = k-s; // <- last affected control point, inclusive
         
-        // spline is not defined at u
+        // b-spline is not defined at u
         if (fst < 0 || lst >= bspline->n_ctrlp) {
             *n_affected = *n_points = 0;
             return -1;

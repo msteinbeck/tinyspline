@@ -11,7 +11,7 @@ int bspline_new(
 )
 {
     // check input parameter
-    if (deg < 1 || n_ctrlp < 2 || deg >= n_ctrlp || dim < 1) {
+    if (deg < 0 || n_ctrlp < 1 || deg >= n_ctrlp || dim < 1) {
         return -1;
     }
     

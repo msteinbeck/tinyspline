@@ -171,14 +171,14 @@ int bspline_evaluate(
             return 1;
         // must be an inner control points, copy both
         } else {
-            deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
+            deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
                 return -3;
             }
             deBoorNet->n_affected = deBoorNet->n_points = 2;
             deBoorNet->last_idx = 1;
-            memcpy(deBoorNet->points, bspline->ctrlp, deBoorNet->n_points * size_ctrlp);
+            memcpy(deBoorNet->points, bspline->ctrlp, 2 * size_ctrlp);
             return 2;
         }
     } else {

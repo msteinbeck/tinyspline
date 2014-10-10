@@ -7,12 +7,37 @@
 extern "C" {
 #endif
 
-typedef enum {
+    
+// =============================
+// De Boor
+// =============================
+typedef struct
+{
+    int k;             // <- the index [u_k, u_k+1)
+    int s;             // <- the multiplicity of u_k
+    int h;             // <- how many times u must be inserted
+    size_t deg;        // <- degree of b-spline bassis function
+    size_t dim;        // <- dimension of a control point
+    size_t n_affected; // <- number of affected control points
+    size_t n_points;   // <- number of control points
+    size_t last_idx;   // <- index of last point in points
+                       //    This field can be used for direct 
+                       //    access of last point in points
+    float* points;     // <- the control points of the de Boor net
+} DeBoorNet;
+
+void deboornet_free(DeBoorNet* deBoorNet);
+
+
+// =============================
+// B-Spline
+// =============================
+typedef enum 
+{
     OPENED = 0, 
     CLAMPED
 } BSplineType;
 
-/** A B-Spline curve. */
 typedef struct
 {
     size_t deg;     // <- degree of b-spline basis function
@@ -74,7 +99,7 @@ void bspline_free(BSpline* bspline);
  */
 int bspline_evaluate(
     const BSpline* bspline, const float u, 
-    size_t* n_affected, size_t* n_points, float** points
+    DeBoorNet* deBoorNet
 );
 
 

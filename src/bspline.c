@@ -38,6 +38,8 @@ int bspline_new(
     bspline->dim     = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
+    bspline->ctrlp   = NULL;
+    bspline->knots   = NULL;
     
     bspline->ctrlp = (float*) malloc(n_ctrlp * dim * sizeof(float));
     if (bspline->ctrlp == NULL) {
@@ -116,6 +118,7 @@ int bspline_evaluate(
     deBoorNet->n_affected = 0;
     deBoorNet->n_points = 0;
     deBoorNet->last_idx = 0;
+    deBoorNet->points = NULL;
     
     // u must be within [0, 1]
     if (u < 0.0f || u > 1.0f) {
@@ -126,7 +129,9 @@ int bspline_evaluate(
     const size_t size_ctrlp = 
         sizeof(float) * deBoorNet->dim; // <- size of one control point
     
-    // find [u_k, u_k+1)
+    // 1. Find index k such that u is in between [u_k, u_k+1).
+    // 2. Decide by multiplicity of u how to calculate point P(u).
+    
     for (; deBoorNet->k < bspline->n_knots; deBoorNet->k++) {
         const float uk     = bspline->knots[deBoorNet->k];
         const float e_u_uk = fabs(u - uk);
@@ -154,13 +159,13 @@ int bspline_evaluate(
         const int snd = fst+1; // <- the index k-s + 1
         // only one of the two control points exists
         if (fst < 0 || snd >= bspline->n_ctrlp) {
+            deBoorNet->n_affected = deBoorNet->n_points = 1;
+            deBoorNet->last_idx = 0;
             deBoorNet->points = (float*) malloc(size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
                 return -3;
             }
-            deBoorNet->n_affected = deBoorNet->n_points = 1;
-            deBoorNet->last_idx = 0;
             // copy only first control point
             if (fst < 0) {
                 memcpy(deBoorNet->points, bspline->ctrlp, size_ctrlp);
@@ -171,14 +176,14 @@ int bspline_evaluate(
             return 1;
         // must be an inner control points, copy both
         } else {
+            deBoorNet->n_affected = deBoorNet->n_points = 2;
+            deBoorNet->last_idx = deBoorNet->dim;
             deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
                 return -3;
             }
-            deBoorNet->n_affected = deBoorNet->n_points = 2;
-            deBoorNet->last_idx = 1;
-            memcpy(deBoorNet->points, bspline->ctrlp, 2 * size_ctrlp);
+            memcpy(deBoorNet->points, &bspline->ctrlp[fst * deBoorNet->dim], 2 * size_ctrlp);
             return 2;
         }
     } else {
@@ -198,10 +203,6 @@ int bspline_evaluate(
         
         // error handling
         if (deBoorNet->points == NULL) {
-            // unset already assigned values
-            deBoorNet->n_affected = 0;
-            deBoorNet->n_points = 0;
-            deBoorNet->last_idx = 0;
             return -3;
         }
         

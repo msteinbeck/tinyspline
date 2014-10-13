@@ -53,14 +53,12 @@ typedef struct
                     //    each value is within [0.0, 1.0]
 } BSpline;
 
-
 int bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 );
 
 void bspline_free(BSpline* bspline);
-
 
 /**
  * Returns the de boor net at u if the given spline is continuous at u.
@@ -100,6 +98,11 @@ void bspline_free(BSpline* bspline);
 int bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet
+);
+
+int bspline_split(
+    const BSpline* bspline, const float u,
+    BSpline (*split)[2] 
 );
 
 

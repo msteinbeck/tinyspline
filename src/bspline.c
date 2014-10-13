@@ -97,10 +97,12 @@ void bspline_free(BSpline* bspline)
 {
     if (bspline->ctrlp != NULL) {
         free(bspline->ctrlp);
+        bspline->ctrlp = NULL;
     }
     
     if (bspline->knots != NULL) {
         free(bspline->knots);
+        bspline->knots = NULL;
     }
 }
 
@@ -110,20 +112,15 @@ int bspline_evaluate(
 )
 {
     // set default values
-    deBoorNet->k = 0;
-    deBoorNet->s = 0;
-    deBoorNet->h = 0;
-    deBoorNet->deg = bspline->deg;
-    deBoorNet->dim = bspline->dim;
+    deBoorNet->k          = 0;
+    deBoorNet->s          = 0;
+    deBoorNet->h          = 0;
+    deBoorNet->deg        = bspline->deg;
+    deBoorNet->dim        = bspline->dim;
     deBoorNet->n_affected = 0;
-    deBoorNet->n_points = 0;
-    deBoorNet->last_idx = 0;
-    deBoorNet->points = NULL;
-    
-    // u must be within [0, 1]
-    if (u < 0.0f || u > 1.0f) {
-        return -1;
-    }
+    deBoorNet->n_points   = 0;
+    deBoorNet->last_idx   = 0;
+    deBoorNet->points     = NULL;
     
     // for convenience
     const size_t size_ctrlp = 
@@ -227,8 +224,8 @@ int bspline_evaluate(
                 size_t counter;
                 for (counter = 0; counter < deBoorNet->dim; counter++) {
                     deBoorNet->points[idx_to++] = 
-                            a_hat * deBoorNet->points[idx_l++] + 
-                                a * deBoorNet->points[idx_r++];
+                        a_hat * deBoorNet->points[idx_l++] + 
+                            a * deBoorNet->points[idx_r++];
                 }
             }
             idx_l += deBoorNet->dim; 
@@ -237,4 +234,79 @@ int bspline_evaluate(
         
         return 0;
     }
+}
+
+int bspline_split(
+    const BSpline* bspline, const float u,
+    BSpline (*split)[2] 
+)
+{
+    // evaluate given b-spline at u to find the point to split
+    DeBoorNet net;
+    const int val = bspline_evaluate(bspline, u, &net);
+    
+    // for convenience
+    const size_t deg = bspline->deg; // <- the degree of the original b-spline
+    const size_t dim = bspline->dim; // <- dimension of one control point
+    const size_t size_ctrlp = 
+        dim * sizeof(float);         // <- size of one control point
+    const size_t N = net.n_affected; // <- number of affected conrol points
+    const int k = net.k;             // <- the index k of the de boor net
+    const int s = net.s;             // <- the multiplicity of u
+
+    if (val < 0) {
+        return val;
+    } else if (val == 0) {
+        // the number of control points of the new generated b-splines
+        const size_t n_ctrlp[2] = {
+            k - deg + N,
+            bspline->n_ctrlp - (k-s) + N -1
+        };
+        
+        // the offsets to use while copying control points
+        // from the original b-spline to the new one
+        const size_t from_b[2] = {0, (k-s + 1) * dim};
+        const size_t to_b[2]   = {0, N * dim};
+        
+        // the offsets to use while copying control points
+        // from the de boor net to the new b-splines
+        int from_n[2]        = {0, (net.n_points - 1) * dim};
+        int to_n[2]          = {(n_ctrlp[0] - N) * dim, 0};
+        int stride[2]        = {N * dim, -dim}; // <- the next index to use
+        const int stride_inc = -dim;
+        
+        // for both parts of the split
+        int idx = 0;
+        for (; idx < 2; idx++) {
+            // setup new b-spline
+            bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
+            
+            // copy the necessary control points from the original b-spline
+            memcpy(
+                &(*split)[idx].ctrlp[to_b[idx]], 
+                &bspline->ctrlp[from_b[idx]], 
+                (n_ctrlp[idx] - N) * size_ctrlp
+            );
+            
+            // copy the remaining control points from the de boor net
+            int n = 0;
+            for (; n < N; n++) {
+                memcpy(
+                    &((*split)[idx].ctrlp[to_n[idx]]), 
+                    &net.points[from_n[idx]], 
+                    size_ctrlp
+                );
+                
+                from_n[idx] += stride[idx];
+                stride[idx] += stride_inc;
+                to_n[idx]   += dim;
+            }
+        }
+    } else if (val == 1) {
+        
+    } else {
+        
+    }
+    
+    deboornet_free(&net);
 }

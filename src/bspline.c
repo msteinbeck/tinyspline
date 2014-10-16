@@ -136,7 +136,7 @@ int bspline_evaluate(
         }
     }
     deBoorNet->k--;
-    deBoorNet->h = deBoorNet->dim - deBoorNet->s;
+    deBoorNet->h = deBoorNet->deg - deBoorNet->s;
     
     // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
@@ -214,8 +214,8 @@ int bspline_evaluate(
             deBoorNet->n_affected * size_ctrlp
         );
         
-        int idx_l  = 0;           // <- the current left index
-        int idx_r  = idx_l + dim; // <- the current right index
+        int idx_l  = 0;   // <- the current left index
+        int idx_r  = dim; // <- the current right index
         int idx_to = deBoorNet->n_affected * dim; // <- the current to index
         
         int r = 1;

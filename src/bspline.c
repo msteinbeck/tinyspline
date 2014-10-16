@@ -1,7 +1,6 @@
 #include "bspline.h"
 
 #include <stdlib.h>
-#include <float.h>
 #include <math.h>
 #include <string.h>
 
@@ -125,14 +124,20 @@ int bspline_evaluate(
     // 1. Find index k such that u is in between [u_k, u_k+1).
     // 2. Decide by multiplicity of u how to calculate point P(u).
     
-    for (; deBoorNet->k < bspline->n_knots; deBoorNet->k++) {
+    for (deBoorNet->k = 0; deBoorNet->k < bspline->n_knots; deBoorNet->k++) {
         const float uk     = bspline->knots[deBoorNet->k];
-        const float e_u_uk = fabs(u - uk);
-
-        if (e_u_uk < FLT_EPSILON) { // u == u_k
+        const float e_u_uk = fabs(u - uk); // <- absolute error (epsilon)
+        
+        if (e_u_uk < 0.000001) {
             deBoorNet->s++;
-        } else if (u < uk) {
-            break;
+        } else {
+            const float r_u_uk = fabs(u) > fabs(uk) ? 
+                fabs((u - uk) / u) : fabs((u - uk) / uk); // <- relative error
+            if (r_u_uk <= 0.00001) {
+                deBoorNet->s++;
+            } else if (u < uk) {
+                break;
+            }
         }
     }
     deBoorNet->k--;
@@ -262,10 +267,7 @@ int bspline_split(
         return val;
     } else if (val == 0) {
         // the number of control points of the new generated b-splines
-        const size_t n_ctrlp[2] = {
-            k - deg + N,
-            bspline->n_ctrlp - (k-s) + N -1
-        };
+        const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
         // the offsets to use while copying control points
         // from the original b-spline to the new one
@@ -274,15 +276,26 @@ int bspline_split(
         
         // the offsets to use while copying control points
         // from the de boor net to the new b-splines
-        int from_n[2]        = {0, (net.n_points - 1) * dim};
-        int to_n[2]          = {(n_ctrlp[0] - N) * dim, 0};
-        int stride[2]        = {N * dim, -dim}; // <- the next index to use
+        size_t from_n[2] = {0, (net.n_points - 1) * dim};
+        size_t to_n[2]   = {(n_ctrlp[0] - N) * dim, 0};
+        int stride[2]    = {N * dim, -dim}; // <- the next index to use
         const int stride_inc = -dim;
+        
+        // the offsets to use while copying knots
+        // from the original b-spline to the new one
+        size_t from_k[2] = {0, k+1};
+        size_t to_k[2]   = {0, bspline->order};
+        const size_t amount_k[2] = {k-s + 1, bspline->n_knots - (k+1)};
+        
+        // the offset to use while adding u to 
+        // the knot vector of the new b-spline
+        size_t to_u[2] = {k-s + 1, 0};
+        const size_t amount_u = bspline->order;
         
         // for both parts of the split
         int idx = 0;
         for (; idx < 2; idx++) {
-            // setup new b-spline
+            // setup the new b-spline
             bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
             
             // copy the necessary control points from the original b-spline
@@ -293,8 +306,8 @@ int bspline_split(
             );
             
             // copy the remaining control points from the de boor net
-            int n = 0;
-            for (; n < N; n++) {
+            int n;
+            for (n = 0; n < N; n++) {
                 memcpy(
                     &((*split)[idx].ctrlp[to_n[idx]]), 
                     &net.points[from_n[idx]], 
@@ -304,6 +317,19 @@ int bspline_split(
                 from_n[idx] += stride[idx];
                 stride[idx] += stride_inc;
                 to_n[idx]   += dim;
+            }
+            
+            // copy the necessary knots from the original b-spline
+            memcpy(
+                &(*split)[idx].knots[to_k[idx]], 
+                &bspline->knots[from_k[idx]], 
+                amount_k[idx] * sizeof(float)
+            );
+            
+            // adding u to the knot vector
+            for (n = 0; n < amount_u; n++) {
+                (*split)[idx].knots[to_u[idx]] = u;
+                to_u[idx]++;
             }
         }
     } else if (val == 1) {

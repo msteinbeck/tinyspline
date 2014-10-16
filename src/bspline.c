@@ -122,10 +122,6 @@ int bspline_evaluate(
     deBoorNet->last_idx   = 0;
     deBoorNet->points     = NULL;
     
-    // for convenience
-    const size_t size_ctrlp = 
-        sizeof(float) * deBoorNet->dim; // <- size of one control point
-    
     // 1. Find index k such that u is in between [u_k, u_k+1).
     // 2. Decide by multiplicity of u how to calculate point P(u).
     
@@ -141,6 +137,14 @@ int bspline_evaluate(
     }
     deBoorNet->k--;
     deBoorNet->h = deBoorNet->dim - deBoorNet->s;
+    
+    // for convenience
+    const size_t deg = bspline->deg; // <- the degree of the original b-spline
+    const size_t dim = bspline->dim; // <- dimension of one control point
+    const int k = deBoorNet->k;      // <- the index k of the de boor net
+    const int s = deBoorNet->s;      // <- the multiplicity of u        
+    const size_t size_ctrlp = 
+        sizeof(float) * dim;         // <- size of one control point
 
     // 1. Check for multiplicity > order.
     //    This is not allowed for any control point.
@@ -149,10 +153,10 @@ int bspline_evaluate(
     //    them doesn't exist, take only the other.
     // 3. Use de boor algorithm to find point P(u).
     
-    if (deBoorNet->s > bspline->order) {
+    if (s > bspline->order) {
         return -2;
-    } else if (deBoorNet->s == bspline->order) {
-        const int fst = deBoorNet->k - deBoorNet->s; // <- the index k-s
+    } else if (s == bspline->order) {
+        const int fst = k-s;   // <- the index k-s
         const int snd = fst+1; // <- the index k-s + 1
         // only one of the two control points exists
         if (fst < 0 || snd >= bspline->n_ctrlp) {
@@ -168,24 +172,24 @@ int bspline_evaluate(
                 memcpy(deBoorNet->points, bspline->ctrlp, size_ctrlp);
             // copy only last control point
             } else {
-                memcpy(deBoorNet->points, &bspline->ctrlp[fst * deBoorNet->dim], size_ctrlp);
+                memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], size_ctrlp);
             }
             return 1;
         // must be an inner control points, copy both
         } else {
             deBoorNet->n_affected = deBoorNet->n_points = 2;
-            deBoorNet->last_idx = deBoorNet->dim;
+            deBoorNet->last_idx = dim;
             deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
                 return -3;
             }
-            memcpy(deBoorNet->points, &bspline->ctrlp[fst * deBoorNet->dim], 2 * size_ctrlp);
+            memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], 2 * size_ctrlp);
             return 2;
         }
     } else {
-        const int fst = deBoorNet->k - deBoorNet->deg; // <- first affected control point, inclusive
-        const int lst = deBoorNet->k - deBoorNet->s;   // <- last affected control point, inclusive
+        const int fst = k-deg; // <- first affected control point, inclusive
+        const int lst = k-s;   // <- last affected control point, inclusive
         
         // b-spline is not defined at u
         if (fst < 0 || lst >= bspline->n_ctrlp) {
@@ -195,7 +199,7 @@ int bspline_evaluate(
         deBoorNet->n_affected = lst-fst + 1;
         deBoorNet->n_points = 
                 deBoorNet->n_affected * (deBoorNet->n_affected + 1) * 0.5f;
-        deBoorNet->last_idx = (deBoorNet->n_points - 1) * deBoorNet->dim;
+        deBoorNet->last_idx = (deBoorNet->n_points - 1) * dim;
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
         
         // error handling
@@ -206,30 +210,30 @@ int bspline_evaluate(
         // copy initial values to output
         memcpy(
             deBoorNet->points, 
-            &bspline->ctrlp[fst * deBoorNet->dim], 
+            &bspline->ctrlp[fst * dim], 
             deBoorNet->n_affected * size_ctrlp
         );
         
-        int idx_l  = 0; // <- the current left index
-        int idx_r  = idx_l + deBoorNet->dim; // <- the current right index
-        int idx_to = deBoorNet->n_affected * deBoorNet->dim; // <- the current to index
+        int idx_l  = 0;           // <- the current left index
+        int idx_r  = idx_l + dim; // <- the current right index
+        int idx_to = deBoorNet->n_affected * dim; // <- the current to index
         
         int r = 1;
         for (;r <= deBoorNet->h; r++) {
             int i = fst + r;
             for (; i <= lst; i++) {
                 const float ui = bspline->knots[i];
-                const float a  = (u - ui) / (bspline->knots[i + deBoorNet->deg - r + 1] - ui);
+                const float a  = (u - ui) / (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1-a;
                 size_t counter;
-                for (counter = 0; counter < deBoorNet->dim; counter++) {
+                for (counter = 0; counter < dim; counter++) {
                     deBoorNet->points[idx_to++] = 
                         a_hat * deBoorNet->points[idx_l++] + 
                             a * deBoorNet->points[idx_r++];
                 }
             }
-            idx_l += deBoorNet->dim; 
-            idx_r += deBoorNet->dim;
+            idx_l += dim; 
+            idx_r += dim;
         }
         
         return 0;
@@ -243,16 +247,16 @@ int bspline_split(
 {
     // evaluate given b-spline at u to find the point to split
     DeBoorNet net;
-    const int val = bspline_evaluate(bspline, u, &net);
+    const int val = bspline_evaluate(bspline, u, &net); // <- thre return value
     
     // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
     const size_t dim = bspline->dim; // <- dimension of one control point
-    const size_t size_ctrlp = 
-        dim * sizeof(float);         // <- size of one control point
     const size_t N = net.n_affected; // <- number of affected conrol points
     const int k = net.k;             // <- the index k of the de boor net
     const int s = net.s;             // <- the multiplicity of u
+    const size_t size_ctrlp = 
+        dim * sizeof(float);         // <- size of one control point
 
     if (val < 0) {
         return val;

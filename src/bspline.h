@@ -61,29 +61,6 @@ int bspline_new(
 void bspline_free(BSpline* bspline);
 
 /**
- * Returns the de boor net at u if the given spline is continuous at u.
- * The last control point of the returned array contains the point 
- * on the spline.
- * 
- * If the given spline in discontinuous at u because u refers the
- * first/last control point, one of them is returned.
- * 
- * If the given spline is discontinuous at u and refers an internal 
- * control point instead the first/last, the two control points laying on
- * u are returned.
- * 
- * @param bspline
- *      The spline to evaluate
- * @param u
- *      The element of the knot vector to evaluate.
- * @param n_points
- *      The number of returned points.
- * @param points
- *      Either the points of the de boor net, 
- *      or the point(s) directly referred by u.
- * @return
- *      A positive (inclusive 0) value on success, a negative on failure.
- * 
  *      0 = The returned points are the de boor net at u.
  *      1 = The spline is discontinuous at u and points to the 
  *          first/last control point.

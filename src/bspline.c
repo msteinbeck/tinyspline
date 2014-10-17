@@ -308,7 +308,15 @@ int ts_bspline_split(
         int idx = 0;
         for (; idx < 2; idx++) {
             // setup the new b-spline
-            ts_bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
+            const int r = 
+                ts_bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
+            // handle error
+            if (r < 0) {
+                if (idx == 0) {
+                    ts_bspline_free(&(*split)[0]);
+                }
+                return r;
+            }
             
             // copy the necessary control points from the original b-spline
             memcpy(

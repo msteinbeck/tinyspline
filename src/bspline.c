@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-void deboornet_default(DeBoorNet* deBoorNet)
+void ts_deboornet_default(DeBoorNet* deBoorNet)
 {
     deBoorNet->k          = 0;
     deBoorNet->s          = 0;
@@ -17,7 +17,7 @@ void deboornet_default(DeBoorNet* deBoorNet)
     deBoorNet->points     = NULL;
 }
 
-void deboornet_free(DeBoorNet* deBoorNet)
+void ts_deboornet_free(DeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL) {
         free(deBoorNet->points);
@@ -25,7 +25,7 @@ void deboornet_free(DeBoorNet* deBoorNet)
     }
 }
 
-void bspline_default(BSpline* bspline)
+void ts_bspline_default(BSpline* bspline)
 {
     bspline->deg     = 0;
     bspline->order   = 0;
@@ -36,12 +36,25 @@ void bspline_default(BSpline* bspline)
     bspline->knots   = NULL;
 }
 
-int bspline_new(
+void ts_bspline_free(BSpline* bspline)
+{
+    if (bspline->ctrlp != NULL) {
+        free(bspline->ctrlp);
+        bspline->ctrlp = NULL;
+    }
+    
+    if (bspline->knots != NULL) {
+        free(bspline->knots);
+        bspline->knots = NULL;
+    }
+}
+
+int ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 )
 {
-    bspline_default(bspline);
+    ts_bspline_default(bspline);
     
     // check input parameter
     if (deg < 0 || n_ctrlp < 1 || deg >= n_ctrlp || dim < 1) {
@@ -67,7 +80,7 @@ int bspline_new(
     bspline->knots   = (float*) malloc(n_knots * sizeof(float));
     if (bspline->knots == NULL) {
         // do not forget to free already allocated memory
-        bspline_free(bspline);
+        ts_bspline_free(bspline);
         return -2;
     }
     
@@ -111,25 +124,12 @@ int bspline_new(
     return 0;
 }
 
-void bspline_free(BSpline* bspline)
-{
-    if (bspline->ctrlp != NULL) {
-        free(bspline->ctrlp);
-        bspline->ctrlp = NULL;
-    }
-    
-    if (bspline->knots != NULL) {
-        free(bspline->knots);
-        bspline->knots = NULL;
-    }
-}
-
-int bspline_evaluate(
+int ts_bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet
 )
 {
-    deboornet_default(deBoorNet);
+    ts_deboornet_default(deBoorNet);
     deBoorNet->deg = bspline->deg;
     deBoorNet->dim = bspline->dim;
     
@@ -257,14 +257,14 @@ int bspline_evaluate(
     }
 }
 
-int bspline_split(
+int ts_bspline_split(
     const BSpline* bspline, const float u,
     BSpline (*split)[2] 
 )
 {
     // evaluate given b-spline at u to find the point to split
     DeBoorNet net;
-    const int val = bspline_evaluate(bspline, u, &net); // <- thre return value
+    const int val = ts_bspline_evaluate(bspline, u, &net); // <- thre return value
     
     // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
@@ -308,7 +308,7 @@ int bspline_split(
         int idx = 0;
         for (; idx < 2; idx++) {
             // setup the new b-spline
-            bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
+            ts_bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
             
             // copy the necessary control points from the original b-spline
             memcpy(
@@ -350,5 +350,5 @@ int bspline_split(
         
     }
     
-    deboornet_free(&net);
+    ts_deboornet_free(&net);
 }

@@ -65,8 +65,8 @@ typedef struct
 * De Boor methods                                       *
 *                                                       *
 ********************************************************/
-void deboornet_default(DeBoorNet* deBoorNet);
-void deboornet_free(DeBoorNet* deBoorNet);
+void ts_deboornet_default(DeBoorNet* deBoorNet);
+void ts_deboornet_free(DeBoorNet* deBoorNet);
 
 
 
@@ -75,21 +75,20 @@ void deboornet_free(DeBoorNet* deBoorNet);
 * B-Spline methods                                      *
 *                                                       *
 ********************************************************/
-void bspline_default(BSpline* bspline);
+void ts_bspline_default(BSpline* bspline);
+void ts_bspline_free(BSpline* bspline);
 
-int bspline_new(
+int ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 );
 
-void bspline_free(BSpline* bspline);
-
-int bspline_evaluate(
+int ts_bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet
 );
 
-int bspline_split(
+int ts_bspline_split(
     const BSpline* bspline, const float u,
     BSpline (*split)[2] 
 );

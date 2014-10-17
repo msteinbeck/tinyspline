@@ -3,14 +3,25 @@
 
 #include <stddef.h>
 
+/********************************************************
+*                                                       *
+* System dependent configuration                        *
+*                                                       *
+********************************************************/
+#define FLT_MAX_ABS_ERROR 1e-7
+#define FLT_MAX_REL_ERROR 1e-5
+
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-    
-// =============================
-// De Boor
-// =============================
+
+/********************************************************
+*                                                       *
+* Data                                                  *
+*                                                       *
+********************************************************/
 typedef struct
 {
     int k;             // <- the index [u_k, u_k+1)
@@ -26,12 +37,6 @@ typedef struct
     float* points;     // <- the control points of the de Boor net
 } DeBoorNet;
 
-void deboornet_free(DeBoorNet* deBoorNet);
-
-
-// =============================
-// B-Spline
-// =============================
 typedef enum 
 {
     OPENED = 0, 
@@ -53,6 +58,25 @@ typedef struct
                     //    each value is within [0.0, 1.0]
 } BSpline;
 
+
+
+/********************************************************
+*                                                       *
+* De Boor methods                                       *
+*                                                       *
+********************************************************/
+void deboornet_default(DeBoorNet* deBoorNet);
+void deboornet_free(DeBoorNet* deBoorNet);
+
+
+
+/********************************************************
+*                                                       *
+* B-Spline methods                                      *
+*                                                       *
+********************************************************/
+void bspline_default(BSpline* bspline);
+
 int bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
@@ -60,18 +84,6 @@ int bspline_new(
 
 void bspline_free(BSpline* bspline);
 
-/**
- *      0 = The returned points are the de boor net at u.
- *      1 = The spline is discontinuous at u and points to the 
- *          first/last control point.
- *      2 = The spline is discontinuous at u and points to two control points.
- *          (both must be inner control points)
- * 
- *      -1 = If the spline is not defined at u.
- *      -2 = If u has multiplicity of > order, thus the knot vector of the given
- *           spline is corrupted.
- *      -3 = If malloc failed.
- */
 int bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet

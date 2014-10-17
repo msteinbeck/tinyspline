@@ -4,24 +4,45 @@
 #include <math.h>
 #include <string.h>
 
-// =============================
-// De Boor
-// =============================
+void deboornet_default(DeBoorNet* deBoorNet)
+{
+    deBoorNet->k          = 0;
+    deBoorNet->s          = 0;
+    deBoorNet->h          = 0;
+    deBoorNet->deg        = 0;
+    deBoorNet->dim        = 0;
+    deBoorNet->n_affected = 0;
+    deBoorNet->n_points   = 0;
+    deBoorNet->last_idx   = 0;
+    deBoorNet->points     = NULL;
+}
+
 void deboornet_free(DeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL) {
         free(deBoorNet->points);
+        deBoorNet->points = NULL;
     }
 }
 
-// =============================
-// B-Spline
-// =============================
+void bspline_default(BSpline* bspline)
+{
+    bspline->deg     = 0;
+    bspline->order   = 0;
+    bspline->dim     = 0;
+    bspline->n_ctrlp = 0;
+    bspline->n_knots = 0;
+    bspline->ctrlp   = NULL;
+    bspline->knots   = NULL;
+}
+
 int bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 )
 {
+    bspline_default(bspline);
+    
     // check input parameter
     if (deg < 0 || n_ctrlp < 1 || deg >= n_ctrlp || dim < 1) {
         return -1;
@@ -37,8 +58,6 @@ int bspline_new(
     bspline->dim     = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
-    bspline->ctrlp   = NULL;
-    bspline->knots   = NULL;
     
     bspline->ctrlp = (float*) malloc(n_ctrlp * dim * sizeof(float));
     if (bspline->ctrlp == NULL) {
@@ -47,8 +66,8 @@ int bspline_new(
     
     bspline->knots   = (float*) malloc(n_knots * sizeof(float));
     if (bspline->knots == NULL) {
-        // do not forget to free already allocated arrays
-        free(bspline->ctrlp);
+        // do not forget to free already allocated memory
+        bspline_free(bspline);
         return -2;
     }
     
@@ -110,16 +129,9 @@ int bspline_evaluate(
     DeBoorNet* deBoorNet
 )
 {
-    // set default values
-    deBoorNet->k          = 0;
-    deBoorNet->s          = 0;
-    deBoorNet->h          = 0;
-    deBoorNet->deg        = bspline->deg;
-    deBoorNet->dim        = bspline->dim;
-    deBoorNet->n_affected = 0;
-    deBoorNet->n_points   = 0;
-    deBoorNet->last_idx   = 0;
-    deBoorNet->points     = NULL;
+    deboornet_default(deBoorNet);
+    deBoorNet->deg = bspline->deg;
+    deBoorNet->dim = bspline->dim;
     
     // 1. Find index k such that u is in between [u_k, u_k+1).
     // 2. Decide by multiplicity of u how to calculate point P(u).
@@ -128,12 +140,12 @@ int bspline_evaluate(
         const float uk     = bspline->knots[deBoorNet->k];
         const float e_u_uk = fabs(u - uk); // <- absolute error (epsilon)
         
-        if (e_u_uk < 0.000001) {
+        if (e_u_uk < FLT_MAX_ABS_ERROR) {
             deBoorNet->s++;
         } else {
             const float r_u_uk = fabs(u) > fabs(uk) ? 
                 fabs((u - uk) / u) : fabs((u - uk) / uk); // <- relative error
-            if (r_u_uk <= 0.00001) {
+            if (r_u_uk <= FLT_MAX_REL_ERROR) {
                 deBoorNet->s++;
             } else if (u < uk) {
                 break;

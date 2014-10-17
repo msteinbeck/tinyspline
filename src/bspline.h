@@ -83,6 +83,11 @@ int ts_bspline_new(
     BSpline* bspline
 );
 
+int ts_bspline_copy(
+    const BSpline* original,
+    BSpline* copy
+);
+
 int ts_bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet

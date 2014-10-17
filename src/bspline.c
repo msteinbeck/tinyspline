@@ -124,6 +124,36 @@ int ts_bspline_new(
     return 0;
 }
 
+int ts_bspline_copy(
+    const BSpline* original,
+    BSpline* copy
+)
+{
+    const int val = ts_bspline_new(
+        original->deg,
+        original->dim,
+        original->n_ctrlp,
+        CLAMPED, /* doesn't really matter because we copy knots anyway. */
+        copy
+    );
+    
+    if (val >= 0) {
+        memcpy(
+            copy->ctrlp, 
+            original->ctrlp, 
+            original->n_ctrlp * original->dim * sizeof(float)
+        );
+        
+        memcpy(
+            copy->knots, 
+            original->knots, 
+            original->n_knots * sizeof(float)
+        );
+    }
+    
+    return val;
+}
+
 int ts_bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet
@@ -262,6 +292,9 @@ int ts_bspline_split(
     BSpline (*split)[2] 
 )
 {
+    ts_bspline_default(&(*split)[0]);
+    ts_bspline_default(&(*split)[1]);
+    
     // evaluate given b-spline at u to find the point to split
     DeBoorNet net;
     const int val = ts_bspline_evaluate(bspline, u, &net); // <- thre return value
@@ -353,10 +386,11 @@ int ts_bspline_split(
             }
         }
     } else if (val == 1) {
-        
+        ts_bspline_copy(bspline, &(*split)[0]);
     } else {
         
     }
     
     ts_deboornet_free(&net);
+    return val;
 }

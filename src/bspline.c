@@ -145,7 +145,6 @@ int ts_bspline_copy(
             original->ctrlp, 
             original->n_ctrlp * original->dim * sizeof(float)
         );
-        
         memcpy(
             copy->knots, 
             original->knots, 
@@ -404,8 +403,16 @@ int ts_bspline_split(
         
         memcpy((*split)[0].ctrlp, bspline->ctrlp, n_ctrlp[0] * size_ctrlp);
         memcpy((*split)[0].knots, bspline->knots, n_knots[0] * sizeof(float));
-        memcpy((*split)[1].ctrlp, &bspline->ctrlp[n_ctrlp[0] * dim], n_ctrlp[1] * size_ctrlp);
-        memcpy((*split)[1].knots, &bspline->knots[bspline->n_knots - n_knots[1]], n_knots[1] * sizeof(float));
+        memcpy(
+            (*split)[1].ctrlp, 
+            &bspline->ctrlp[n_ctrlp[0] * dim], 
+            n_ctrlp[1] * size_ctrlp
+        );
+        memcpy(
+            (*split)[1].knots, 
+            &bspline->knots[bspline->n_knots - n_knots[1]], 
+            n_knots[1] * sizeof(float)
+        );
     }
     
     ts_deboornet_free(&net);

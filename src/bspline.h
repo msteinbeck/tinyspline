@@ -99,6 +99,15 @@ int ts_bspline_split(
 );
 
 
+
+/********************************************************
+*                                                       *
+* Utility methods.                                      *
+*                                                       *
+********************************************************/
+int ts_fequals(const float x, const float y);
+
+
 #ifdef	__cplusplus
 }
 #endif

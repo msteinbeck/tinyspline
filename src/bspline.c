@@ -169,19 +169,11 @@ int ts_bspline_evaluate(
     // 2. Decide by multiplicity of u how to calculate point P(u).
     
     for (deBoorNet->k = 0; deBoorNet->k < bspline->n_knots; deBoorNet->k++) {
-        const float uk     = bspline->knots[deBoorNet->k];
-        const float e_u_uk = fabs(u - uk); // <- absolute error (epsilon)
-        
-        if (e_u_uk < FLT_MAX_ABS_ERROR) {
+        const float uk = bspline->knots[deBoorNet->k];
+        if (ts_fequals(u, uk)) {
             deBoorNet->s++;
-        } else {
-            const float r_u_uk = fabs(u) > fabs(uk) ? 
-                fabs((u - uk) / u) : fabs((u - uk) / uk); // <- relative error
-            if (r_u_uk <= FLT_MAX_REL_ERROR) {
-                deBoorNet->s++;
-            } else if (u < uk) {
-                break;
-            }
+        } else if (u < uk) {
+            break;
         }
     }
     deBoorNet->k--;
@@ -418,4 +410,15 @@ int ts_bspline_split(
     
     ts_deboornet_free(&net);
     return evalVal;
+}
+
+int ts_fequals(const float x, const float y)
+{
+    if (fabs(x-y) < FLT_MAX_ABS_ERROR) {
+        return 1;
+    } else {
+        const float r = fabs(x) > fabs(y) ? 
+            fabs((x-y) / x) : fabs((x-y) / y);
+        return r <= FLT_MAX_REL_ERROR;
+    }
 }

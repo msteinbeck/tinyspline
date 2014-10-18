@@ -297,9 +297,13 @@ int ts_bspline_split(
     ts_bspline_default(&(*split)[0]);
     ts_bspline_default(&(*split)[1]);
     
-    // evaluate given b-spline at u to find the point to split
+    // split b-spline at P(u).
     DeBoorNet net;
     const int evalVal = ts_bspline_evaluate(bspline, u, &net);
+    
+    if (evalVal < 0) {
+        return evalVal;
+    }
     
     // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
@@ -310,11 +314,20 @@ int ts_bspline_split(
     const size_t size_ctrlp = 
         dim * sizeof(float);         // <- size of one control point
 
-    if (evalVal < 0) {
-        return evalVal;
-    } else if (evalVal == 0) {
-        // the number of control points of the new generated b-splines
+    if (evalVal == 0) {
+        int newVal;
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
+        
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &(*split)[0]);
+        if (newVal < 0) {
+            return newVal;
+        }
+        
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &(*split)[1]);
+        if (newVal < 0) {
+            ts_bspline_free(&(*split)[0]);
+            return newVal;
+        }
         
         // the offsets to use while copying control points
         // from the original b-spline to the new one
@@ -342,17 +355,6 @@ int ts_bspline_split(
         // for both parts of the split
         int idx, n;
         for (idx = 0; idx < 2; idx++) {
-            // setup the new b-spline
-            const int newVal = 
-                ts_bspline_new(deg, dim, n_ctrlp[idx], CLAMPED, &(*split)[idx]);
-            // handle error
-            if (newVal < 0) {
-                if (idx == 0) {
-                    ts_bspline_free(&(*split)[0]);
-                }
-                return newVal;
-            }
-            
             // copy the necessary control points from the original b-spline
             memcpy(
                 &(*split)[idx].ctrlp[to_b[idx]], 
@@ -387,30 +389,31 @@ int ts_bspline_split(
             }
         }
     } else if (evalVal == 1) {
-        ts_bspline_copy(bspline, &(*split)[0]);
+        const int newVal = ts_bspline_copy(bspline, &(*split)[0]);
+        if (newVal < 0) {
+            return newVal;
+        }
     } else {
         int newVal;
-        const size_t n_ctrlp0 = k-s + 1;
-        const size_t n_ctrlp1 = bspline->n_ctrlp - n_ctrlp0;
+        const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp0, CLAMPED, &(*split)[0]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &(*split)[0]);
         if (newVal < 0) {
             return newVal;
         }
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp1, CLAMPED, &(*split)[1]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &(*split)[1]);
         if (newVal < 0) {
             ts_bspline_free(&(*split)[0]);
             return newVal;
         }
         
-        const size_t n_knots0 = (*split)[0].n_knots;
-        const size_t n_knots1 = (*split)[1].n_knots;
+        const size_t n_knots[2] = {(*split)[0].n_knots, (*split)[1].n_knots};
         
-        memcpy((*split)[0].ctrlp, bspline->ctrlp, n_ctrlp0 * size_ctrlp);
-        memcpy((*split)[0].knots, bspline->knots, n_knots0 * sizeof(float));
-        memcpy((*split)[1].ctrlp, &bspline->ctrlp[n_ctrlp0 * dim], n_ctrlp1 * size_ctrlp);
-        memcpy((*split)[1].knots, &bspline->knots[bspline->n_knots - n_knots1], n_knots1 * sizeof(float));
+        memcpy((*split)[0].ctrlp, bspline->ctrlp, n_ctrlp[0] * size_ctrlp);
+        memcpy((*split)[0].knots, bspline->knots, n_knots[0] * sizeof(float));
+        memcpy((*split)[1].ctrlp, &bspline->ctrlp[n_ctrlp[0] * dim], n_ctrlp[1] * size_ctrlp);
+        memcpy((*split)[1].knots, &bspline->knots[bspline->n_knots - n_knots[1]], n_knots[1] * sizeof(float));
     }
     
     ts_deboornet_free(&net);

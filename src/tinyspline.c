@@ -1,4 +1,4 @@
-#include "bspline.h"
+#include "tinyspline.h"
 
 #include <stdlib.h>
 #include <math.h>

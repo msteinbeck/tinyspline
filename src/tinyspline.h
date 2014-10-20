@@ -1,5 +1,5 @@
-#ifndef BSPLINE_H
-#define	BSPLINE_H
+#ifndef TINYSPLINE_H
+#define	TINYSPLINE_H
 
 #include <stddef.h>
 
@@ -112,5 +112,5 @@ int ts_fequals(const float x, const float y);
 }
 #endif
 
-#endif	/* BSPLINE_H */
+#endif	/* TINYSPLINE_H */
 

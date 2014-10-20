@@ -17,3 +17,6 @@ lib: init
 	ar rcs bin/libtinyspline.a build/tinyspline.static.o
 	$(CC) $(CFLAGS) -c -fpic src/tinyspline.c -o build/tinyspline.shared.o
 	$(CC) --shared -o bin/libtinyspline.so build/tinyspline.shared.o
+	
+examples: lib
+	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/bspline.c -o bin/bspline bin/libtinyspline.a 

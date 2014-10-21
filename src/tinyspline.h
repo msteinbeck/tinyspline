@@ -106,7 +106,7 @@ TS_Error ts_bspline_evaluate(
 
 TS_Error ts_bspline_split(
     const BSpline* bspline, const float u,
-    BSpline (*split)[2] 
+    TS_BSplineSequence* split
 );
 
 TS_Error ts_bsplinesequence_new(

@@ -295,6 +295,7 @@ TS_Error ts_bspline_split(
     DeBoorNet net;
     const TS_Error evalVal = ts_bspline_evaluate(bspline, u, &net);
     if (evalVal < 0) {
+        ts_deboornet_free(&net);
         return evalVal;
     }
     
@@ -313,11 +314,13 @@ TS_Error ts_bspline_split(
         
         newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &(*split)[0]);
         if (newVal < 0) {
+            ts_deboornet_free(&net);
             return newVal;
         }
         
         newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &(*split)[1]);
         if (newVal < 0) {
+            ts_deboornet_free(&net);
             ts_bspline_free(&(*split)[0]);
             return newVal;
         }
@@ -384,6 +387,7 @@ TS_Error ts_bspline_split(
     } else if (evalVal == 1) {
         const TS_Error copyVal = ts_bspline_copy(bspline, &(*split)[0]);
         if (copyVal < 0) {
+            ts_deboornet_free(&net);
             return copyVal;
         }
     } else {
@@ -392,11 +396,13 @@ TS_Error ts_bspline_split(
         
         newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &(*split)[0]);
         if (newVal < 0) {
+            ts_deboornet_free(&net);
             return newVal;
         }
         
         newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &(*split)[1]);
         if (newVal < 0) {
+            ts_deboornet_free(&net);
             ts_bspline_free(&(*split)[0]);
             return newVal;
         }

@@ -21,8 +21,8 @@ void ts_deboornet_free(DeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL) {
         free(deBoorNet->points);
-        deBoorNet->points = NULL;
     }
+    ts_deboornet_default(deBoorNet);
 }
 
 void ts_bspline_default(BSpline* bspline)
@@ -40,13 +40,29 @@ void ts_bspline_free(BSpline* bspline)
 {
     if (bspline->ctrlp != NULL) {
         free(bspline->ctrlp);
-        bspline->ctrlp = NULL;
     }
-    
     if (bspline->knots != NULL) {
         free(bspline->knots);
-        bspline->knots = NULL;
     }
+    ts_bspline_default(bspline);
+}
+
+void ts_bsplinesequence_default(TS_BSplineSequence* sequence)
+{
+    sequence->n_bsplines = 0;
+    sequence->bsplines   = NULL;
+}
+
+void ts_bsplinesequence_free(TS_BSplineSequence* sequence)
+{
+    int n = 0;
+    for (; n < sequence->n_bsplines; n++) {
+        ts_bspline_free(&sequence->bsplines[n]);
+    }
+    if (sequence->bsplines != NULL) {
+        free(sequence->bsplines);
+    }
+    ts_bsplinesequence_default(sequence);
 }
 
 TS_Error ts_bspline_new(
@@ -74,15 +90,13 @@ TS_Error ts_bspline_new(
     bspline->dim     = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
-    
-    bspline->ctrlp = (float*) malloc(n_ctrlp * dim * sizeof(float));
+    bspline->ctrlp   = (float*) malloc(n_ctrlp * dim * sizeof(float));
     if (bspline->ctrlp == NULL) {
+        ts_bspline_free(bspline);
         return TS_MALLOC;
     }
-    
     bspline->knots   = (float*) malloc(n_knots * sizeof(float));
     if (bspline->knots == NULL) {
-        // do not forget to free already allocated memory
         ts_bspline_free(bspline);
         return TS_MALLOC;
     }
@@ -424,6 +438,30 @@ TS_Error ts_bspline_split(
     }
     
     ts_deboornet_free(&net);
+    return TS_SUCCESS;
+}
+
+TS_Error ts_bsplinesequence_new(
+    const size_t n, 
+    TS_BSplineSequence* sequence
+)
+{
+    ts_bsplinesequence_default(sequence);
+
+    if (n > 0) {
+        sequence->bsplines = (BSpline*) malloc(n * sizeof(BSpline));
+        if (sequence->bsplines == NULL) {
+            return TS_MALLOC;
+        }
+        
+        int i = 0;
+        for (; i < n; i++) {
+            ts_bspline_default(&sequence->bsplines[i]);
+        }
+        
+        sequence->n_bsplines = n;
+    }
+
     return TS_SUCCESS;
 }
 

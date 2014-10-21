@@ -33,6 +33,12 @@ typedef enum
                            //    the order of the spline
 } TS_Error;
 
+typedef enum 
+{
+    OPENED = 0, 
+    CLAMPED
+} BSplineType;
+
 typedef struct
 {
     int k;             // <- the index [u_k, u_k+1)
@@ -47,12 +53,6 @@ typedef struct
                        //    access of last point in points
     float* points;     // <- the control points of the de Boor net
 } DeBoorNet;
-
-typedef enum 
-{
-    OPENED = 0, 
-    CLAMPED
-} BSplineType;
 
 typedef struct
 {
@@ -69,25 +69,25 @@ typedef struct
                     //    each value is within [0.0, 1.0]
 } BSpline;
 
+typedef struct
+{
+    size_t n_bsplines; // <- the number of b-splines
+    BSpline* bsplines; // <- the b-splines
+} TS_BSplineSequence;
+
 
 
 /********************************************************
 *                                                       *
-* De Boor methods                                       *
+* Methods                                               *
 *                                                       *
 ********************************************************/
 void ts_deboornet_default(DeBoorNet* deBoorNet);
 void ts_deboornet_free(DeBoorNet* deBoorNet);
-
-
-
-/********************************************************
-*                                                       *
-* B-Spline methods                                      *
-*                                                       *
-********************************************************/
 void ts_bspline_default(BSpline* bspline);
 void ts_bspline_free(BSpline* bspline);
+void ts_bsplinesequence_default(TS_BSplineSequence* sequence);
+void ts_bsplinesequence_free(TS_BSplineSequence* sequence);
 
 TS_Error ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
@@ -109,11 +109,16 @@ TS_Error ts_bspline_split(
     BSpline (*split)[2] 
 );
 
+TS_Error ts_bsplinesequence_new(
+    const size_t n,
+    TS_BSplineSequence* sequence
+);
+
 
 
 /********************************************************
 *                                                       *
-* Utility methods.                                      *
+* Utility                                               *
 *                                                       *
 ********************************************************/
 int ts_fequals(const float x, const float y);

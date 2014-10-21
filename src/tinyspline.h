@@ -22,6 +22,17 @@ extern "C" {
 * Data                                                  *
 *                                                       *
 ********************************************************/
+typedef enum
+{
+    TS_SUCCESS = 0,        // <- no error 
+    TS_MALLOC = -1,        // <- malloc retuned null
+    TS_DIM_ZERO = -2,      // <- the dimension of the control points are 0
+    TS_DEG_GE_NCTRLP = -3, // <- degree of spline >= number of control points
+    TS_U_UNDEFINED = -4,   // <- spline is not defined at u
+    TS_MULTIPLICITY = -5   // <- the multiplicity of a knot is greater than 
+                           //    the order of the spline
+} TS_Error;
+
 typedef struct
 {
     int k;             // <- the index [u_k, u_k+1)
@@ -78,22 +89,22 @@ void ts_deboornet_free(DeBoorNet* deBoorNet);
 void ts_bspline_default(BSpline* bspline);
 void ts_bspline_free(BSpline* bspline);
 
-int ts_bspline_new(
+TS_Error ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
     BSpline* bspline
 );
 
-int ts_bspline_copy(
+TS_Error ts_bspline_copy(
     const BSpline* original,
     BSpline* copy
 );
 
-int ts_bspline_evaluate(
+TS_Error ts_bspline_evaluate(
     const BSpline* bspline, const float u, 
     DeBoorNet* deBoorNet
 );
 
-int ts_bspline_split(
+TS_Error ts_bspline_split(
     const BSpline* bspline, const float u,
     BSpline (*split)[2] 
 );

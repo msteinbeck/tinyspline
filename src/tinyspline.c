@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-void ts_deboornet_default(DeBoorNet* deBoorNet)
+void ts_deboornet_default(tsDeBoorNet* deBoorNet)
 {
     deBoorNet->k          = 0;
     deBoorNet->s          = 0;
@@ -17,7 +17,7 @@ void ts_deboornet_default(DeBoorNet* deBoorNet)
     deBoorNet->points     = NULL;
 }
 
-void ts_deboornet_free(DeBoorNet* deBoorNet)
+void ts_deboornet_free(tsDeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL) {
         free(deBoorNet->points);
@@ -25,7 +25,7 @@ void ts_deboornet_free(DeBoorNet* deBoorNet)
     ts_deboornet_default(deBoorNet);
 }
 
-void ts_bspline_default(BSpline* bspline)
+void ts_bspline_default(tsBSpline* bspline)
 {
     bspline->deg     = 0;
     bspline->order   = 0;
@@ -36,7 +36,7 @@ void ts_bspline_default(BSpline* bspline)
     bspline->knots   = NULL;
 }
 
-void ts_bspline_free(BSpline* bspline)
+void ts_bspline_free(tsBSpline* bspline)
 {
     if (bspline->ctrlp != NULL) {
         free(bspline->ctrlp);
@@ -47,13 +47,13 @@ void ts_bspline_free(BSpline* bspline)
     ts_bspline_default(bspline);
 }
 
-void ts_bsplinesequence_default(TS_BSplineSequence* sequence)
+void ts_bsplinesequence_default(tsBSplineSequence* sequence)
 {
     sequence->n_bsplines = 0;
     sequence->bsplines   = NULL;
 }
 
-void ts_bsplinesequence_free(TS_BSplineSequence* sequence)
+void ts_bsplinesequence_free(tsBSplineSequence* sequence)
 {
     int n = 0;
     for (; n < sequence->n_bsplines; n++) {
@@ -65,9 +65,9 @@ void ts_bsplinesequence_free(TS_BSplineSequence* sequence)
     ts_bsplinesequence_default(sequence);
 }
 
-TS_Error ts_bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
-    BSpline* bspline
+tsError ts_bspline_new(
+    const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+    tsBSpline* bspline
 )
 {
     ts_bspline_default(bspline);
@@ -108,7 +108,7 @@ TS_Error ts_bspline_new(
     size_t current, end; // <- used by loops
     size_t numerator, dominator; // <- to fill uniformly spaced elements
     
-    if (type == OPENED) {
+    if (type == TS_OPENED) {
         current = numerator = 0;
         end = n_knots;
         dominator = n_knots - 1;
@@ -141,18 +141,18 @@ TS_Error ts_bspline_new(
     return TS_SUCCESS;
 }
 
-TS_Error ts_bspline_copy(
-    const BSpline* original,
-    BSpline* copy
+tsError ts_bspline_copy(
+    const tsBSpline* original,
+    tsBSpline* copy
 )
 {
     ts_bspline_default(copy);
     
-    const TS_Error val = ts_bspline_new(
+    const tsError val = ts_bspline_new(
         original->deg,
         original->dim,
         original->n_ctrlp,
-        CLAMPED, /* doesn't really matter because we copy knots anyway. */
+        TS_CLAMPED, /* doesn't really matter because we copy knots anyway. */
         copy
     );
     
@@ -172,9 +172,9 @@ TS_Error ts_bspline_copy(
     return val;
 }
 
-TS_Error ts_bspline_evaluate(
-    const BSpline* bspline, const float u, 
-    DeBoorNet* deBoorNet
+tsError ts_bspline_evaluate(
+    const tsBSpline* bspline, const float u, 
+    tsDeBoorNet* deBoorNet
 )
 {
     ts_deboornet_default(deBoorNet);
@@ -297,19 +297,19 @@ TS_Error ts_bspline_evaluate(
     }
 }
 
-TS_Error ts_bspline_split(
-    const BSpline* bspline, const float u,
-    TS_BSplineSequence* split
+tsError ts_bspline_split(
+    const tsBSpline* bspline, const float u,
+    tsBSplineSequence* split
 )
 {
-    const TS_Error defVal = ts_bsplinesequence_new(2, split);
+    const tsError defVal = ts_bsplinesequence_new(2, split);
     if (defVal < 0) {
         return defVal;
     }
     
     // split b-spline at P(u).
-    DeBoorNet net;
-    const TS_Error evalVal = ts_bspline_evaluate(bspline, u, &net);
+    tsDeBoorNet net;
+    const tsError evalVal = ts_bspline_evaluate(bspline, u, &net);
     if (evalVal < 0) {
         ts_bsplinesequence_free(split);
         return evalVal;
@@ -325,17 +325,17 @@ TS_Error ts_bspline_split(
         dim * sizeof(float);         // <- size of one control point
 
     if (evalVal == 0) {
-        TS_Error newVal;
+        tsError newVal;
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &split->bsplines[0]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
         if (newVal < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
             return newVal;
         }
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &split->bsplines[1]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
         if (newVal < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
@@ -402,24 +402,24 @@ TS_Error ts_bspline_split(
             }
         }
     } else if (evalVal == 1) {
-        const TS_Error copyVal = ts_bspline_copy(bspline, &split->bsplines[0]);
+        const tsError copyVal = ts_bspline_copy(bspline, &split->bsplines[0]);
         if (copyVal < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
             return copyVal;
         }
     } else {
-        TS_Error newVal;
+        tsError newVal;
         const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], CLAMPED, &split->bsplines[0]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
         if (newVal < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
             return newVal;
         }
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], CLAMPED, &split->bsplines[1]);
+        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
         if (newVal < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
@@ -455,15 +455,15 @@ TS_Error ts_bspline_split(
     return TS_SUCCESS;
 }
 
-TS_Error ts_bsplinesequence_new(
+tsError ts_bsplinesequence_new(
     const size_t n, 
-    TS_BSplineSequence* sequence
+    tsBSplineSequence* sequence
 )
 {
     ts_bsplinesequence_default(sequence);
 
     if (n > 0) {
-        sequence->bsplines = (BSpline*) malloc(n * sizeof(BSpline));
+        sequence->bsplines = (tsBSpline*) malloc(n * sizeof(tsBSpline));
         if (sequence->bsplines == NULL) {
             return TS_MALLOC;
         }

@@ -31,13 +31,13 @@ typedef enum
     TS_U_UNDEFINED = -4,   // <- spline is not defined at u
     TS_MULTIPLICITY = -5   // <- the multiplicity of a knot is greater than 
                            //    the order of the spline
-} TS_Error;
+} tsError;
 
 typedef enum 
 {
-    OPENED = 0, 
-    CLAMPED
-} BSplineType;
+    TS_OPENED = 0, 
+    TS_CLAMPED
+} tsBSplineType;
 
 typedef struct
 {
@@ -52,7 +52,7 @@ typedef struct
                        //    This field can be used for direct 
                        //    access of last point in points
     float* points;     // <- the control points of the de Boor net
-} DeBoorNet;
+} tsDeBoorNet;
 
 typedef struct
 {
@@ -67,13 +67,13 @@ typedef struct
     float* ctrlp;   // <- the control points of the spline
     float* knots;   // <- the knot vector of the spline 
                     //    each value is within [0.0, 1.0]
-} BSpline;
+} tsBSpline;
 
 typedef struct
 {
-    size_t n_bsplines; // <- the number of b-splines
-    BSpline* bsplines; // <- the b-splines
-} TS_BSplineSequence;
+    size_t n_bsplines;   // <- the number of b-splines
+    tsBSpline* bsplines; // <- the b-splines
+} tsBSplineSequence;
 
 
 
@@ -82,36 +82,36 @@ typedef struct
 * Methods                                               *
 *                                                       *
 ********************************************************/
-void ts_deboornet_default(DeBoorNet* deBoorNet);
-void ts_deboornet_free(DeBoorNet* deBoorNet);
-void ts_bspline_default(BSpline* bspline);
-void ts_bspline_free(BSpline* bspline);
-void ts_bsplinesequence_default(TS_BSplineSequence* sequence);
-void ts_bsplinesequence_free(TS_BSplineSequence* sequence);
+void ts_deboornet_default(tsDeBoorNet* deBoorNet);
+void ts_deboornet_free(tsDeBoorNet* deBoorNet);
+void ts_bspline_default(tsBSpline* bspline);
+void ts_bspline_free(tsBSpline* bspline);
+void ts_bsplinesequence_default(tsBSplineSequence* sequence);
+void ts_bsplinesequence_free(tsBSplineSequence* sequence);
 
-TS_Error ts_bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, const BSplineType type,
-    BSpline* bspline
+tsError ts_bspline_new(
+    const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+    tsBSpline* bspline
 );
 
-TS_Error ts_bspline_copy(
-    const BSpline* original,
-    BSpline* copy
+tsError ts_bspline_copy(
+    const tsBSpline* original,
+    tsBSpline* copy
 );
 
-TS_Error ts_bspline_evaluate(
-    const BSpline* bspline, const float u, 
-    DeBoorNet* deBoorNet
+tsError ts_bspline_evaluate(
+    const tsBSpline* bspline, const float u, 
+    tsDeBoorNet* deBoorNet
 );
 
-TS_Error ts_bspline_split(
-    const BSpline* bspline, const float u,
-    TS_BSplineSequence* split
+tsError ts_bspline_split(
+    const tsBSpline* bspline, const float u,
+    tsBSplineSequence* split
 );
 
-TS_Error ts_bsplinesequence_new(
+tsError ts_bsplinesequence_new(
     const size_t n,
-    TS_BSplineSequence* sequence
+    tsBSplineSequence* sequence
 );
 
 

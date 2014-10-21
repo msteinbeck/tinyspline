@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <math.h> 
 
-BSpline spline;
+tsBSpline spline;
 GLUnurbsObj *theNurb;
 
 /********************************************************
@@ -21,7 +21,7 @@ void setup()
         3,      // degree of spline
         3,      // dimension of each point
         7,      // number of control points
-        CLAMPED,// used to hit first and last control point
+        TS_CLAMPED,// used to hit first and last control point
         &spline // the spline to setup
     );
     
@@ -85,7 +85,7 @@ void display(void)
     // draw evaluation
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    DeBoorNet net;
+    tsDeBoorNet net;
     ts_bspline_evaluate(&spline, 0.5f, &net);
     glBegin(GL_POINTS);
         glVertex3fv(&net.points[net.last_idx]);

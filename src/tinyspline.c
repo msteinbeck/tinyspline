@@ -146,8 +146,6 @@ tsError ts_bspline_copy(
     tsBSpline* copy
 )
 {
-    ts_bspline_default(copy);
-    
     const tsError val = ts_bspline_new(
         original->deg,
         original->dim,
@@ -211,6 +209,7 @@ tsError ts_bspline_evaluate(
     // 3. Use de boor algorithm to find point P(u).
     
     if (s > bspline->order) {
+        ts_deboornet_free(deBoorNet);
         return TS_MULTIPLICITY;
     } else if (s == bspline->order) {
         const int fst = k-s;   // <- the index k-s
@@ -222,6 +221,7 @@ tsError ts_bspline_evaluate(
             deBoorNet->points = (float*) malloc(size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
+                ts_deboornet_free(deBoorNet);
                 return TS_MALLOC;
             }
             // copy only first control point
@@ -239,6 +239,7 @@ tsError ts_bspline_evaluate(
             deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             // error handling
             if (deBoorNet->points == NULL) {
+                ts_deboornet_free(deBoorNet);
                 return TS_MALLOC;
             }
             memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], 2 * size_ctrlp);
@@ -250,6 +251,7 @@ tsError ts_bspline_evaluate(
         
         // b-spline is not defined at u
         if (fst < 0 || lst >= bspline->n_ctrlp) {
+            ts_deboornet_free(deBoorNet);
             return TS_U_UNDEFINED;
         }
         
@@ -261,6 +263,7 @@ tsError ts_bspline_evaluate(
         
         // error handling
         if (deBoorNet->points == NULL) {
+            ts_deboornet_free(deBoorNet);
             return TS_MALLOC;
         }
         

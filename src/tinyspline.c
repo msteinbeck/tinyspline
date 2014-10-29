@@ -314,7 +314,6 @@ tsError ts_bspline_split(
     tsDeBoorNet net;
     const tsError evalVal = ts_bspline_evaluate(bspline, u, &net);
     if (evalVal < 0) {
-        ts_bsplinesequence_free(split);
         return evalVal;
     }
     

@@ -19,7 +19,7 @@ lib: init
 	$(CC) --shared -o bin/libtinyspline.so build/tinyspline.shared.o
 
 java: lib
-	javac -cp libs/jna-4.1.0.jar -d build/ src/Binding.java
+	javac -cp libs/jna-4.1.0.jar -d build/ src/*.java
 	jar cvf bin/tinyspline.jar -C build com
 	cp libs/jna-4.1.0.jar bin/jna-4.1.0.jar
 

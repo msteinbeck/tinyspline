@@ -111,7 +111,7 @@ class Binding {
 
         int ts_bspline_new(
             final size_t deg, final size_t dim, final size_t n_ctrlp, final int type,
-            Structure bspline
+            BSplineBinding bspline
         );
 
         int ts_bspline_copy(

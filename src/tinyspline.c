@@ -284,7 +284,7 @@ tsError ts_bspline_evaluate(
             for (; i <= lst; i++) {
                 const float ui = bspline->knots[i];
                 const float a  = (u - ui) / (bspline->knots[i+deg-r+1] - ui);
-                const float a_hat = 1-a;
+                const float a_hat = 1.f-a;
                 size_t counter;
                 for (counter = 0; counter < dim; counter++) {
                     deBoorNet->points[idx_to++] = 
@@ -454,6 +454,36 @@ tsError ts_bspline_split(
     }
     
     ts_deboornet_free(&net);
+    return TS_SUCCESS;
+}
+
+tsError ts_bspline_buckle(
+    const tsBSpline* original, const float b,
+    tsBSpline* buckled
+)
+{
+    const int val = ts_bspline_copy(original, buckled);
+    if (val < 0) {
+        return val;
+    }
+    
+    // for convenience
+    const float b_hat  = 1.f-b;            // <- 1-b
+    const size_t dim   = buckled->dim;     // <- dimension of one control point 
+    const size_t N     = buckled->n_ctrlp; // <- number of control points
+    const float* p0    = buckled->ctrlp;   // <- pointer to P0
+    const float* pn_1  =
+        &buckled->ctrlp[(N-1) * dim];      // <- pointer to P_n-1
+    
+    int i, d;
+    for (i = 0; i < N; i++) {
+        for (d = 0; d < dim; d++) {
+            buckled->ctrlp[i*dim + d] = 
+                    b * buckled->ctrlp[i*dim + d] + 
+                b_hat * (p0[d] + (i/(N-1)) * (pn_1[d] - p0[d]));
+        }
+    }
+    
     return TS_SUCCESS;
 }
 

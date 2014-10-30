@@ -109,6 +109,11 @@ tsError ts_bspline_split(
     tsBSplineSequence* split
 );
 
+tsError ts_bspline_buckle(
+    const tsBSpline* original, const float b,
+    tsBSpline* buckled
+);
+
 tsError ts_bsplinesequence_new(
     const size_t n,
     tsBSplineSequence* sequence

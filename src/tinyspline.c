@@ -285,8 +285,8 @@ tsError ts_bspline_evaluate(
                 const float ui = bspline->knots[i];
                 const float a  = (u - ui) / (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1.f-a;
-                size_t counter;
-                for (counter = 0; counter < dim; counter++) {
+                size_t n;
+                for (n = 0; n < dim; n++) {
                     deBoorNet->points[idx_to++] = 
                         a_hat * deBoorNet->points[idx_l++] + 
                             a * deBoorNet->points[idx_r++];

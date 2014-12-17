@@ -309,7 +309,7 @@ tsError ts_bspline_split(
     const tsError ret_eval = ts_bspline_evaluate(bspline, u, &net);
     tsError ret_seq;
     
-    // handle return value of evaluation and create the bspline sequence 
+    // handle return value of evaluation and create the b-spline sequence 
     // depending on the result, if no error occurred
     if (ret_eval < 0) {
         return ret_eval;
@@ -319,7 +319,7 @@ tsError ts_bspline_split(
         ret_seq = ts_bsplinesequence_new(2, split);
     }
     
-    // error handling of bspline sequence creation
+    // error handling of b-spline sequence creation
     if (ret_seq < 0) {
         return ret_seq;
     }
@@ -334,7 +334,7 @@ tsError ts_bspline_split(
         dim * sizeof(float);         // <- size of one control point
 
     if (ret_eval == 0) {
-        tsError ret; // <- return value of bspline creation
+        tsError ret;
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
@@ -418,7 +418,7 @@ tsError ts_bspline_split(
             return ret;
         }
     } else {
-        tsError ret; // <- return value of bspline creation
+        tsError ret;
         const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);

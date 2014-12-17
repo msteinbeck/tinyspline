@@ -305,16 +305,23 @@ tsError ts_bspline_split(
     tsBSplineSequence* split
 )
 {
-    const tsError defVal = ts_bsplinesequence_new(2, split);
-    if (defVal < 0) {
-        return defVal;
+    tsDeBoorNet net;
+    const tsError ret_eval = ts_bspline_evaluate(bspline, u, &net);
+    tsError ret_seq;
+    
+    // handle return value of evaluation and create the bspline sequence 
+    // depending on the result, if no error occurred
+    if (ret_eval < 0) {
+        return ret_eval;
+    } else if (ret_eval == 1) {
+        ret_seq = ts_bsplinesequence_new(1, split);
+    } else {
+        ret_seq = ts_bsplinesequence_new(2, split);
     }
     
-    // split b-spline at P(u).
-    tsDeBoorNet net;
-    const tsError evalVal = ts_bspline_evaluate(bspline, u, &net);
-    if (evalVal < 0) {
-        return evalVal;
+    // error handling of bspline sequence creation
+    if (ret_seq < 0) {
+        return ret_seq;
     }
     
     // for convenience
@@ -326,7 +333,7 @@ tsError ts_bspline_split(
     const size_t size_ctrlp = 
         dim * sizeof(float);         // <- size of one control point
 
-    if (evalVal == 0) {
+    if (ret_eval == 0) {
         tsError newVal;
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
@@ -403,7 +410,7 @@ tsError ts_bspline_split(
                 to_u[idx]++;
             }
         }
-    } else if (evalVal == 1) {
+    } else if (ret_eval == 1) {
         const tsError copyVal = ts_bspline_copy(bspline, &split->bsplines[0]);
         if (copyVal < 0) {
             ts_bsplinesequence_free(split);

@@ -71,7 +71,7 @@ typedef struct
 
 typedef struct
 {
-    size_t n_bsplines;   // <- the number of b-splines
+    size_t n;            // <- the number of b-splines
     tsBSpline* bsplines; // <- the b-splines
 } tsBSplineSequence;
 

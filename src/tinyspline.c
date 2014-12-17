@@ -49,15 +49,15 @@ void ts_bspline_free(tsBSpline* bspline)
 
 void ts_bsplinesequence_default(tsBSplineSequence* sequence)
 {
-    sequence->n_bsplines = 0;
-    sequence->bsplines   = NULL;
+    sequence->n        = 0;
+    sequence->bsplines = NULL;
 }
 
 void ts_bsplinesequence_free(tsBSplineSequence* sequence)
 {
-    int n = 0;
-    for (; n < sequence->n_bsplines; n++) {
-        ts_bspline_free(&sequence->bsplines[n]);
+    int i = 0;
+    for (; i < sequence->n; i++) {
+        ts_bspline_free(&sequence->bsplines[i]);
     }
     if (sequence->bsplines != NULL) {
         free(sequence->bsplines);
@@ -512,7 +512,7 @@ tsError ts_bsplinesequence_new(
             ts_bspline_default(&sequence->bsplines[i]);
         }
         
-        sequence->n_bsplines = n;
+        sequence->n = n;
     }
 
     return TS_SUCCESS;

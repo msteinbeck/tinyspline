@@ -334,21 +334,21 @@ tsError ts_bspline_split(
         dim * sizeof(float);         // <- size of one control point
 
     if (ret_eval == 0) {
-        tsError newVal;
+        tsError ret; // <- return value of bspline creation
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
-        if (newVal < 0) {
+        ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
+        if (ret < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
-            return newVal;
+            return ret;
         }
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
-        if (newVal < 0) {
+        ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
+        if (ret < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
-            return newVal;
+            return ret;
         }
         
         // the offsets to use while copying control points
@@ -411,28 +411,28 @@ tsError ts_bspline_split(
             }
         }
     } else if (ret_eval == 1) {
-        const tsError copyVal = ts_bspline_copy(bspline, &split->bsplines[0]);
-        if (copyVal < 0) {
+        const tsError ret = ts_bspline_copy(bspline, &split->bsplines[0]);
+        if (ret < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
-            return copyVal;
+            return ret;
         }
     } else {
-        tsError newVal;
+        tsError ret; // <- return value of bspline creation
         const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
-        if (newVal < 0) {
+        ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
+        if (ret < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
-            return newVal;
+            return ret;
         }
         
-        newVal = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
-        if (newVal < 0) {
+        ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
+        if (ret < 0) {
             ts_bsplinesequence_free(split);
             ts_deboornet_free(&net);
-            return newVal;
+            return ret;
         }
         
         const size_t n_knots[2] = 

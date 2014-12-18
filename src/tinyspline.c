@@ -305,23 +305,26 @@ tsError ts_bspline_split(
     tsBSplineSequence* split
 )
 {
+    // NOTE:
+    // Yes, using goto is ugly and should be avoided,
+    // but in this case it really makes things easier.
+    // Calling an additional function which cleans up
+    // still requires a return statement thereafter, thus
+    // using goto here should be fair enough.
+    
+    tsError ret;      // <- contains the functions return value
+    tsError ret_eval; // <- contains the return value of the evaluation
+    
+    // as usual, set default values to output
+    ts_bsplinesequence_default(split);
+
+    // try to evaluate b-spline at point u and use the
+    // returned de boor net to create the split
     tsDeBoorNet net;
-    const tsError ret_eval = ts_bspline_evaluate(bspline, u, &net);
-    tsError ret_seq;
-    
-    // handle return value of evaluation and create the b-spline sequence 
-    // depending on the result, if no error occurred
+    ret_eval = ts_bspline_evaluate(bspline, u, &net);
     if (ret_eval < 0) {
-        return ret_eval;
-    } else if (ret_eval == 1) {
-        ret_seq = ts_bsplinesequence_new(1, split);
-    } else {
-        ret_seq = ts_bsplinesequence_new(2, split);
-    }
-    
-    // error handling of b-spline sequence creation
-    if (ret_seq < 0) {
-        return ret_seq;
+        ret = ret_eval; // do not forget to assign ret here
+        goto after_if;
     }
     
     // for convenience
@@ -332,23 +335,34 @@ tsError ts_bspline_split(
     const int s = net.s;             // <- the multiplicity of u
     const size_t size_ctrlp = 
         dim * sizeof(float);         // <- size of one control point
+    
+    // map the case: u pointing on start/end in opened b-spline 
+    // to the case:  u pointing to start/end in clamped b-spline
+    if (ts_fequals(bspline->knots[deg], u) ||
+        ts_fequals(bspline->knots[bspline->n_knots - bspline->order], u)) {
+        ret_eval = 1;
+    }
+    
+    // create sequence depending on split location
+    // and handle error if necessary
+    const int n_bsplines_in_seq = ret_eval == 1 ? 1 : 2;
+    ret = ts_bsplinesequence_new(n_bsplines_in_seq, split);
+    if (ret < 0) {
+        goto after_if;
+    }
 
+    // split the b-spline
     if (ret_eval == 0) {
-        tsError ret;
         const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
         if (ret < 0) {
-            ts_bsplinesequence_free(split);
-            ts_deboornet_free(&net);
-            return ret;
+            goto after_if;
         }
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
         if (ret < 0) {
-            ts_bsplinesequence_free(split);
-            ts_deboornet_free(&net);
-            return ret;
+            goto after_if;
         }
         
         // the offsets to use while copying control points
@@ -410,29 +424,26 @@ tsError ts_bspline_split(
                 to_u[idx]++;
             }
         }
+        
+        ret = 0;
     } else if (ret_eval == 1) {
-        const tsError ret = ts_bspline_copy(bspline, &split->bsplines[0]);
+        ret = ts_bspline_copy(bspline, &split->bsplines[0]);
         if (ret < 0) {
-            ts_bsplinesequence_free(split);
-            ts_deboornet_free(&net);
-            return ret;
+            goto after_if;
         }
+        
+        ret = ts_fequals(bspline->knots[deg], u) ? 1 : 2;
     } else {
-        tsError ret;
         const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
         if (ret < 0) {
-            ts_bsplinesequence_free(split);
-            ts_deboornet_free(&net);
-            return ret;
+            goto after_if;
         }
         
         ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
         if (ret < 0) {
-            ts_bsplinesequence_free(split);
-            ts_deboornet_free(&net);
-            return ret;
+            goto after_if;
         }
         
         const size_t n_knots[2] = 
@@ -458,10 +469,21 @@ tsError ts_bspline_split(
             &bspline->knots[bspline->n_knots - n_knots[1]], 
             n_knots[1] * sizeof(float)
         );
+        
+        ret = 0;
     }
     
+    // see note comment at the beginning of this function
+    after_if:
+    
+    // in case of error cleanup b-spline sequence
+    if (ret < 0) {
+        ts_bsplinesequence_free(split);
+    }
+
+    // cleanup de boor net in any case
     ts_deboornet_free(&net);
-    return TS_SUCCESS;
+    return ret;
 }
 
 tsError ts_bspline_buckle(

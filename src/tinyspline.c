@@ -345,7 +345,7 @@ tsError ts_bspline_split(
     
     // create sequence depending on split location
     // and handle error if necessary
-    const int n_bsplines_in_seq = ret_eval == 1 ? 1 : 2;
+    const size_t n_bsplines_in_seq = ret_eval == 1 ? 1 : 2;
     ret = ts_bsplinesequence_new(n_bsplines_in_seq, split);
     if (ret < 0) {
         goto after_if;
@@ -491,9 +491,9 @@ tsError ts_bspline_buckle(
     tsBSpline* buckled
 )
 {
-    const int val = ts_bspline_copy(original, buckled);
-    if (val < 0) {
-        return val;
+    const tsError ret = ts_bspline_copy(original, buckled);
+    if (ret < 0) {
+        return ret;
     }
     
     // for convenience
@@ -511,6 +511,45 @@ tsError ts_bspline_buckle(
                     b * buckled->ctrlp[i*dim + d] + 
                 b_hat * (p0[d] + (i/(N-1)) * (pn_1[d] - p0[d]));
         }
+    }
+    
+    return TS_SUCCESS;
+}
+
+tsError ts_bspline_to_bezier(
+    const tsBSpline* bspline,
+    tsBSplineSequence* sequence
+)
+{
+    const size_t n_bsplines = bspline->n_knots - 2 * bspline->order;
+    tsError ret_new = ts_bsplinesequence_new(n_bsplines, sequence);
+    if (ret_new < 0) {
+        return ret_new;
+    }
+    
+    tsError ret_split = 0; // <- the return of the last split operation
+    tsBSpline* current = (tsBSpline*)bspline; // <- the current b-spline to split
+    tsBSplineSequence split; // <- the current split
+    int i = 0; // <- the current b-spline insert index of the sequence
+    // if ret = 2, than there is nothing more to split
+    for (;ret_split < 2; i++) {
+        ret_split = 
+            ts_bspline_split(current, bspline->knots[bspline->order], &split);
+        if (ret_split < 0) {
+            ts_bsplinesequence_free(sequence);
+            return ret_split;
+        }
+        if (ret_split < 2) {
+            const tsError ret_copy = 
+                ts_bspline_copy(&split.bsplines[0], &sequence->bsplines[i]);
+            if (ret_copy < 0) {
+                ts_bsplinesequence_free(sequence);
+                ts_bsplinesequence_free(&split);
+                return ret_copy;
+            }
+            current = &split.bsplines[1];
+        }
+        ts_bsplinesequence_free(&split);
     }
     
     return TS_SUCCESS;

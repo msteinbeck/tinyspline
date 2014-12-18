@@ -114,6 +114,11 @@ tsError ts_bspline_buckle(
     tsBSpline* buckled
 );
 
+tsError ts_bspline_to_bezier(
+    const tsBSpline* bspline,
+    tsBSplineSequence* sequence
+);
+
 tsError ts_bsplinesequence_new(
     const size_t n,
     tsBSplineSequence* sequence

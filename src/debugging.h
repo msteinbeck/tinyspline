@@ -1,4 +1,8 @@
+#ifndef DEBUGGING_H
+#define	DEBUGGING_H
+
 #include "tinyspline.h"
+#include <stdio.h>
 
 void ts_bspline_print(tsBSpline* bspline)
 {
@@ -19,3 +23,5 @@ void ts_bspline_print(tsBSpline* bspline)
     }
     printf("\n\n");
 }
+
+#endif	/* DEBUGGING_H */

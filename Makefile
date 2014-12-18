@@ -26,3 +26,4 @@ java: lib
 examples: lib
 	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/bspline.c -o bin/bspline bin/libtinyspline.a
 	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/nurbs.c -o bin/nurbs bin/libtinyspline.a
+	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/sequence.c -o bin/sequence bin/libtinyspline.a

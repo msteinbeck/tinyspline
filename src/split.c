@@ -5,8 +5,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h> 
-#include "debugging.h"
+#include <math.h>
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;

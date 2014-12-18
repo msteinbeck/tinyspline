@@ -9,6 +9,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
+float u = 0.f;
 
 /********************************************************
 *                                                       *
@@ -116,14 +117,20 @@ void display(void)
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
     tsDeBoorNet net;
-    ts_bspline_evaluate(&spline, 0.3f, &net);
+    ts_bspline_evaluate(&spline, u, &net);
     glBegin(GL_POINTS);
         glVertex4fv(&net.points[net.last_idx]);
     glEnd();
     ts_deboornet_free(&net);
     
+    u += 0.0001;
+    if (u > 1.f) {
+        u = 0.f;
+    }
+    
     // flush output
     glFlush();
+    glutPostRedisplay();
 }
 
 

@@ -24,4 +24,19 @@ void ts_bspline_print(tsBSpline* bspline)
     printf("\n\n");
 }
 
+void ts_deboornet_print(tsDeBoorNet* net)
+{
+    int i, j;
+    
+    printf("########### points (%zu) ###########\n", net->n_points);
+    for (i = 0; i < net->n_points; i++) {
+        for (j = 0; j < net->dim; j++) {
+            printf("%f\t", net->points[i * net->dim + j]);
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+    
+}
+
 #endif	/* DEBUGGING_H */

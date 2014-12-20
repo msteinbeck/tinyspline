@@ -4,6 +4,93 @@
 #include <math.h>
 #include <string.h>
 
+/********************************************************
+*                                                       *
+* Internal functions                                    *
+*                                                       *
+********************************************************/
+tsError ts_internal_bspline_insert_knot(
+    const tsBSpline* bspline, const tsDeBoorNet* deBoorNet, const size_t n, 
+    tsBSpline* result
+)
+{
+    ts_bspline_default(result);
+    
+    if (deBoorNet->s+n > bspline->order) {
+        return TS_MULTIPLICITY;
+    }
+    
+    // for convenience
+    const size_t deg = bspline->deg;       // <- the degree of the original b-spline
+    const size_t dim = bspline->dim;       // <- dimension of one control point
+    const size_t N = deBoorNet->n_affected;// <- number of affected conrol points
+    const int k = deBoorNet->k;            // <- the index k of the de boor net
+    const size_t size_ctrlp = 
+        dim * sizeof(float);               // <- size of one control point
+    
+    const tsError ret = 
+        ts_bspline_new(deg, dim, bspline->n_ctrlp + n, TS_CLAMPED, result);
+    if (ret < 0) {
+        return ret;
+    }
+
+    int from, to;
+    int stride, stride_inc, i;
+    
+    // copy left hand side control points from original
+    from = to = 0;
+    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (k-deg) * size_ctrlp);
+    to += (k-deg)*dim;
+    
+    // copy left hand side control points from de boor net
+    from   = 0;
+    stride = N*dim;
+    stride_inc = -dim;
+    for (i = 0; i < n; i++) {
+        memcpy(&result->ctrlp[to], &deBoorNet->points[from], size_ctrlp);
+        from   += stride;
+        stride += stride_inc;
+        to     += dim;
+    }
+    
+    // copy middle part control points from de boor net
+    memcpy(&result->ctrlp[to], &deBoorNet->points[from], (N-n) * size_ctrlp);
+    to += (N-n)*dim;
+    
+    // copy right hand side control points from de boor net
+    from  -= dim;
+    stride = -(N-n+1)*dim;
+    stride_inc = -dim;
+    for (i = 0; i < n; i++) {
+        memcpy(&result->ctrlp[to], &deBoorNet->points[from], size_ctrlp);
+        from   += stride;
+        stride += stride_inc;
+        to     += dim;
+    }
+
+    // copy right hand side control points from original
+    from = ((k-deg)+N)*dim;
+    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (bspline->n_ctrlp-((k-deg)+N)) * size_ctrlp);
+    
+    from = to = 0;
+    memcpy(&result->knots[0], &bspline->knots[0], (k+1)*sizeof(float));
+    from = to = (k+1);
+    for (i = 0; i < n; i++) {
+        result->knots[to] = deBoorNet->u;
+        to++;
+    }
+    memcpy(&result->knots[to], &bspline->knots[from], (bspline->n_knots-from)*sizeof(float));
+    
+    return TS_SUCCESS;
+}
+
+
+
+/********************************************************
+*                                                       *
+* Interface implementation                              *
+*                                                       *
+********************************************************/
 void ts_deboornet_default(tsDeBoorNet* deBoorNet)
 {
     deBoorNet->u          = 0.f;
@@ -46,24 +133,6 @@ void ts_bspline_free(tsBSpline* bspline)
         free(bspline->knots);
     }
     ts_bspline_default(bspline);
-}
-
-void ts_bsplinesequence_default(tsBSplineSequence* sequence)
-{
-    sequence->n        = 0;
-    sequence->bsplines = NULL;
-}
-
-void ts_bsplinesequence_free(tsBSplineSequence* sequence)
-{
-    int i = 0;
-    for (; i < sequence->n; i++) {
-        ts_bspline_free(&sequence->bsplines[i]);
-    }
-    if (sequence->bsplines != NULL) {
-        free(sequence->bsplines);
-    }
-    ts_bsplinesequence_default(sequence);
 }
 
 tsError ts_bspline_new(
@@ -177,7 +246,6 @@ tsError ts_bspline_evaluate(
 )
 {
     ts_deboornet_default(deBoorNet);
-    deBoorNet->u   = u;
     deBoorNet->deg = bspline->deg;
     deBoorNet->dim = bspline->dim;
     
@@ -193,13 +261,16 @@ tsError ts_bspline_evaluate(
         }
     }
     deBoorNet->k--;
+    // ensures that with any float precision the knot vector stays valid
+    const float uk = bspline->knots[deBoorNet->k];
+    deBoorNet->u = ts_fequals(u, uk) ? uk : u;
     deBoorNet->h = deBoorNet->deg - deBoorNet->s;
     
     // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
     const size_t dim = bspline->dim; // <- dimension of one control point
     const int k = deBoorNet->k;      // <- the index k of the de boor net
-    const size_t s = deBoorNet->s;   // <- the multiplicity of u        
+    const int s = deBoorNet->s;      // <- the multiplicity of u        
     const size_t size_ctrlp = 
         sizeof(float) * dim;         // <- size of one control point
 
@@ -284,8 +355,9 @@ tsError ts_bspline_evaluate(
         for (;r <= deBoorNet->h; r++) {
             int i = fst + r;
             for (; i <= lst; i++) {
-                const float ui = bspline->knots[i];
-                const float a  = (u - ui) / (bspline->knots[i+deg-r+1] - ui);
+                const float ui    = bspline->knots[i];
+                const float a     = (deBoorNet->u - ui) / 
+                                    (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1.f-a;
                 int d;
                 for (d = 0; d < dim; d++) {
@@ -308,267 +380,37 @@ tsError ts_bspline_insert_knot(
 )
 {
     tsError ret;
-    
-    // as usual, set default values to output
-    ts_bspline_default(result);
-
-    // try to evaluate b-spline and use the returned de boor net
-    // to insert knot n times
     tsDeBoorNet net;
     ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret < 0) {
-        ts_deboornet_free(&net);
-        return ret;
-    } else if (net.s+n > bspline->order) {
-        ts_deboornet_free(&net);
-        return TS_MULTIPLICITY;
+    if (ret >= 0) {
+        ret = ts_internal_bspline_insert_knot(bspline, &net, n, result);
+    } else {
+        ts_bspline_default(result);
     }
-    
-    // for convenience
-    const size_t deg = bspline->deg; // <- the degree of the original b-spline
-    const size_t dim = bspline->dim; // <- dimension of one control point
-    const size_t N = net.n_affected; // <- number of affected conrol points
-    const int k = net.k;             // <- the index k of the de boor net
-    const size_t size_ctrlp = 
-        dim * sizeof(float);         // <- size of one control point
-    
-    ret = ts_bspline_new(deg, dim, bspline->n_ctrlp + n, TS_OPENED, result);
-    if (ret < 0) {
-        ts_deboornet_free(&net);
-        return ret;
-    }
-
-    int from, to;
-    int stride, stride_inc, i;
-    
-    // copy left hand side control points from original
-    from = to = 0;
-    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (k-deg) * size_ctrlp);
-    to += (k-deg)*dim;
-    
-    // copy left hand side control points from de boor net
-    from   = 0;
-    stride = N*dim;
-    stride_inc = -dim;
-    for (i = 0; i < n; i++) {
-        memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
-        from   += stride;
-        stride += stride_inc;
-        to     += dim;
-    }
-    
-    // copy middle part control points from de boor net
-    memcpy(&result->ctrlp[to], &net.points[from], (N-n) * size_ctrlp);
-    to += (N-n)*dim;
-    
-    // copy right hand side control points from de boor net
-    from  -= dim;
-    stride = -(N-n+1)*dim;
-    stride_inc = -dim;
-    for (i = 0; i < n; i++) {
-        memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
-        from   += stride;
-        stride += stride_inc;
-        to     += dim;
-    }
-
-    // copy right hand side control points from original
-    from = ((k-deg)+N)*dim;
-    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (bspline->n_ctrlp-((k-deg)+N)) * size_ctrlp);
-    
-    from = to = 0;
-    memcpy(&result->knots[0], &bspline->knots[0], (k+1)*sizeof(float));
-    from = to = (k+1);
-    for (i = 0; i < n; i++) {
-        result->knots[to] = u;
-        to++;
-    }
-    memcpy(&result->knots[to], &bspline->knots[from], (bspline->n_knots-from)*sizeof(float));
-    return TS_SUCCESS;
+    ts_deboornet_free(&net);
+    return ret;
 }
 
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
-    tsBSplineSequence* split
+    tsBSpline* split
 )
 {
-    // NOTE:
-    // Yes, using goto is ugly and should be avoided,
-    // but in this case it really makes things easier.
-    // Calling an additional function which cleans up
-    // still requires a return statement thereafter, thus
-    // using goto here should be fair enough.
-    
-    tsError ret;      // <- contains the functions return value
-    tsError ret_eval; // <- contains the return value of the evaluation
-    
-    // as usual, set default values to output
-    ts_bsplinesequence_default(split);
-
-    // try to evaluate b-spline at point u and use the
-    // returned de boor net to create the split
+    tsError ret;
     tsDeBoorNet net;
-    ret_eval = ts_bspline_evaluate(bspline, u, &net);
-    if (ret_eval < 0) {
-        ret = ret_eval; // do not forget to assign ret here
-        goto after_if;
-    }
-    
-    // for convenience
-    const size_t deg = bspline->deg; // <- the degree of the original b-spline
-    const size_t dim = bspline->dim; // <- dimension of one control point
-    const size_t N = net.n_affected; // <- number of affected conrol points
-    const int k = net.k;             // <- the index k of the de boor net
-    const int s = net.s;             // <- the multiplicity of u
-    const size_t size_ctrlp = 
-        dim * sizeof(float);         // <- size of one control point
-    
-    // map the case: u pointing on start/end in opened b-spline 
-    // to the case:  u pointing to start/end in clamped b-spline
-    if (ts_fequals(bspline->knots[deg], u) ||
-        ts_fequals(bspline->knots[bspline->n_knots - bspline->order], u)) {
-        ret_eval = 1;
-    }
-    
-    // create sequence depending on split location
-    // and handle error if necessary
-    const size_t n_bsplines_in_seq = ret_eval == 1 ? 1 : 2;
-    ret = ts_bsplinesequence_new(n_bsplines_in_seq, split);
-    if (ret < 0) {
-        goto after_if;
-    }
-
-    // split the b-spline
-    if (ret_eval == 0) {
-        const size_t n_ctrlp[2] = {k-deg+N, bspline->n_ctrlp-(k-s)+N-1};
-        
-        ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
-        if (ret < 0) {
-            goto after_if;
+    ret = ts_bspline_evaluate(bspline, u, &net);
+    if (ret >= 0) {
+        // FIXME: use net.order if available
+        if (net.h < 0 ||
+            net.k <= bspline->order ||
+            net.k >= bspline->n_knots - bspline->order) {
+            ret = ts_bspline_copy(bspline, split);
+        } else {
+            ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
         }
-        
-        ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
-        if (ret < 0) {
-            goto after_if;
-        }
-        
-        // the offsets to use while copying control points
-        // from the original b-spline to the new one
-        const size_t from_b[2] = {0, (k-s + 1) * dim};
-        const size_t to_b[2]   = {0, N * dim};
-        
-        // the offsets to use while copying control points
-        // from the de boor net to the new b-splines
-        size_t from_n[2] = {0, (net.n_points - 1) * dim};
-        size_t to_n[2]   = {(n_ctrlp[0] - N) * dim, 0};
-        int stride[2]    = {N * dim, -dim}; // <- the next index to use
-        const int stride_inc = -dim;
-        
-        // the offsets to use while copying knots
-        // from the original b-spline to the new one
-        size_t from_k[2] = {0, k+1};
-        size_t to_k[2]   = {0, bspline->order};
-        const size_t amount_k[2] = {k-s + 1, bspline->n_knots - (k+1)};
-        
-        // the offset to use while adding u to 
-        // the knot vector of the new b-spline
-        size_t to_u[2] = {k-s + 1, 0};
-        const size_t amount_u = bspline->order;
-        
-        // for both parts of the split
-        int idx, n;
-        for (idx = 0; idx < 2; idx++) {
-            // copy the necessary control points from the original b-spline
-            memcpy(
-                &split->bsplines[idx].ctrlp[to_b[idx]], 
-                &bspline->ctrlp[from_b[idx]], 
-                (n_ctrlp[idx] - N) * size_ctrlp
-            );
-            
-            // copy the remaining control points from the de boor net
-            for (n = 0; n < N; n++) {
-                memcpy(
-                    &(split->bsplines[idx].ctrlp[to_n[idx]]), 
-                    &net.points[from_n[idx]], 
-                    size_ctrlp
-                );
-                
-                from_n[idx] += stride[idx];
-                stride[idx] += stride_inc;
-                to_n[idx]   += dim;
-            }
-            
-            // copy the necessary knots from the original b-spline
-            memcpy(
-                &split->bsplines[idx].knots[to_k[idx]], 
-                &bspline->knots[from_k[idx]], 
-                amount_k[idx] * sizeof(float)
-            );
-            
-            // adding u to the knot vector
-            for (n = 0; n < amount_u; n++) {
-                split->bsplines[idx].knots[to_u[idx]] = u;
-                to_u[idx]++;
-            }
-        }
-        
-        ret = 0;
-    } else if (ret_eval == 1) {
-        ret = ts_bspline_copy(bspline, &split->bsplines[0]);
-        if (ret < 0) {
-            goto after_if;
-        }
-        
-        ret = ts_fequals(bspline->knots[deg], u) ? 1 : 2;
     } else {
-        const size_t n_ctrlp[2] = {k-s + 1, bspline->n_ctrlp - (k-s + 1)};
-        
-        ret = ts_bspline_new(deg, dim, n_ctrlp[0], TS_CLAMPED, &split->bsplines[0]);
-        if (ret < 0) {
-            goto after_if;
-        }
-        
-        ret = ts_bspline_new(deg, dim, n_ctrlp[1], TS_CLAMPED, &split->bsplines[1]);
-        if (ret < 0) {
-            goto after_if;
-        }
-        
-        const size_t n_knots[2] = 
-            {split->bsplines[0].n_knots, split->bsplines[1].n_knots};
-        
-        memcpy(
-            split->bsplines[0].ctrlp, 
-            bspline->ctrlp, 
-            n_ctrlp[0] * size_ctrlp
-        );
-        memcpy(
-            split->bsplines[0].knots, 
-            bspline->knots, 
-            n_knots[0] * sizeof(float)
-        );
-        memcpy(
-            split->bsplines[1].ctrlp, 
-            &bspline->ctrlp[n_ctrlp[0] * dim], 
-            n_ctrlp[1] * size_ctrlp
-        );
-        memcpy(
-            split->bsplines[1].knots, 
-            &bspline->knots[bspline->n_knots - n_knots[1]], 
-            n_knots[1] * sizeof(float)
-        );
-        
-        ret = 0;
+        ts_bspline_default(split);
     }
-    
-    // see note comment at the beginning of this function
-    after_if:
-    
-    // in case of error cleanup b-spline sequence
-    if (ret < 0) {
-        ts_bsplinesequence_free(split);
-    }
-
-    // cleanup de boor net in any case
     ts_deboornet_free(&net);
     return ret;
 }
@@ -605,9 +447,10 @@ tsError ts_bspline_buckle(
 
 tsError ts_bspline_to_bezier(
     const tsBSpline* bspline,
-    tsBSplineSequence* sequence
+    tsBSpline* sequence
 )
 {
+    /*
     const size_t n_bsplines = bspline->n_knots - 2 * bspline->order;
     tsError ret_new = ts_bsplinesequence_new(n_bsplines, sequence);
     if (ret_new < 0) {
@@ -637,38 +480,14 @@ tsError ts_bspline_to_bezier(
             current = &split.bsplines[1];
         }
         ts_bsplinesequence_free(&split);
-    }
+    }*/
     
-    return TS_SUCCESS;
-}
-
-tsError ts_bsplinesequence_new(
-    const size_t n, 
-    tsBSplineSequence* sequence
-)
-{
-    ts_bsplinesequence_default(sequence);
-
-    if (n > 0) {
-        sequence->bsplines = (tsBSpline*) malloc(n * sizeof(tsBSpline));
-        if (sequence->bsplines == NULL) {
-            return TS_MALLOC;
-        }
-        
-        int i = 0;
-        for (; i < n; i++) {
-            ts_bspline_default(&sequence->bsplines[i]);
-        }
-        
-        sequence->n = n;
-    }
-
     return TS_SUCCESS;
 }
 
 int ts_fequals(const float x, const float y)
 {
-    if (fabs(x-y) < FLT_MAX_ABS_ERROR) {
+    if (fabs(x-y) <= FLT_MAX_ABS_ERROR) {
         return 1;
     } else {
         const float r = fabs(x) > fabs(y) ? 

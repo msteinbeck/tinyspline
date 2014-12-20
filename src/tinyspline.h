@@ -75,12 +75,6 @@ typedef struct
                     //    each value is within [0.0, 1.0]
 } tsBSpline;
 
-typedef struct
-{
-    size_t n;            // <- the number of b-splines
-    tsBSpline* bsplines; // <- the b-splines
-} tsBSplineSequence;
-
 
 
 /********************************************************
@@ -92,8 +86,6 @@ void ts_deboornet_default(tsDeBoorNet* deBoorNet);
 void ts_deboornet_free(tsDeBoorNet* deBoorNet);
 void ts_bspline_default(tsBSpline* bspline);
 void ts_bspline_free(tsBSpline* bspline);
-void ts_bsplinesequence_default(tsBSplineSequence* sequence);
-void ts_bsplinesequence_free(tsBSplineSequence* sequence);
 
 tsError ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
@@ -117,7 +109,7 @@ tsError ts_bspline_insert_knot(
 
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
-    tsBSplineSequence* split
+    tsBSpline* split
 );
 
 tsError ts_bspline_buckle(
@@ -127,12 +119,7 @@ tsError ts_bspline_buckle(
 
 tsError ts_bspline_to_bezier(
     const tsBSpline* bspline,
-    tsBSplineSequence* sequence
-);
-
-tsError ts_bsplinesequence_new(
-    const size_t n,
-    tsBSplineSequence* sequence
+    tsBSpline* bezier
 );
 
 

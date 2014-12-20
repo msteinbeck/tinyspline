@@ -51,12 +51,16 @@ typedef struct
     int s;             // <- the multiplicity of u_k
     int h;             // <- how many times u must be inserted
     size_t deg;        // <- degree of b-spline bassis function
+    size_t order;      // <- degree + 1
+                       //    This field is provided for convenience, because
+                       //    some libraries (e.g. OpenGL) implicitly describing 
+                       //    a polynomial of degree n with n + 1.
     size_t dim;        // <- dimension of a control point
     size_t n_affected; // <- number of affected control points
     size_t n_points;   // <- number of control points
     size_t last_idx;   // <- index of last point in points
                        //    This field can be used for direct 
-                       //    access of last point in points
+                       //    access of last point in points.
     float* points;     // <- the control points of the de Boor net
 } tsDeBoorNet;
 

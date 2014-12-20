@@ -98,6 +98,7 @@ void ts_deboornet_default(tsDeBoorNet* deBoorNet)
     deBoorNet->s          = 0;
     deBoorNet->h          = 0;
     deBoorNet->deg        = 0;
+    deBoorNet->order      = 0;
     deBoorNet->dim        = 0;
     deBoorNet->n_affected = 0;
     deBoorNet->n_points   = 0;
@@ -246,8 +247,9 @@ tsError ts_bspline_evaluate(
 )
 {
     ts_deboornet_default(deBoorNet);
-    deBoorNet->deg = bspline->deg;
-    deBoorNet->dim = bspline->dim;
+    deBoorNet->deg   = bspline->deg;
+    deBoorNet->order = bspline->order;
+    deBoorNet->dim   = bspline->dim;
     
     // 1. Find index k such that u is in between [u_k, u_k+1).
     // 2. Decide by multiplicity of u how to calculate point P(u).
@@ -400,7 +402,6 @@ tsError ts_bspline_split(
     tsDeBoorNet net;
     ret = ts_bspline_evaluate(bspline, u, &net);
     if (ret >= 0) {
-        // FIXME: use net.order if available
         if (net.h < 0 ||
             net.k <= bspline->order ||
             net.k >= bspline->n_knots - bspline->order) {

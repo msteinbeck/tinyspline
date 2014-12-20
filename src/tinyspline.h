@@ -43,8 +43,13 @@ typedef struct
 {
     float u;           // <- the knot u
     int k;             // <- the index [u_k, u_k+1)
-    size_t s;          // <- the multiplicity of u_k
-    size_t h;          // <- how many times u must be inserted
+/** 
+ * although s and h are sizes, it makes
+ * things easier to declare them as int
+ * because in some cases they might be negative
+ */
+    int s;             // <- the multiplicity of u_k
+    int h;             // <- how many times u must be inserted
     size_t deg;        // <- degree of b-spline bassis function
     size_t dim;        // <- dimension of a control point
     size_t n_affected; // <- number of affected control points

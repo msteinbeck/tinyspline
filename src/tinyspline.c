@@ -106,7 +106,7 @@ tsError ts_bspline_new(
     // [multiplicity order, uniformly spaced, multiplicity order]
     // for opened b-splines setup knot vector with:
     // [uniformly spaced]
-    size_t current, end; // <- used by loops
+    int current, end; // <- used by loops
     size_t numerator, dominator; // <- to fill uniformly spaced elements
     
     if (type == TS_OPENED) {
@@ -199,7 +199,7 @@ tsError ts_bspline_evaluate(
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
     const size_t dim = bspline->dim; // <- dimension of one control point
     const int k = deBoorNet->k;      // <- the index k of the de boor net
-    const int s = deBoorNet->s;      // <- the multiplicity of u        
+    const size_t s = deBoorNet->s;   // <- the multiplicity of u        
     const size_t size_ctrlp = 
         sizeof(float) * dim;         // <- size of one control point
 
@@ -287,8 +287,8 @@ tsError ts_bspline_evaluate(
                 const float ui = bspline->knots[i];
                 const float a  = (u - ui) / (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1.f-a;
-                size_t n;
-                for (n = 0; n < dim; n++) {
+                int d;
+                for (d = 0; d < dim; d++) {
                     deBoorNet->points[idx_to++] = 
                         a_hat * deBoorNet->points[idx_l++] + 
                             a * deBoorNet->points[idx_r++];
@@ -339,7 +339,7 @@ tsError ts_bspline_insert_knot(
     }
 
     int from, to;
-    int stride, stride_inc, idx;
+    int stride, stride_inc, i;
     
     // copy left hand side control points from original
     from = to = 0;
@@ -350,7 +350,7 @@ tsError ts_bspline_insert_knot(
     from   = 0;
     stride = N*dim;
     stride_inc = -dim;
-    for (idx = 0; idx < n; idx++) {
+    for (i = 0; i < n; i++) {
         memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
         from   += stride;
         stride += stride_inc;
@@ -365,7 +365,7 @@ tsError ts_bspline_insert_knot(
     from  -= dim;
     stride = -(N-n+1)*dim;
     stride_inc = -dim;
-    for (idx = 0; idx < n; idx++) {
+    for (i = 0; i < n; i++) {
         memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
         from   += stride;
         stride += stride_inc;
@@ -379,7 +379,7 @@ tsError ts_bspline_insert_knot(
     from = to = 0;
     memcpy(&result->knots[0], &bspline->knots[0], (k+1)*sizeof(float));
     from = to = (k+1);
-    for (idx = 0; idx < n; idx++) {
+    for (i = 0; i < n; i++) {
         result->knots[to] = u;
         to++;
     }

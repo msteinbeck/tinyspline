@@ -104,6 +104,11 @@ tsError ts_bspline_evaluate(
     tsDeBoorNet* deBoorNet
 );
 
+tsError ts_bspline_insert_knot(
+    const tsBSpline* bspline, const float u, const size_t n,
+    tsBSpline* result
+);
+
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
     tsBSplineSequence* split

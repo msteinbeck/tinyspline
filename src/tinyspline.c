@@ -300,6 +300,91 @@ tsError ts_bspline_evaluate(
     }
 }
 
+tsError ts_bspline_insert_knot(
+    const tsBSpline* bspline, const float u, const size_t n,
+    tsBSpline* result
+)
+{
+    tsError ret;
+    
+    // as usual, set default values to output
+    ts_bspline_default(result);
+
+    // try to evaluate b-spline and use the returned de boor net
+    // to insert knot n times
+    tsDeBoorNet net;
+    ret = ts_bspline_evaluate(bspline, u, &net);
+    if (ret < 0) {
+        ts_deboornet_free(&net);
+        return ret;
+    } else if (net.s+n > bspline->order) {
+        ts_deboornet_free(&net);
+        return TS_MULTIPLICITY;
+    }
+    
+    // for convenience
+    const size_t deg = bspline->deg; // <- the degree of the original b-spline
+    const size_t dim = bspline->dim; // <- dimension of one control point
+    const size_t N = net.n_affected; // <- number of affected conrol points
+    const int k = net.k;             // <- the index k of the de boor net
+    const size_t size_ctrlp = 
+        dim * sizeof(float);         // <- size of one control point
+    
+    ret = ts_bspline_new(deg, dim, bspline->n_ctrlp + n, TS_OPENED, result);
+    if (ret < 0) {
+        ts_deboornet_free(&net);
+        return ret;
+    }
+
+    int from, to;
+    int stride, stride_inc, idx;
+    
+    // copy left hand side control points from original
+    from = to = 0;
+    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (k-deg) * size_ctrlp);
+    to += (k-deg)*dim;
+    
+    // copy left hand side control points from de boor net
+    from   = 0;
+    stride = N*dim;
+    stride_inc = -dim;
+    for (idx = 0; idx < n; idx++) {
+        memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
+        from   += stride;
+        stride += stride_inc;
+        to     += dim;
+    }
+    
+    // copy middle part control points from de boor net
+    memcpy(&result->ctrlp[to], &net.points[from], (N-n) * size_ctrlp);
+    to += (N-n)*dim;
+    
+    // copy right hand side control points from de boor net
+    from  -= dim;
+    stride = -(N-n+1)*dim;
+    stride_inc = -dim;
+    for (idx = 0; idx < n; idx++) {
+        memcpy(&result->ctrlp[to], &net.points[from], size_ctrlp);
+        from   += stride;
+        stride += stride_inc;
+        to     += dim;
+    }
+
+    // copy right hand side control points from original
+    from = ((k-deg)+N)*dim;
+    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (bspline->n_ctrlp-((k-deg)+N)) * size_ctrlp);
+    
+    from = to = 0;
+    memcpy(&result->knots[0], &bspline->knots[0], (k+1)*sizeof(float));
+    from = to = (k+1);
+    for (idx = 0; idx < n; idx++) {
+        result->knots[to] = u;
+        to++;
+    }
+    memcpy(&result->knots[to], &bspline->knots[from], (bspline->n_knots-from)*sizeof(float));
+    return TS_SUCCESS;
+}
+
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
     tsBSplineSequence* split

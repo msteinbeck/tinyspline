@@ -147,7 +147,7 @@ tsError ts_bspline_copy(
     tsBSpline* copy
 )
 {
-    const tsError val = ts_bspline_new(
+    const tsError ret = ts_bspline_new(
         original->deg,
         original->dim,
         original->n_ctrlp,
@@ -155,7 +155,7 @@ tsError ts_bspline_copy(
         copy
     );
     
-    if (val >= 0) {
+    if (ret >= 0) {
         memcpy(
             copy->ctrlp, 
             original->ctrlp, 
@@ -168,7 +168,7 @@ tsError ts_bspline_copy(
         );
     }
     
-    return val;
+    return ret;
 }
 
 tsError ts_bspline_evaluate(

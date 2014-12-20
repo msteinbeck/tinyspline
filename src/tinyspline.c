@@ -6,6 +6,7 @@
 
 void ts_deboornet_default(tsDeBoorNet* deBoorNet)
 {
+    deBoorNet->u          = 0.f;
     deBoorNet->k          = 0;
     deBoorNet->s          = 0;
     deBoorNet->h          = 0;
@@ -176,6 +177,7 @@ tsError ts_bspline_evaluate(
 )
 {
     ts_deboornet_default(deBoorNet);
+    deBoorNet->u   = u;
     deBoorNet->deg = bspline->deg;
     deBoorNet->dim = bspline->dim;
     

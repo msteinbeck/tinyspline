@@ -24,6 +24,7 @@ java: lib
 	cp libs/jna-4.1.0.jar bin/jna-4.1.0.jar
 
 examples: lib
-	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/bspline.c -o bin/bspline bin/libtinyspline.a
-	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/nurbs.c -o bin/nurbs bin/libtinyspline.a
-	$(CC) $(CFLAGS) -lGL -lGLU -lglut src/split.c -o bin/split bin/libtinyspline.a
+	rm bin/libtinyspline.so # remove shared lib to ensure examples use static lib
+	$(CC) $(CFLAGS) -Lbin src/bspline.c -o bin/bspline -lGL -lGLU -lglut -Bstatic -ltinyspline
+	$(CC) $(CFLAGS) -Lbin src/nurbs.c -o bin/nurbs -lGL -lGLU -lglut  -Bstatic -ltinyspline
+#	$(CC) $(CFLAGS) -Lbin src/split.c -o bin/split -lGL -lGLU -lglut  -Bstatic -ltinyspline

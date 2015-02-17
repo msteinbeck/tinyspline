@@ -123,13 +123,12 @@ void display(void)
     glEnd();
     ts_deboornet_free(&net);
     
-    u += 0.0001;
+    u += 0.001;
     if (u > 1.f) {
         u = 0.f;
     }
     
-    // flush output
-    glFlush();
+    glutSwapBuffers();
     glutPostRedisplay();
 }
 
@@ -175,7 +174,7 @@ void reshape(int w, int h)
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (500, 500);
     glutInitWindowPosition (100, 100);
     glutCreateWindow(argv[0]);

@@ -9,7 +9,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-float u = 0;
+float u = 0.f;
 
 /********************************************************
 *                                                       *
@@ -59,64 +59,53 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // draw spline
+    // draw split
+    tsBSpline split;
+    ts_bspline_split(&spline, u, &split);
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
         gluNurbsCurve(
             theNurb, 
-            spline.n_knots, 
-            &spline.knots[0], 
-            spline.dim, 
-            spline.ctrlp, 
-            spline.order, 
+            split.n_knots, 
+            &split.knots[0], 
+            split.dim, 
+            split.ctrlp, 
+            split.order, 
             GL_MAP1_VERTEX_3
         );
     gluEndCurve(theNurb);
+    ts_bspline_free(&split);
+
+    // draw control points
+    glColor3f(1.0, 0.0, 0.0);
+    glPointSize(5.0);
+    int i;
+    glBegin(GL_POINTS);
+      for (i = 0; i < spline.n_ctrlp; i++) 
+         glVertex3fv(&spline.ctrlp[i * spline.dim]);
+    glEnd();
     
-    // draw split
+    // draw split point
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    tsBSplineSequence seq;
-    int ret = ts_bspline_split(&spline, u, &seq);
-    if (ret >= 0) {
-        gluBeginCurve(theNurb);
-            gluNurbsCurve(
-                theNurb, 
-                seq.bsplines[0].n_knots, 
-                &seq.bsplines[0].knots[0], 
-                seq.bsplines[0].dim, 
-                seq.bsplines[0].ctrlp, 
-                seq.bsplines[0].order, 
-                GL_MAP1_VERTEX_3
-            );
-        gluEndCurve(theNurb);
-        
-        if (ret == 0) {
-            glColor3f(0.0, 1.0, 0.0);
-            gluBeginCurve(theNurb);
-                gluNurbsCurve(
-                    theNurb, 
-                    seq.bsplines[1].n_knots, 
-                    &seq.bsplines[1].knots[0], 
-                    seq.bsplines[1].dim, 
-                    seq.bsplines[1].ctrlp, 
-                    seq.bsplines[1].order, 
-                    GL_MAP1_VERTEX_3
-                );
-            gluEndCurve(theNurb);
-        }
-    }
+    tsDeBoorNet net;
+    ts_bspline_evaluate(&spline, u, &net);
+    glBegin(GL_POINTS);
+        glVertex3fv(&net.points[net.last_idx]);
+    glEnd();
+    ts_deboornet_free(&net);
     
     u += 0.001;
     if (u > 1.f) {
         u = 0.f;
     }
     
-    // flush output
-    glFlush();
+    glutSwapBuffers();
     glutPostRedisplay();
 }
+
+
 
 
 /********************************************************
@@ -124,12 +113,6 @@ void display(void)
 * Framework                                             *
 *                                                       *
 ********************************************************/
-void glutTimer(int value)
-{
-    glutPostRedisplay();
-    glutTimerFunc(1, glutTimer, 1);
-} 
-
 void nurbsError(GLenum errorCode)
 {
    const GLubyte *estring;
@@ -164,7 +147,7 @@ void reshape(int w, int h)
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (500, 500);
     glutInitWindowPosition (100, 100);
     glutCreateWindow(argv[0]);

@@ -27,4 +27,4 @@ examples: lib
 	rm bin/libtinyspline.so # remove shared lib to ensure examples use static lib
 	$(CC) $(CFLAGS) -Lbin src/bspline.c -o bin/bspline -lGL -lGLU -lglut -Bstatic -ltinyspline
 	$(CC) $(CFLAGS) -Lbin src/nurbs.c -o bin/nurbs -lGL -lGLU -lglut  -Bstatic -ltinyspline
-#	$(CC) $(CFLAGS) -Lbin src/split.c -o bin/split -lGL -lGLU -lglut  -Bstatic -ltinyspline
+	$(CC) $(CFLAGS) -Lbin src/split.c -o bin/split -lGL -lGLU -lglut  -Bstatic -ltinyspline

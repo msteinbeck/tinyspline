@@ -430,8 +430,8 @@ tsError ts_bspline_split(
     ret = ts_bspline_evaluate(bspline, u, &net);
     if (ret >= 0) {
         if (net.h < 0 ||
-            net.k <= bspline->order ||
-            net.k >= bspline->n_knots - bspline->order) {
+            ts_fequals(bspline->knots[bspline->deg], u) ||
+            ts_fequals(bspline->knots[bspline->n_knots - bspline->order], u)) {
             ret = ts_bspline_copy(bspline, split);
         } else {
             ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);

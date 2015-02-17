@@ -68,7 +68,7 @@ void display(void)
         gluNurbsCurve(
             theNurb, 
             split.n_knots, 
-            &split.knots[0], 
+            split.knots, 
             split.dim, 
             split.ctrlp, 
             split.order, 

@@ -466,7 +466,7 @@ tsError ts_bspline_buckle(
         for (d = 0; d < dim; d++) {
             buckled->ctrlp[i*dim + d] = 
                     b * buckled->ctrlp[i*dim + d] + 
-                b_hat * (p0[d] + (i/(N-1)) * (pn_1[d] - p0[d]));
+                b_hat * (p0[d] + ((float)i / (N-1)) * (pn_1[d] - p0[d]));
         }
     }
     

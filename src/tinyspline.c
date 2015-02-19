@@ -433,8 +433,10 @@ tsError ts_bspline_split(
             ts_fequals(bspline->knots[bspline->deg], u) ||
             ts_fequals(bspline->knots[bspline->n_knots - bspline->order], u)) {
             ret = ts_bspline_copy(bspline, split);
+            ret = ret >= 0 ? net.k : ret;
         } else {
             ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
+            ret = ret >= 0 ? net.k + net.h + 1 : ret;
         }
     } else {
         ts_bspline_default(split);
@@ -478,38 +480,6 @@ tsError ts_bspline_to_bezier(
     tsBSpline* sequence
 )
 {
-    /*
-    const size_t n_bsplines = bspline->n_knots - 2 * bspline->order;
-    tsError ret_new = ts_bsplinesequence_new(n_bsplines, sequence);
-    if (ret_new < 0) {
-        return ret_new;
-    }
-    
-    tsError ret_split = 0; // <- the return of the last split operation
-    tsBSpline* current = (tsBSpline*)bspline; // <- the current b-spline to split
-    tsBSplineSequence split; // <- the current split
-    int i = 0; // <- the current b-spline insert index of the sequence
-    // if ret = 2, than there is nothing more to split
-    for (;ret_split < 2; i++) {
-        ret_split = 
-            ts_bspline_split(current, bspline->knots[bspline->order], &split);
-        if (ret_split < 0) {
-            ts_bsplinesequence_free(sequence);
-            return ret_split;
-        }
-        if (ret_split < 2) {
-            const tsError ret_copy = 
-                ts_bspline_copy(&split.bsplines[0], &sequence->bsplines[i]);
-            if (ret_copy < 0) {
-                ts_bsplinesequence_free(sequence);
-                ts_bsplinesequence_free(&split);
-                return ret_copy;
-            }
-            current = &split.bsplines[1];
-        }
-        ts_bsplinesequence_free(&split);
-    }*/
-    
     return TS_SUCCESS;
 }
 

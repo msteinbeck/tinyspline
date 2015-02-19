@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -Wall -Werror
+CFLAGS=-g -Werror -Wall -Wfloat-equal -Wshadow -Wunreachable-code -Winit-self
 
 all: lib
 

@@ -455,7 +455,6 @@ tsError ts_bspline_split(
 {
     tsError ret;
     tsDeBoorNet net;
-    
     ret = ts_bspline_evaluate(bspline, u, &net);
     if (ret >= 1) {
         ret = ts_bspline_copy(bspline, split);
@@ -465,9 +464,8 @@ tsError ts_bspline_split(
         *k = ret >= 0 ? net.k + net.h + 1 : 0;
     } else {
         ts_bspline_default(split);
-        *k = -1;
+        *k = 0;
     }
-    
     ts_deboornet_free(&net);
     return ret;
 }

@@ -1,5 +1,9 @@
 CC=gcc
-CFLAGS=-g -Werror -Wall -Wextra -Wfloat-equal -Wshadow -Wunreachable-code -Winit-self
+CFLAGS=-g \
+       -Werror -Wall -Wextra -Wfloat-equal -Winit-self -Wno-missing-braces \
+       -Wshadow -Wunreachable-code -Wundef -Wnested-externs -Winline \
+       -Wcast-align -Wbad-function-cast -Wcast-qual -Wpointer-arith \
+       -Wswitch-default -Wswitch-enum
 
 all: lib
 

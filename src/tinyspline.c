@@ -128,8 +128,6 @@ void ts_deboornet_default(tsDeBoorNet* deBoorNet)
     deBoorNet->k          = 0;
     deBoorNet->s          = 0;
     deBoorNet->h          = 0;
-    deBoorNet->deg        = 0;
-    deBoorNet->order      = 0;
     deBoorNet->dim        = 0;
     deBoorNet->n_affected = 0;
     deBoorNet->n_points   = 0;
@@ -315,8 +313,6 @@ tsError ts_bspline_evaluate(
     }
     
     // 3. setup already known values
-    deBoorNet->deg   = bspline->deg;
-    deBoorNet->order = bspline->order;
     deBoorNet->dim   = bspline->dim;
     deBoorNet->k--; // by 2. k must be >= 1, thus -1 will never underflow
     const float uk = bspline->knots[deBoorNet->k]; // ensures that with any 

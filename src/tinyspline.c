@@ -48,8 +48,10 @@ tsError ts_internal_bspline_insert_knot(
     // 6. copy left hand side knots from original b-spline
     // 7. fill insert point with u
     // 8. copy right hand side knots form original b-spline
+    
+    size_t i;     // <- used in for loops
     int from, to; // <- copy indicies
-    int stride, stride_inc, i;
+    int stride, stride_inc; // <- offsets for copy indicies
     
     // 1.
     from = to = 0;
@@ -348,8 +350,8 @@ tsError ts_bspline_evaluate(
             return 2;
         }
     } else {
-        const int fst = k-deg; // <- first affected control point, inclusive
-        const int lst = k-s;   // <- last affected control point, inclusive
+        const int fst = k-deg;  // <- first affected control point, inclusive
+        const size_t lst = k-s; // <- last affected control point, inclusive
         
         // b-spline is not defined at u
         if (fst < 0 || lst >= bspline->n_ctrlp) {
@@ -382,13 +384,14 @@ tsError ts_bspline_evaluate(
         
         int r = 1;
         for (;r <= deBoorNet->h; r++) {
-            int i = fst + r;
+            size_t i = fst + r;
             for (; i <= lst; i++) {
                 const float ui    = bspline->knots[i];
                 const float a     = (deBoorNet->u - ui) / 
                                     (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1.f-a;
-                int d;
+                
+                size_t d;
                 for (d = 0; d < dim; d++) {
                     deBoorNet->points[idx_to++] = 
                         a_hat * deBoorNet->points[idx_l++] + 
@@ -463,7 +466,7 @@ tsError ts_bspline_buckle(
     const float* pn_1  =
         &buckled->ctrlp[(N-1) * dim];      // <- pointer to P_n-1
     
-    int i, d;
+    size_t i, d;
     for (i = 0; i < N; i++) {
         for (d = 0; d < dim; d++) {
             buckled->ctrlp[i*dim + d] = 
@@ -480,6 +483,7 @@ tsError ts_bspline_to_bezier(
     tsBSpline* sequence
 )
 {
+    ts_bspline_copy(bspline, sequence);
     return TS_SUCCESS;
 }
 

@@ -61,7 +61,8 @@ void display(void)
     
     // draw split
     tsBSpline split;
-    ts_bspline_split(&spline, u, &split);
+    size_t k;
+    ts_bspline_split(&spline, u, &split, &k);
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
@@ -80,7 +81,7 @@ void display(void)
     // draw control points
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    int i;
+    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);

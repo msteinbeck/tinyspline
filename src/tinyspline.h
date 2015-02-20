@@ -42,14 +42,9 @@ typedef enum
 typedef struct
 {
     float u;           // <- the knot u
-    int k;             // <- the index [u_k, u_k+1)
-/** 
- * although s and h are sizes, it makes
- * things easier to declare them as int
- * because in some cases they might be negative
- */
-    int s;             // <- the multiplicity of u_k
-    int h;             // <- how many times u must be inserted
+    size_t k;          // <- the index [u_k, u_k+1)
+    size_t s;          // <- the multiplicity of u_k
+    size_t h;          // <- how many times u must be inserted
     size_t deg;        // <- degree of b-spline bassis function
     size_t order;      // <- degree + 1
                        //    This field is provided for convenience, because
@@ -112,7 +107,7 @@ tsError ts_bspline_insert_knot(
 
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
-    tsBSpline* split
+    tsBSpline* split, size_t* k
 );
 
 tsError ts_bspline_buckle(

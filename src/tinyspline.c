@@ -21,18 +21,20 @@ tsError ts_internal_bspline_insert_knot(
     }
     
     const tsError ret = ts_bspline_new(
-        // It doesn't matter whether clamped or opened is used here,
-        // because the knots will be copied from the original b-spline anyway.
-        bspline->deg, bspline->dim, bspline->n_ctrlp + n, TS_CLAMPED, result
+        bspline->deg, 
+        bspline->dim, 
+        bspline->n_ctrlp + n, 
+        TS_CLAMPED, /* doesn't really matter because we copy knots anyway. */
+        result
     );
+    
     if (ret < 0) {
         return ret;
     }
     
-    // for convenience
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
     const size_t dim = bspline->dim; // <- dimension of one control point
-    const int k = deBoorNet->k;      // <- the index k of the de boor net
+    const size_t k = deBoorNet->k;   // <- the index k of the de boor net
     const size_t N = 
         deBoorNet->n_affected;       // <- number of affected conrol points
     const size_t size_ctrlp = 
@@ -180,7 +182,6 @@ tsError ts_bspline_new(
         return TS_DEG_GE_NCTRLP;
     }
 
-    // for convenience
     const size_t order   = deg + 1;
     const size_t n_knots = n_ctrlp + order;
     
@@ -205,7 +206,7 @@ tsError ts_bspline_new(
     // [multiplicity order, uniformly spaced, multiplicity order]
     // for opened b-splines setup knot vector with:
     // [uniformly spaced]
-    int current, end; // <- used by loops
+    size_t current, end; // <- used by loops
     size_t numerator, dominator; // <- to fill uniformly spaced elements
     
     if (type == TS_OPENED) {
@@ -276,14 +277,16 @@ tsError ts_bspline_evaluate(
 )
 {
     ts_deboornet_default(deBoorNet);
-    deBoorNet->deg   = bspline->deg;
-    deBoorNet->order = bspline->order;
-    deBoorNet->dim   = bspline->dim;
     
     // 1. Find index k such that u is in between [u_k, u_k+1).
-    // 2. Decide by multiplicity of u how to calculate point P(u).
+    // 2. Check whether b-spline is defined at u
+    // 3. Setup already known values
+    // 4. Decide by multiplicity of u how to calculate point P(u).
     
-    for (deBoorNet->k = 0; deBoorNet->k < bspline->n_knots; deBoorNet->k++) {
+    const size_t n_knots = bspline->n_knots; // <- the number of knots
+    
+    // 1. find index k
+    for (deBoorNet->k = 0; deBoorNet->k < n_knots; deBoorNet->k++) {
         const float uk = bspline->knots[deBoorNet->k];
         if (ts_fequals(u, uk)) {
             deBoorNet->s++;
@@ -291,84 +294,96 @@ tsError ts_bspline_evaluate(
             break;
         }
     }
-    deBoorNet->k--;
-    // ensures that with any float precision the knot vector stays valid
-    const float uk = bspline->knots[deBoorNet->k];
-    deBoorNet->u = ts_fequals(u, uk) ? uk : u;
-    deBoorNet->h = deBoorNet->deg - deBoorNet->s;
     
-    // for convenience
-    const size_t deg = bspline->deg; // <- the degree of the original b-spline
-    const size_t dim = bspline->dim; // <- dimension of one control point
-    const int k = deBoorNet->k;      // <- the index k of the de boor net
-    const int s = deBoorNet->s;      // <- the multiplicity of u        
-    const size_t size_ctrlp = 
-        sizeof(float) * dim;         // <- size of one control point
-
-    // 1. Check for multiplicity > order.
-    //    This is not allowed for any control point.
-    // 2. Check for multiplicity = order.
-    //    Take the two points k-s and k-s + 1. If one of
-    //    them doesn't exist, take only the other.
-    // 3. Use de boor algorithm to find point P(u).
+    const size_t s   = deBoorNet->s; // <- the multiplicity of u
+    const size_t deg = bspline->deg; // <- the degree of the b-spline
     
-    if (s > bspline->order) {
-        ts_deboornet_free(deBoorNet);
-        return TS_MULTIPLICITY;
-    } else if (s == bspline->order) {
-        const int fst = k-s;   // <- the index k-s
-        const int snd = fst+1; // <- the index k-s + 1
+    // 2. check u
+    //
+    // 2a) Check for u < u_0
+    // 2b) Check for u > u_max
+    // 2c) Check whether b-spline is defined at u for opened b-splines
+    if (deBoorNet->k == 0) { // u < u_0
+        goto err_u_undefined;
+    } else if (deBoorNet->k == n_knots && s == 0) { // u > u_max
+        goto err_u_undefined;
+    } else if (s <= deg) { // we may have an opened b-spline
+        // (keep in mind that currently k is k+1)
+        if (deBoorNet->k <= deg || deBoorNet->k > n_knots-deg) {
+            goto err_u_undefined;
+        }
+    }
+    
+    // 3. setup already known values
+    deBoorNet->deg   = bspline->deg;
+    deBoorNet->order = bspline->order;
+    deBoorNet->dim   = bspline->dim;
+    deBoorNet->k--; // by 2. k must be >= 1, thus -1 will never underflow
+    const float uk = bspline->knots[deBoorNet->k]; // ensures that with any 
+                                                   // float precision the knot
+    deBoorNet->u = ts_fequals(u, uk) ? uk : u;     // vector stays valid
+    deBoorNet->h = deg < s ? 0 : deg-s; // prevent underflow
+ 
+    const size_t order = bspline->order; // <- the order of the b-spline
+    const size_t dim   = bspline->dim;   // <- the dimension of one point
+    const size_t k     = deBoorNet->k;   // <- the index k of the de boor net
+    const size_t size_ctrlp = sizeof(float) * dim; // <- size of one ctrlp
+    
+    // 4. decide how to calculate P(u)
+    //
+    // 4a) Check for multiplicity > order.
+    //     This is not allowed for any control point.
+    // 4b) Check for multiplicity = order.
+    //     Take the two points k-s and k-s + 1. If one of
+    //     them doesn't exist, take only the other.
+    // 4c) Use de boor algorithm to find point P(u). 
+    if (s > order) {
+        goto err_multiplicity;
+    } else if (s == order) {
         // only one of the two control points exists
-        if (fst < 0 || snd >= bspline->n_ctrlp) {
+        if (k == deg ||                  // only the first control point
+            k == bspline->n_knots - 1) { // only the last control point
+            
             deBoorNet->n_affected = deBoorNet->n_points = 1;
-            deBoorNet->last_idx = 0;
-            deBoorNet->points = (float*) malloc(size_ctrlp);
-            // error handling
+            deBoorNet->last_idx   = 0;
+            deBoorNet->points     = (float*) malloc(size_ctrlp);
             if (deBoorNet->points == NULL) {
-                ts_deboornet_free(deBoorNet);
-                return TS_MALLOC;
+                goto err_malloc;
             }
-            // copy only first control point
-            if (fst < 0) {
+            
+            // first control point
+            if (k == deg) {
                 memcpy(deBoorNet->points, bspline->ctrlp, size_ctrlp);
-            // copy only last control point
+            // last control point
             } else {
-                memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], size_ctrlp);
+                const size_t from = (k-s) * dim;
+                memcpy(deBoorNet->points, &bspline->ctrlp[from], size_ctrlp);
             }
             return 1;
-        // must be an inner control points, copy both
         } else {
             deBoorNet->n_affected = deBoorNet->n_points = 2;
-            deBoorNet->last_idx = dim;
-            deBoorNet->points = (float*) malloc(2 * size_ctrlp);
-            // error handling
+            deBoorNet->last_idx   = dim;
+            deBoorNet->points     = (float*) malloc(2 * size_ctrlp);
             if (deBoorNet->points == NULL) {
-                ts_deboornet_free(deBoorNet);
-                return TS_MALLOC;
+                goto err_malloc;
             }
-            memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], 2 * size_ctrlp);
+            const size_t from = (k-s) * dim;
+            memcpy(deBoorNet->points, &bspline->ctrlp[from], 2 * size_ctrlp);
             return 2;
         }
-    } else {
-        const int fst = k-deg;  // <- first affected control point, inclusive
-        const size_t lst = k-s; // <- last affected control point, inclusive
-        
-        // b-spline is not defined at u
-        if (fst < 0 || lst >= bspline->n_ctrlp) {
-            ts_deboornet_free(deBoorNet);
-            return TS_U_UNDEFINED;
-        }
+    } else { // by 4a) and 4b) s <= deg (order = deg+1)
+        const size_t fst = k-deg; // <- first affected control point, inclusive
+                                  //    by 2c) s <= deg implies k > deg
+        const size_t lst = k-s;   // <- last affected control point, inclusive
+                                  //    s <= deg < k
         
         deBoorNet->n_affected = lst-fst + 1;
         deBoorNet->n_points = 
                 deBoorNet->n_affected * (deBoorNet->n_affected + 1) * 0.5f;
         deBoorNet->last_idx = (deBoorNet->n_points - 1) * dim;
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
-        
-        // error handling
         if (deBoorNet->points == NULL) {
-            ts_deboornet_free(deBoorNet);
-            return TS_MALLOC;
+            goto err_malloc;
         }
         
         // copy initial values to output
@@ -382,7 +397,7 @@ tsError ts_bspline_evaluate(
         int idx_r  = dim; // <- the current right index
         int idx_to = deBoorNet->n_affected * dim; // <- the current to index
         
-        int r = 1;
+        size_t r = 1;
         for (;r <= deBoorNet->h; r++) {
             size_t i = fst + r;
             for (; i <= lst; i++) {
@@ -404,6 +419,16 @@ tsError ts_bspline_evaluate(
         
         return 0;
     }
+    
+    err_malloc:
+        ts_deboornet_free(deBoorNet);
+        return TS_MALLOC;
+    err_u_undefined:
+        ts_deboornet_free(deBoorNet);
+        return TS_U_UNDEFINED;
+    err_multiplicity:
+        ts_deboornet_free(deBoorNet);
+        return TS_MULTIPLICITY;
 }
 
 tsError ts_bspline_insert_knot(
@@ -425,25 +450,24 @@ tsError ts_bspline_insert_knot(
 
 tsError ts_bspline_split(
     const tsBSpline* bspline, const float u,
-    tsBSpline* split
+    tsBSpline* split, size_t* k
 )
 {
     tsError ret;
     tsDeBoorNet net;
+    
     ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret >= 0) {
-        if (net.h < 0 ||
-            ts_fequals(bspline->knots[bspline->deg], u) ||
-            ts_fequals(bspline->knots[bspline->n_knots - bspline->order], u)) {
-            ret = ts_bspline_copy(bspline, split);
-            ret = ret >= 0 ? net.k : ret;
-        } else {
-            ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
-            ret = ret >= 0 ? net.k + net.h + 1 : ret;
-        }
+    if (ret >= 1) {
+        ret = ts_bspline_copy(bspline, split);
+        *k = ret >= 0 ? net.k : 0;
+    } else if (ret == 0) {
+        ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
+        *k = ret >= 0 ? net.k + net.h + 1 : 0;
     } else {
         ts_bspline_default(split);
+        *k = -1;
     }
+    
     ts_deboornet_free(&net);
     return ret;
 }
@@ -458,7 +482,6 @@ tsError ts_bspline_buckle(
         return ret;
     }
     
-    // for convenience
     const float b_hat  = 1.f-b;            // <- 1-b
     const size_t dim   = buckled->dim;     // <- dimension of one control point 
     const size_t N     = buckled->n_ctrlp; // <- number of control points

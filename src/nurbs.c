@@ -107,7 +107,7 @@ void display(void)
     // draw control points
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    int i;
+    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);

@@ -6,7 +6,7 @@
 
 void ts_bspline_print(tsBSpline* bspline)
 {
-    int i, j;
+    size_t i, j;
     
     printf("########### control points (%zu) ###########\n", bspline->n_ctrlp);
     for (i = 0; i < bspline->n_ctrlp; i++) {
@@ -26,7 +26,7 @@ void ts_bspline_print(tsBSpline* bspline)
 
 void ts_deboornet_print(tsDeBoorNet* net)
 {
-    int i, j;
+    size_t i, j;
     
     printf("########### points (%zu) ###########\n", net->n_points);
     for (i = 0; i < net->n_points; i++) {

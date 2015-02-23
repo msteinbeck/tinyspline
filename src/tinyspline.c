@@ -495,12 +495,12 @@ tsError ts_bspline_buckle(
     return TS_SUCCESS;
 }
 
-tsError ts_bspline_to_bezier(
+tsError ts_bspline_to_beziers(
     const tsBSpline* bspline,
-    tsBSpline* sequence
+    tsBSpline* beziers
 )
 {
-    ts_bspline_copy(bspline, sequence);
+    ts_bspline_copy(bspline, beziers);
     return TS_SUCCESS;
 }
 

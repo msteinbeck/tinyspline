@@ -110,9 +110,9 @@ tsError ts_bspline_buckle(
     tsBSpline* buckled
 );
 
-tsError ts_bspline_to_bezier(
+tsError ts_bspline_to_beziers(
     const tsBSpline* bspline,
-    tsBSpline* bezier
+    tsBSpline* beziers
 );
 
 

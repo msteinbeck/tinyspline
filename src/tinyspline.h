@@ -48,10 +48,14 @@ typedef struct
     size_t dim;        // <- dimension of a control point
     size_t n_affected; // <- number of affected control points
     size_t n_points;   // <- number of control points
-    size_t last_idx;   // <- index of last point in points
-                       //    This field can be used for direct 
-                       //    access of last point in points.
     float* points;     // <- the control points of the de Boor net
+    float* result;     // <- the result of the evalutation
+                       //    Technically it is a pointer to the last point
+                       //    in points. Any changes made here will modify
+                       //    points and vice versa. In case of a discontinuous
+                       //    B-Spline at u, points can be used to get access
+                       //    to the first point and result to get access to
+                       //    the second one.
 } tsDeBoorNet;
 
 typedef struct

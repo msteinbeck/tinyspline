@@ -131,13 +131,14 @@ void ts_deboornet_default(tsDeBoorNet* deBoorNet)
     deBoorNet->dim        = 0;
     deBoorNet->n_affected = 0;
     deBoorNet->n_points   = 0;
-    deBoorNet->last_idx   = 0;
     deBoorNet->points     = NULL;
+    deBoorNet->result     = NULL;
 }
 
 void ts_deboornet_free(tsDeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL) {
+        // automatically frees the field result
         free(deBoorNet->points);
     }
     ts_deboornet_default(deBoorNet);
@@ -340,12 +341,12 @@ tsError ts_bspline_evaluate(
         if (k == deg ||                  // only the first control point
             k == bspline->n_knots - 1) { // only the last control point
             
-            deBoorNet->n_affected = deBoorNet->n_points = 1;
-            deBoorNet->last_idx   = 0;
-            deBoorNet->points     = (float*) malloc(size_ctrlp);
+            deBoorNet->points = (float*) malloc(size_ctrlp);
             if (deBoorNet->points == NULL) {
                 goto err_malloc;
             }
+            deBoorNet->result = deBoorNet->points;
+            deBoorNet->n_affected = deBoorNet->n_points = 1;
             
             // first control point
             if (k == deg) {
@@ -357,12 +358,14 @@ tsError ts_bspline_evaluate(
             }
             return 1;
         } else {
-            deBoorNet->n_affected = deBoorNet->n_points = 2;
-            deBoorNet->last_idx   = dim;
-            deBoorNet->points     = (float*) malloc(2 * size_ctrlp);
+            deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             if (deBoorNet->points == NULL) {
                 goto err_malloc;
             }
+            deBoorNet->result = &deBoorNet->points[dim];
+            deBoorNet->n_affected = deBoorNet->n_points = 2;
+            
+            // copy both control points
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, &bspline->ctrlp[from], 2 * size_ctrlp);
             return 2;
@@ -372,26 +375,22 @@ tsError ts_bspline_evaluate(
                                   //    by 2c) s <= deg implies k > deg
         const size_t lst = k-s;   // <- last affected control point, inclusive
                                   //    s <= deg < k
+        const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
         
-        deBoorNet->n_affected = lst-fst + 1;
-        deBoorNet->n_points = 
-                deBoorNet->n_affected * (deBoorNet->n_affected + 1) * 0.5f;
-        deBoorNet->last_idx = (deBoorNet->n_points - 1) * dim;
+        deBoorNet->n_affected = N;
+        deBoorNet->n_points = N * (N+1) * 0.5f;
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
         if (deBoorNet->points == NULL) {
             goto err_malloc;
         }
+        deBoorNet->result = &deBoorNet->points[(deBoorNet->n_points - 1) * dim];
         
         // copy initial values to output
-        memcpy(
-            deBoorNet->points, 
-            &bspline->ctrlp[fst * dim], 
-            deBoorNet->n_affected * size_ctrlp
-        );
+        memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], N * size_ctrlp);
         
-        int idx_l  = 0;   // <- the current left index
-        int idx_r  = dim; // <- the current right index
-        int idx_to = deBoorNet->n_affected * dim; // <- the current to index
+        int idx_l  = 0;       // <- the current left index
+        int idx_r  = dim;     // <- the current right index
+        int idx_to = N * dim; // <- the current to index
         
         size_t r = 1;
         for (;r <= deBoorNet->h; r++) {

@@ -57,7 +57,7 @@ tsError ts_internal_bspline_insert_knot(
     
     // 1.
     from = to = 0;
-    memcpy(&result->ctrlp[to], &bspline->ctrlp[from], (k-deg) * size_ctrlp);
+    memcpy(result->ctrlp+to, bspline->ctrlp+from, (k-deg) * size_ctrlp);
     to += (k-deg)*dim;
     
     // 2.
@@ -65,14 +65,14 @@ tsError ts_internal_bspline_insert_knot(
     stride = N*dim;
     stride_inc = -dim;
     for (i = 0; i < n; i++) {
-        memcpy(&result->ctrlp[to], &deBoorNet->points[from], size_ctrlp);
+        memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
         from   += stride;
         stride += stride_inc;
         to     += dim;
     }
     
     // 3.
-    memcpy(&result->ctrlp[to], &deBoorNet->points[from], (N-n) * size_ctrlp);
+    memcpy(result->ctrlp+to, deBoorNet->points+from, (N-n) * size_ctrlp);
     to += (N-n)*dim;
     
     // 4.
@@ -80,7 +80,7 @@ tsError ts_internal_bspline_insert_knot(
     stride = -(N-n+1)*dim;
     stride_inc = -dim;
     for (i = 0; i < n; i++) {
-        memcpy(&result->ctrlp[to], &deBoorNet->points[from], size_ctrlp);
+        memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
         from   += stride;
         stride += stride_inc;
         to     += dim;
@@ -89,14 +89,14 @@ tsError ts_internal_bspline_insert_knot(
     // 5.
     from = ((k-deg)+N)*dim;
     memcpy(
-        &result->ctrlp[to], 
-        &bspline->ctrlp[from], 
+        result->ctrlp+to, 
+        bspline->ctrlp+from, 
         (bspline->n_ctrlp-((k-deg)+N)) * size_ctrlp
     );
 
     // 6.
     from = to = 0;
-    memcpy(&result->knots[0], &bspline->knots[0], (k+1)*sizeof(float));
+    memcpy(result->knots, bspline->knots, (k+1)*sizeof(float));
     from = to = (k+1);
     
     // 7.
@@ -107,8 +107,8 @@ tsError ts_internal_bspline_insert_knot(
     
     // 8.
     memcpy(
-        &result->knots[to], 
-        &bspline->knots[from], 
+        result->knots+to, 
+        bspline->knots+from, 
         (bspline->n_knots-from)*sizeof(float)
     );
     
@@ -354,7 +354,7 @@ tsError ts_bspline_evaluate(
             // last control point
             } else {
                 const size_t from = (k-s) * dim;
-                memcpy(deBoorNet->points, &bspline->ctrlp[from], size_ctrlp);
+                memcpy(deBoorNet->points, bspline->ctrlp+from, size_ctrlp);
             }
             return 1;
         } else {
@@ -362,12 +362,12 @@ tsError ts_bspline_evaluate(
             if (deBoorNet->points == NULL) {
                 goto err_malloc;
             }
-            deBoorNet->result = &deBoorNet->points[dim];
+            deBoorNet->result = deBoorNet->points+dim;
             deBoorNet->n_affected = deBoorNet->n_points = 2;
             
             // copy both control points
             const size_t from = (k-s) * dim;
-            memcpy(deBoorNet->points, &bspline->ctrlp[from], 2 * size_ctrlp);
+            memcpy(deBoorNet->points, bspline->ctrlp+from, 2 * size_ctrlp);
             return 2;
         }
     } else { // by 4a) and 4b) s <= deg (order = deg+1)
@@ -383,10 +383,10 @@ tsError ts_bspline_evaluate(
         if (deBoorNet->points == NULL) {
             goto err_malloc;
         }
-        deBoorNet->result = &deBoorNet->points[(deBoorNet->n_points-1) * dim];
+        deBoorNet->result = deBoorNet->points + (deBoorNet->n_points-1)*dim;
         
         // copy initial values to output
-        memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], N * size_ctrlp);
+        memcpy(deBoorNet->points, bspline->ctrlp + fst*dim, N * size_ctrlp);
         
         int idx_l  = 0;       // <- the current left index
         int idx_r  = dim;     // <- the current right index
@@ -479,8 +479,7 @@ tsError ts_bspline_buckle(
     const size_t dim   = buckled->dim;     // <- dimension of one control point 
     const size_t N     = buckled->n_ctrlp; // <- number of control points
     const float* p0    = buckled->ctrlp;   // <- pointer to P0
-    const float* pn_1  =
-        &buckled->ctrlp[(N-1) * dim];      // <- pointer to P_n-1
+    const float* pn_1  = p0 + (N-1)*dim;   // <- pointer to P_n-1
     
     size_t i, d;
     for (i = 0; i < N; i++) {

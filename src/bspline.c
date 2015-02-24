@@ -88,7 +88,7 @@ void display(void)
     tsDeBoorNet net;
     ts_bspline_evaluate(&spline, 0.5f, &net);
     glBegin(GL_POINTS);
-        glVertex3fv(&net.points[net.last_idx]);
+        glVertex3fv(net.result);
     glEnd();
     ts_deboornet_free(&net);
     

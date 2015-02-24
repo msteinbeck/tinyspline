@@ -383,7 +383,7 @@ tsError ts_bspline_evaluate(
         if (deBoorNet->points == NULL) {
             goto err_malloc;
         }
-        deBoorNet->result = &deBoorNet->points[(deBoorNet->n_points - 1) * dim];
+        deBoorNet->result = &deBoorNet->points[(deBoorNet->n_points-1) * dim];
         
         // copy initial values to output
         memcpy(deBoorNet->points, &bspline->ctrlp[fst * dim], N * size_ctrlp);
@@ -500,6 +500,104 @@ tsError ts_bspline_to_beziers(
 )
 {
     ts_bspline_copy(bspline, beziers);
+    
+    // fix first control point if necessary
+    const float u_min = beziers->knots[beziers->deg];
+    if (!ts_fequals(beziers->knots[0], u_min)) {
+        tsBSpline fixed;
+        size_t k;
+        float* tmp;
+        
+        ts_bspline_split(beziers, u_min, &fixed, &k);
+        ts_bspline_free(beziers);
+
+        fixed.n_ctrlp -= fixed.deg;
+        fixed.n_knots -= fixed.deg;
+        memmove(
+            fixed.ctrlp, 
+            fixed.ctrlp + (fixed.deg * fixed.dim), 
+            fixed.n_ctrlp * fixed.dim * sizeof(float)
+        );
+        memmove(
+            fixed.knots, 
+            fixed.knots + fixed.deg, 
+            fixed.n_knots * sizeof(float)
+        );
+        
+        // if realloc fails
+        if (!(tmp = (float*) realloc(
+            fixed.ctrlp, 
+            fixed.n_ctrlp * fixed.dim * sizeof(float))
+        )) {
+            ts_bspline_free(&fixed);
+            return TS_MALLOC;
+        }
+        fixed.ctrlp = tmp;
+
+        // if realloc fail  
+        if (!(tmp = (float*) realloc(
+            fixed.knots, 
+            fixed.n_knots * sizeof(float))
+        )) {
+            ts_bspline_free(&fixed);
+            return TS_MALLOC;
+        }
+        fixed.knots = tmp;
+
+        ts_bspline_copy(&fixed, beziers);
+        ts_bspline_free(&fixed);
+    }
+    
+    // fix last control point if necessary
+    const float u_max = beziers->knots[beziers->n_knots - beziers->order];
+    if (!ts_fequals(beziers->knots[beziers->n_knots-1], u_max)) {
+        tsBSpline fixed;
+        size_t k;
+        float* tmp;
+        
+        ts_bspline_split(beziers, u_max, &fixed, &k);
+        ts_bspline_free(beziers);
+        
+        fixed.n_ctrlp -= fixed.deg;
+        fixed.n_knots -= fixed.deg;
+        
+        // if realloc fails
+        if (!(tmp = (float*) realloc(
+            fixed.ctrlp, 
+            fixed.n_ctrlp * fixed.dim * sizeof(float))
+        )) {
+            ts_bspline_free(&fixed);
+            return TS_MALLOC;
+        }
+        fixed.ctrlp = tmp;
+
+        // if realloc fail  
+        if (!(tmp = (float*) realloc(
+            fixed.knots, 
+            fixed.n_knots * sizeof(float))
+        )) {
+            ts_bspline_free(&fixed);
+            return TS_MALLOC;
+        }
+        fixed.knots = tmp;
+
+        ts_bspline_copy(&fixed, beziers);
+        ts_bspline_free(&fixed);
+    }
+    
+    tsBSpline current, next;
+    current = *beziers;
+    size_t k = bspline->order;
+
+    while (k < current.n_knots - bspline->order) {
+        ts_bspline_split(&current, current.knots[k], &next, &k);
+        ts_bspline_free(&current);
+        current = next;
+        k++;
+    }
+    ts_bspline_copy(&current, beziers);
+    ts_bspline_free(&current);
+    
     return TS_SUCCESS;
 }
 

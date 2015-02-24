@@ -14,22 +14,23 @@ tsError ts_internal_bspline_insert_knot(
     tsBSpline* result
 )
 {
-    ts_bspline_default(result);
-    
     if (deBoorNet->s+n > bspline->order) {
+        if (bspline != result)
+            ts_bspline_default(result);
         return TS_MULTIPLICITY;
     }
     
-    const tsError ret = ts_bspline_new(
-        bspline->deg, 
-        bspline->dim, 
-        bspline->n_ctrlp + n, 
-        TS_CLAMPED, /* doesn't really matter because we copy knots anyway. */
-        result
-    );
-    
-    if (ret < 0) {
-        return ret;
+    if (bspline != result) {
+        const tsError ret = ts_bspline_new(
+            bspline->deg, 
+            bspline->dim, 
+            bspline->n_ctrlp + n, 
+            TS_CLAMPED, // doesn't really matter because we copy knots anyway.
+            result
+        );
+        
+        if (ret < 0)
+            return ret;
     }
     
     const size_t deg = bspline->deg; // <- the degree of the original b-spline
@@ -40,43 +41,55 @@ tsError ts_internal_bspline_insert_knot(
     const size_t size_ctrlp = 
         dim * sizeof(float);         // <- size of one control point
 
-    // == control points ==
-    // 1. copy left hand side control points from original b-spline
-    // 2. copy left hand side control points from de boor net
-    // 3. copy middle part control points from de boor net
-    // 4. copy right hand side control points from de boor net
-    // 5. copy right hand side control points from original b-spline
-    // == knots ==
-    // 6. copy left hand side knots from original b-spline
-    // 7. fill insert point with u
-    // 8. copy right hand side knots form original b-spline
-    
-    size_t i;     // <- used in for loops
-    int from, to; // <- copy indicies
-    int stride, stride_inc; // <- offsets for copy indicies
+    // 1. Copy all necessary control points and knots from 
+    //    the original B-Spline.
+    // 2. Copy all necessary control points and knots from
+    //    the de Boor net.
     
     // 1.
-    from = to = 0;
-    memcpy(result->ctrlp+to, bspline->ctrlp+from, (k-deg) * size_ctrlp);
-    to += (k-deg)*dim;
+    //
+    // a) copy left hand side control points from original b-spline
+    // b) copy right hand side control points from original b-spline
+    // c) copy left hand side knots from original b-spline
+    // d) copy right hand side knots form original b-spline
+    const size_t cidx = k-deg+N;
+    const size_t kidx = k+1;
+    // copy control points
+    memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
+    memmove(
+        result->ctrlp + (cidx+n)*dim, 
+        bspline->ctrlp + cidx*dim, 
+        (bspline->n_ctrlp-cidx) * size_ctrlp
+    );
+    // copy knots
+    memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
+    memmove(
+        result->knots+kidx+n, 
+        bspline->knots+kidx, 
+        (bspline->n_knots-kidx) * sizeof(float)
+    );
     
     // 2.
-    from   = 0;
-    stride = N*dim;
-    stride_inc = -dim;
+    //
+    // a) copy left hand side control points from de boor net
+    // b) copy middle part control points from de boor net
+    // c) copy right hand side control points from de boor net
+    // d) insert knots with u_k
+    size_t i;     // <- used in for loops
+    // copy control points
+    int from = 0;
+    int to = (k-deg)*dim;
+    int stride = N*dim;
+    int stride_inc = -dim;
     for (i = 0; i < n; i++) {
         memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
         from   += stride;
         stride += stride_inc;
         to     += dim;
     }
-    
-    // 3.
     memcpy(result->ctrlp+to, deBoorNet->points+from, (N-n) * size_ctrlp);
-    to += (N-n)*dim;
-    
-    // 4.
     from  -= dim;
+    to += (N-n)*dim;
     stride = -(N-n+1)*dim;
     stride_inc = -dim;
     for (i = 0; i < n; i++) {
@@ -85,32 +98,12 @@ tsError ts_internal_bspline_insert_knot(
         stride += stride_inc;
         to     += dim;
     }
-
-    // 5.
-    from = ((k-deg)+N)*dim;
-    memcpy(
-        result->ctrlp+to, 
-        bspline->ctrlp+from, 
-        (bspline->n_ctrlp-((k-deg)+N)) * size_ctrlp
-    );
-
-    // 6.
-    from = to = 0;
-    memcpy(result->knots, bspline->knots, (k+1)*sizeof(float));
+    // copy knots
     from = to = (k+1);
-    
-    // 7.
     for (i = 0; i < n; i++) {
         result->knots[to] = deBoorNet->u;
         to++;
     }
-    
-    // 8.
-    memcpy(
-        result->knots+to, 
-        bspline->knots+from, 
-        (bspline->n_knots-from)*sizeof(float)
-    );
     
     return TS_SUCCESS;
 }

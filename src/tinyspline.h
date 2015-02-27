@@ -89,6 +89,11 @@ tsError ts_bspline_new(
     tsBSpline* bspline
 );
 
+tsError ts_bspline_fill_knots(
+    const tsBSpline* original, const tsBSplineType type,
+    tsBSpline* result
+);
+
 tsError ts_bspline_copy(
     const tsBSpline* original,
     tsBSpline* copy

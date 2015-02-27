@@ -194,19 +194,40 @@ tsError ts_bspline_new(
         return TS_MALLOC;
     }
     
+    ts_bspline_fill_knots(bspline, type, bspline);
+    
+    return TS_SUCCESS;
+}
+
+tsError ts_bspline_fill_knots(
+    const tsBSpline* original, const tsBSplineType type,
+    tsBSpline* result
+)
+{
+    if (original != result) {
+        const tsError ret = ts_bspline_copy(original, result);
+        if (ret < 0)
+            return ret;
+    }
+    
     // for clamped b-splines setup knot vector with:
     // [multiplicity order, uniformly spaced, multiplicity order]
+    // 
     // for opened b-splines setup knot vector with:
     // [uniformly spaced]
+    const size_t n_knots = result->n_knots;
+    const size_t deg = result->deg;
+    const size_t order = result->order;
+    
     size_t current, end; // <- used by loops
     size_t numerator, dominator; // <- to fill uniformly spaced elements
     
     if (type == TS_OPENED) {
         current = numerator = 0;
         end = n_knots;
-        dominator = n_knots - 1;
+        dominator = end-1;
         for (;current < end; current++, numerator++) {
-            bspline->knots[current] = (float) numerator / dominator;
+            result->knots[current] = (float) numerator / dominator;
         }
     } else {
         current = 0;
@@ -214,7 +235,7 @@ tsError ts_bspline_new(
 
         // fill first knots with 0
         for (;current < end; current++) {
-            bspline->knots[current] = 0.f;
+            result->knots[current] = 0.f;
         }
         
         // uniformly spaced between 0 and 1
@@ -222,15 +243,16 @@ tsError ts_bspline_new(
         numerator = 1;
         dominator = n_knots - (2 * deg) - 1;
         for (;current < end; current++, numerator++) {
-            bspline->knots[current] = (float) numerator / dominator;
+            result->knots[current] = (float) numerator / dominator;
         }
         
         // fill last knots with 1
         end = n_knots;
         for (;current < end; current++) {
-            bspline->knots[current] = 1.f;
+            result->knots[current] = 1.f;
         }
     }
+    
     return TS_SUCCESS;
 }
 

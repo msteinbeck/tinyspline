@@ -20,26 +20,32 @@ tsError ts_internal_bspline_insert_knot(
         return TS_MULTIPLICITY;
     }
     
+    const size_t deg = bspline->deg;
+    const size_t dim = bspline->dim;
+    const size_t n_ctrlp = bspline->n_ctrlp;
+    const size_t n_knots = bspline->n_knots;
+    
     if (bspline != result) {
-        const tsError ret = ts_bspline_new(
-            bspline->deg, 
-            bspline->dim, 
-            bspline->n_ctrlp + n, 
-            TS_CLAMPED, // doesn't really matter because we copy knots anyway.
-            result
-        );
-        
+        tsError ret = ts_bspline_new(deg, dim, n_ctrlp+n, TS_CLAMPED, result);
         if (ret < 0)
             return ret;
+    } else {
+        float* tmp; // <- used to not loose pointer if realloc fails
+        // resize control points
+        tmp = (float*) realloc(result->ctrlp, n_ctrlp+n);
+        if (tmp == NULL)
+            return TS_MALLOC;
+        result->ctrlp = tmp;
+        // resize knots
+        tmp = (float*) realloc(result->knots, n_knots+n);
+        if (tmp == NULL)
+            return TS_MALLOC;
+        result->knots = tmp;
     }
     
-    const size_t deg = bspline->deg; // <- the degree of the original b-spline
-    const size_t dim = bspline->dim; // <- dimension of one control point
-    const size_t k = deBoorNet->k;   // <- the index k of the de boor net
-    const size_t N = 
-        deBoorNet->n_affected;       // <- number of affected conrol points
-    const size_t size_ctrlp = 
-        dim * sizeof(float);         // <- size of one control point
+    const size_t k = deBoorNet->k;
+    const size_t N = deBoorNet->n_affected;
+    const size_t size_ctrlp = dim * sizeof(float); // <- size of one ctrlp
 
     // 1. Copy all necessary control points and knots from 
     //    the original B-Spline.
@@ -57,14 +63,14 @@ tsError ts_internal_bspline_insert_knot(
     // copy control points
     memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
     memmove(
-        result->ctrlp + (cidx+n)*dim, 
+        result->ctrlp + (cidx+n)*dim, // n >= 0 implies cidx+n >= cidx
         bspline->ctrlp + cidx*dim, 
         (bspline->n_ctrlp-cidx) * size_ctrlp
     );
     // copy knots
     memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
     memmove(
-        result->knots+kidx+n, 
+        result->knots+kidx+n, // n >= 0 implies kidx+n >= kidx
         bspline->knots+kidx, 
         (bspline->n_knots-kidx) * sizeof(float)
     );

@@ -14,38 +14,20 @@ tsError ts_internal_bspline_insert_knot(
     tsBSpline* result
 )
 {
-    if (deBoorNet->s+n > bspline->order) {
-        if (bspline != result)
-            ts_bspline_default(result);
-        return TS_MULTIPLICITY;
-    }
+    if (deBoorNet->s+n > bspline->order)
+        goto err_multiplicity;
+    if (((int)n) < 0) // ensure n fits into an int without getting negative
+        goto err_over_underflow;
+    
+    const tsError ret = ts_bspline_resize_back(bspline, n, result);
+    if (ret < 0)
+        return ret;
     
     const size_t deg = bspline->deg;
-    const size_t dim = bspline->dim;
-    const size_t n_ctrlp = bspline->n_ctrlp;
-    const size_t n_knots = bspline->n_knots;
-    
-    if (bspline != result) {
-        tsError ret = ts_bspline_new(deg, dim, n_ctrlp+n, TS_CLAMPED, result);
-        if (ret < 0)
-            return ret;
-    } else {
-        float* tmp; // <- used to not loose pointer if realloc fails
-        // resize control points
-        tmp = (float*) realloc(result->ctrlp, n_ctrlp+n);
-        if (tmp == NULL)
-            return TS_MALLOC;
-        result->ctrlp = tmp;
-        // resize knots
-        tmp = (float*) realloc(result->knots, n_knots+n);
-        if (tmp == NULL)
-            return TS_MALLOC;
-        result->knots = tmp;
-    }
-    
+    const size_t dim = bspline->dim;  
     const size_t k = deBoorNet->k;
     const size_t N = deBoorNet->n_affected;
-    const size_t size_ctrlp = dim * sizeof(float); // <- size of one ctrlp
+    const size_t size_ctrlp = dim * sizeof(float);
 
     // 1. Copy all necessary control points and knots from 
     //    the original B-Spline.
@@ -110,11 +92,79 @@ tsError ts_internal_bspline_insert_knot(
         result->knots[to] = deBoorNet->u;
         to++;
     }
-    
     return TS_SUCCESS;
+    
+    // error handling
+    tsError err;
+    err_multiplicity:
+        err = TS_MULTIPLICITY;
+        goto cleanup;
+    err_over_underflow:
+        err = TS_OVER_UNDERFLOW;
+        goto cleanup;
+    cleanup:
+        if (bspline != result)
+            ts_bspline_default(result);
+        return err;
 }
 
+tsError ts_internal_bspline_resize(
+    const tsBSpline* bspline, const int n,
+    tsBSpline* resized
+)
+{
+    if (n == 0 && bspline != resized)
+        return ts_bspline_copy(bspline, resized);
+    
+    const size_t deg = bspline->deg;
+    const size_t n_ctrlp = bspline->n_ctrlp;
+    const size_t new_n_ctrlp = n_ctrlp+n;
+    
+    if (new_n_ctrlp <= deg)
+        goto err_deg_ge_nctrlp;
+    else if (n < 0 && new_n_ctrlp > n_ctrlp)
+        goto err_over_underflow;
+    else if (n > 0 && new_n_ctrlp < n_ctrlp)
+        goto err_over_underflow;
+    
+    const size_t dim = bspline->dim;
+    const size_t size_ctrlp = dim * sizeof(float);
+    const size_t n_knots = bspline->n_knots;
+    const size_t new_n_knots = n_knots+n;
 
+    if (bspline != resized) {
+        return ts_bspline_new(deg, dim, new_n_ctrlp, TS_CLAMPED, resized);
+    } else {
+        float* tmp; // <- used to not loose pointer if realloc fails
+        // resize control points
+        tmp = (float*) realloc(resized->ctrlp, new_n_ctrlp * size_ctrlp);
+        if (tmp == NULL)
+            goto err_malloc;
+        resized->ctrlp = tmp;
+        // resize knots
+        tmp = (float*) realloc(resized->knots, new_n_knots * sizeof(float));
+        if (tmp == NULL)
+            goto err_malloc;
+        resized->knots = tmp;
+        return TS_SUCCESS;
+    }
+    
+    // error handling
+    tsError err;
+    err_deg_ge_nctrlp:
+        err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_over_underflow:
+        err = TS_OVER_UNDERFLOW;
+        goto cleanup;
+    err_malloc:
+        err = TS_MALLOC;
+        goto cleanup;
+    cleanup:
+        if (bspline != resized)
+            ts_bspline_default(resized);
+        return err;
+}
 
 /********************************************************
 *                                                       *
@@ -462,6 +512,46 @@ tsError ts_bspline_insert_knot(
     }
     ts_deboornet_free(&net);
     return ret;
+}
+
+tsError ts_bspline_resize_back(
+    const tsBSpline* bspline, const int n,
+    tsBSpline* resized
+)
+{
+    const tsError ret = ts_internal_bspline_resize(bspline, n, resized);
+    if (ret < 0) {
+        return ret;
+    } else if (bspline != resized) {
+        const size_t min_nc = n < 0 ? resized->n_ctrlp : bspline->n_ctrlp;
+        const size_t min_nk = n < 0 ? resized->n_knots : bspline->n_knots;
+        const size_t sf = sizeof(float);
+        memcpy(resized->ctrlp, bspline->ctrlp, min_nc * bspline->dim * sf);
+        memcpy(resized->knots, bspline->knots, min_nk * sf);
+    }
+    return TS_SUCCESS;
+}
+
+tsError ts_bspline_resize_front(
+    const tsBSpline* bspline, const int n,
+    tsBSpline* resized
+)
+{
+    const tsError ret = ts_internal_bspline_resize(bspline, n, resized);
+    if (ret < 0) {
+        return ret;
+    } 
+    
+    const size_t sf = sizeof(float);
+    const size_t dim = bspline->dim;
+    if (n < 0) {
+        memmove(resized->ctrlp, bspline->ctrlp+n*dim, resized->n_ctrlp*dim*sf);
+        memmove(resized->knots, bspline->knots+n, resized->n_knots*sf);
+    } else {
+        memmove(resized->ctrlp+n*dim, bspline->ctrlp, bspline->n_ctrlp*dim*sf);
+        memmove(resized->knots+n, bspline->knots, bspline->n_knots*sf);
+    }
+    return TS_SUCCESS;
 }
 
 tsError ts_bspline_split(

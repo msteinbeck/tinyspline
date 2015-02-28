@@ -24,13 +24,14 @@ extern "C" {
 ********************************************************/
 typedef enum
 {
-    TS_SUCCESS = 0,        // <- no error 
-    TS_MALLOC = -1,        // <- malloc retuned null
-    TS_DIM_ZERO = -2,      // <- the dimension of the control points are 0
-    TS_DEG_GE_NCTRLP = -3, // <- degree of spline >= number of control points
-    TS_U_UNDEFINED = -4,   // <- spline is not defined at u
-    TS_MULTIPLICITY = -5   // <- the multiplicity of a knot is greater than 
-                           //    the order of the spline
+    TS_SUCCESS = 0,         // <- no error 
+    TS_MALLOC = -1,         // <- malloc/realloc retuned null
+    TS_OVER_UNDERFLOW = -2, // <- overflow/underflow detected
+    TS_DIM_ZERO = -3,       // <- the dimension of the control points are 0
+    TS_DEG_GE_NCTRLP = -4,  // <- degree of spline >= number of control points
+    TS_U_UNDEFINED = -5,    // <- spline is not defined at u
+    TS_MULTIPLICITY = -6    // <- the multiplicity of a knot is greater than 
+                            //    the order of the spline
 } tsError;
 
 typedef enum 
@@ -107,6 +108,16 @@ tsError ts_bspline_evaluate(
 tsError ts_bspline_insert_knot(
     const tsBSpline* bspline, const float u, const size_t n,
     tsBSpline* result
+);
+
+tsError ts_bspline_resize_back(
+    const tsBSpline* bspline, const int n,
+    tsBSpline* resized
+);
+
+tsError ts_bspline_resize_front(
+    const tsBSpline* bspline, const int n,
+    tsBSpline* resized
 );
 
 tsError ts_bspline_split(

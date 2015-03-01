@@ -47,14 +47,14 @@ tsError ts_internal_bspline_insert_knot(
     memmove(
         result->ctrlp + (cidx+n)*dim, // n >= 0 implies cidx+n >= cidx
         bspline->ctrlp + cidx*dim, 
-        (bspline->n_ctrlp-cidx) * size_ctrlp
+        (result->n_ctrlp-n-cidx) * size_ctrlp
     );
     // copy knots
     memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
     memmove(
         result->knots+kidx+n, // n >= 0 implies kidx+n >= kidx
         bspline->knots+kidx, 
-        (bspline->n_knots-kidx) * sizeof(float)
+        (bspline->n_knots-n-kidx) * sizeof(float)
     );
     
     // 2.

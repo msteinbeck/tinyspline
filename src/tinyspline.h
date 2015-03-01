@@ -30,8 +30,9 @@ typedef enum
     TS_DIM_ZERO = -3,       // <- the dimension of the control points are 0
     TS_DEG_GE_NCTRLP = -4,  // <- degree of spline >= number of control points
     TS_U_UNDEFINED = -5,    // <- spline is not defined at u
-    TS_MULTIPLICITY = -6    // <- the multiplicity of a knot is greater than 
+    TS_MULTIPLICITY = -6,   // <- the multiplicity of a knot is greater than 
                             //    the order of the spline
+    TS_INPUT_EQ_OUTPUT = -7 // <- input parameter is equals to output parameter
 } tsError;
 
 typedef enum 

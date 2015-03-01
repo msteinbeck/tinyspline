@@ -141,11 +141,13 @@ tsError ts_internal_bspline_resize(
         if (tmp == NULL)
             goto err_malloc;
         resized->ctrlp = tmp;
+        resized->n_ctrlp = new_n_ctrlp;
         // resize knots
         tmp = (float*) realloc(resized->knots, new_n_knots * sizeof(float));
         if (tmp == NULL)
             goto err_malloc;
         resized->knots = tmp;
+        resized->n_knots = new_n_knots;
         return TS_SUCCESS;
     }
     
@@ -317,27 +319,19 @@ tsError ts_bspline_copy(
     tsBSpline* copy
 )
 {
-    const tsError ret = ts_bspline_new(
-        original->deg,
-        original->dim,
-        original->n_ctrlp,
-        TS_CLAMPED, /* doesn't really matter because we copy knots anyway. */
-        copy
-    );
+    if (original == copy)
+        return TS_INPUT_EQ_OUTPUT;
     
+    const size_t deg = original->deg;
+    const size_t dim = original->dim;
+    const size_t n_ctrlp = original->n_ctrlp;
+    const size_t sf = sizeof(float);
+    
+    const tsError ret = ts_bspline_new(deg, dim, n_ctrlp, TS_CLAMPED, copy);
     if (ret >= 0) {
-        memcpy(
-            copy->ctrlp, 
-            original->ctrlp, 
-            original->n_ctrlp * original->dim * sizeof(float)
-        );
-        memcpy(
-            copy->knots, 
-            original->knots, 
-            original->n_knots * sizeof(float)
-        );
+        memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*sf);
+        memcpy(copy->knots, original->knots, original->n_knots*sf);
     }
-    
     return ret;
 }
 
@@ -563,13 +557,15 @@ tsError ts_bspline_split(
     tsDeBoorNet net;
     ret = ts_bspline_evaluate(bspline, u, &net);
     if (ret >= 1) {
-        ret = ts_bspline_copy(bspline, split);
+        if (bspline != split)
+            ret = ts_bspline_copy(bspline, split);
         *k = ret >= 0 ? net.k : 0;
     } else if (ret == 0) {
         ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
         *k = ret >= 0 ? net.k + net.h + 1 : 0;
     } else {
-        ts_bspline_default(split);
+        if (bspline != split)
+            ts_bspline_default(split);
         *k = 0;
     }
     ts_deboornet_free(&net);

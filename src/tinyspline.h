@@ -111,13 +111,8 @@ tsError ts_bspline_insert_knot(
     tsBSpline* result
 );
 
-tsError ts_bspline_resize_back(
-    const tsBSpline* bspline, const int n,
-    tsBSpline* resized
-);
-
-tsError ts_bspline_resize_front(
-    const tsBSpline* bspline, const int n,
+tsError ts_bspline_resize(
+    const tsBSpline* bspline, const int n, const int back,
     tsBSpline* resized
 );
 

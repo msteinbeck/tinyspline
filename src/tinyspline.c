@@ -162,40 +162,47 @@ tsError ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
     tsBSpline* bspline
 )
-{
+{   
     ts_bspline_default(bspline);
     
-    // check input parameter
-    if (dim < 1) {
-        return TS_DIM_ZERO;
-    }
-    if (deg >= n_ctrlp) {
-        return TS_DEG_GE_NCTRLP;
-    }
-
-    const size_t order   = deg + 1;
-    const size_t n_knots = n_ctrlp + order;
+    if (dim < 1)
+        goto err_dim_zero;
+    if (deg >= n_ctrlp)
+        goto err_deg_ge_nctrlp;
     
-    // setup fields
+    const size_t order    = deg + 1;
+    const size_t n_knots  = n_ctrlp + order;
+    const size_t size_flt = sizeof(float);
+    
+    // setup b-spline
     bspline->deg     = deg;
     bspline->order   = order;
     bspline->dim     = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
-    bspline->ctrlp   = (float*) malloc(n_ctrlp * dim * sizeof(float));
-    if (bspline->ctrlp == NULL) {
-        ts_bspline_free(bspline);
-        return TS_MALLOC;
-    }
-    bspline->knots   = (float*) malloc(n_knots * sizeof(float));
-    if (bspline->knots == NULL) {
-        ts_bspline_free(bspline);
-        return TS_MALLOC;
-    }
-    
+    bspline->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
+    if (bspline->ctrlp == NULL)
+        goto err_malloc;
+    bspline->knots   = (float*) malloc(n_knots*size_flt);
+    if (bspline->knots == NULL)
+        goto err_malloc;
     ts_bspline_setup_knots(bspline, type, bspline);
-    
     return TS_SUCCESS;
+    
+    // error handling
+    tsError err;
+    err_dim_zero:
+        err = TS_DIM_ZERO;
+        goto cleanup;
+    err_deg_ge_nctrlp:
+        err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_malloc:
+        err = TS_MALLOC;
+        goto cleanup;
+    cleanup:
+        ts_bspline_free(bspline);
+        return err;
 }
 
 tsError ts_bspline_setup_knots(
@@ -223,33 +230,22 @@ tsError ts_bspline_setup_knots(
         current = numerator = 0;
         end = n_knots;
         dominator = end-1;
-        for (;current < end; current++, numerator++) {
+        for (;current < end; current++, numerator++)
             result->knots[current] = (float) numerator / dominator;
-        }
     } else {
         current = 0;
         end = order;
-
-        // fill first knots with 0
-        for (;current < end; current++) {
+        for (;current < end; current++)
             result->knots[current] = 0.f;
-        }
-        
-        // uniformly spaced between 0 and 1
         end = n_knots - order;
         numerator = 1;
         dominator = n_knots - (2 * deg) - 1;
-        for (;current < end; current++, numerator++) {
+        for (;current < end; current++, numerator++)
             result->knots[current] = (float) numerator / dominator;
-        }
-        
-        // fill last knots with 1
         end = n_knots;
-        for (;current < end; current++) {
+        for (;current < end; current++)
             result->knots[current] = 1.f;
-        }
     }
-    
     return TS_SUCCESS;
 }
 
@@ -346,29 +342,19 @@ tsError ts_bspline_evaluate(
             k == bspline->n_knots - 1) { // only the last control point
             
             deBoorNet->points = (float*) malloc(size_ctrlp);
-            if (deBoorNet->points == NULL) {
+            if (deBoorNet->points == NULL)
                 goto err_malloc;
-            }
             deBoorNet->result = deBoorNet->points;
             deBoorNet->n_affected = deBoorNet->n_points = 1;
-            
-            // first control point
-            if (k == deg) {
-                memcpy(deBoorNet->points, bspline->ctrlp, size_ctrlp);
-            // last control point
-            } else {
-                const size_t from = (k-s) * dim;
-                memcpy(deBoorNet->points, bspline->ctrlp+from, size_ctrlp);
-            }
+            const size_t from = k == deg ? 0 : (k-s) * dim;
+            memcpy(deBoorNet->points, bspline->ctrlp + from, size_ctrlp);
             return 1;
         } else {
             deBoorNet->points = (float*) malloc(2 * size_ctrlp);
-            if (deBoorNet->points == NULL) {
+            if (deBoorNet->points == NULL)
                 goto err_malloc;
-            }
             deBoorNet->result = deBoorNet->points+dim;
             deBoorNet->n_affected = deBoorNet->n_points = 2;
-            
             // copy both control points
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp+from, 2 * size_ctrlp);
@@ -380,13 +366,13 @@ tsError ts_bspline_evaluate(
         const size_t lst = k-s;   // <- last affected control point, inclusive
                                   //    s <= deg < k
         const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
+                                        //    lst <= fst implies N >= 1
         
         deBoorNet->n_affected = N;
         deBoorNet->n_points = N * (N+1) * 0.5f;
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
-        if (deBoorNet->points == NULL) {
+        if (deBoorNet->points == NULL)
             goto err_malloc;
-        }
         deBoorNet->result = deBoorNet->points + (deBoorNet->n_points-1)*dim;
         
         // copy initial values to output
@@ -419,15 +405,20 @@ tsError ts_bspline_evaluate(
         return 0;
     }
     
+    // error handling
+    tsError err;
     err_malloc:
-        ts_deboornet_free(deBoorNet);
-        return TS_MALLOC;
+        err = TS_MALLOC;
+        goto cleanup;
     err_u_undefined:
-        ts_deboornet_free(deBoorNet);
-        return TS_U_UNDEFINED;
+        err = TS_U_UNDEFINED;
+        goto cleanup;
     err_multiplicity:
+        err = TS_MULTIPLICITY;
+        goto cleanup;
+    cleanup:
         ts_deboornet_free(deBoorNet);
-        return TS_MULTIPLICITY;
+        return err;
 }
 
 tsError ts_bspline_insert_knot(
@@ -438,11 +429,10 @@ tsError ts_bspline_insert_knot(
     tsError ret;
     tsDeBoorNet net;
     ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret >= 0) {
+    if (ret >= 0)
         ret = ts_internal_bspline_insert_knot(bspline, &net, n, result);
-    } else {
+    else
         ts_bspline_default(result);
-    }
     ts_deboornet_free(&net);
     return ret;
 }

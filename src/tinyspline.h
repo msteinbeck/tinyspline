@@ -42,7 +42,7 @@ typedef enum
 // setup knots as...
     TS_OPENED = 0,  // <- [uniformly spaced]
     TS_CLAMPED = 1, // <- [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n]
-    TS_NONE = 2     // <- do not setup konts
+    TS_NONE = 2     // <- do not setup the konts; they may have any values
 } tsBSplineType;
 
 typedef struct
@@ -90,26 +90,86 @@ void ts_deboornet_free(tsDeBoorNet* deBoorNet);
 void ts_bspline_default(tsBSpline* bspline);
 void ts_bspline_free(tsBSpline* bspline);
 
+/**
+ * Creates a new B-Spline. On error \bspline is setup with default values.
+ * @param deg       The degree of the B-Spline basis function
+ * @param dim       The dimension of one control point
+ * @param n_ctrlp   The number of control points
+ * @param type      The type of the B-Spline. 
+ *                  If type is ::TS_NONE the knot vector will not be setup.
+ * @param bspline   The B-Spline to create.
+ * @return          On success ::TS_SUCCESS. 
+ *                  On error one of ::TS_DIM_ZERO, TS_DEG_GE_NCTRLP, TS_MALLOC.
+ */
 tsError ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
     tsBSpline* bspline
 );
 
+/**
+ * Setup the knot vector of \original. On error \result is setup with default 
+ * values. \original and \result might be the same pointer.
+ * @param original  The original B-Spline.
+ * @param type      The type of the B-Spline.
+ *                  If type is ::TS_NONE the knot vector's values are 
+ *                  the same as \original
+ * @param result    The B-Spline with its knot vector to setup.
+ * @return          On success ::TS_SUCCESS.
+ *                  On error with \original != \result one of
+ *                  ::TS_DIM_ZERO, TS_DEG_GE_NCTRLP, TS_MALLOC.
+ *                  If \original == \result this function will never return
+ *                  an error.
+ */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
 );
 
+/**
+ * Creates a deep copy of \original. On error \copy is setup with default
+ * values. \original and \copy might NOT be the same pointer.
+ * @param original  The B-Spline to copy from.
+ * @param copy      The B-Spline to copy to.
+ * @return          On success ::TS_SUCCESS.
+ *                  On error one of ::TS_INPUT_EQ_OUTPUT, ::TS_DIM_ZERO, 
+ *                  TS_DEG_GE_NCTRLP, TS_MALLOC.
+ */
 tsError ts_bspline_copy(
     const tsBSpline* original,
     tsBSpline* copy
 );
 
+/**
+ * Evaluates \bspline at knot value \u. As the knots of B-Splines are floats, 
+ * the field tsDeBoorNet::u might not be == to to \u but it will always be 
+ * ::ts_fequals. On error \net is setup with default values.
+ * @param bspline   The B-spline to evaluate.
+ * @param u         The knot value on which \bspline will be evaluated.
+ * @param deBoorNet The de Boor net to create.
+ * @return          On success one of 0, 1, 2 where
+ *                  0: regular evaluation, 
+ *                  1: evaluation at the begin/end of \bspline with s == order
+ *                  2: evaluation inside of \bspline with s == order
+ *                  On error one of ::TS_MALLOC, ::TS_U_UNDEFINED, 
+ *                  ::TS_MULTIPLICITY
+ */
 tsError ts_bspline_evaluate(
     const tsBSpline* bspline, const float u, 
     tsDeBoorNet* deBoorNet
 );
 
+/**
+ * Inserts the knot value \u \n times into \bspline. On error \result is setup 
+ * with default values. \bspline and \result might be the same pointer.
+ * @param bspline   The B-Spline on which to insert \u.
+ * @param u         The knot value to insert.
+ * @param n         How many times to insert \u.
+ * @param result    The B-Spline with its knot vector to increase.
+ * @return          On success ::TS_SUCCESS.
+ *                  On error one of ::TS_MALLOC, ::TS_U_UNDEFINED, 
+ *                  ::TS_MULTIPLICITY, ::TS_DEG_GE_NCTRLP, ::TS_DIM_ZERO,
+ *                  ::TS_OVER_UNDERFLOW
+ */
 tsError ts_bspline_insert_knot(
     const tsBSpline* bspline, const float u, const size_t n,
     tsBSpline* result

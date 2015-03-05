@@ -193,12 +193,12 @@ tsError ts_bspline_new(
         return TS_MALLOC;
     }
     
-    ts_bspline_fill_knots(bspline, type, bspline);
+    ts_bspline_setup_knots(bspline, type, bspline);
     
     return TS_SUCCESS;
 }
 
-tsError ts_bspline_fill_knots(
+tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
 )
@@ -209,11 +209,9 @@ tsError ts_bspline_fill_knots(
             return ret;
     }
     
-    // for clamped b-splines setup knot vector with:
-    // [multiplicity order, uniformly spaced, multiplicity order]
-    // 
-    // for opened b-splines setup knot vector with:
-    // [uniformly spaced]
+    if (type == TS_NONE)
+        return TS_SUCCESS;
+    
     const size_t n_knots = result->n_knots;
     const size_t deg = result->deg;
     const size_t order = result->order;
@@ -268,7 +266,7 @@ tsError ts_bspline_copy(
     const size_t n_ctrlp = original->n_ctrlp;
     const size_t sf = sizeof(float);
     
-    const tsError ret = ts_bspline_new(deg, dim, n_ctrlp, TS_CLAMPED, copy);
+    const tsError ret = ts_bspline_new(deg, dim, n_ctrlp, TS_NONE, copy);
     if (ret >= 0) {
         memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*sf);
         memcpy(copy->knots, original->knots, original->n_knots*sf);
@@ -495,7 +493,7 @@ tsError ts_bspline_resize(
     
     if (bspline != resized) {
         const tsError ret = 
-            ts_bspline_new(deg, dim, new_n_ctrlp, TS_CLAMPED, resized);
+            ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
         if (ret < 0)
             return ret;
         memcpy(to_ctrlp, from_ctrlp, min_n_ctrlp * size_ctrlp);

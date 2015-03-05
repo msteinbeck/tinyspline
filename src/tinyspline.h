@@ -37,8 +37,12 @@ typedef enum
 
 typedef enum 
 {
-    TS_OPENED = 0, 
-    TS_CLAMPED
+// if you don't know what an opened or clamped b-splines is, take a look at:
+// www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
+// setup knots as...
+    TS_OPENED = 0,  // <- [uniformly spaced]
+    TS_CLAMPED = 1, // <- [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n]
+    TS_NONE = 2     // <- do not setup konts
 } tsBSplineType;
 
 typedef struct
@@ -91,7 +95,7 @@ tsError ts_bspline_new(
     tsBSpline* bspline
 );
 
-tsError ts_bspline_fill_knots(
+tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
 );

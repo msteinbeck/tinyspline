@@ -308,7 +308,7 @@ tsError ts_bspline_evaluate(
         goto err_u_undefined;
     } else if (s <= deg) { // we may have an opened b-spline
         // (keep in mind that currently k is k+1)
-        if (deBoorNet->k <= deg || deBoorNet->k > n_knots-deg) {
+        if (deBoorNet->k <= deg || deBoorNet->k > n_knots-deg + s-1) {
             goto err_u_undefined;
         }
     }
@@ -591,24 +591,29 @@ tsError ts_bspline_to_beziers(
     if (bspline != beziers)
         ts_bspline_copy(bspline, beziers);
     
+    const size_t deg = beziers->deg;
+    const size_t order = beziers->order;
+    
     // fix first control point if necessary
-    const float u_min = beziers->knots[beziers->deg];
+    const float u_min = beziers->knots[deg];
     if (!ts_fequals(beziers->knots[0], u_min)) {
         size_t k;
         ts_bspline_split(beziers, u_min, beziers, &k);
-        ts_bspline_resize(beziers, -beziers->deg, 0, beziers);
+        const int resize = -1*deg + (deg*2 - k);
+        ts_bspline_resize(beziers, resize, 0, beziers);
     }
 
     // fix last control point if necessary
-    const float u_max = beziers->knots[beziers->n_knots - beziers->order];
+    const float u_max = beziers->knots[beziers->n_knots - order];
     if (!ts_fequals(beziers->knots[beziers->n_knots-1], u_max)) {
         size_t k;
         ts_bspline_split(beziers, u_max, beziers, &k);
-        ts_bspline_resize(beziers, -beziers->deg, 1, beziers);
+        const int resize = -1*deg + (k - (beziers->n_knots - order));
+        ts_bspline_resize(beziers, resize, 1, beziers);
     }
     
-    size_t k = bspline->order;
-    while (k < beziers->n_knots - beziers->order) {
+    size_t k = order;
+    while (k < beziers->n_knots - order) {
         ts_bspline_split(beziers, beziers->knots[k], beziers, &k);
         k++;
     }

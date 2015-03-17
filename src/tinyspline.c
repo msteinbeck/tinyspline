@@ -9,6 +9,10 @@
 * Internal functions                                    *
 *                                                       *
 ********************************************************/
+
+/**
+ * @return ::TS_SUCCESS, ::TS_MULTIPLICITY, ::TS_OVER_UNDERFLOW
+ */
 tsError ts_internal_bspline_insert_knot(
     const tsBSpline* bspline, const tsDeBoorNet* deBoorNet, const size_t n, 
     tsBSpline* result

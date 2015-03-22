@@ -592,8 +592,13 @@ tsError ts_bspline_to_beziers(
     tsBSpline* beziers
 )
 {
-    if (bspline != beziers)
-        ts_bspline_copy(bspline, beziers);
+    tsError err;
+    
+    if (bspline != beziers) {
+        err = ts_bspline_copy(bspline, beziers);
+        if (err < 0)
+            return err;
+    }
     
     const size_t deg = beziers->deg;
     const size_t order = beziers->order;
@@ -602,23 +607,33 @@ tsError ts_bspline_to_beziers(
     const float u_min = beziers->knots[deg];
     if (!ts_fequals(beziers->knots[0], u_min)) {
         size_t k;
-        ts_bspline_split(beziers, u_min, beziers, &k);
+        err = ts_bspline_split(beziers, u_min, beziers, &k);
+        if (err < 0)
+            return err;
         const int resize = -1*deg + (deg*2 - k);
-        ts_bspline_resize(beziers, resize, 0, beziers);
+        err = ts_bspline_resize(beziers, resize, 0, beziers);
+        if (err < 0)
+            return err;
     }
 
     // fix last control point if necessary
     const float u_max = beziers->knots[beziers->n_knots - order];
     if (!ts_fequals(beziers->knots[beziers->n_knots-1], u_max)) {
         size_t k;
-        ts_bspline_split(beziers, u_max, beziers, &k);
+        err = ts_bspline_split(beziers, u_max, beziers, &k);
+        if (err < 0)
+            return err;
         const int resize = -1*deg + (k - (beziers->n_knots - order));
-        ts_bspline_resize(beziers, resize, 1, beziers);
+        err = ts_bspline_resize(beziers, resize, 1, beziers);
+        if (err < 0)
+            return err;
     }
     
     size_t k = order;
     while (k < beziers->n_knots - order) {
-        ts_bspline_split(beziers, beziers->knots[k], beziers, &k);
+        err = ts_bspline_split(beziers, beziers->knots[k], beziers, &k);
+        if (err < 0)
+            return err;
         k++;
     }
     return TS_SUCCESS;

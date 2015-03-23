@@ -1,9 +1,8 @@
 CC=gcc
+CCX=g++
 CFLAGS=-g \
        -Werror -Wall -Wextra -Wfloat-equal -Winit-self -Wno-missing-braces \
-       -Wshadow -Wunreachable-code -Wundef -Wnested-externs -Winline \
-       -Wcast-align -Wbad-function-cast -Wcast-qual -Wpointer-arith \
-       -Wswitch-default -Wswitch-enum
+       -Wunreachable-code -Wundef -Wswitch-default -Wswitch-enum
 
 all: lib
 
@@ -21,6 +20,16 @@ lib: init
 	ar rcs bin/libtinyspline.a build/tinyspline.static.o
 	$(CC) $(CFLAGS) -c -fpic src/tinyspline.c -o build/tinyspline.shared.o
 	$(CC) --shared -o bin/libtinyspline.so build/tinyspline.shared.o
+
+libcpp: init
+	cp src/tinyspline.h bin/tinyspline.h
+	cp src/tinysplinecpp.h bin/tinysplinecpp.h
+	$(CC) $(CFLAGS) -c src/tinyspline.c -o build/tinyspline.static.o -lstdc++
+	$(CC) $(CFLAGS) -c src/tinysplinecpp.cpp -o build/tinysplinecpp.static.o -lstdc++
+	ar rcs bin/libtinysplinecpp.a build/tinyspline.static.o build/tinysplinecpp.static.o
+	$(CC) $(CFLAGS) -c -fpic src/tinyspline.c -o build/tinyspline.shared.o -lstdc++
+	$(CC) $(CFLAGS) -c -fpic src/tinysplinecpp.cpp -o build/tinysplinecpp.shared.o -lstdc++
+	$(CXX) -shared -o bin/libtinysplinecpp.so build/tinyspline.shared.o build/tinysplinecpp.shared.o
 
 java: lib
 	javac -cp libs/jna-4.1.0.jar -d build/ src/*.java

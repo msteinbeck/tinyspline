@@ -175,6 +175,18 @@ tsError ts_bspline_insert_knot(
     tsBSpline* result
 );
 
+/**
+ * Resizes \bspline at the front/back by \n. If \n is negative, \resized will 
+ * be smaller than \bspline. If \n is positive, \resized will be greater than
+ * \bspline. Resizing \bspline at the back is usually faster. On error \resized 
+ * is setup with default values. \bspline and \resized might be the same 
+ * pointer.
+ * @param bspline   The B-Spline to resize.
+ * @param n         The number of control points/knots to add/remove
+ * @param back      The flag to determine where to resize the B-Spline.
+ * @param resized
+ * @return 
+ */
 tsError ts_bspline_resize(
     const tsBSpline* bspline, const int n, const int back,
     tsBSpline* resized

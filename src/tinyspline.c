@@ -174,8 +174,12 @@ tsError ts_bspline_new(
     if (deg >= n_ctrlp)
         goto err_deg_ge_nctrlp;
     
-    const size_t order    = deg + 1;
-    const size_t n_knots  = n_ctrlp + order;
+    const size_t order = deg + 1;
+    if (order < deg)
+        goto err_over_underflow;
+    const size_t n_knots = n_ctrlp + order;
+    if (n_knots < n_ctrlp)
+        goto err_over_underflow;
     const size_t size_flt = sizeof(float);
     
     // setup b-spline
@@ -200,6 +204,9 @@ tsError ts_bspline_new(
         goto cleanup;
     err_deg_ge_nctrlp:
         err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_over_underflow:
+        err = TS_OVER_UNDERFLOW;
         goto cleanup;
     err_malloc:
         err = TS_MALLOC;

@@ -145,7 +145,7 @@ void TsBSpline::buckle(const float b)
         throw err;
 }
 
-void TsBSpline::toBesziers()
+void TsBSpline::toBeziers()
 {
     const tsError err = ts_bspline_to_beziers(&bspline, &bspline);
     if (err < 0)

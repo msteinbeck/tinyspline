@@ -172,7 +172,7 @@ tsError ts_bspline_evaluate(
  */
 tsError ts_bspline_insert_knot(
     const tsBSpline* bspline, const float u, const size_t n,
-    tsBSpline* result
+    tsBSpline* result, size_t* k
 );
 
 /**

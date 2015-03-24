@@ -28,7 +28,7 @@ public:
     void setNKnots(const size_t nKnots);
     
     void setupKnots(const tsBSplineType type);
-    void insertKnot(const float u, const size_t n);
+    size_t insertKnot(const float u, const size_t n);
     void resize(const int n, const int back);
     size_t split(const float u);
     void buckle(const float b);

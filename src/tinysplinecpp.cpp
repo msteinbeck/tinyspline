@@ -113,11 +113,13 @@ void TsBSpline::setupKnots(const tsBSplineType type)
         throw err;
 }
 
-void TsBSpline::insertKnot(const float u, const size_t n)
+size_t TsBSpline::insertKnot(const float u, const size_t n)
 {
-    const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bspline);
+    size_t k;
+    const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bspline, &k);
     if (err < 0)
         throw err;
+    return k;
 }
 
 void TsBSpline::resize(const int n, const int back)

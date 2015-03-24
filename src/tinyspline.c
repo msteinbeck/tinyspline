@@ -434,16 +434,19 @@ tsError ts_bspline_evaluate(
 
 tsError ts_bspline_insert_knot(
     const tsBSpline* bspline, const float u, const size_t n,
-    tsBSpline* result
+    tsBSpline* result, size_t* k
 )
 {
     tsError ret;
     tsDeBoorNet net;
     ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret >= 0)
+    if (ret >= 0) {
         ret = ts_internal_bspline_insert_knot(bspline, &net, n, result);
-    else
+        *k = ret >= 0 ? net.k+n : 0;
+    } else {
         ts_bspline_default(result);
+        *k = 0;
+    }
     ts_deboornet_free(&net);
     return ret;
 }

@@ -1,5 +1,68 @@
 #include "tinysplinecpp.h"
 
+TsDeBoorNet::TsDeBoorNet()
+{
+    ts_deboornet_default(&deBoorNet);
+}
+
+TsDeBoorNet::~TsDeBoorNet()
+{
+    ts_deboornet_free(&deBoorNet);
+}
+
+tsDeBoorNet* TsDeBoorNet::data()
+{
+    return &deBoorNet;
+}
+
+float* TsDeBoorNet::points() const
+{
+    return deBoorNet.points;
+}
+
+float* TsDeBoorNet::result() const
+{
+    return deBoorNet.result;
+}
+
+float TsDeBoorNet::u() const
+{
+    return deBoorNet.u;
+}
+
+size_t TsDeBoorNet::k() const
+{
+    return deBoorNet.k;
+}
+
+size_t TsDeBoorNet::s() const
+{
+    return deBoorNet.s;
+}
+
+size_t TsDeBoorNet::h() const
+{
+    return deBoorNet.h;
+}
+
+size_t TsDeBoorNet::dim() const
+{
+    return deBoorNet.dim;
+}
+
+size_t TsDeBoorNet::nAffected() const
+{
+    return deBoorNet.n_affected;
+}
+
+size_t TsDeBoorNet::nPoints() const
+{
+    return deBoorNet.n_points;
+}
+
+
+
+
 TsBSpline::TsBSpline() 
 {
     ts_bspline_default(&bspline);
@@ -137,4 +200,11 @@ void TsBSpline::toBeziers()
     const tsError err = ts_bspline_to_beziers(&bspline, &bspline);
     if (err < 0)
         throw err;
+}
+
+TsDeBoorNet TsBSpline::evaluate(const float u) const
+{
+    TsDeBoorNet deBoorNet;
+    ts_bspline_evaluate(&bspline, u, deBoorNet.data());
+    return deBoorNet;
 }

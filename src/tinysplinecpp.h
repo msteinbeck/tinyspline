@@ -2,6 +2,27 @@
 
 #include "tinyspline.h"
 
+class TsDeBoorNet {
+public:
+    TsDeBoorNet();
+    ~TsDeBoorNet();
+    
+    tsDeBoorNet* data();
+    float* points() const;
+    float* result() const;
+    
+    float u() const;
+    size_t k() const;
+    size_t s() const;
+    size_t h() const;
+    size_t dim() const;
+    size_t nAffected() const;
+    size_t nPoints() const;
+    
+private:
+    tsDeBoorNet deBoorNet;
+};
+
 class TsBSpline {
 public:
     TsBSpline();
@@ -14,23 +35,23 @@ public:
     float* ctrlp() const;
     float* knots() const;
     
-    // getter
     size_t deg() const;
     size_t order() const;
     size_t dim() const;
     size_t nCtrlp() const;
     size_t nKnots() const;
-    // setter
+    
     void setDeg(const size_t deg);
     void setOrder(const size_t order);
     void setDim(const size_t dim);
     
     void setupKnots(const tsBSplineType type);
-    size_t insertKnot(const float u, const size_t n);
     void resize(const int n, const int back);
-    size_t split(const float u);
     void buckle(const float b);
     void toBeziers();
+    size_t insertKnot(const float u, const size_t n);
+    size_t split(const float u);
+    TsDeBoorNet evaluate(const float u) const;
     
 private:
     tsBSpline bspline;

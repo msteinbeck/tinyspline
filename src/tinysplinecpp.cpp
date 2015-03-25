@@ -93,19 +93,6 @@ void TsBSpline::setDim(const size_t dim)
     bspline.dim = dim;
 }
 
-void TsBSpline::setNCtrlp(const size_t nCtrlp)
-{
-    if (bspline.deg >= nCtrlp)
-        throw TS_DEG_GE_NCTRLP;
-    bspline.n_ctrlp = nCtrlp;
-}
-
-void TsBSpline::setNKnots(const size_t nKnots)
-{
-    // TODO: add error code to c lib
-    bspline.n_knots = nKnots;
-}
-
 void TsBSpline::setupKnots(const tsBSplineType type)
 {
     const tsError err = ts_bspline_setup_knots(&bspline, type, &bspline);

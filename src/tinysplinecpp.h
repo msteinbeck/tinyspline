@@ -24,8 +24,6 @@ public:
     void setDeg(const size_t deg);
     void setOrder(const size_t order);
     void setDim(const size_t dim);
-    void setNCtrlp(const size_t nCtrlp);
-    void setNKnots(const size_t nKnots);
     
     void setupKnots(const tsBSplineType type);
     size_t insertKnot(const float u, const size_t n);

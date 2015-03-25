@@ -38,7 +38,7 @@ java: lib
 	jar cvf bin/tinyspline.jar -C build com
 	cp libs/jna-4.1.0.jar bin/jna-4.1.0.jar
 
-examples: lib
+examples: c
 	rm bin/libtinyspline.so # remove shared lib to ensure examples use static lib
 	$(CC) $(CFLAGS) -Lbin src/bspline.c -o bin/bspline -lGL -lGLU -lglut -Bstatic -ltinyspline
 	$(CC) $(CFLAGS) -Lbin src/nurbs.c -o bin/nurbs -lGL -lGLU -lglut  -Bstatic -ltinyspline

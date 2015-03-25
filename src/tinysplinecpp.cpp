@@ -149,13 +149,6 @@ void TsBSpline::setOrder(const size_t order)
     bspline.deg = deg;
 }
 
-void TsBSpline::setDim(const size_t dim)
-{
-    if (dim == 0)
-        throw TS_DIM_ZERO;
-    bspline.dim = dim;
-}
-
 void TsBSpline::setupKnots(const tsBSplineType type)
 {
     const tsError err = ts_bspline_setup_knots(&bspline, type, &bspline);

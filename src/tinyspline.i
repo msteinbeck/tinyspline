@@ -74,7 +74,6 @@ import java.util.RandomAccess;
 %include <attribute.i>
 %attribute(TsBSpline, size_t, deg, deg, setDeg);
 %attribute(TsBSpline, size_t, order, order, setOrder);
-%attribute(TsBSpline, size_t, dim, dim, setDim);
 %attribute(TsBSpline, size_t, nCtrlp, nCtrlp);
 %attribute(TsBSpline, size_t, nKnots, nKnots);
 

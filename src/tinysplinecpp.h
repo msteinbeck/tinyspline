@@ -43,7 +43,6 @@ public:
     
     void setDeg(const size_t deg);
     void setOrder(const size_t order);
-    void setDim(const size_t dim);
     
     void setupKnots(const tsBSplineType type);
     void resize(const int n, const int back);

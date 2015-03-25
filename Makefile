@@ -4,24 +4,26 @@ CFLAGS=-g \
        -Werror -Wall -Wextra -Wfloat-equal -Winit-self -Wno-missing-braces \
        -Wunreachable-code -Wundef -Wswitch-default -Wswitch-enum
 
-all: lib
+all: c
 
 init:
 	mkdir -p bin
 	mkdir -p build
+	mkdir -p gen
 
 clean:
 	rm -rf bin
 	rm -rf build
+	rm -rf gen
 
-lib: init
+c: init
 	cp src/tinyspline.h bin/tinyspline.h
 	$(CC) $(CFLAGS) -c src/tinyspline.c -o build/tinyspline.static.o
 	ar rcs bin/libtinyspline.a build/tinyspline.static.o
 	$(CC) $(CFLAGS) -c -fpic src/tinyspline.c -o build/tinyspline.shared.o
 	$(CC) --shared -o bin/libtinyspline.so build/tinyspline.shared.o
 
-libcpp: init
+cpp: init
 	cp src/tinyspline.h bin/tinyspline.h
 	cp src/tinysplinecpp.h bin/tinysplinecpp.h
 	$(CC) $(CFLAGS) -c src/tinyspline.c -o build/tinyspline.static.o -lstdc++

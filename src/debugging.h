@@ -4,7 +4,7 @@
 #include "tinyspline.h"
 #include <stdio.h>
 
-void ts_bspline_print(tsBSpline* bspline)
+void ts_bspline_print(const tsBSpline* bspline)
 {
     size_t i, j;
     
@@ -24,7 +24,7 @@ void ts_bspline_print(tsBSpline* bspline)
     printf("\n\n");
 }
 
-void ts_deboornet_print(tsDeBoorNet* net)
+void ts_deboornet_print(const tsDeBoorNet* net)
 {
     size_t i, j;
     

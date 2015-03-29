@@ -31,6 +31,8 @@ public:
               const tsBSplineType type);
     ~TsBSpline();
     
+    bool operator==(const TsBSpline& other) const;
+    
     tsBSpline* data();
     float* ctrlp() const;
     float* knots() const;

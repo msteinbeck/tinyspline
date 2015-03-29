@@ -58,7 +58,7 @@ tsError ts_internal_bspline_insert_knot(
     memmove(
         result->knots+kidx+n, // n >= 0 implies kidx+n >= kidx
         bspline->knots+kidx, 
-        (bspline->n_knots-n-kidx) * sizeof(float)
+        (result->n_knots-n-kidx) * sizeof(float)
     );
     
     // 2.
@@ -479,6 +479,13 @@ tsError ts_bspline_resize(
     const size_t new_n_knots = n_knots+n;
     const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
     const size_t min_n_knots = n < 0 ? n_knots : n_knots;
+    
+    if (bspline != resized) {
+        const tsError err = 
+            ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
+        if (err < 0)
+            return err;
+    }
 
     float* from_ctrlp = bspline->ctrlp;
     float* from_knots = bspline->knots;
@@ -496,10 +503,6 @@ tsError ts_bspline_resize(
     const size_t size_ctrlp = dim*size_flt;
     
     if (bspline != resized) {
-        const tsError ret = 
-            ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
-        if (ret < 0)
-            return ret;
         memcpy(to_ctrlp, from_ctrlp, min_n_ctrlp * size_ctrlp);
         memcpy(to_knots, from_knots, min_n_knots * size_flt);
     } else {
@@ -647,6 +650,30 @@ tsError ts_bspline_to_beziers(
         k++;
     }
     return TS_SUCCESS;
+}
+
+int ts_bspline_equals(
+    const tsBSpline* x, const tsBSpline* y
+)
+{
+    if (x->deg     != y->deg ||
+        x->order   != y->order ||
+        x->dim     != y->dim ||
+        x->n_ctrlp != y->n_ctrlp ||
+        x->n_knots != y->n_knots) {
+        return 0;
+    } else {
+        size_t i;
+        for (i = 0; i < x->n_ctrlp; i++) {
+            if (!ts_fequals(x->ctrlp[i], y->ctrlp[i]))
+                return 0;
+        }
+        for (i = 0; i < x->n_knots; i++) {
+            if (!ts_fequals(x->knots[i], y->knots[i]))
+                return 0;
+        }
+        return 1;
+    }
 }
 
 int ts_fequals(const float x, const float y)

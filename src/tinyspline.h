@@ -207,6 +207,10 @@ tsError ts_bspline_to_beziers(
     tsBSpline* beziers
 );
 
+int ts_bspline_equals(
+    const tsBSpline* x, const tsBSpline* y
+);
+
 
 
 /********************************************************

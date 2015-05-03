@@ -23,7 +23,7 @@ tsError ts_internal_bspline_insert_knot(
     if (((int)n) < 0) // ensure n fits into an int without getting negative
         goto err_over_underflow;
     
-    const tsError ret = ts_bspline_resize(bspline, n, 1, result);
+    const tsError ret = ts_bspline_resize(bspline, (int)n, 1, result);
     if (ret < 0)
         return ret;
     

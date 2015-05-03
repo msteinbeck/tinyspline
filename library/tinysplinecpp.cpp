@@ -89,7 +89,7 @@ TsBSpline::~TsBSpline()
 
 bool TsBSpline::operator ==(const TsBSpline& other) const
 {
-    return ts_bspline_equals(&bspline, &other.bspline);
+    return static_cast<bool>(ts_bspline_equals(&bspline, &other.bspline));
 }
 
 tsBSpline* TsBSpline::data()

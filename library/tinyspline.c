@@ -91,7 +91,7 @@ tsError ts_internal_bspline_insert_knot(
         to     += dim;
     }
     // copy knots
-    from = to = (k+1);
+    to = (k+1);
     for (i = 0; i < n; i++) {
         result->knots[to] = deBoorNet->u;
         to++;

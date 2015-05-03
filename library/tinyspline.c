@@ -267,18 +267,31 @@ tsError ts_bspline_copy(
 {
     if (original == copy)
         return TS_INPUT_EQ_OUTPUT;
-    
-    const size_t deg = original->deg;
-    const size_t dim = original->dim;
-    const size_t n_ctrlp = original->n_ctrlp;
-    const size_t sf = sizeof(float);
-    
-    const tsError ret = ts_bspline_new(deg, dim, n_ctrlp, TS_NONE, copy);
-    if (ret >= 0) {
-        memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*sf);
-        memcpy(copy->knots, original->knots, original->n_knots*sf);
-    }
-    return ret;
+
+    const size_t dim      = original->dim;
+    const size_t n_ctrlp  = original->n_ctrlp;
+    const size_t n_knots  = original->n_knots;
+    const size_t size_flt = sizeof(float);
+
+    copy->deg     = original->deg;
+    copy->order   = original->order;
+    copy->dim     = original->dim;
+    copy->n_ctrlp = original->n_ctrlp;
+    copy->n_knots = original->n_knots;
+    copy->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
+    if (copy->ctrlp == NULL)
+        goto err_malloc;
+    copy->knots   = (float*) malloc(n_knots*size_flt);
+    if (copy->knots == NULL)
+        goto err_malloc;
+    memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*size_flt);
+    memcpy(copy->knots, original->knots, n_knots*size_flt);
+    return TS_SUCCESS;
+
+    // error handling
+    err_malloc:
+        ts_bspline_free(copy);
+        return TS_MALLOC;
 }
 
 tsError ts_bspline_evaluate(

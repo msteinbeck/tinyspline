@@ -71,23 +71,21 @@ tsError ts_internal_bspline_insert_knot(
     // copy control points
     int from = 0;
     int to = (k-deg)*dim;
-    int stride = N*dim;
-    int stride_inc = -dim;
+    int stride = N*dim; // <- must be int because it will be negative in c)
     for (i = 0; i < n; i++) {
         memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
         from   += stride;
-        stride += stride_inc;
+        stride -= dim;
         to     += dim;
     }
     memcpy(result->ctrlp+to, deBoorNet->points+from, (N-n) * size_ctrlp);
     from  -= dim;
     to += (N-n)*dim;
     stride = -(N-n+1)*dim;
-    stride_inc = -dim;
     for (i = 0; i < n; i++) {
         memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
         from   += stride;
-        stride += stride_inc;
+        stride -= dim;
         to     += dim;
     }
     // copy knots
@@ -491,7 +489,7 @@ tsError ts_bspline_resize(
     const size_t n_knots = bspline->n_knots;
     const size_t new_n_knots = n_knots+n;
     const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
-    const size_t min_n_knots = n < 0 ? n_knots : n_knots;
+    const size_t min_n_knots = n < 0 ? n_knots : n_knots; //TODO must be bug
     
     if (bspline != resized) {
         const tsError err = 

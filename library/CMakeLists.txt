@@ -1,14 +1,17 @@
+cmake_minimum_required(VERSION 2.8)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal")
 add_library(tinyspline SHARED tinyspline.c)
 add_library(tinyspline_static STATIC tinyspline.c)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wfloat-equal")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -std=c++11")
   add_library(tinysplinecpp SHARED tinyspline.c tinysplinecpp.cpp)
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
 endif()
 
 target_include_directories (tinyspline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (tinysplinecpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(SWIG)
 if(SWIG_FOUND)

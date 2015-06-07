@@ -379,7 +379,7 @@ tsError ts_bspline_evaluate(
             deBoorNet->n_affected = deBoorNet->n_points = 2;
             // copy both control points
             const size_t from = (k-s) * dim;
-            memcpy(deBoorNet->points, bspline->ctrlp+from, 2 * size_ctrlp);
+            memcpy(deBoorNet->points, bspline->ctrlp + from, 2 * size_ctrlp);
             return 2;
         }
     } else { // by 4a) and 4b) s <= deg (order = deg+1)

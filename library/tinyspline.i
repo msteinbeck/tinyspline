@@ -1,70 +1,11 @@
-%module tinyspline
+// NOTE:
+//
+// This file configures all language independent settings. It gets 
+// included in each concrete module.
+//
+// For some reason you MUST include this file AFTER typemaps.
+// Use %include "tinyspline.i" to include this file.
 
-// java extensions 
-%typemap(javaimports) TsBSpline 
-%{
-import java.util.AbstractList;
-import java.lang.NullPointerException;
-import java.util.List;
-import java.util.RandomAccess;
-%}
-
-%javamethodmodifiers TsBSpline::ctrlp "private";
-%javamethodmodifiers TsBSpline::knots "private";
-
-%typemap(javacode) TsBSpline 
-%{
-  private abstract class TsFloatList extends AbstractList<Float> 
-      implements RandomAccess {
-    abstract SWIGTYPE_p_float getData();
-      
-    @Override
-    public Float get(int index) {
-      return tinyspline.float_array_getitem(getData(), index);
-    }
-    
-    @Override
-    public Float set(int index, Float element) {
-      if (element == null)
-        throw new NullPointerException();
-      final Float prev = tinyspline.float_array_getitem(getData(), index);
-      tinyspline.float_array_setitem(getData(), index, element);
-      return prev;
-    }
-  }
-  
-  private final TsFloatList ctrlpList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getData() {
-      return ctrlp();
-    }
-        
-    @Override
-    public int size() {
-      return (int) getNCtrlp();
-    }
-  };
-  
-  private final TsFloatList knotList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getData() {
-      return knots();
-    }
-        
-    @Override
-    public int size() {
-      return (int) getNKnots();
-    }
-  };
-    
-  public List<Float> getCtrlp() {
-    return ctrlpList;
-  }
-  
-  public List<Float> getKnots() {
-    return knotList;
-  }
-%}
 
 // make control points and knots accessible
 %include <carrays.i>
@@ -77,15 +18,26 @@ import java.util.RandomAccess;
 %attribute(TsBSpline, size_t, dim, dim);
 %attribute(TsBSpline, size_t, nCtrlp, nCtrlp);
 %attribute(TsBSpline, size_t, nKnots, nKnots);
+%attribute(TsDeBoorNet, float, u, u);
+%attribute(TsDeBoorNet, size_t, k, k);
+%attribute(TsDeBoorNet, size_t, s, s);
+%attribute(TsDeBoorNet, size_t, h, h);
+%attribute(TsDeBoorNet, size_t, dim, dim);
+%attribute(TsDeBoorNet, size_t, nAffected, nAffected);
+%attribute(TsDeBoorNet, size_t, nPoints, nPoints);
 
+// ignore wrapped structs and data fields
 %ignore tsDeBoorNet;
+%ignore TsDeBoorNet::data;
 %ignore tsBSpline;
 %ignore TsBSpline::data;
 
 %{
     #include "tinyspline.h"
     #include "tinysplinecpp.h"
+    struct TsFloatList {};
 %}
 
 %include "tinyspline.h"
 %include "tinysplinecpp.h"
+struct TsFloatList {};

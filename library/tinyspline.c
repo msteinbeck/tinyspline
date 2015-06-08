@@ -69,29 +69,29 @@ tsError ts_internal_bspline_insert_knot(
     // d) insert knots with u_k
     size_t i;     // <- used in for loops
     // copy control points
-    int from = 0;
-    int to = (k-deg)*dim;
+    float* from = deBoorNet->points;
+    float* to = result->ctrlp + (k-deg)*dim;
     int stride = N*dim; // <- must be int because it will be negative in c)
-    for (i = 0; i < n; i++) {
-        memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
-        from   += stride;
+    for (i = 0; i < n; i++) { // a)
+        memcpy(to, from, size_ctrlp);
+        from += stride;
+        to += dim;
         stride -= dim;
-        to     += dim;
     }
-    memcpy(result->ctrlp+to, deBoorNet->points+from, (N-n) * size_ctrlp);
-    from  -= dim;
+    memcpy(to, from, (N-n) * size_ctrlp); // b)
+    from -= dim;
     to += (N-n)*dim;
     stride = -(N-n+1)*dim;
-    for (i = 0; i < n; i++) {
-        memcpy(result->ctrlp+to, deBoorNet->points+from, size_ctrlp);
+    for (i = 0; i < n; i++) { // c)
+        memcpy(to, from, size_ctrlp);
         from   += stride;
         stride -= dim;
         to     += dim;
     }
     // copy knots
-    to = (k+1);
+    to = result->knots+k+1;
     for (i = 0; i < n; i++) {
-        result->knots[to] = deBoorNet->u;
+        *to = deBoorNet->u;
         to++;
     }
     return TS_SUCCESS;

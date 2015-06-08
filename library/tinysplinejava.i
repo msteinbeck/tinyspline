@@ -42,6 +42,8 @@ import java.util.RandomAccess;
 //********************************************************
 %javamethodmodifiers TsBSpline::ctrlp "private";
 %javamethodmodifiers TsBSpline::knots "private";
+%javamethodmodifiers TsBSpline::operator== "private";
+%rename(internalEquals) TsBSpline::operator==;
 
 %typemap(javaimports) TsBSpline
 %{
@@ -80,6 +82,16 @@ import java.util.List;
   
   public List<Float> getKnots() {
     return knotList;
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this)
+      return true;
+    else if (o instanceof TsBSpline)
+      return internalEquals((TsBSpline) o);
+    else
+      return false;
   }
 %}
 

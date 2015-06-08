@@ -22,15 +22,15 @@ import java.util.RandomAccess;
       
   @Override
   public Float get(int index) {
-    return tinyspline.float_array_getitem(getSwigPtr(), index);
+    return tinysplinejava.float_array_getitem(getSwigPtr(), index);
   }
     
   @Override
   public Float set(int index, Float element) {
     if (element == null)
       throw new NullPointerException();
-    Float prev = tinyspline.float_array_getitem(getSwigPtr(), index);
-    tinyspline.float_array_setitem(getSwigPtr(), index, element);
+    Float prev = tinysplinejava.float_array_getitem(getSwigPtr(), index);
+    tinysplinejava.float_array_setitem(getSwigPtr(), index, element);
     return prev;
   }
 %}

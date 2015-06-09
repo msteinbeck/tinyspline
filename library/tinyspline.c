@@ -489,7 +489,7 @@ tsError ts_bspline_resize(
     const size_t n_knots = bspline->n_knots;
     const size_t new_n_knots = n_knots+n;
     const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
-    const size_t min_n_knots = n < 0 ? n_knots : n_knots; //TODO must be bug
+    const size_t min_n_knots = n < 0 ? new_n_knots : n_knots;
     
     if (bspline != resized) {
         const tsError err = 

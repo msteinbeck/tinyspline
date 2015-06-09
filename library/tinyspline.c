@@ -584,13 +584,14 @@ tsError ts_bspline_split(
 }
 
 tsError ts_bspline_buckle(
-    const tsBSpline* original, const float b,
+    const tsBSpline* bspline, const float b,
     tsBSpline* buckled
 )
 {
-    const tsError ret = ts_bspline_copy(original, buckled);
-    if (ret < 0) {
-        return ret;
+    if (bspline != buckled) {
+        const tsError err = ts_bspline_copy(bspline, buckled);
+        if (err < 0)
+            return err;
     }
     
     const float b_hat  = 1.f-b;            // <- 1-b

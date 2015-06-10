@@ -18,6 +18,8 @@ tsError ts_internal_bspline_insert_knot(
     tsBSpline* result
 )
 {
+    tsError err;
+
     if (deBoorNet->s+n > bspline->order)
         goto err_multiplicity;
     if (((int)n) < 0) // ensure n fits into an int without getting negative
@@ -97,7 +99,6 @@ tsError ts_internal_bspline_insert_knot(
     return TS_SUCCESS;
     
     // error handling
-    tsError err;
     err_multiplicity:
         err = TS_MULTIPLICITY;
         goto cleanup;

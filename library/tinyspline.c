@@ -69,11 +69,14 @@ tsError ts_internal_bspline_insert_knot(
     // b) copy middle part control points from de boor net
     // c) copy right hand side control points from de boor net
     // d) insert knots with u_k
-    size_t i;     // <- used in for loops
-    // copy control points
+    size_t i; // <- used in for loops
     float* from = deBoorNet->points;
     float* to = result->ctrlp + (k-deg)*dim;
-    int stride = N*dim; // <- must be int because it will be negative in c)
+    int stride = (int)(N*dim); // <- will be negative in c), thus use int
+    if (stride < 0)
+        goto err_over_underflow;
+
+    // copy control points
     for (i = 0; i < n; i++) { // a)
         memcpy(to, from, size_ctrlp);
         from += stride;
@@ -81,18 +84,22 @@ tsError ts_internal_bspline_insert_knot(
         stride -= dim;
     }
     memcpy(to, from, (N-n) * size_ctrlp); // b)
+
     from -= dim;
     to += (N-n)*dim;
-    stride = -(N-n+1)*dim;
+    stride = (int)(-(N-n+1)*dim);
+    if (stride >= 0)
+        goto err_over_underflow;
+
     for (i = 0; i < n; i++) { // c)
         memcpy(to, from, size_ctrlp);
-        from   += stride;
+        from += stride;
         stride -= dim;
-        to     += dim;
+        to += dim;
     }
     // copy knots
     to = result->knots+k+1;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) { // d)
         *to = deBoorNet->u;
         to++;
     }

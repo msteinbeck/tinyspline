@@ -164,7 +164,8 @@ tsError ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
     tsBSpline* bspline
 )
-{   
+{
+    tsError err;
     ts_bspline_default(bspline);
     
     if (dim < 1)
@@ -196,7 +197,6 @@ tsError ts_bspline_new(
     return TS_SUCCESS;
     
     // error handling
-    tsError err;
     err_dim_zero:
         err = TS_DIM_ZERO;
         goto cleanup;
@@ -297,6 +297,7 @@ tsError ts_bspline_evaluate(
     tsDeBoorNet* deBoorNet
 )
 {
+    tsError err;
     ts_deboornet_default(deBoorNet);
     
     // 1. Find index k such that u is in between [u_k, u_k+1).
@@ -428,7 +429,6 @@ tsError ts_bspline_evaluate(
     }
     
     // error handling
-    tsError err;
     err_malloc:
         err = TS_MALLOC;
         goto cleanup;
@@ -467,6 +467,8 @@ tsError ts_bspline_resize(
     tsBSpline* resized
 )
 {
+    tsError err;
+
     // if n is 0 the b-spline must not be resized
     if (n == 0 && bspline != resized)
         return ts_bspline_copy(bspline, resized);
@@ -543,7 +545,6 @@ tsError ts_bspline_resize(
     return TS_SUCCESS;
     
     // error handling
-    tsError err;
     err_deg_ge_nctrlp:
         err = TS_DEG_GE_NCTRLP;
         goto cleanup;

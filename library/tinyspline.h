@@ -55,7 +55,7 @@ typedef struct
     size_t n_affected; // <- number of affected control points
     size_t n_points;   // <- number of control points
     float* points;     // <- the control points of the de Boor net
-    float* result;     // <- the result of the evalutation
+    float* result;     // <- the result of the evaluation
                        //    Technically it is a pointer to the last point
                        //    in points. Any changes made here will modify
                        //    points and vice versa. In case of a discontinuous

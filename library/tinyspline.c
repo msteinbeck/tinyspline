@@ -25,9 +25,9 @@ tsError ts_internal_bspline_insert_knot(
     if (((int)n) < 0) // ensure n fits into an int without getting negative
         goto err_over_underflow;
     
-    const tsError ret = ts_bspline_resize(bspline, (int)n, 1, result);
-    if (ret < 0)
-        return ret;
+    err = ts_bspline_resize(bspline, (int)n, 1, result);
+    if (err < 0)
+        return err;
     
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;  
@@ -502,8 +502,7 @@ tsError ts_bspline_resize(
     const size_t min_n_knots = n < 0 ? new_n_knots : n_knots;
     
     if (bspline != resized) {
-        const tsError err = 
-            ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
+        err = ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
         if (err < 0)
             return err;
     }

@@ -60,7 +60,7 @@ import java.util.List;
         
     @Override
     public int size() {
-      return (int) getNCtrlp();
+      return (int) (getNCtrlp() * getDim());
     }
   };
   
@@ -118,7 +118,7 @@ import java.util.List;
         
     @Override
     public int size() {
-      return (int) getNPoints();
+      return (int) (getNPoints() * getDim());
     }
   };
   

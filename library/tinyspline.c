@@ -30,11 +30,14 @@ tsError ts_internal_bspline_insert_knot(
         return err;
     if (n == 0) // nothing to insert
         return TS_SUCCESS;
-    
+
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;  
     const size_t k = deBoorNet->k;
-    const size_t N = deBoorNet->h+1;
+    const size_t N = deBoorNet->h+1; // <- the number of affected ctrlps
+                                     //    n > 0 implies s <= deg implies a
+                                     //    regular evaluation implies h+1 is
+                                     //    valid
     const size_t size_ctrlp = dim * sizeof(float);
 
     // 1. Copy all necessary control points and knots from 

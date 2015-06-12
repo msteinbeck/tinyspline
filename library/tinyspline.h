@@ -42,7 +42,7 @@ typedef enum
 // setup knots as...
     TS_OPENED = 0,  // <- [uniformly spaced]
     TS_CLAMPED = 1, // <- [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n]
-    TS_NONE = 2     // <- do not setup the konts; they may have any values
+    TS_NONE = 2     // <- do not setup the knots; they may have any values
 } tsBSplineType;
 
 typedef struct

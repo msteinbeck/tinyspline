@@ -23,7 +23,6 @@
 %attribute(TsDeBoorNet, size_t, s, s);
 %attribute(TsDeBoorNet, size_t, h, h);
 %attribute(TsDeBoorNet, size_t, dim, dim);
-%attribute(TsDeBoorNet, size_t, nAffected, nAffected);
 %attribute(TsDeBoorNet, size_t, nPoints, nPoints);
 
 // ignore wrapped structs and data fields

@@ -47,21 +47,20 @@ typedef enum
 
 typedef struct
 {
-    float u;           // <- the knot u
-    size_t k;          // <- the index [u_k, u_k+1)
-    size_t s;          // <- the multiplicity of u_k
-    size_t h;          // <- how many times u must be inserted
-    size_t dim;        // <- dimension of a control point
-    size_t n_affected; // <- number of affected control points
-    size_t n_points;   // <- number of control points
-    float* points;     // <- the control points of the de Boor net
-    float* result;     // <- the result of the evaluation
-                       //    Technically it is a pointer to the last point
-                       //    in points. Any changes made here will modify
-                       //    points and vice versa. In case of a discontinuous
-                       //    B-Spline at u, points can be used to get access
-                       //    to the first point and result to get access to
-                       //    the second one.
+    float u;         // <- the knot u
+    size_t k;        // <- the index [u_k, u_k+1)
+    size_t s;        // <- the multiplicity of u_k
+    size_t h;        // <- how many times u must be inserted
+    size_t dim;      // <- dimension of a control point
+    size_t n_points; // <- number of control points
+    float* points;   // <- the control points of the de Boor net
+    float* result;   // <- the result of the evaluation
+                     //    Technically it is a pointer to the last point
+                     //    in points. Any changes made here will modify
+                     //    points and vice versa. In case of a discontinuous
+                     //    B-Spline at u, points can be used to get access
+                     //    to the first point and result to get access to
+                     //    the second one.
 } tsDeBoorNet;
 
 typedef struct

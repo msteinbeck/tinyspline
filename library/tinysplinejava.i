@@ -130,7 +130,7 @@ import java.util.List;
     
     @Override
     public int size() {
-      return getNAffected() == 2 ? 2 : 1;
+      return (int) getDim();
     }
   };
     

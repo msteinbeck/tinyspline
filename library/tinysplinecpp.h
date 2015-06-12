@@ -16,7 +16,6 @@ public:
     size_t s() const;
     size_t h() const;
     size_t dim() const;
-    size_t nAffected() const;
     size_t nPoints() const;
     
 private:

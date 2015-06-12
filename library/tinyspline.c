@@ -32,7 +32,7 @@ tsError ts_internal_bspline_insert_knot(
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;  
     const size_t k = deBoorNet->k;
-    const size_t N = deBoorNet->n_affected;
+    const size_t N = deBoorNet->h+1;
     const size_t size_ctrlp = dim * sizeof(float);
 
     // 1. Copy all necessary control points and knots from 
@@ -126,15 +126,14 @@ tsError ts_internal_bspline_insert_knot(
 ********************************************************/
 void ts_deboornet_default(tsDeBoorNet* deBoorNet)
 {
-    deBoorNet->u          = 0.f;
-    deBoorNet->k          = 0;
-    deBoorNet->s          = 0;
-    deBoorNet->h          = 0;
-    deBoorNet->dim        = 0;
-    deBoorNet->n_affected = 0;
-    deBoorNet->n_points   = 0;
-    deBoorNet->points     = NULL;
-    deBoorNet->result     = NULL;
+    deBoorNet->u        = 0.f;
+    deBoorNet->k        = 0;
+    deBoorNet->s        = 0;
+    deBoorNet->h        = 0;
+    deBoorNet->dim      = 0;
+    deBoorNet->n_points = 0;
+    deBoorNet->points   = NULL;
+    deBoorNet->result   = NULL;
 }
 
 void ts_deboornet_free(tsDeBoorNet* deBoorNet)
@@ -376,7 +375,7 @@ tsError ts_bspline_evaluate(
             if (deBoorNet->points == NULL)
                 goto err_malloc;
             deBoorNet->result = deBoorNet->points;
-            deBoorNet->n_affected = deBoorNet->n_points = 1;
+            deBoorNet->n_points = 1;
             const size_t from = k == deg ? 0 : (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, size_ctrlp);
             return 1;
@@ -385,7 +384,7 @@ tsError ts_bspline_evaluate(
             if (deBoorNet->points == NULL)
                 goto err_malloc;
             deBoorNet->result = deBoorNet->points+dim;
-            deBoorNet->n_affected = deBoorNet->n_points = 2;
+            deBoorNet->n_points = 2;
             // copy both control points
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, 2 * size_ctrlp);
@@ -398,8 +397,7 @@ tsError ts_bspline_evaluate(
                                   //    s <= deg < k
         const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
                                         //    lst <= fst implies N >= 1
-        
-        deBoorNet->n_affected = N;
+
         deBoorNet->n_points = N * (N+1) * 0.5f;
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
         if (deBoorNet->points == NULL)

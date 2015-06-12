@@ -50,11 +50,6 @@ size_t TsDeBoorNet::dim() const
     return deBoorNet.dim;
 }
 
-size_t TsDeBoorNet::nAffected() const
-{
-    return deBoorNet.n_affected;
-}
-
 size_t TsDeBoorNet::nPoints() const
 {
     return deBoorNet.n_points;

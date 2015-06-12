@@ -25,7 +25,7 @@ extern "C" {
 typedef enum
 {
     TS_SUCCESS = 0,         // <- no error 
-    TS_MALLOC = -1,         // <- malloc/realloc retuned null
+    TS_MALLOC = -1,         // <- malloc/realloc returned null
     TS_OVER_UNDERFLOW = -2, // <- overflow/underflow detected
     TS_DIM_ZERO = -3,       // <- the dimension of the control points are 0
     TS_DEG_GE_NCTRLP = -4,  // <- degree of spline >= number of control points

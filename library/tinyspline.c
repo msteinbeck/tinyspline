@@ -24,10 +24,12 @@ tsError ts_internal_bspline_insert_knot(
         goto err_multiplicity;
     if (((int)n) < 0) // ensure n fits into an int without getting negative
         goto err_over_underflow;
-    
+
     err = ts_bspline_resize(bspline, (int)n, 1, result);
     if (err < 0)
         return err;
+    if (n == 0) // nothing to insert
+        return TS_SUCCESS;
     
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;  

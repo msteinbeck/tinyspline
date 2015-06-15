@@ -401,7 +401,7 @@ tsError ts_bspline_evaluate(
         const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
                                         //    lst <= fst implies N >= 1
 
-        deBoorNet->n_points = N * (N+1) * 0.5f;
+        deBoorNet->n_points = (size_t)(N * (N+1) * 0.5f); // always fits
         deBoorNet->points = (float*) malloc(deBoorNet->n_points * size_ctrlp);
         if (deBoorNet->points == NULL)
             goto err_malloc;

@@ -383,7 +383,6 @@ tsError ts_bspline_evaluate(
             deBoorNet->n_points = 1;
             const size_t from = k == deg ? 0 : (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, size_ctrlp);
-            return 1;
         } else {
             deBoorNet->points = (float*) malloc(2 * size_ctrlp);
             if (deBoorNet->points == NULL)
@@ -393,7 +392,6 @@ tsError ts_bspline_evaluate(
             // copy both control points
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, 2 * size_ctrlp);
-            return 2;
         }
     } else { // by 4a) and 4b) s <= deg (order = deg+1)
         const size_t fst = k-deg; // <- first affected control point, inclusive
@@ -435,9 +433,8 @@ tsError ts_bspline_evaluate(
             idx_l += dim; 
             idx_r += dim;
         }
-        
-        return 0;
     }
+    return TS_SUCCESS;
     
     // error handling
     err_malloc:
@@ -459,18 +456,17 @@ tsError ts_bspline_insert_knot(
     tsBSpline* result, size_t* k
 )
 {
-    tsError ret;
     tsDeBoorNet net;
-    ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret >= 0) {
-        ret = ts_internal_bspline_insert_knot(bspline, &net, n, result);
-        *k = ret >= 0 ? net.k+n : 0;
-    } else {
+    tsError err = ts_bspline_evaluate(bspline, u, &net);
+    if (err < 0) {
         ts_bspline_default(result);
         *k = 0;
+    } else {
+        err = ts_internal_bspline_insert_knot(bspline, &net, n, result);
+        *k = err < 0 ? 0 : net.k+n;
     }
     ts_deboornet_free(&net);
-    return ret;
+    return err;
 }
 
 tsError ts_bspline_resize(
@@ -575,23 +571,22 @@ tsError ts_bspline_split(
     tsBSpline* split, size_t* k
 )
 {
-    tsError ret;
     tsDeBoorNet net;
-    ret = ts_bspline_evaluate(bspline, u, &net);
-    if (ret >= 1) {
-        if (bspline != split)
-            ret = ts_bspline_copy(bspline, split);
-        *k = ret >= 0 ? net.k : 0;
-    } else if (ret == 0) {
-        ret = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
-        *k = ret >= 0 ? net.k + net.h + 1 : 0;
-    } else {
+    tsError err = ts_bspline_evaluate(bspline, u, &net);
+    if (err < 0) {
         if (bspline != split)
             ts_bspline_default(split);
         *k = 0;
+    } else if (net.s == bspline->order) {
+        if (bspline != split)
+            err = ts_bspline_copy(bspline, split);
+        *k = err < 0 ? 0 : net.k;
+    } else {
+        err = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
+        *k = err < 0 ? 0 : net.k + net.h + 1;
     }
     ts_deboornet_free(&net);
-    return ret;
+    return err;
 }
 
 tsError ts_bspline_buckle(

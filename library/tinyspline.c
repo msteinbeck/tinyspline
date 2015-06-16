@@ -111,6 +111,7 @@ tsError ts_internal_bspline_insert_knot(
         *to = deBoorNet->u;
         to++;
     }
+
     return TS_SUCCESS;
     
     // error handling
@@ -202,6 +203,7 @@ tsError ts_bspline_new(
     if (bspline->knots == NULL)
         goto err_malloc;
     ts_bspline_setup_knots(bspline, type, bspline);
+
     return TS_SUCCESS;
     
     // error handling
@@ -260,6 +262,7 @@ tsError ts_bspline_setup_knots(
         for (;current < end; current++)
             result->knots[current] = 1.f;
     }
+
     return TS_SUCCESS;
 }
 
@@ -289,6 +292,7 @@ tsError ts_bspline_copy(
         goto err_malloc;
     memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*size_flt);
     memcpy(copy->knots, original->knots, n_knots*size_flt);
+
     return TS_SUCCESS;
 
     // error handling
@@ -427,6 +431,7 @@ tsError ts_bspline_evaluate(
             idx_r += dim;
         }
     }
+
     return TS_SUCCESS;
     
     // error handling
@@ -658,6 +663,7 @@ tsError ts_bspline_to_beziers(
             return err;
         k++;
     }
+    
     return TS_SUCCESS;
 }
 

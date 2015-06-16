@@ -31,8 +31,6 @@ tsError ts_internal_bspline_insert_knot(
 
     if (deBoorNet->s+n > bspline->order)
         goto err_multiplicity;
-    if (((int)n) < 0) // ensure n fits into an int without getting negative
-        goto err_over_underflow;
 
     err = ts_bspline_resize(bspline, (int)n, 1, result);
     if (err < 0)
@@ -87,8 +85,6 @@ tsError ts_internal_bspline_insert_knot(
     float* from = deBoorNet->points;
     float* to = result->ctrlp + (k-deg)*dim;
     int stride = (int)(N*dim); // <- will be negative in c), thus use int
-    if (stride < 0)
-        goto err_over_underflow;
 
     // copy control points
     for (i = 0; i < n; i++) { // a)
@@ -102,8 +98,6 @@ tsError ts_internal_bspline_insert_knot(
     from -= dim;
     to += (N-n)*dim;
     stride = (int)(-(N-n+1)*dim);
-    if (stride >= 0)
-        goto err_over_underflow;
 
     for (i = 0; i < n; i++) { // c)
         memcpy(to, from, size_ctrlp);
@@ -122,9 +116,6 @@ tsError ts_internal_bspline_insert_knot(
     // error handling
     err_multiplicity:
         err = TS_MULTIPLICITY;
-        goto cleanup;
-    err_over_underflow:
-        err = TS_OVER_UNDERFLOW;
         goto cleanup;
     cleanup:
         if (bspline != result)
@@ -195,11 +186,7 @@ tsError ts_bspline_new(
         goto err_deg_ge_nctrlp;
     
     const size_t order = deg + 1;
-    if (order < deg)
-        goto err_over_underflow;
     const size_t n_knots = n_ctrlp + order;
-    if (n_knots < n_ctrlp)
-        goto err_over_underflow;
     const size_t size_flt = sizeof(float);
     
     // setup b-spline
@@ -223,9 +210,6 @@ tsError ts_bspline_new(
         goto cleanup;
     err_deg_ge_nctrlp:
         err = TS_DEG_GE_NCTRLP;
-        goto cleanup;
-    err_over_underflow:
-        err = TS_OVER_UNDERFLOW;
         goto cleanup;
     err_malloc:
         err = TS_MALLOC;
@@ -493,14 +477,12 @@ tsError ts_bspline_resize(
     
     const size_t deg = bspline->deg;
     const size_t n_ctrlp = bspline->n_ctrlp;
-    const size_t new_n_ctrlp = n_ctrlp+n;
+    const size_t new_n_ctrlp = n_ctrlp + n;
     
     // check input
     if (new_n_ctrlp <= deg)
         goto err_deg_ge_nctrlp;
     else if (n < 0 && new_n_ctrlp > n_ctrlp)
-        goto err_over_underflow;
-    else if (n > 0 && new_n_ctrlp < n_ctrlp)
         goto err_over_underflow;
     
     const size_t dim = bspline->dim;

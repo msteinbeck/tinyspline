@@ -132,8 +132,6 @@ void TsBSpline::setDeg(const size_t deg)
     if (deg >= bspline.n_ctrlp)
         throw TS_DEG_GE_NCTRLP;
     const size_t order = deg+1;
-    if (order < deg)
-        throw TS_OVER_UNDERFLOW;
     bspline.deg = deg;
     bspline.order = order;
 }
@@ -141,8 +139,6 @@ void TsBSpline::setDeg(const size_t deg)
 void TsBSpline::setOrder(const size_t order)
 {
     const size_t deg = order-1;
-    if (deg > order)
-        throw TS_OVER_UNDERFLOW;
     if (deg >= bspline.n_ctrlp)
         throw TS_DEG_GE_NCTRLP;
     bspline.order = order;

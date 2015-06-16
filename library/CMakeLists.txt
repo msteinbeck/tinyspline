@@ -36,7 +36,6 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsBSpline.java
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsDeBoorNet.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejava.java
-        ${TS_GENERATED_JAVA_DIR}/tinysplinejavaConstants.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejavaJNI.java
         ${TS_GENERATED_JAVA_DIR}/TsBSpline.java
         ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java

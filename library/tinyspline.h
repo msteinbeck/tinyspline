@@ -66,7 +66,7 @@ typedef struct
     size_t n_ctrlp; // <- number of control points
     size_t n_knots; // <- number of knots (n_ctrlp + deg + 1)
     float* ctrlp;   // <- the control points of the spline
-    float* knots;   // <- the knot vector of the b-spline (acsending)
+    float* knots;   // <- the knot vector of the b-spline (ascending)
 } tsBSpline;
 
 

@@ -26,6 +26,7 @@ if(SWIG_FOUND)
     set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
     set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
     swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/so")
     
     find_package(Java COMPONENTS Development)
     if(Java_Development_FOUND)

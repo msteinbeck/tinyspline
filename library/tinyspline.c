@@ -173,6 +173,34 @@ void ts_bspline_free(tsBSpline* bspline)
     ts_bspline_default(bspline);
 }
 
+tsError ts_deboornet_copy(
+        const tsDeBoorNet* original,
+        tsDeBoorNet* copy
+)
+{
+    if (original == copy)
+        return TS_INPUT_EQ_OUTPUT;
+
+    copy->u   = original->u;
+    copy->k   = original->k;
+    copy->s   = original->s;
+    copy->h   = original->h;
+    copy->dim = original->dim;
+    copy->n_points = original->n_points;
+
+    const size_t size = original->n_points * original->dim * sizeof(float);
+    copy->points = (float*) malloc(size);
+    if (copy->points == NULL)
+        goto err_malloc;
+    memcpy(copy->points, original->points, size);
+    copy->result = copy->points + copy->n_points - 1;
+
+    // error handling
+    err_malloc:
+        ts_deboornet_free(copy);
+        return TS_MALLOC;
+}
+
 tsError ts_bspline_new(
     const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
     tsBSpline* bspline

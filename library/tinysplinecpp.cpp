@@ -5,6 +5,12 @@ TsDeBoorNet::TsDeBoorNet()
     ts_deboornet_default(&deBoorNet);
 }
 
+TsDeBoorNet::TsDeBoorNet(const TsDeBoorNet &other) {
+    const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
+    if (err < 0)
+        throw err;
+}
+
 TsDeBoorNet::~TsDeBoorNet()
 {
     ts_deboornet_free(&deBoorNet);

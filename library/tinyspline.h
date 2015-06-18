@@ -81,6 +81,11 @@ void ts_deboornet_free(tsDeBoorNet* deBoorNet);
 void ts_bspline_default(tsBSpline* bspline);
 void ts_bspline_free(tsBSpline* bspline);
 
+tsError ts_deboornet_copy(
+    const tsDeBoorNet* original,
+    tsDeBoorNet* copy
+);
+
 /**
  * Creates a new B-Spline. On error \bspline is setup with default values.
  * @param deg       The degree of the B-Spline basis function

@@ -5,6 +5,7 @@
 class TsDeBoorNet {
 public:
     TsDeBoorNet();
+    TsDeBoorNet(const TsDeBoorNet& other);
     ~TsDeBoorNet();
     
     tsDeBoorNet* data();

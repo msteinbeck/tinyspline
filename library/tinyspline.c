@@ -173,6 +173,54 @@ void ts_bspline_free(tsBSpline* bspline)
     ts_bspline_default(bspline);
 }
 
+tsError ts_bspline_new(
+        const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+        tsBSpline* bspline
+)
+{
+    tsError err;
+    ts_bspline_default(bspline);
+
+    if (dim < 1)
+        goto err_dim_zero;
+    if (deg >= n_ctrlp)
+        goto err_deg_ge_nctrlp;
+
+    const size_t order = deg + 1;
+    const size_t n_knots = n_ctrlp + order;
+    const size_t size_flt = sizeof(float);
+
+    // setup b-spline
+    bspline->deg     = deg;
+    bspline->order   = order;
+    bspline->dim     = dim;
+    bspline->n_ctrlp = n_ctrlp;
+    bspline->n_knots = n_knots;
+    bspline->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
+    if (bspline->ctrlp == NULL)
+        goto err_malloc;
+    bspline->knots   = (float*) malloc(n_knots*size_flt);
+    if (bspline->knots == NULL)
+        goto err_malloc;
+    ts_bspline_setup_knots(bspline, type, bspline);
+
+    return TS_SUCCESS;
+
+    // error handling
+    err_dim_zero:
+        err = TS_DIM_ZERO;
+        goto cleanup;
+    err_deg_ge_nctrlp:
+        err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_malloc:
+        err = TS_MALLOC;
+        goto cleanup;
+    cleanup:
+        ts_bspline_free(bspline);
+        return err;
+}
+
 tsError ts_deboornet_copy(
         const tsDeBoorNet* original,
         tsDeBoorNet* copy
@@ -202,99 +250,6 @@ tsError ts_deboornet_copy(
     err_malloc:
         ts_deboornet_free(copy);
         return TS_MALLOC;
-}
-
-tsError ts_bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
-    tsBSpline* bspline
-)
-{
-    tsError err;
-    ts_bspline_default(bspline);
-    
-    if (dim < 1)
-        goto err_dim_zero;
-    if (deg >= n_ctrlp)
-        goto err_deg_ge_nctrlp;
-    
-    const size_t order = deg + 1;
-    const size_t n_knots = n_ctrlp + order;
-    const size_t size_flt = sizeof(float);
-    
-    // setup b-spline
-    bspline->deg     = deg;
-    bspline->order   = order;
-    bspline->dim     = dim;
-    bspline->n_ctrlp = n_ctrlp;
-    bspline->n_knots = n_knots;
-    bspline->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
-    if (bspline->ctrlp == NULL)
-        goto err_malloc;
-    bspline->knots   = (float*) malloc(n_knots*size_flt);
-    if (bspline->knots == NULL)
-        goto err_malloc;
-    ts_bspline_setup_knots(bspline, type, bspline);
-
-    return TS_SUCCESS;
-    
-    // error handling
-    err_dim_zero:
-        err = TS_DIM_ZERO;
-        goto cleanup;
-    err_deg_ge_nctrlp:
-        err = TS_DEG_GE_NCTRLP;
-        goto cleanup;
-    err_malloc:
-        err = TS_MALLOC;
-        goto cleanup;
-    cleanup:
-        ts_bspline_free(bspline);
-        return err;
-}
-
-tsError ts_bspline_setup_knots(
-    const tsBSpline* original, const tsBSplineType type,
-    tsBSpline* result
-)
-{
-    if (original != result) {
-        const tsError ret = ts_bspline_copy(original, result);
-        if (ret < 0)
-            return ret;
-    }
-    
-    if (type == TS_NONE)
-        return TS_SUCCESS;
-    
-    const size_t n_knots = result->n_knots;
-    const size_t deg = result->deg;
-    const size_t order = result->order;
-    
-    size_t current, end; // <- used by loops
-    size_t numerator, dominator; // <- to fill uniformly spaced elements
-    
-    if (type == TS_OPENED) {
-        current = numerator = 0;
-        end = n_knots;
-        dominator = end-1;
-        for (;current < end; current++, numerator++)
-            result->knots[current] = (float) numerator / dominator;
-    } else {
-        current = 0;
-        end = order;
-        for (;current < end; current++)
-            result->knots[current] = 0.f;
-        end = n_knots - order;
-        numerator = 1;
-        dominator = n_knots - (2 * deg) - 1;
-        for (;current < end; current++, numerator++)
-            result->knots[current] = (float) numerator / dominator;
-        end = n_knots;
-        for (;current < end; current++)
-            result->knots[current] = 1.f;
-    }
-
-    return TS_SUCCESS;
 }
 
 tsError ts_bspline_copy(
@@ -329,6 +284,75 @@ tsError ts_bspline_copy(
     err_malloc:
         ts_bspline_free(copy);
         return TS_MALLOC;
+}
+
+int ts_bspline_equals(
+        const tsBSpline* x, const tsBSpline* y
+)
+{
+    if (x->deg     != y->deg ||
+        x->order   != y->order ||
+        x->dim     != y->dim ||
+        x->n_ctrlp != y->n_ctrlp ||
+        x->n_knots != y->n_knots) {
+        return 0;
+    } else {
+        size_t i;
+        for (i = 0; i < x->n_ctrlp; i++) {
+            if (!ts_fequals(x->ctrlp[i], y->ctrlp[i]))
+                return 0;
+        }
+        for (i = 0; i < x->n_knots; i++) {
+            if (!ts_fequals(x->knots[i], y->knots[i]))
+                return 0;
+        }
+        return 1;
+    }
+}
+
+tsError ts_bspline_setup_knots(
+        const tsBSpline* original, const tsBSplineType type,
+        tsBSpline* result
+)
+{
+    if (original != result) {
+        const tsError ret = ts_bspline_copy(original, result);
+        if (ret < 0)
+            return ret;
+    }
+
+    if (type == TS_NONE)
+        return TS_SUCCESS;
+
+    const size_t n_knots = result->n_knots;
+    const size_t deg = result->deg;
+    const size_t order = result->order;
+
+    size_t current, end; // <- used by loops
+    size_t numerator, dominator; // <- to fill uniformly spaced elements
+
+    if (type == TS_OPENED) {
+        current = numerator = 0;
+        end = n_knots;
+        dominator = end-1;
+        for (;current < end; current++, numerator++)
+            result->knots[current] = (float) numerator / dominator;
+    } else {
+        current = 0;
+        end = order;
+        for (;current < end; current++)
+            result->knots[current] = 0.f;
+        end = n_knots - order;
+        numerator = 1;
+        dominator = n_knots - (2 * deg) - 1;
+        for (;current < end; current++, numerator++)
+            result->knots[current] = (float) numerator / dominator;
+        end = n_knots;
+        for (;current < end; current++)
+            result->knots[current] = 1.f;
+    }
+
+    return TS_SUCCESS;
 }
 
 tsError ts_bspline_evaluate(
@@ -695,30 +719,6 @@ tsError ts_bspline_to_beziers(
     }
     
     return TS_SUCCESS;
-}
-
-int ts_bspline_equals(
-    const tsBSpline* x, const tsBSpline* y
-)
-{
-    if (x->deg     != y->deg ||
-        x->order   != y->order ||
-        x->dim     != y->dim ||
-        x->n_ctrlp != y->n_ctrlp ||
-        x->n_knots != y->n_knots) {
-        return 0;
-    } else {
-        size_t i;
-        for (i = 0; i < x->n_ctrlp; i++) {
-            if (!ts_fequals(x->ctrlp[i], y->ctrlp[i]))
-                return 0;
-        }
-        for (i = 0; i < x->n_knots; i++) {
-            if (!ts_fequals(x->knots[i], y->knots[i]))
-                return 0;
-        }
-        return 1;
-    }
 }
 
 int ts_fequals(const float x, const float y)

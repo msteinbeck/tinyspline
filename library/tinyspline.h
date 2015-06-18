@@ -76,31 +76,41 @@ typedef struct
 * Methods                                               *
 *                                                       *
 ********************************************************/
+// ============ default constructors ============
 void ts_deboornet_default(tsDeBoorNet* deBoorNet);
 void ts_deboornet_free(tsDeBoorNet* deBoorNet);
 void ts_bspline_default(tsBSpline* bspline);
 void ts_bspline_free(tsBSpline* bspline);
+// ==============================================
 
+
+// ============== new constructors ==============
+tsError ts_bspline_new(
+        const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+        tsBSpline* bspline
+);
+// ==============================================
+
+
+// ============= copy constructors ==============
 tsError ts_deboornet_copy(
     const tsDeBoorNet* original,
     tsDeBoorNet* copy
 );
 
-/**
- * Creates a new B-Spline. On error \bspline is setup with default values.
- * @param deg       The degree of the B-Spline basis function
- * @param dim       The dimension of one control point
- * @param n_ctrlp   The number of control points
- * @param type      The type of the B-Spline. 
- *                  If type is ::TS_NONE the knot vector will not be setup.
- * @param bspline   The B-Spline to create.
- * @return          On success ::TS_SUCCESS. 
- *                  On error one of ::TS_DIM_ZERO, TS_DEG_GE_NCTRLP, TS_MALLOC.
- */
-tsError ts_bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
-    tsBSpline* bspline
+tsError ts_bspline_copy(
+        const tsBSpline* original,
+        tsBSpline* copy
 );
+// ==============================================
+
+
+// ================= operators ==================
+int ts_bspline_equals(
+        const tsBSpline* x, const tsBSpline* y
+);
+// ==============================================
+
 
 /**
  * Setup the knot vector of \original. On error \result is setup with default 
@@ -119,20 +129,6 @@ tsError ts_bspline_new(
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
-);
-
-/**
- * Creates a deep copy of \original. On error \copy is setup with default
- * values. \original and \copy might NOT be the same pointer.
- * @param original  The B-Spline to copy from.
- * @param copy      The B-Spline to copy to.
- * @return          On success ::TS_SUCCESS.
- *                  On error one of ::TS_INPUT_EQ_OUTPUT, ::TS_DIM_ZERO, 
- *                  TS_DEG_GE_NCTRLP, TS_MALLOC.
- */
-tsError ts_bspline_copy(
-    const tsBSpline* original,
-    tsBSpline* copy
 );
 
 /**
@@ -202,11 +198,6 @@ tsError ts_bspline_to_beziers(
     const tsBSpline* bspline,
     tsBSpline* beziers
 );
-
-int ts_bspline_equals(
-    const tsBSpline* x, const tsBSpline* y
-);
-
 
 
 /********************************************************

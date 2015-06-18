@@ -69,7 +69,7 @@ TsBSpline::TsBSpline()
     ts_bspline_default(&bspline);
 }
 
-TsBSpline::TsBSpline(TsBSpline& other)
+TsBSpline::TsBSpline(const TsBSpline& other)
 {
     const tsError err = ts_bspline_copy(&other.bspline, &bspline);
     if (err < 0)

@@ -26,7 +26,7 @@ private:
 class TsBSpline {
 public:
     TsBSpline();
-    TsBSpline(TsBSpline& other);
+    TsBSpline(const TsBSpline& other);
     TsBSpline(const size_t deg, const size_t dim, const size_t n_ctrlp, 
               const tsBSplineType type);
     ~TsBSpline();

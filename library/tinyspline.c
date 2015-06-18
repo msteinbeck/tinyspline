@@ -187,13 +187,14 @@ tsError ts_deboornet_copy(
     copy->h   = original->h;
     copy->dim = original->dim;
     copy->n_points = original->n_points;
-
+    // copy points
     const size_t size = original->n_points * original->dim * sizeof(float);
     copy->points = (float*) malloc(size);
     if (copy->points == NULL)
         goto err_malloc;
     memcpy(copy->points, original->points, size);
-    copy->result = copy->points + copy->n_points - 1;
+    // set result
+    copy->result = copy->points + (copy->n_points-1)*copy->dim;
 
     // error handling
     err_malloc:

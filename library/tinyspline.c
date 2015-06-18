@@ -196,6 +196,8 @@ tsError ts_deboornet_copy(
     // set result
     copy->result = copy->points + (copy->n_points-1)*copy->dim;
 
+    return TS_SUCCESS;
+
     // error handling
     err_malloc:
         ts_deboornet_free(copy);

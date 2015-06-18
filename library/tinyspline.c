@@ -302,24 +302,23 @@ tsError ts_bspline_copy(
     if (original == copy)
         return TS_INPUT_EQ_OUTPUT;
 
-    const size_t dim      = original->dim;
-    const size_t n_ctrlp  = original->n_ctrlp;
-    const size_t n_knots  = original->n_knots;
-    const size_t size_flt = sizeof(float);
-
     copy->deg     = original->deg;
     copy->order   = original->order;
     copy->dim     = original->dim;
     copy->n_ctrlp = original->n_ctrlp;
     copy->n_knots = original->n_knots;
-    copy->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
+    // copy control points
+    size_t size = original->n_ctrlp * original->dim * sizeof(float);
+    copy->ctrlp = (float*) malloc(size);
     if (copy->ctrlp == NULL)
         goto err_malloc;
-    copy->knots   = (float*) malloc(n_knots*size_flt);
+    memcpy(copy->ctrlp, original->ctrlp, size);
+    // copy knots
+    size = original->n_knots * sizeof(float);
+    copy->knots = (float*) malloc(size);
     if (copy->knots == NULL)
         goto err_malloc;
-    memcpy(copy->ctrlp, original->ctrlp, n_ctrlp*dim*size_flt);
-    memcpy(copy->knots, original->knots, n_knots*size_flt);
+    memcpy(copy->knots, original->knots, size);
 
     return TS_SUCCESS;
 

@@ -32,6 +32,7 @@ public:
     ~TsBSpline();
     
     bool operator==(const TsBSpline& other) const;
+    TsDeBoorNet operator()(const float u) const;
     
     tsBSpline* data();
     float* ctrlp() const;

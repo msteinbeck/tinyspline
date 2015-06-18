@@ -93,6 +93,11 @@ bool TsBSpline::operator ==(const TsBSpline& other) const
     return static_cast<bool>(ts_bspline_equals(&bspline, &other.bspline));
 }
 
+TsDeBoorNet TsBSpline::operator()(const float u) const
+{
+    return evaluate(u);
+}
+
 tsBSpline* TsBSpline::data()
 {
     return &bspline;

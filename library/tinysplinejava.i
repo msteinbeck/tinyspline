@@ -44,6 +44,7 @@ import java.util.RandomAccess;
 %javamethodmodifiers TsBSpline::knots "private";
 %javamethodmodifiers TsBSpline::operator== "private";
 %rename(internalEquals) TsBSpline::operator==;
+%ignore TsBSpline::operator();
 
 %typemap(javaimports) TsBSpline
 %{

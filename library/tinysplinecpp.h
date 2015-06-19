@@ -32,7 +32,8 @@ public:
     TsBSpline(const size_t deg, const size_t dim, const size_t n_ctrlp, 
               const tsBSplineType type);
     ~TsBSpline();
-    
+
+    TsBSpline& operator=(const TsBSpline& other);
     bool operator==(const TsBSpline& other) const;
     TsDeBoorNet operator()(const float u) const;
     

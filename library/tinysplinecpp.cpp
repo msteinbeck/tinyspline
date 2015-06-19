@@ -95,6 +95,13 @@ TsBSpline::~TsBSpline()
     ts_bspline_free(&bspline);
 }
 
+TsBSpline &TsBSpline::operator=(const TsBSpline &other) {
+    const tsError err = ts_bspline_copy(&other.bspline, &bspline);
+    if (err < 0)
+        throw err;
+    return *this;
+}
+
 bool TsBSpline::operator ==(const TsBSpline& other) const
 {
     return static_cast<bool>(ts_bspline_equals(&bspline, &other.bspline));

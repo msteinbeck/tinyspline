@@ -17,9 +17,11 @@ TsDeBoorNet::~TsDeBoorNet()
 }
 
 TsDeBoorNet &TsDeBoorNet::operator=(const TsDeBoorNet &other) {
-    const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
-    if (err < 0)
-        throw err;
+    if (this != &other) {
+        const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
+        if (err < 0)
+            throw err;
+    }
     return *this;
 }
 
@@ -96,9 +98,11 @@ TsBSpline::~TsBSpline()
 }
 
 TsBSpline &TsBSpline::operator=(const TsBSpline &other) {
-    const tsError err = ts_bspline_copy(&other.bspline, &bspline);
-    if (err < 0)
-        throw err;
+    if (this != &other) {
+        const tsError err = ts_bspline_copy(&other.bspline, &bspline);
+        if (err < 0)
+            throw err;
+    }
     return *this;
 }
 

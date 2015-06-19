@@ -25,21 +25,6 @@ TsDeBoorNet &TsDeBoorNet::operator=(const TsDeBoorNet &other) {
     return *this;
 }
 
-tsDeBoorNet* TsDeBoorNet::data()
-{
-    return &deBoorNet;
-}
-
-float* TsDeBoorNet::points() const
-{
-    return deBoorNet.points;
-}
-
-float* TsDeBoorNet::result() const
-{
-    return deBoorNet.result;
-}
-
 float TsDeBoorNet::u() const
 {
     return deBoorNet.u;
@@ -68,6 +53,21 @@ size_t TsDeBoorNet::dim() const
 size_t TsDeBoorNet::nPoints() const
 {
     return deBoorNet.n_points;
+}
+
+float* TsDeBoorNet::points()
+{
+    return deBoorNet.points;
+}
+
+float* TsDeBoorNet::result()
+{
+    return deBoorNet.result;
+}
+
+tsDeBoorNet* TsDeBoorNet::data()
+{
+    return &deBoorNet;
 }
 
 
@@ -116,21 +116,6 @@ TsDeBoorNet TsBSpline::operator()(const float u) const
     return evaluate(u);
 }
 
-tsBSpline* TsBSpline::data()
-{
-    return &bspline;
-}
-
-float* TsBSpline::ctrlp() const
-{
-    return bspline.ctrlp;
-}
-
-float* TsBSpline::knots() const
-{
-    return bspline.knots;
-}
-
 size_t TsBSpline::deg() const
 {
     return bspline.deg;
@@ -154,6 +139,21 @@ size_t TsBSpline::nCtrlp() const
 size_t TsBSpline::nKnots() const
 {
     return bspline.n_knots;
+}
+
+float* TsBSpline::ctrlp()
+{
+    return bspline.ctrlp;
+}
+
+float* TsBSpline::knots()
+{
+    return bspline.knots;
+}
+
+tsBSpline* TsBSpline::data()
+{
+    return &bspline;
 }
 
 void TsBSpline::setDeg(const size_t deg)

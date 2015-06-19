@@ -9,17 +9,16 @@ public:
     ~TsDeBoorNet();
 
     TsDeBoorNet& operator=(const TsDeBoorNet& other);
-    
-    tsDeBoorNet* data();
-    float* points() const;
-    float* result() const;
-    
+
     float u() const;
     size_t k() const;
     size_t s() const;
     size_t h() const;
     size_t dim() const;
     size_t nPoints() const;
+    float* points();
+    float* result();
+    tsDeBoorNet* data();
     
 private:
     tsDeBoorNet deBoorNet;
@@ -37,15 +36,14 @@ public:
     bool operator==(const TsBSpline& other) const;
     TsDeBoorNet operator()(const float u) const;
     
-    tsBSpline* data();
-    float* ctrlp() const;
-    float* knots() const;
-    
     size_t deg() const;
     size_t order() const;
     size_t dim() const;
     size_t nCtrlp() const;
     size_t nKnots() const;
+    float* ctrlp();
+    float* knots();
+    tsBSpline* data();
     
     void setDeg(const size_t deg);
     void setOrder(const size_t order);

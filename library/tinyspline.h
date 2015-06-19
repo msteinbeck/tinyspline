@@ -111,73 +111,21 @@ int ts_bspline_equals(
 // ==============================================
 
 
-/**
- * Setup the knot vector of \original. On error \result is setup with default 
- * values. \original and \result might be the same pointer.
- * @param original  The original B-Spline.
- * @param type      The type of the B-Spline.
- *                  If type is ::TS_NONE the knot vector's values are 
- *                  the same as \original
- * @param result    The B-Spline with its knot vector to setup.
- * @return          On success ::TS_SUCCESS.
- *                  On error with \original != \result one of
- *                  ::TS_DIM_ZERO, TS_DEG_GE_NCTRLP, TS_MALLOC.
- *                  If \original == \result this function will never return
- *                  an error.
- */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
 );
 
-/**
- * Evaluates \bspline at knot value \u. As the knots of B-Splines are floats, 
- * the field tsDeBoorNet::u might not be == to to \u but it will always be 
- * ::ts_fequals. On error \net is setup with default values.
- * @param bspline   The B-spline to evaluate.
- * @param u         The knot value on which \bspline will be evaluated.
- * @param deBoorNet The de Boor net to create.
- * @return          On success one of 0, 1, 2 where
- *                  0: regular evaluation, 
- *                  1: evaluation at the begin/end of \bspline with s == order
- *                  2: evaluation inside of \bspline with s == order
- *                  On error one of ::TS_MALLOC, ::TS_U_UNDEFINED, 
- *                  ::TS_MULTIPLICITY
- */
 tsError ts_bspline_evaluate(
     const tsBSpline* bspline, const float u, 
     tsDeBoorNet* deBoorNet
 );
 
-/**
- * Inserts the knot value \u \n times into \bspline. On error \result is setup 
- * with default values. \bspline and \result might be the same pointer.
- * @param bspline   The B-Spline on which to insert \u.
- * @param u         The knot value to insert.
- * @param n         How many times to insert \u.
- * @param result    The B-Spline with its knot vector to increase.
- * @return          On success ::TS_SUCCESS.
- *                  On error one of ::TS_MALLOC, ::TS_U_UNDEFINED, 
- *                  ::TS_MULTIPLICITY, ::TS_DEG_GE_NCTRLP, ::TS_DIM_ZERO,
- *                  ::TS_OVER_UNDERFLOW
- */
 tsError ts_bspline_insert_knot(
     const tsBSpline* bspline, const float u, const size_t n,
     tsBSpline* result, size_t* k
 );
 
-/**
- * Resizes \bspline at the front/back by \n. If \n is negative, \resized will 
- * be smaller than \bspline. If \n is positive, \resized will be greater than
- * \bspline. Resizing \bspline at the back is usually faster. On error \resized 
- * is setup with default values. \bspline and \resized might be the same 
- * pointer.
- * @param bspline   The B-Spline to resize.
- * @param n         The number of control points/knots to add/remove
- * @param back      The flag to determine where to resize the B-Spline.
- * @param resized
- * @return 
- */
 tsError ts_bspline_resize(
     const tsBSpline* bspline, const int n, const int back,
     tsBSpline* resized

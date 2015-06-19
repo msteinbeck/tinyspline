@@ -45,6 +45,7 @@ import java.util.RandomAccess;
 %javamethodmodifiers TsBSpline::operator== "private";
 %rename(internalEquals) TsBSpline::operator==;
 %ignore TsBSpline::operator();
+%ignore TsBSpline::operator=;
 
 %typemap(javaimports) TsBSpline
 %{
@@ -103,6 +104,7 @@ import java.util.List;
 //********************************************************
 %javamethodmodifiers TsDeBoorNet::points "private";
 %javamethodmodifiers TsDeBoorNet::result "private";
+%ignore TsDeBoorNet::operator=;
 
 %typemap(javaimports) TsDeBoorNet 
 %{

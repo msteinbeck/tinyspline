@@ -16,6 +16,13 @@ TsDeBoorNet::~TsDeBoorNet()
     ts_deboornet_free(&deBoorNet);
 }
 
+TsDeBoorNet &TsDeBoorNet::operator=(const TsDeBoorNet &other) {
+    const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
+    if (err < 0)
+        throw err;
+    return *this;
+}
+
 tsDeBoorNet* TsDeBoorNet::data()
 {
     return &deBoorNet;

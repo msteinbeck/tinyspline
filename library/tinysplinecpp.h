@@ -7,6 +7,8 @@ public:
     TsDeBoorNet();
     TsDeBoorNet(const TsDeBoorNet& other);
     ~TsDeBoorNet();
+
+    TsDeBoorNet& operator=(const TsDeBoorNet& other);
     
     tsDeBoorNet* data();
     float* points() const;

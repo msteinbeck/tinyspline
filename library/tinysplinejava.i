@@ -9,6 +9,7 @@
 %{
 import java.util.AbstractList;
 import java.lang.NullPointerException;
+import java.lang.IndexOutOfBoundsException;
 import java.util.RandomAccess;
 %}
 
@@ -22,6 +23,9 @@ import java.util.RandomAccess;
       
   @Override
   public Float get(int index) {
+    final int size = size();
+    if (index >= size)
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
     return tinysplinejava.float_array_getitem(getSwigPtr(), index);
   }
     

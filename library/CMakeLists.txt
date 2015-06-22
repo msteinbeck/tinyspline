@@ -17,6 +17,9 @@ find_package(SWIG)
 if(SWIG_FOUND)
   include(${SWIG_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  # http://www.swig.org/Doc1.3/Java.html#compiling_dynamic
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 
   find_package(JNI)
   if(JNI_FOUND)

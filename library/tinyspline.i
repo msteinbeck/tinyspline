@@ -6,6 +6,15 @@
 // For some reason you MUST include this file AFTER typemaps.
 // Use %include "tinyspline.i" to include this file.
 
+// exception handling
+%include "exception.i"
+%exception {
+  try {
+    $action
+  } catch (const std::exception& e) {
+    SWIG_exception(SWIG_RuntimeError, e.what());
+  }
+}
 
 // make control points and knots accessible
 %include <carrays.i>

@@ -35,6 +35,7 @@
 %attribute(TsDeBoorNet, size_t, nPoints, nPoints);
 
 // ignore wrapped structs and data fields
+%ignore tsError;
 %ignore tsDeBoorNet;
 %ignore TsDeBoorNet::data;
 %ignore tsBSpline;

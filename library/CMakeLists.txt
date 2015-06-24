@@ -45,7 +45,6 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/TsBSpline.java
         ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
         ${TS_GENERATED_JAVA_DIR}/TsDeBoorNet.java
-        ${TS_GENERATED_JAVA_DIR}/tsError.java
         ${TS_GENERATED_JAVA_DIR}/TsFloatList.java
       )
       add_dependencies(tinysplinejar tinysplinejava)

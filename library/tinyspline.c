@@ -461,9 +461,9 @@ tsError ts_bspline_evaluate(
         // copy initial values to output
         memcpy(deBoorNet->points, bspline->ctrlp + fst*dim, N * size_ctrlp);
         
-        int idx_l  = 0;       // <- the current left index
-        int idx_r  = dim;     // <- the current right index
-        int idx_to = N * dim; // <- the current to index
+        int lidx = 0;            // <- the current left index
+        int ridx = (int)dim;     // <- the current right index
+        int tidx = (int)(N*dim); // <- the current to index
         
         size_t r = 1;
         for (;r <= deBoorNet->h; r++) {
@@ -476,13 +476,13 @@ tsError ts_bspline_evaluate(
                 
                 size_t d;
                 for (d = 0; d < dim; d++) {
-                    deBoorNet->points[idx_to++] = 
-                        a_hat * deBoorNet->points[idx_l++] + 
-                            a * deBoorNet->points[idx_r++];
+                    deBoorNet->points[tidx++] =
+                        a_hat * deBoorNet->points[lidx++] +
+                            a * deBoorNet->points[ridx++];
                 }
             }
-            idx_l += dim; 
-            idx_r += dim;
+            lidx += dim;
+            ridx += dim;
         }
     }
 

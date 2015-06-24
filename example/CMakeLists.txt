@@ -22,4 +22,7 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   
   add_executable(split split.c)
   target_link_libraries(split LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
+  add_executable(beziers beziers.c)
+  target_link_libraries(beziers LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 endif()

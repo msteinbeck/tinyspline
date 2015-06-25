@@ -368,7 +368,7 @@ tsError ts_bspline_evaluate(
     // 3. Setup already known values
     // 4. Decide by multiplicity of u how to calculate point P(u).
     
-    const size_t n_knots = bspline->n_knots; // <- the number of knots
+    const size_t n_knots = bspline->n_knots;
     
     // 1. find index k
     for (deBoorNet->k = 0; deBoorNet->k < n_knots; deBoorNet->k++) {
@@ -379,50 +379,42 @@ tsError ts_bspline_evaluate(
             break;
         }
     }
-    
-    const size_t s   = deBoorNet->s; // <- the multiplicity of u
-    const size_t deg = bspline->deg; // <- the degree of the b-spline
-    
+
+    const size_t s = deBoorNet->s;
+    const size_t deg = bspline->deg;
+
     // 2. check u
-    //
-    // 2a) Check for u < u_0
-    // 2b) Check for u > u_max
-    // 2c) Check whether b-spline is defined at u for opened b-splines
-    if (deBoorNet->k == 0) { // u < u_0
+    // (keep in mind that currently k is k+1)
+    if (deBoorNet->s > bspline->order)
+        goto err_multiplicity;
+    if (deBoorNet->k <= bspline->deg) // u < u_min
         goto err_u_undefined;
-    } else if (deBoorNet->k == n_knots && s == 0) { // u > u_max
+    if (deBoorNet->k == n_knots && s == 0) // u > u_last
         goto err_u_undefined;
-    } else if (s <= deg) { // we may have an opened b-spline
-        // (keep in mind that currently k is k+1)
-        if (deBoorNet->k <= deg || deBoorNet->k > n_knots-deg + s-1) {
-            goto err_u_undefined;
-        }
-    }
+    if (deBoorNet->k > n_knots-deg + s-1) // u > u_max
+        goto err_u_undefined;
     
     // 3. setup already known values
-    deBoorNet->dim   = bspline->dim;
     deBoorNet->k--; // by 2. k must be >= 1, thus -1 will never underflow
     const float uk = bspline->knots[deBoorNet->k]; // ensures that with any 
-                                                   // float precision the knot
-    deBoorNet->u = ts_fequals(u, uk) ? uk : u;     // vector stays valid
+    deBoorNet->u = ts_fequals(u, uk) ? uk : u;     // float precision the knot
+                                                   // vector stays valid
     deBoorNet->h = deg < s ? 0 : deg-s; // prevent underflow
+    deBoorNet->dim = bspline->dim;
  
-    const size_t order = bspline->order; // <- the order of the b-spline
-    const size_t dim   = bspline->dim;   // <- the dimension of one point
-    const size_t k     = deBoorNet->k;   // <- the index k of the de boor net
+    const size_t order = bspline->order;
+    const size_t dim = bspline->dim;
+    const size_t k = deBoorNet->k;
     const size_t size_ctrlp = sizeof(float) * dim; // <- size of one ctrlp
     
     // 4. decide how to calculate P(u)
+    // (by 2. s <= order)
     //
-    // 4a) Check for multiplicity > order.
-    //     This is not allowed for any control point.
-    // 4b) Check for multiplicity = order.
+    // 4a) Check for s = order.
     //     Take the two points k-s and k-s + 1. If one of
     //     them doesn't exist, take only the other.
-    // 4c) Use de boor algorithm to find point P(u). 
-    if (s > order) {
-        goto err_multiplicity;
-    } else if (s == order) {
+    // 4b) Use de boor algorithm to find point P(u).
+    if (s == order) {
         // only one of the two control points exists
         if (k == deg ||                  // only the first control point
             k == bspline->n_knots - 1) { // only the last control point
@@ -444,11 +436,11 @@ tsError ts_bspline_evaluate(
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, 2 * size_ctrlp);
         }
-    } else { // by 4a) and 4b) s <= deg (order = deg+1)
+    } else { // by 2. and 4a) s <= deg (order = deg+1)
         const size_t fst = k-deg; // <- first affected control point, inclusive
-                                  //    by 2c) s <= deg implies k > deg
+                                  //    by 2. and 3. k >= deg
         const size_t lst = k-s;   // <- last affected control point, inclusive
-                                  //    s <= deg < k
+                                  //    s <= deg <= k
         const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
                                         //    lst <= fst implies N >= 1
 

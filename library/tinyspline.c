@@ -18,6 +18,37 @@
 * Internal functions                                    *
 *                                                       *
 ********************************************************/
+tsError ts_internal_bspline_find_u(
+    const tsBSpline* bspline, const float u,
+    size_t* k, size_t* s
+)
+{
+    const size_t deg = bspline->deg;
+    const size_t order = bspline->order;
+    const size_t n_knots = bspline->n_knots;
+
+    for (*k = 0; *k < n_knots; (*k)++) {
+        const float uk = bspline->knots[*k];
+        if (ts_fequals(u, uk)) {
+            (*s)++;
+        } else if (u < uk) {
+            break;
+        }
+    }
+
+    // keep in mind that currently k is k+1
+    if (*s > order)
+        return TS_MULTIPLICITY;
+    if (*k <= deg)                // u < u_min
+        return TS_U_UNDEFINED;
+    if (*k == n_knots && *s == 0) // u > u_last
+        return TS_U_UNDEFINED;
+    if (*k > n_knots-deg + *s-1)  // u > u_max
+        return TS_U_UNDEFINED;
+
+    (*k)--; // k+1 - 1 will never underflow
+    return TS_SUCCESS;
+}
 
 /**
  * @return ::TS_SUCCESS, ::TS_MULTIPLICITY, ::TS_OVER_UNDERFLOW
@@ -364,56 +395,34 @@ tsError ts_bspline_evaluate(
     ts_deboornet_default(deBoorNet);
     
     // 1. Find index k such that u is in between [u_k, u_k+1).
-    // 2. Check whether b-spline is defined at u
-    // 3. Setup already known values
-    // 4. Decide by multiplicity of u how to calculate point P(u).
-    
-    const size_t n_knots = bspline->n_knots;
-    
-    // 1. find index k
-    for (deBoorNet->k = 0; deBoorNet->k < n_knots; deBoorNet->k++) {
-        const float uk = bspline->knots[deBoorNet->k];
-        if (ts_fequals(u, uk)) {
-            deBoorNet->s++;
-        } else if (u < uk) {
-            break;
-        }
-    }
+    // 2. Setup already known values.
+    // 3. Decide by multiplicity of u how to calculate point P(u).
 
+    // 1.
+    err = ts_internal_bspline_find_u(bspline, u, &deBoorNet->k, &deBoorNet->s);
+    if (err < 0)
+        goto cleanup;
+
+    const size_t k = deBoorNet->k;
     const size_t s = deBoorNet->s;
     const size_t deg = bspline->deg;
-
-    // 2. check u
-    // (keep in mind that currently k is k+1)
-    if (deBoorNet->s > bspline->order)
-        goto err_multiplicity;
-    if (deBoorNet->k <= bspline->deg) // u < u_min
-        goto err_u_undefined;
-    if (deBoorNet->k == n_knots && s == 0) // u > u_last
-        goto err_u_undefined;
-    if (deBoorNet->k > n_knots-deg + s-1) // u > u_max
-        goto err_u_undefined;
-    
-    // 3. setup already known values
-    deBoorNet->k--; // by 2. k must be >= 1, thus -1 will never underflow
-    const float uk = bspline->knots[deBoorNet->k]; // ensures that with any 
-    deBoorNet->u = ts_fequals(u, uk) ? uk : u;     // float precision the knot
-                                                   // vector stays valid
-    deBoorNet->h = deg < s ? 0 : deg-s; // prevent underflow
-    deBoorNet->dim = bspline->dim;
- 
     const size_t order = bspline->order;
     const size_t dim = bspline->dim;
-    const size_t k = deBoorNet->k;
-    const size_t size_ctrlp = sizeof(float) * dim; // <- size of one ctrlp
-    
-    // 4. decide how to calculate P(u)
-    // (by 2. s <= order)
+    const size_t size_ctrlp = sizeof(float) * dim;
+
+    // 2.
+    const float uk = bspline->knots[k];        // ensures that with any float
+    deBoorNet->u = ts_fequals(u, uk) ? uk : u; // precision the knot vector
+                                               // stays valid
+    deBoorNet->h = deg < s ? 0 : deg-s; // prevent underflow
+    deBoorNet->dim = dim;
+
+    // 3. (by 1. s <= order)
     //
-    // 4a) Check for s = order.
+    // 3a) Check for s = order.
     //     Take the two points k-s and k-s + 1. If one of
     //     them doesn't exist, take only the other.
-    // 4b) Use de boor algorithm to find point P(u).
+    // 3b) Use de boor algorithm to find point P(u).
     if (s == order) {
         // only one of the two control points exists
         if (k == deg ||                  // only the first control point
@@ -436,9 +445,9 @@ tsError ts_bspline_evaluate(
             const size_t from = (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, 2 * size_ctrlp);
         }
-    } else { // by 2. and 4a) s <= deg (order = deg+1)
+    } else { // by 3a) s <= deg (order = deg+1)
         const size_t fst = k-deg; // <- first affected control point, inclusive
-                                  //    by 2. and 3. k >= deg
+                                  //    by 1. k >= deg
         const size_t lst = k-s;   // <- last affected control point, inclusive
                                   //    s <= deg <= k
         const size_t N   = lst-fst + 1; // <- the number of affected ctrlps
@@ -483,12 +492,6 @@ tsError ts_bspline_evaluate(
     // error handling
     err_malloc:
         err = TS_MALLOC;
-        goto cleanup;
-    err_u_undefined:
-        err = TS_U_UNDEFINED;
-        goto cleanup;
-    err_multiplicity:
-        err = TS_MULTIPLICITY;
         goto cleanup;
     cleanup:
         ts_deboornet_free(deBoorNet);

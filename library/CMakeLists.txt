@@ -20,17 +20,30 @@ if(SWIG_FOUND)
   # http://www.swig.org/Doc1.3/Java.html#compiling_dynamic
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+  # define the output dirs
+  set(TS_GENERATED_PYTHON_DIR ${CMAKE_CURRENT_BINARY_DIR}/python)
+  set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
 
+  # python
+  find_package(PythonLibs)
+  if (PYTHONLIBS_FOUND)
+    include_directories(${PYTHON_INCLUDE_PATH})
+    set_source_files_properties(tinysplinepython.i PROPERTIES CPLUSPLUS ON)
+    set(CMAKE_SWIG_FLAGS -O)
+    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_PYTHON_DIR})
+    swig_add_module(tinysplinepython python tinysplinepython.i tinyspline.c tinysplinecpp.cpp)
+    swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
+  endif()
+
+  # java
   find_package(JNI)
   if(JNI_FOUND)
     include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
     set_source_files_properties(tinysplinejava.i PROPERTIES CPLUSPLUS ON)
     set(CMAKE_SWIG_FLAGS -package "so.tinyspline" -O)
-    set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
     set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
     swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
-    swig_link_libraries(tinysplinejava ${PYTHON_LIBRARIES})
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/so")
+    swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
     
     find_package(Java COMPONENTS Development)
     if(Java_Development_FOUND)
@@ -50,6 +63,8 @@ if(SWIG_FOUND)
       add_dependencies(tinysplinejar tinysplinejava)
     endif()
   endif()
+
+  set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/so;")
 endif()
 
 # make static lib of tinyspline available for examples

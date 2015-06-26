@@ -6,7 +6,7 @@ TinySpline is a [B-Spine](https://en.wikipedia.org/wiki/B-spline) and
 library written in pure C with wrappers for C++11 and Java (using Swig). 
 The goal of this project is to provide a small library with a minimum of 
 dependencies which is easy and intuitively to use. Moreover, the 
-interface was designed for easy integration in OpenGL.
+integration of OpenGL is very simple.
 
 ###Some Features of This Library
 - Modeling B-Splines and NURBS (even Béziers, lines and points, as 

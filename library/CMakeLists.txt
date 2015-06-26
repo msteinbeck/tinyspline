@@ -53,6 +53,7 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_size_t.java
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsBSpline.java
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsDeBoorNet.java
+        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_tsError.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejava.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejavaJNI.java
         ${TS_GENERATED_JAVA_DIR}/TsBSpline.java

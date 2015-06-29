@@ -73,7 +73,9 @@ if(SWIG_FOUND)
     endif()
   endif()
 
-  set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/so;")
+  set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+    "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinysplinepython.py;${CMAKE_CURRENT_BINARY_DIR}/so;"
+  )
 endif()
 
 # make static lib of tinyspline available for examples

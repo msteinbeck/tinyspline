@@ -13,7 +13,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # create proxies
-find_package(SWIG)
+find_package(SWIG 3.0.1)
 if(SWIG_FOUND)
   include(${SWIG_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,27 +1,28 @@
 TinySpline
 ========
 
-TinySpline is a C library for [B-Spines](https://en.wikipedia.org/wiki/B-spline) 
+TinySpline is a C library for [B-Splines](https://en.wikipedia.org/wiki/B-spline) 
 and [NURBS](https://de.wikipedia.org/wiki/Non-Uniform_Rational_B-Spline) 
-with wrappers for C++11, Java and Python (using Swig). The goal of this 
-project is to provide a small library with a minimum of dependencies 
-which is easy and intuitively to use. Moreover, the integration of 
-TinySpline into OpenGL is straight forward.
+with a modern C++11 wrapper and bindings for Java and Python (via Swig). 
+The goal of this project is to provide a small library with a minimum of 
+dependencies which is easy and intuitively to use. Moreover, the integration 
+of TinySpline into OpenGL is straight forward.
 
 ###Some Features of This Library
 - Modeling B-Splines and NURBS (even Béziers, lines and points, as 
 they are implicit forms) of any degree with any dimensions (2D, 3D, ...).
 - Evaluating splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
-- Inserting knots and splitting splines.
+- Knot insertion and spline splitting with keeping the splines shape.
 - Subdividing splines into Béziers.
-- Wrapper for C++11, Java and Python.
+- A modern C++11 wrapper.
+- Bindings for Java and Python.
+- MIT licensed.
 
 ###Current Development
 - Deriving splines.
 - Knot removal.
 - Given a point P and a spline S, find the Point Q on S with the 
 minimal distance ||P - Q||<sub>2</sub>.
-- Improving the Python wrapper.
 - Wrapper for C#, Rust and Julia.
 
 ###Compiling TinySpline From Source

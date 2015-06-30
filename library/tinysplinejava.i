@@ -41,7 +41,7 @@ import java.util.RandomAccess;
 
 //********************************************************
 //*                                                      *
-//* TsBspline (Java)                                     *
+//* TsBSpline (Java)                                     *
 //*                                                      *
 //********************************************************
 %javamethodmodifiers TsBSpline::ctrlp "private";
@@ -103,7 +103,7 @@ import java.util.List;
 
 //********************************************************
 //*                                                      *
-//* TsDeboorNet (Java)                                   *
+//* TsDeBoorNet (Java)                                   *
 //*                                                      *
 //********************************************************
 %javamethodmodifiers TsDeBoorNet::points "private";

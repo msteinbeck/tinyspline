@@ -25,6 +25,14 @@ class TsFloatList(collections.MutableSequence):
         prev = float_array_getitem(self.getSwigPtr(), index)
         float_array_setitem(self.getSwigPtr(), index, value)
         return prev
+        
+    def __str__(self):
+        s = "["
+        lst = self.__len__() - 1
+        for i in range(0, lst):
+            s = s + str(self.__getitem__(i)) + ", "
+        s = s + str(self.__getitem__(lst)) + "]"
+        return s
 
     def __delitem__(self, index):
         raise NotImplementedError("Deleting items is not supported.")

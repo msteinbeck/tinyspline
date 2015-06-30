@@ -117,7 +117,7 @@ import java.util.List;
 
 %typemap(javacode) TsDeBoorNet
 %{
-  private final TsFloatList pointsList = new TsFloatList() {
+  private final TsFloatList pointList = new TsFloatList() {
     @Override
     SWIGTYPE_p_float getSwigPtr() {
       return points();
@@ -142,7 +142,7 @@ import java.util.List;
   };
     
   public List<Float> getPoints() {
-    return pointsList;
+    return pointList;
   }
   
   public List<Float> getResult() {

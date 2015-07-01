@@ -23,15 +23,15 @@ typedef enum
     TS_DEG_GE_NCTRLP = -4,  /* degree of spline >= number of control points */
     TS_U_UNDEFINED = -5,    /* spline is not defined at u */
     TS_MULTIPLICITY = -6,   /* the multiplicity of a knot is greater than
-                               the order of the spline */
+                             * the order of the spline */
     TS_INPUT_EQ_OUTPUT = -7 /* input parameter is equals to output parameter */
 } tsError;
 
 typedef enum 
 {
-/* if you don't know what an opened or clamped b-splines is, take a look at:
-   www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
-   setup knots as... */
+/* If you don't know what an opened or clamped b-splines is, take a look at:
+ * www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
+ * setup knots as... */
     TS_OPENED = 0,  /* [uniformly spaced] */
     TS_CLAMPED = 1, /* [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n] */
     TS_NONE = 2     /* do not setup the knots; they may have any values */

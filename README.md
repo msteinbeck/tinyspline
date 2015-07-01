@@ -8,15 +8,42 @@ The goal of this project is to provide a small library with a minimum of
 dependencies which is easy and intuitively to use. Moreover, the integration 
 of TinySpline into OpenGL is straight forward.
 
+TinySpline is licensed under [the MIT License](http://opensource.org/licenses/MIT),
+so feel free to use it anywhere.
+
 ###Some Features of This Library
-- Modeling B-Splines and NURBS (even Béziers, lines and points, as 
-they are implicit forms) of any degree with any dimensions (2D, 3D, ...).
-- Evaluating splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
-- Knot insertion and spline splitting with keeping the splines shape.
-- Subdividing splines into Béziers.
+- TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.
+- Create splines of any degree with any dimensions.
+- Evaluate splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
+- Insert knots and split splines by keeping the splines shape.
+- Subdivide B-Splines into Béziers.
 - A modern C++11 wrapper.
 - Bindings for Java and Python.
-- MIT licensed.
+
+###Project Structure
+The core of TinySpline is written in ANSI C and consists of the files
+[tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.h) 
+and [tinyspline.c](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.c).
+You can either copy those files into your project or use CMake to create
+a static and shared library.
+
+The C++11 wrapper consists of the files [tinysplinecpp.h](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.h)
+and [tinysplinecpp.cpp](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.cpp).
+As for the C library, you can copy those files (alongside tinyspline.h and
+tinyspline.c) into your project or use CMake to create a static and shared library.
+
+All bindings of TinySpline work on top of the C++11 wrapper and will be 
+generated with [Swig](http://www.swig.org/) (3.0.1 or above). The file
+[tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.i)
+configures all language independent settings, while tinyspline<xyz>.i adds
+language specific features. Using CMake to create the bindings is recommended.
+
+All these files can be found in the directory 
+[library](https://github.com/retuxx/tinyspline/tree/master/library).
+
+The directory 
+[example](https://github.com/retuxx/tinyspline/tree/master/example) contains
+some examples written in OpenGL.
 
 ###Current Development
 - Deriving splines.
@@ -26,9 +53,11 @@ minimal distance ||P - Q||<sub>2</sub>.
 - Wrapper for C#, Rust and Julia.
 
 ###Compiling TinySpline From Source
-TinySpline uses the CMake build system. All Wrappers, except of C++11, 
-require [Swig](http://www.swig.org/). The provided examples require 
-OpenGL.
+TinySpline uses the CMake build system. The C library is written in 
+ANSI C and should be compilable with nearly every compiler. All
+other features of TinySpline are optional and will be disabled
+if CMake does not find the required dependencies (such as 
+Swig and OpenGL).
 
 - Checkout the repository
 ```bash

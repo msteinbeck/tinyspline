@@ -717,8 +717,8 @@ int ts_fequals(const float x, const float y)
     if (fabs(x-y) <= FLT_MAX_ABS_ERROR) {
         return 1;
     } else {
-        const float r = fabsf(x) > fabsf(y) ?
-            fabsf((x-y) / x) : fabsf((x-y) / y);
+        const float r = (float)fabs(x) > (float)fabs(y) ?
+            (float)fabs((x-y) / x) : (float)fabs((x-y) / y);
         return r <= FLT_MAX_REL_ERROR;
     }
 }

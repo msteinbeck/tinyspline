@@ -57,7 +57,7 @@ minimal distance ||P - Q||<sub>2</sub>.
 &nbsp;&nbsp; is a very good entry point for B-Splines.  
 [[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html)
 &nbsp;&nbsp; explains the De Boor's Algorithm and gives some pseudo code.  
-[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy?msg=5084057#xx5084057xx)
+[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy)
 &nbsp;&nbsp; provides a good overview of NURBS with some mathematical background.  
 [[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html)
 &nbsp;&nbsp; is useful if you want to use NURBS in TinySpline.

@@ -4,12 +4,26 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -ansi")
 add_library(tinyspline SHARED tinyspline.c)
 add_library(tinyspline_static STATIC tinyspline.c)
+install(TARGETS tinyspline tinyspline_static
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+install(FILES tinyspline.h
+  DESTINATION include
+)
 
 # create c++ libs
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -std=c++11")
   add_library(tinysplinecpp SHARED tinyspline.c tinysplinecpp.cpp)
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
+  install(TARGETS tinysplinecpp tinysplinecpp_static
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+  install(FILES tinysplinecpp.h
+    DESTINATION include
+  )
 endif()
 
 # create proxies
@@ -52,6 +66,9 @@ if(SWIG_FOUND)
     set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
     swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
     swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
+    install(TARGETS tinysplinejava
+      LIBRARY DESTINATION lib
+    )
     
     find_package(Java COMPONENTS Development)
     if(Java_Development_FOUND)
@@ -70,6 +87,9 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/TsFloatList.java
       )
       add_dependencies(tinysplinejar tinysplinejava)
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinysplinejar.jar
+        DESTINATION share/java
+      )
     endif()
   endif()
 

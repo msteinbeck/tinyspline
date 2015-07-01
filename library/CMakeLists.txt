@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # create c libs
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -ansi")
 add_library(tinyspline SHARED tinyspline.c)
 add_library(tinyspline_static STATIC tinyspline.c)
 

@@ -45,6 +45,34 @@ The directory
 [example](https://github.com/retuxx/tinyspline/tree/master/example) contains
 some examples written in OpenGL.
 
+###API
+With a few exceptions, all functions of the C library provide input and output
+parameter, where all input parameter are const. Except of the copy functions
+(`ts_***_copy`), the pointer of the input may be equal to the pointer of the
+output, so you can modify a spline by using it as input and output at once:
+
+```c
+tsBSpline spline;
+ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
+ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
+```
+
+Error handling has been implemented in a single struct (`tsError`). This makes
+it easier to reuse the error codes over several functions. Error checking should
+be straight forward:
+
+```c
+tsBSpline spline;
+const tsError err = ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline);
+if (err < 0) // or use err != TS_SUCCESS
+  // error
+else
+  // no error
+```
+
+The C++11 wrapper uses std::exception instead. All bindings map std::exception
+into their own exception types.
+
 ###Current Development
 - Deriving splines.
 - Knot removal.

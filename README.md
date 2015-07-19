@@ -100,7 +100,7 @@ Swig and OpenGL).
 
 - Checkout the repository
 ```bash
-svn co git@github.com:retuxx/tinyspline.git tinyspline
+git clone git@github.com:retuxx/tinyspline.git tinyspline
 cd tinyspline
 ```
 - Create a build directory

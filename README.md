@@ -40,12 +40,27 @@ language specific features. Using CMake to create the bindings is recommended.
 
 All these files can be found in the directory 
 [library](https://github.com/retuxx/tinyspline/tree/master/library).
-
 The directory 
 [example](https://github.com/retuxx/tinyspline/tree/master/example) contains
 some examples written in OpenGL.
 
 ###API
+
+####Data Structures
+The C library of TinySpline consists of two enums and two structs:
+
+Name | Description
+---- | -----------
+`tsError` (enum) | Defines some error codes
+`tsBSplineType` (enum) | Defines how to setup knots while creating splines
+`tsBSpline` (struct) | The spline itself
+`tsDeBoorNet` (struct) | The result of spline evaluation (De Boor's algorithm)
+
+The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely 
+`TsBSpline` and `tsDeBoorNet`) and maps functions into methods. Furthermore,
+constructors and destructors are provided.
+
+####Functions 
 With a few exceptions, all functions of the C library provide input and output
 parameter, where all input parameter are const. Except of the copy functions
 (`ts_***_copy`), the pointer of the input may be equal to the pointer of the
@@ -57,6 +72,7 @@ ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
 ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
 ```
 
+####Error Handling
 Error handling has been implemented in a single struct (`tsError`). This makes
 it easier to reuse the error codes over several functions. Error checking should
 be straight forward:

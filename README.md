@@ -60,6 +60,19 @@ The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely
 `TsBSpline` and `tsDeBoorNet`) and maps functions into methods. Furthermore,
 constructors and destructors are provided.
 
+#####Functions 
+With a few exceptions, all functions of the C library provide input and output
+parameter, where all input parameter are const. Except of the copy functions
+(`ts_***_copy`), the pointer of the input may be equal to the pointer of the
+output, so you can modify a spline by using it as input and output at once:
+
+```c
+tsBSpline spline;
+ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
+ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
+...
+```
+
 #####Memory Management
 Due to the fact that TinySpline provides generic splines in size, degree and
 dimension, the structs `tsBSpline` and `tsDeBoorNet` contain pointer to 
@@ -81,19 +94,6 @@ ts_bspline_free(&spline); // free dynamically allocated memory
 The C++11 wrapper wraps the call of `ts_***_free` into the destrcutor of
 the wrapper class. Thus, you don't need to take care of memory management
 in C++ and the bindings.
-
-#####Functions 
-With a few exceptions, all functions of the C library provide input and output
-parameter, where all input parameter are const. Except of the copy functions
-(`ts_***_copy`), the pointer of the input may be equal to the pointer of the
-output, so you can modify a spline by using it as input and output at once:
-
-```c
-tsBSpline spline;
-ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
-ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
-...
-```
 
 #####Error Handling
 Error handling has been implemented in a single struct (`tsError`). This makes

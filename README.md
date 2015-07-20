@@ -112,6 +112,40 @@ else
 The C++11 wrapper uses std::exception instead. All bindings map std::exception
 into their own exception types.
 
+#####OpenGL Integration
+Using TinySpline within OpenGL is very easy because the structs provide 
+all necessary fields.
+
+```c
+tsBSpline spline;
+ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
+// setup control points
+
+GLUnurbsObj *theNurb = gluNewNurbsRenderer(); // is part of GLU
+// setup theNurb, have a look at: gluNurbsProperty, gluNurbsCallback etc.
+
+// draw spline
+gluBeginCurve(theNurb);
+  gluNurbsCurve(
+    theNurb, 
+    spline.n_knots, 
+    spline.knots, 
+    spline.dim, 
+    spline.ctrlp, 
+    spline.order, // no need to calc deg + 1
+    GL_MAP1_VERTEX_3 // MAP1 = spline, VERTEX_3 = 3 dimensions
+  );
+gluEndCurve(theNurb);
+
+// draw evaluation at u = 0.5
+tsDeBoorNet net;
+ts_bspline_evaluate(&spline, 0.5f, &net);
+glBegin(GL_POINTS);
+  glVertex3fv(net.result);
+glEnd();
+...
+```
+
 ###Current Development
 - Deriving splines.
 - Knot removal.

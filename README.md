@@ -154,16 +154,13 @@ there are some notes you should know about.
    to evaluate a spline `s` at knot value `u`, the function `ts_bspline_evaluate`
    tries to find `u` within the knot vector of `s` and count its multiplicity
    (as part of [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm)).
-   Because of comparing floats with `==` isn't smart idea in general, TinySpline provides
+   Because of comparing floats with `==` isn't a smart idea in general, TinySpline provides
    its own float comparing function (namely `ts_fequals`) which uses absolute and relative 
-   distances (the code of `ts_fequals` is based on:
-   http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm).
-   To keep things valid, the field `tsDeBoorNet.u` contains the actual used knot
+   errors. To keep things valid, the field `tsDeBoorNet.u` contains the actual used knot
    value and may only differ from the given `u` if the multiplicity of `u` is 
    greater than or equals to 1 and `u` is not `==` to `tsDeBoorNet.u` but 
    `ts_fequals(u, tsDeBoorNet.u) == 1`. If further calculations depend on the 
-   exact value of `u` (as some functions of TinySpline does) use `tsDeBoorNet.u` 
-   instead.
+   exact value of `u` use `tsDeBoorNet.u` instead.
 
 2. As you perhaps know increasing the multiplicity of a knot `u` by 1 within a spline 
    `s` decreases the continuity of `s` by 1. The upper bound of the multiplicity of `u`

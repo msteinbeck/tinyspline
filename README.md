@@ -46,7 +46,7 @@ some examples written in OpenGL.
 
 ###API
 
-####Data Structures
+#####Data Structures
 The C library of TinySpline consists of two enums and two structs:
 
 Name | Description
@@ -60,7 +60,29 @@ The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely
 `TsBSpline` and `tsDeBoorNet`) and maps functions into methods. Furthermore,
 constructors and destructors are provided.
 
-####Functions 
+#####Memory Management
+Due to the fact that TinySpline provides generic splines in size, degree and
+dimension, the structs `tsBSpline` and `tsDeBoorNet` contain pointer to 
+dynamically allocated memory. In conclusion that means, although you don't
+have to allocate the structs on heap, you have to free the memory using one 
+of the `ts_***_free` functions to prevent memory leaks:
+
+```c
+tsBSpline spline; // allocated on stack
+ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
+// do some cool stuff here
+tsDeBoorNet net;
+ts_bspline_evaluate(&spline, 0.5f, &net);
+// do more cool stuff
+ts_deboornet_free(&net); // free dynamically allocated memory
+ts_bspline_free(&spline); // free dynamically allocated memory
+```
+
+The C++11 wrapper wraps the call of `ts_***_free` into the destrcutor of
+the wrapper class. Thus, you don't need to take care of memory management
+in C++ and the bindings.
+
+#####Functions 
 With a few exceptions, all functions of the C library provide input and output
 parameter, where all input parameter are const. Except of the copy functions
 (`ts_***_copy`), the pointer of the input may be equal to the pointer of the
@@ -70,9 +92,10 @@ output, so you can modify a spline by using it as input and output at once:
 tsBSpline spline;
 ts_bspline_new(3, 3, 7, TS_CLAMPED, &spline); // create spline
 ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
+...
 ```
 
-####Error Handling
+#####Error Handling
 Error handling has been implemented in a single struct (`tsError`). This makes
 it easier to reuse the error codes over several functions. Error checking should
 be straight forward:

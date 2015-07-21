@@ -37,6 +37,7 @@ if(SWIG_FOUND)
   # define the output dirs
   set(TS_GENERATED_PYTHON_DIR ${CMAKE_CURRENT_BINARY_DIR}/python)
   set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
+  set(TS_GENERATED_CSHARP_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp)
 
   # python
   find_package(PythonLibs)
@@ -91,6 +92,20 @@ if(SWIG_FOUND)
         DESTINATION share/java
       )
     endif()
+  endif()
+
+  # csharp
+  set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
+  set(CMAKE_SWIG_FLAGS -O)
+  set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
+  swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
+  find_program(MONO_COMPILER mcs)
+  if(MONO_COMPILER)
+    # append 'cs' to assembly name to ensure it doesn't clash
+    # with the c library.
+    add_custom_command(TARGET tinysplinecsharp POST_BUILD
+        COMMAND mcs -t:library -recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" -out:tinysplinecs.dll
+    )
   endif()
 
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 

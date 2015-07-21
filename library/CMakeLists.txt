@@ -54,7 +54,7 @@ if(SWIG_FOUND)
     # command and  bind it to tinysplinecpp
     add_custom_command(TARGET tinysplinecpp POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py 
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
     )
   endif()
 
@@ -86,9 +86,10 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
         ${TS_GENERATED_JAVA_DIR}/TsDeBoorNet.java
         ${TS_GENERATED_JAVA_DIR}/TsFloatList.java
+        OUTPUT_NAME tinyspline
       )
       add_dependencies(tinysplinejar tinysplinejava)
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinysplinejar.jar
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.jar
         DESTINATION share/java
       )
     endif()
@@ -109,7 +110,7 @@ if(SWIG_FOUND)
   endif()
 
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
-    "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinysplinepython.py;${CMAKE_CURRENT_BINARY_DIR}/so;"
+    "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py;${CMAKE_CURRENT_BINARY_DIR}/so;"
   )
 endif()
 

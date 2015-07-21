@@ -100,8 +100,7 @@ if(SWIG_FOUND)
   set(CMAKE_SWIG_FLAGS -O)
   set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
   swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
-  find_program(MONO_COMPILER mcs)
-  if(MONO_COMPILER)
+  if(COMMAND mcs)
     # append 'cs' to assembly name to ensure it doesn't clash
     # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD

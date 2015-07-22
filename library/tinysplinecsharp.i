@@ -125,6 +125,18 @@ using System.Collections.Generic;
   public void Clear() {
     throw new NotSupportedException("Removing items is not supported.");
   }
+
+  public override string ToString() {
+    string s = "[";
+    int lst = this.Count - 1;
+    for (int i = 0; i < lst; i++) {
+      s += tinysplinecsharp.float_array_getitem(getSwigPtr(), i);
+      s += ", ";
+    }
+    s += tinysplinecsharp.float_array_getitem(getSwigPtr(), lst);
+    s += "]";
+    return s;
+  }
 %}
 
 //********************************************************

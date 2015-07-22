@@ -111,7 +111,7 @@ if(SWIG_FOUND)
     # append 'cs' to assembly name to ensure it doesn't clash
     # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD
-      COMMAND ${CSHARP_COMPILER} -t:library -recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" -out:tinysplinecs.dll
+      COMMAND ${CSHARP_COMPILER} /t:library /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
     )
   endif()
 

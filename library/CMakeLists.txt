@@ -100,14 +100,22 @@ if(SWIG_FOUND)
   set(CMAKE_SWIG_FLAGS -O)
   set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
   swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
-  if(COMMAND mcs)
+  find_program(CSHARP_COMPILER
+    NAMES csc mcs dmcs gmcs
+    PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
+  )
+  if(NOT CSHARP_COMPILER)
+    message(STATUS "Could NOT find any suitable C# compiler.")
+  else()
+    message(STATUS "Using ${CSHARP_COMPILER} to compile C# sources.")
     # append 'cs' to assembly name to ensure it doesn't clash
     # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD
-        COMMAND mcs -t:library -recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" -out:tinysplinecs.dll
+      COMMAND ${CSHARP_COMPILER} -t:library -recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" -out:tinysplinecs.dll
     )
   endif()
 
+  # add additional clean targets
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
     "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py;${CMAKE_CURRENT_BINARY_DIR}/so;${TS_GENERATED_CSHARP_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinysplinecs.dll"
   )

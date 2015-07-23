@@ -101,13 +101,6 @@ tsError ts_bspline_copy(
 /* ============================================== */
 
 
-/* ================= operators ================== */
-int ts_bspline_equals(
-        const tsBSpline* x, const tsBSpline* y
-);
-/* ============================================== */
-
-
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result

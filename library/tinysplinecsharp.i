@@ -148,8 +148,6 @@ using System.Collections.Generic;
 %csmethodmodifiers TsBSpline::knots "private";
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
-%csmethodmodifiers TsBSpline::operator== "private";
-%rename(internalEquals) TsBSpline::operator==;
 
 %typemap(csimports) TsBSpline
 %{
@@ -200,29 +198,6 @@ using System.Collections.Generic;
 
   public IList<float> getKnots() {
     return new TsKnotList(this);
-  }
-
-  public static bool operator== (TsBSpline b1, TsBSpline b2) {
-    return b1.internalEquals(b2);
-  }
-
-  public static bool operator!= (TsBSpline b1, TsBSpline b2) {
-    return !b1.internalEquals(b2);
-  }
-
-  public override bool Equals(object o) {
-    if (o == null) {
-      return false;
-    } else if (o is TsBSpline) {
-      return internalEquals((TsBSpline)o);
-    } else {
-      return false;
-    }
-  }
-
-  // suppress compiler warning about Equals and GetHashCode
-  public override int GetHashCode() {
-    return base.GetHashCode();
   }
 %}
 

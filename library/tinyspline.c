@@ -314,30 +314,6 @@ tsError ts_bspline_copy(
         return TS_MALLOC;
 }
 
-int ts_bspline_equals(
-        const tsBSpline* x, const tsBSpline* y
-)
-{
-    if (x->deg     != y->deg ||
-        x->order   != y->order ||
-        x->dim     != y->dim ||
-        x->n_ctrlp != y->n_ctrlp ||
-        x->n_knots != y->n_knots) {
-        return 0;
-    } else {
-        size_t i;
-        for (i = 0; i < x->n_ctrlp; i++) {
-            if (!ts_fequals(x->ctrlp[i], y->ctrlp[i]))
-                return 0;
-        }
-        for (i = 0; i < x->n_knots; i++) {
-            if (!ts_fequals(x->knots[i], y->knots[i]))
-                return 0;
-        }
-        return 1;
-    }
-}
-
 tsError ts_bspline_setup_knots(
         const tsBSpline* original, const tsBSplineType type,
         tsBSpline* result

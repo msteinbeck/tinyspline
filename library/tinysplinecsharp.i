@@ -145,7 +145,9 @@ using System.Collections.Generic;
 //*                                                      *
 //********************************************************
 %csmethodmodifiers TsBSpline::ctrlp "private";
+%rename(ctrlp_p) TsBSpline::ctrlp;
 %csmethodmodifiers TsBSpline::knots "private";
+%rename(knots_p) TsBSpline::knots;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
@@ -164,7 +166,7 @@ using System.Collections.Generic;
     }
 
     internal override SWIGTYPE_p_float getSwigPtr() {
-      return bspline.ctrlp();
+      return bspline.ctrlp_p();
     }
 
     public override int Count {
@@ -182,7 +184,7 @@ using System.Collections.Generic;
     }
 
     internal override SWIGTYPE_p_float getSwigPtr() {
-      return bspline.knots();
+      return bspline.knots_p();
     }
 
     public override int Count {
@@ -192,12 +194,16 @@ using System.Collections.Generic;
     }
   }
 
-  public IList<float> getCtrlp() {
-    return new TsCtrlpList(this);
+  public IList<float> ctrlp {
+    get {
+      return new TsCtrlpList(this);
+    }
   }
 
-  public IList<float> getKnots() {
-    return new TsKnotList(this);
+  public IList<float> knots {
+    get {
+      return new TsKnotList(this);
+    }
   }
 %}
 
@@ -207,7 +213,9 @@ using System.Collections.Generic;
 //*                                                      *
 //********************************************************
 %csmethodmodifiers TsDeBoorNet::points "private";
+%rename(points_p) TsDeBoorNet::points;
 %csmethodmodifiers TsDeBoorNet::result "private";
+%rename(result_p) TsDeBoorNet::result;
 %ignore TsDeBoorNet::operator=;
 
 %typemap(csimports) TsDeBoorNet
@@ -225,7 +233,7 @@ using System.Collections.Generic;
     }
 
     internal override SWIGTYPE_p_float getSwigPtr() {
-      return deboornet.points();
+      return deboornet.points_p();
     }
 
     public override int Count {
@@ -243,7 +251,7 @@ using System.Collections.Generic;
     }
 
     internal override SWIGTYPE_p_float getSwigPtr() {
-      return deboornet.result();
+      return deboornet.result_p();
     }
 
     public override int Count {
@@ -253,12 +261,16 @@ using System.Collections.Generic;
     }
   }
 
-  public IList<float> getPoints() {
-    return new TsPointList(this);
+  public IList<float> points {
+    get {
+      return new TsPointList(this);
+    }
   }
 
-  public IList<float> getResult() {
-    return new TsResultList(this);
+  public IList<float> result {
+    get {
+      return new TsResultList(this);
+    }
   }
 %}
 

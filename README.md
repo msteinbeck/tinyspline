@@ -3,10 +3,10 @@ TinySpline
 
 TinySpline is a C library for [B-Splines](https://en.wikipedia.org/wiki/B-spline) 
 and [NURBS](https://de.wikipedia.org/wiki/Non-Uniform_Rational_B-Spline) 
-with a modern C++11 wrapper and bindings for Java and Python (via Swig). 
+with a modern C++11 wrapper and bindings for C#, Java and Python (via Swig). 
 The goal of this project is to provide a small library with a minimum of 
 dependencies which is easy and intuitively to use. Moreover, the integration 
-of TinySpline into OpenGL is straight forward.
+of TinySpline into OpenGL is straightforward.
 
 TinySpline is licensed under [the MIT License](http://opensource.org/licenses/MIT),
 so feel free to use it anywhere.
@@ -18,7 +18,7 @@ so feel free to use it anywhere.
 - Insert knots and split splines by keeping the splines shape.
 - Subdivide B-Splines into Béziers.
 - A modern C++11 wrapper.
-- Bindings for Java and Python.
+- Bindings for C#, Java and Python.
 
 ###Project Structure
 The core of TinySpline is written in ANSI C and consists of the files

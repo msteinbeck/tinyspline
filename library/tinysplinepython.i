@@ -19,12 +19,20 @@ class TsFloatList(collections.MutableSequence):
         return None
 
     def __getitem__(self, index):
+        size = self.__len__()
+        if index >= size:
+            raise IndexError("Index: " + str(index) + ", Size: " + str(size))
+        if index < 0:
+            raise IndexError("Negative index: " + str(index))
         return float_array_getitem(self.getSwigPtr(), index)
         
     def __setitem__(self, index, value):
-        prev = float_array_getitem(self.getSwigPtr(), index)
+        size = self.__len__()
+        if index >= size:
+            raise IndexError("Index: " + str(index) + ", Size: " + str(size))
+        if index < 0:
+            raise IndexError("Negative index: " + str(index))
         float_array_setitem(self.getSwigPtr(), index, value)
-        return prev
         
     def __str__(self):
         s = "["

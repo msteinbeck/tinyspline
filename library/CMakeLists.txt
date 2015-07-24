@@ -100,6 +100,9 @@ if(SWIG_FOUND)
   set(CMAKE_SWIG_FLAGS -O)
   set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
   swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
+  install(TARGETS tinysplinecsharp
+    LIBRARY DESTINATION lib
+  )
   find_program(CSHARP_COMPILER
     NAMES csc mcs dmcs gmcs
     PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
@@ -111,7 +114,10 @@ if(SWIG_FOUND)
     # append 'cs' to assembly name to ensure it doesn't clash
     # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD
-      COMMAND ${CSHARP_COMPILER} /t:library /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
+      COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinysplinecs.dll
+      DESTINATION lib/mono/2.0
     )
   endif()
 

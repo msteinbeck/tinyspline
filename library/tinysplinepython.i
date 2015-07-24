@@ -46,25 +46,27 @@ class TsFloatList(collections.MutableSequence):
 //* TsBSpline (Python)                                   *
 //*                                                      *
 //********************************************************
+%rename(ctrlp_p) TsBSpline::ctrlp;
+%rename(knots_p) TsBSpline::knots;
 %ignore TsBSpline::operator=;
 
 %pythoncode %{
 class TsCtrlpList(TsFloatList):
-    def __init__(self, bspline):
-       self.bspline = bspline
+    def __init__(self):
+       self.bspline = None
        
     def getSwigPtr(self):
-        return self.bspline.ctrlp()
+        return self.bspline.ctrlp_p()
         
     def __len__(self):
         return self.bspline.nCtrlp * self.bspline.dim
 
 class TsKnotList(TsFloatList):
-    def __init__(self, bspline):
-       self.bspline = bspline
+    def __init__(self):
+       self.bspline = None
        
     def getSwigPtr(self):
-        return self.bspline.knots()
+        return self.bspline.knots_p()
         
     def __len__(self):
         return self.bspline.nKnots
@@ -75,25 +77,27 @@ class TsKnotList(TsFloatList):
 //* TsDeBoorNet (Python)                                 *
 //*                                                      *
 //********************************************************
+%rename(points_p) TsDeBoorNet::points;
+%rename(result_p) TsDeBoorNet::result;
 %ignore TsDeBoorNet::operator=;
 
 %pythoncode %{
 class TsPointList(TsFloatList):
-    def __init__(self, deboornet):
-       self.deboornet = deboornet
+    def __init__(self):
+       self.deboornet = None
        
     def getSwigPtr(self):
-        return self.deboornet.points()
+        return self.deboornet.points_p()
         
     def __len__(self):
         return self.deboornet.nPoints * self.deboornet.dim
 
 class TsResultList(TsFloatList):
-    def __init__(self, deboornet):
-       self.deboornet = deboornet
+    def __init__(self):
+       self.deboornet = None
        
     def getSwigPtr(self):
-        return self.deboornet.result()
+        return self.deboornet.result_p()
         
     def __len__(self):
         return self.deboornet.dim
@@ -109,23 +113,34 @@ class TsResultList(TsFloatList):
 // otherwise the classes TsBSpline and TsDeBoorNet are unknown
 
 %pythoncode %{
-def getCtrlp(self):
-    return TsCtrlpList(self)
+TsBSpline.ctrlpList = TsCtrlpList()
+TsBSpline.knotList = TsKnotList()
 
-def getKnots(self):
-    return TsKnotList(self)
+def ts_init_ctrlpList(c, b):
+    c.bspline = b
+    return c
+
+def ts_init_knotList(k, b):
+    k.bspline = b
+    return k
+
+TsBSpline.ctrlp = property(lambda self: ts_init_ctrlpList(self.ctrlpList, self))
+TsBSpline.knots = property(lambda self: ts_init_knotList(self.knotList, self))
+
+
+TsDeBoorNet.pointList = TsPointList()
+TsDeBoorNet.resultList = TsResultList()
     
-TsBSpline.getCtrlp = getCtrlp
-TsBSpline.getKnots = getKnots
+def ts_init_pointList(p, d):
+    p.deboornet = d
+    return p
+
+def ts_init_resultList(r, d):
+    r.deboornet = d
+    return r
     
-def getPoints(self):
-    return TsPointList(self)
-    
-def getResult(self):
-    return TsResultList(self)
-    
-TsDeBoorNet.getPoints = getPoints
-TsDeBoorNet.getResult = getResult
+TsDeBoorNet.points = property(lambda self: ts_init_pointList(self.pointList, self))
+TsDeBoorNet.result = property(lambda self: ts_init_resultList(self.resultList, self))
 %}
 
 

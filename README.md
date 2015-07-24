@@ -175,7 +175,7 @@ there are some notes you should know about.
 - Knot removal.
 - Given a point P and a spline S, find the Point Q on S with the 
 minimal distance ||P - Q||<sub>2</sub>.
-- Wrapper for C#, Rust and Julia.
+- Bindings for Rust and Julia.
 
 ###Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html)

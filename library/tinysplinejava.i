@@ -26,11 +26,18 @@ import java.util.RandomAccess;
     final int size = size();
     if (index >= size)
       throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+    if (index < 0)
+      throw new IndexOutOfBoundsException("Negative index: " + index);
     return tinysplinejava.float_array_getitem(getSwigPtr(), index);
   }
     
   @Override
   public Float set(int index, Float element) {
+    final int size = size();
+    if (index >= size)
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+    if (index < 0)
+      throw new IndexOutOfBoundsException("Negative index: " + index);
     if (element == null)
       throw new NullPointerException();
     Float prev = tinysplinejava.float_array_getitem(getSwigPtr(), index);

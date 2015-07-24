@@ -48,13 +48,13 @@ if(SWIG_FOUND)
     set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_PYTHON_DIR})
     swig_add_module(tinysplinepython python tinysplinepython.i tinyspline.c tinysplinecpp.cpp)
     swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
-    # for some reason cmake doesn't recognize tinysplinepython as make 
-    # target, though the proxy will be generated just before tinysplinecpp.
-    # to copy the python file into the binary dir, add a custom copy 
-    # command and  bind it to tinysplinecpp
-    add_custom_command(TARGET tinysplinecpp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py 
-        ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
+    # for some reason the generated make target for python is _tinysplinepython
+    add_custom_command(TARGET _tinysplinepython POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
+      ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
+    )
+    install(TARGETS _tinysplinepython
+      LIBRARY DESTINATION lib
     )
   endif()
 

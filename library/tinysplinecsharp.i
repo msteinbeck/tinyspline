@@ -63,12 +63,16 @@ using System.Collections.Generic;
       int size = this.Count;
       if (index >= size)
         throw new ArgumentOutOfRangeException("Index: " + index + ", Size: " + size);
+      if (index < 0)
+        throw new ArgumentOutOfRangeException("Negative index: " + index);
       return tinysplinecsharp.float_array_getitem(getSwigPtr(), index);
     }
     set {
       int size = this.Count;
       if (index >= size)
         throw new ArgumentOutOfRangeException("Index: " + index + ", Size: " + size);
+      if (index < 0)
+        throw new ArgumentOutOfRangeException("Negative index: " + index);
       tinysplinecsharp.float_array_setitem(getSwigPtr(), index, value);
     }
   }

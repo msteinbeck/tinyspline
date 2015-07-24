@@ -159,11 +159,7 @@ using System.Collections.Generic;
 %typemap(cscode) TsBSpline
 %{
   private class TsCtrlpList : TsFloatList {
-    private TsBSpline bspline;
-
-    public TsCtrlpList(TsBSpline bspline) {
-      this.bspline = bspline;
-    }
+    internal TsBSpline bspline;
 
     internal override SWIGTYPE_p_float getSwigPtr() {
       return bspline.ctrlp_p();
@@ -177,11 +173,7 @@ using System.Collections.Generic;
   }
 
   private class TsKnotList : TsFloatList {
-    private TsBSpline bspline;
-
-    public TsKnotList(TsBSpline bspline) {
-      this.bspline = bspline;
-    }
+    internal TsBSpline bspline;
 
     internal override SWIGTYPE_p_float getSwigPtr() {
       return bspline.knots_p();
@@ -194,15 +186,20 @@ using System.Collections.Generic;
     }
   }
 
+  TsCtrlpList ctrlpList = new TsCtrlpList();
+  TsKnotList knotList = new TsKnotList();
+
   public IList<float> ctrlp {
     get {
-      return new TsCtrlpList(this);
+      ctrlpList.bspline = this;
+      return ctrlpList;
     }
   }
 
   public IList<float> knots {
     get {
-      return new TsKnotList(this);
+      knotList.bspline = this;
+      return knotList;
     }
   }
 %}
@@ -226,11 +223,7 @@ using System.Collections.Generic;
 %typemap(cscode) TsDeBoorNet
 %{
   private class TsPointList : TsFloatList {
-    private TsDeBoorNet deboornet;
-
-    public TsPointList(TsDeBoorNet deboornet) {
-      this.deboornet = deboornet;
-    }
+    internal TsDeBoorNet deboornet;
 
     internal override SWIGTYPE_p_float getSwigPtr() {
       return deboornet.points_p();
@@ -244,11 +237,7 @@ using System.Collections.Generic;
   }
 
   private class TsResultList : TsFloatList {
-    private TsDeBoorNet deboornet;
-
-    public TsResultList(TsDeBoorNet deboornet) {
-      this.deboornet = deboornet;
-    }
+    internal TsDeBoorNet deboornet;
 
     internal override SWIGTYPE_p_float getSwigPtr() {
       return deboornet.result_p();
@@ -261,15 +250,20 @@ using System.Collections.Generic;
     }
   }
 
+  TsPointList pointList = new TsPointList();
+  TsResultList resultList = new TsResultList();
+
   public IList<float> points {
     get {
-      return new TsPointList(this);
+      pointList.deboornet = this;
+      return pointList;
     }
   }
 
   public IList<float> result {
     get {
-      return new TsResultList(this);
+      resultList.deboornet = this;
+      return resultList;
     }
   }
 %}

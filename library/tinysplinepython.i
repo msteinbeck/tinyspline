@@ -1,5 +1,8 @@
 %module tinysplinepython
 
+%ignore TsDeBoorNet::operator=;
+%ignore TsBSpline::operator=;
+
 %include "tinyspline.i"
 
 // NOTE:

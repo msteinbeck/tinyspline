@@ -33,10 +33,13 @@ As for the C library, you can copy those files (alongside tinyspline.h and
 tinyspline.c) into your project or use CMake to create a static and shared library.
 
 All bindings of TinySpline work on top of the C++11 wrapper and will be 
-generated with [Swig](http://www.swig.org/) (3.0.1 or above). The file
+generated with [Swig](http://www.swig.org/) (3.0.1 or above). While
 [tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.i)
-configures all language independent settings, while tinyspline-xyz.i adds
-language specific features. Using CMake to create the bindings is recommended.
+configures all language independent settings, tinysplineXYZ.i adds
+language related features. The file 
+[swig_wrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swig_wrapper.h)
+contains function which are necessary to provide collections instead of plain C arrays.
+Using CMake to create the bindings is recommended.
 
 All these files can be found in the directory 
 [library](https://github.com/retuxx/tinyspline/tree/master/library).

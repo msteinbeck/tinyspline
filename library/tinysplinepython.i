@@ -1,52 +1,35 @@
 %module tinysplinepython
 
+%include "tinyspline.i"
+
+// NOTE:
+//
+// The following code must be included AFTER "tinyspline.i",
+// otherwise the classes TsFloatList, TsBSpline and TsDeBoorNet are unknown
+
 //********************************************************
 //*                                                      *
 //* TsFloatList (Python)                                 *
 //*                                                      *
 //********************************************************
-%ignore TsFloatList;
-
 %pythoncode %{
-import abc
-import collections
+# http://stackoverflow.com/questions/8294618/define-a-lambda-expression-that-raises-an-exception
+def ts_raise(ex):
+    raise ex
 
-class TsFloatList(collections.MutableSequence):
-    """A wrapper for swig float arrays"""
-    
-    @abc.abstractmethod
-    def getSwigPtr(self):
-        return None
+def ts_indexOf(self, value):
+    i = self.ts_indexOf(value)
+    if i >= 0:
+        return i
+    raise ValueError
 
-    def __getitem__(self, index):
-        size = self.__len__()
-        if index >= size:
-            raise IndexError("Index: " + str(index) + ", Size: " + str(size))
-        if index < 0:
-            raise IndexError("Negative index: " + str(index))
-        return float_array_getitem(self.getSwigPtr(), index)
-        
-    def __setitem__(self, index, value):
-        size = self.__len__()
-        if index >= size:
-            raise IndexError("Index: " + str(index) + ", Size: " + str(size))
-        if index < 0:
-            raise IndexError("Negative index: " + str(index))
-        float_array_setitem(self.getSwigPtr(), index, value)
-        
-    def __str__(self):
-        s = "["
-        lst = self.__len__() - 1
-        for i in range(0, lst):
-            s = s + str(self.__getitem__(i)) + ", "
-        s = s + str(self.__getitem__(lst)) + "]"
-        return s
-
-    def __delitem__(self, index):
-        raise NotImplementedError("Deleting items is not supported.")
-        
-    def insert(self, index, value):
-        raise NotImplementedError("Inserting items is not supported.")
+TsFloatList.__getitem__ = lambda self, index: self.ts_get(index)
+TsFloatList.__setitem__ = lambda self, index, value: self.ts_set(index, value)
+TsFloatList.index = ts_indexOf
+TsFloatList.__contains__ = lambda self, value: self.ts_contains(value)
+TsFloatList.__str__ = lambda self: self.ts_toString()
+TsFloatList.__delitem__ = lambda self, index: ts_raise(NotImplementedError("Deleting items is not supported."))
+TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("Inserting items is not supported."))
 %}
 
 //********************************************************
@@ -54,101 +37,33 @@ class TsFloatList(collections.MutableSequence):
 //* TsBSpline (Python)                                   *
 //*                                                      *
 //********************************************************
-%rename(ctrlp_p) TsBSpline::ctrlp;
-%rename(knots_p) TsBSpline::knots;
-%ignore TsBSpline::operator=;
-
 %pythoncode %{
-class TsCtrlpList(TsFloatList):
-    def __init__(self):
-       self.bspline = None
-       
-    def getSwigPtr(self):
-        return self.bspline.ctrlp_p()
-        
-    def __len__(self):
-        return self.bspline.nCtrlp * self.bspline.dim
+TsBSpline.ctrlpList = TsCtrlpList()
+TsBSpline.knotList = TsKnotList()
 
-class TsKnotList(TsFloatList):
-    def __init__(self):
-       self.bspline = None
-       
-    def getSwigPtr(self):
-        return self.bspline.knots_p()
-        
-    def __len__(self):
-        return self.bspline.nKnots
+def ts_initBList(l, b):
+    l.ts_bspline = b
+    return l
+
+TsBSpline.ctrlp = property(lambda self: ts_initBList(self.ctrlpList, self))
+TsBSpline.knots = property(lambda self: ts_initBList(self.knotList, self))
 %}
-        
+
 //********************************************************
 //*                                                      *
 //* TsDeBoorNet (Python)                                 *
 //*                                                      *
 //********************************************************
-%rename(points_p) TsDeBoorNet::points;
-%rename(result_p) TsDeBoorNet::result;
-%ignore TsDeBoorNet::operator=;
-
 %pythoncode %{
-class TsPointList(TsFloatList):
-    def __init__(self):
-       self.deboornet = None
-       
-    def getSwigPtr(self):
-        return self.deboornet.points_p()
-        
-    def __len__(self):
-        return self.deboornet.nPoints * self.deboornet.dim
-
-class TsResultList(TsFloatList):
-    def __init__(self):
-       self.deboornet = None
-       
-    def getSwigPtr(self):
-        return self.deboornet.result_p()
-        
-    def __len__(self):
-        return self.deboornet.dim
-%}
-
-
-%include "tinyspline.i"
-
-
-// NOTE:
-//
-// The following code must be included AFTER "tinyspline.i",
-// otherwise the classes TsBSpline and TsDeBoorNet are unknown
-
-%pythoncode %{
-TsBSpline.ctrlpList = TsCtrlpList()
-TsBSpline.knotList = TsKnotList()
-
-def ts_init_ctrlpList(c, b):
-    c.bspline = b
-    return c
-
-def ts_init_knotList(k, b):
-    k.bspline = b
-    return k
-
-TsBSpline.ctrlp = property(lambda self: ts_init_ctrlpList(self.ctrlpList, self))
-TsBSpline.knots = property(lambda self: ts_init_knotList(self.knotList, self))
-
-
 TsDeBoorNet.pointList = TsPointList()
 TsDeBoorNet.resultList = TsResultList()
     
-def ts_init_pointList(p, d):
-    p.deboornet = d
-    return p
-
-def ts_init_resultList(r, d):
-    r.deboornet = d
-    return r
+def ts_initDList(l, d):
+    l.ts_deboornet = d
+    return l
     
-TsDeBoorNet.points = property(lambda self: ts_init_pointList(self.pointList, self))
-TsDeBoorNet.result = property(lambda self: ts_init_resultList(self.resultList, self))
+TsDeBoorNet.points = property(lambda self: ts_initDList(self.pointList, self))
+TsDeBoorNet.result = property(lambda self: ts_initDList(self.resultList, self))
 %}
 
 

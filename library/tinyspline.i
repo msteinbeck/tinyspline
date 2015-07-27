@@ -11,14 +11,12 @@
 %exception {
   try {
     $action
+  } catch (const std::out_of_range& e) {
+    SWIG_exception(SWIG_IndexError, e.what());
   } catch (const std::exception& e) {
     SWIG_exception(SWIG_RuntimeError, e.what());
   }
 }
-
-// make control points and knots accessible
-%include <carrays.i>
-%array_functions(float, float_array);
 
 // generate getter/setter
 %include <attribute.i>
@@ -34,19 +32,26 @@
 %attribute(TsDeBoorNet, size_t, dim, dim);
 %attribute(TsDeBoorNet, size_t, nPoints, nPoints);
 
+// make strings directly accessible
+%include "std_string.i"
+
 // ignore wrapped structs and data fields
 %ignore tsError;
 %ignore tsDeBoorNet;
 %ignore TsDeBoorNet::data;
+%ignore TsDeBoorNet::points;
+%ignore TsDeBoorNet::result;
 %ignore tsBSpline;
 %ignore TsBSpline::data;
+%ignore TsBSpline::ctrlp;
+%ignore TsBSpline::knots;
 
 %{
     #include "tinyspline.h"
     #include "tinysplinecpp.h"
-    struct TsFloatList {};
+    #include "swig_wrapper.h"
 %}
 
 %include "tinyspline.h"
 %include "tinysplinecpp.h"
-struct TsFloatList {};
+%include "swig_wrapper.h"

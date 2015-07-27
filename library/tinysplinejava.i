@@ -9,7 +9,7 @@
 %{
 import java.util.AbstractList;
 import java.lang.NullPointerException;
-import java.lang.IndexOutOfBoundsException;
+import java.lang.RuntimeException;
 import java.util.RandomAccess;
 %}
 
@@ -19,30 +19,35 @@ import java.util.RandomAccess;
 
 %typemap(javacode) TsFloatList
 %{
-  abstract SWIGTYPE_p_float getSwigPtr();
-      
   @Override
   public Float get(int index) {
-    final int size = size();
-    if (index >= size)
-      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-    if (index < 0)
-      throw new IndexOutOfBoundsException("Negative index: " + index);
-    return tinysplinejava.float_array_getitem(getSwigPtr(), index);
+    return ts_get(index);
   }
     
   @Override
   public Float set(int index, Float element) {
-    final int size = size();
-    if (index >= size)
-      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-    if (index < 0)
-      throw new IndexOutOfBoundsException("Negative index: " + index);
     if (element == null)
       throw new NullPointerException();
-    Float prev = tinysplinejava.float_array_getitem(getSwigPtr(), index);
-    tinysplinejava.float_array_setitem(getSwigPtr(), index, element);
-    return prev;
+    return ts_set(index, element);
+  }
+
+  @Override
+  public int size() {
+    return ts_len();
+  }
+
+  @Override
+  public int indexOf(Object o) {
+    if (o == null)
+      throw new NullPointerException();
+    else if (! (o instanceof Float))
+      throw new ClassCastException();
+    return ts_indexOf((Float) o);
+  }
+
+  @Override
+  public boolean contains(Object o) {
+    return indexOf(o) >= 0;
   }
 %}
 
@@ -63,35 +68,16 @@ import java.util.List;
 
 %typemap(javacode) TsBSpline
 %{
-  private final TsFloatList ctrlpList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getSwigPtr() {
-      return ctrlp();
-    }
-        
-    @Override
-    public int size() {
-      return (int) (getNCtrlp() * getDim());
-    }
-  };
-  
-  private final TsFloatList knotList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getSwigPtr() {
-      return knots();
-    }
-        
-    @Override
-    public int size() {
-      return (int) getNKnots();
-    }
-  };
-    
+  private final TsFloatList ctrlpList = new TsCtrlpList();
+  private final TsFloatList knotList = new TsKnotList();
+
   public List<Float> getCtrlp() {
+    ctrlpList.setTs_bspline(this);
     return ctrlpList;
   }
-  
+
   public List<Float> getKnots() {
+    knotList.setTs_bspline(this);
     return knotList;
   }
 %}
@@ -112,35 +98,16 @@ import java.util.List;
 
 %typemap(javacode) TsDeBoorNet
 %{
-  private final TsFloatList pointList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getSwigPtr() {
-      return points();
-    }
-        
-    @Override
-    public int size() {
-      return (int) (getNPoints() * getDim());
-    }
-  };
-  
-  private final TsFloatList resultList = new TsFloatList() {
-    @Override
-    SWIGTYPE_p_float getSwigPtr() {
-      return result();
-    }
-    
-    @Override
-    public int size() {
-      return (int) getDim();
-    }
-  };
-    
+  private final TsFloatList pointList = new TsPointList();
+  private final TsFloatList resultList = new TsResultList();
+
   public List<Float> getPoints() {
+    pointList.setTs_deboornet(this);
     return pointList;
   }
-  
+
   public List<Float> getResult() {
+    resultList.setTs_deboornet(this);
     return resultList;
   }
 %}

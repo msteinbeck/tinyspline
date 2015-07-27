@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
     public float Current {
       get {
-        return tinysplinecsharp.float_array_getitem(list.getSwigPtr(), idx);
+        return list.ts_get(idx);
       }
     }
 
@@ -49,8 +49,11 @@ using System.Collections.Generic;
     public void Dispose() {}
   }
 
-  internal abstract SWIGTYPE_p_float getSwigPtr();
-  public abstract int Count { get; }
+  public int Count {
+    get {
+      return ts_len();
+    }
+  }
 
   public bool IsReadOnly {
     get {
@@ -60,20 +63,10 @@ using System.Collections.Generic;
 
   public float this[int index] {
     get {
-      int size = this.Count;
-      if (index >= size)
-        throw new ArgumentOutOfRangeException("Index: " + index + ", Size: " + size);
-      if (index < 0)
-        throw new ArgumentOutOfRangeException("Negative index: " + index);
-      return tinysplinecsharp.float_array_getitem(getSwigPtr(), index);
+      return ts_get(index);
     }
     set {
-      int size = this.Count;
-      if (index >= size)
-        throw new ArgumentOutOfRangeException("Index: " + index + ", Size: " + size);
-      if (index < 0)
-        throw new ArgumentOutOfRangeException("Negative index: " + index);
-      tinysplinecsharp.float_array_setitem(getSwigPtr(), index, value);
+      ts_set(index, value);
     }
   }
 
@@ -86,20 +79,15 @@ using System.Collections.Generic;
     if (array.Length < size)
       throw new ArgumentException("Array: " + array.Length + ", List: " + size);
     for (; arrayIndex < size; arrayIndex++)
-      array[arrayIndex] = tinysplinecsharp.float_array_getitem(getSwigPtr(), arrayIndex);
+      array[arrayIndex] = ts_get(arrayIndex);
   }
 
   public int IndexOf(float item) {
-    int size = this.Count;
-    for (int i = 0; i < size; i++) {
-      if (item == tinysplinecsharp.float_array_getitem(getSwigPtr(), i))
-        return i;
-    }
-    return -1;
+    return ts_indexOf(item);
   }
 
   public bool Contains(float item) {
-    return IndexOf(item) >= 0;
+    return ts_contains(item);
   }
 
   public IEnumerator<float> GetEnumerator() {
@@ -131,15 +119,7 @@ using System.Collections.Generic;
   }
 
   public override string ToString() {
-    string s = "[";
-    int lst = this.Count - 1;
-    for (int i = 0; i < lst; i++) {
-      s += tinysplinecsharp.float_array_getitem(getSwigPtr(), i);
-      s += ", ";
-    }
-    s += tinysplinecsharp.float_array_getitem(getSwigPtr(), lst);
-    s += "]";
-    return s;
+    return ts_toString();
   }
 %}
 
@@ -148,10 +128,6 @@ using System.Collections.Generic;
 //* TsBSpline (C#)                                       *
 //*                                                      *
 //********************************************************
-%csmethodmodifiers TsBSpline::ctrlp "private";
-%rename(ctrlp_p) TsBSpline::ctrlp;
-%csmethodmodifiers TsBSpline::knots "private";
-%rename(knots_p) TsBSpline::knots;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
@@ -162,47 +138,19 @@ using System.Collections.Generic;
 
 %typemap(cscode) TsBSpline
 %{
-  private class TsCtrlpList : TsFloatList {
-    internal TsBSpline bspline;
-
-    internal override SWIGTYPE_p_float getSwigPtr() {
-      return bspline.ctrlp_p();
-    }
-
-    public override int Count {
-      get {
-        return (int) (bspline.nCtrlp * bspline.dim);
-      }
-    }
-  }
-
-  private class TsKnotList : TsFloatList {
-    internal TsBSpline bspline;
-
-    internal override SWIGTYPE_p_float getSwigPtr() {
-      return bspline.knots_p();
-    }
-
-    public override int Count {
-      get {
-        return (int)bspline.nKnots;
-      }
-    }
-  }
-
   TsCtrlpList ctrlpList = new TsCtrlpList();
   TsKnotList knotList = new TsKnotList();
 
   public IList<float> ctrlp {
     get {
-      ctrlpList.bspline = this;
+      ctrlpList.ts_bspline = this;
       return ctrlpList;
     }
   }
 
   public IList<float> knots {
     get {
-      knotList.bspline = this;
+      knotList.ts_bspline = this;
       return knotList;
     }
   }
@@ -213,10 +161,6 @@ using System.Collections.Generic;
 //* TsDeBoorNet (C#)                                     *
 //*                                                      *
 //********************************************************
-%csmethodmodifiers TsDeBoorNet::points "private";
-%rename(points_p) TsDeBoorNet::points;
-%csmethodmodifiers TsDeBoorNet::result "private";
-%rename(result_p) TsDeBoorNet::result;
 %ignore TsDeBoorNet::operator=;
 
 %typemap(csimports) TsDeBoorNet
@@ -226,47 +170,19 @@ using System.Collections.Generic;
 
 %typemap(cscode) TsDeBoorNet
 %{
-  private class TsPointList : TsFloatList {
-    internal TsDeBoorNet deboornet;
-
-    internal override SWIGTYPE_p_float getSwigPtr() {
-      return deboornet.points_p();
-    }
-
-    public override int Count {
-      get {
-        return (int) (deboornet.nPoints * deboornet.dim);
-      }
-    }
-  }
-
-  private class TsResultList : TsFloatList {
-    internal TsDeBoorNet deboornet;
-
-    internal override SWIGTYPE_p_float getSwigPtr() {
-      return deboornet.result_p();
-    }
-
-    public override int Count {
-      get {
-        return (int)deboornet.dim;
-      }
-    }
-  }
-
   TsPointList pointList = new TsPointList();
   TsResultList resultList = new TsResultList();
 
   public IList<float> points {
     get {
-      pointList.deboornet = this;
+      pointList.ts_deboornet = this;
       return pointList;
     }
   }
 
   public IList<float> result {
     get {
-      resultList.deboornet = this;
+      resultList.ts_deboornet = this;
       return resultList;
     }
   }

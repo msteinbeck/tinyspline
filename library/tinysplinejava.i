@@ -56,8 +56,6 @@ import java.util.RandomAccess;
 //* TsBSpline (Java)                                     *
 //*                                                      *
 //********************************************************
-%javamethodmodifiers TsBSpline::ctrlp "private";
-%javamethodmodifiers TsBSpline::knots "private";
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
@@ -87,8 +85,6 @@ import java.util.List;
 //* TsDeBoorNet (Java)                                   *
 //*                                                      *
 //********************************************************
-%javamethodmodifiers TsDeBoorNet::points "private";
-%javamethodmodifiers TsDeBoorNet::result "private";
 %ignore TsDeBoorNet::operator=;
 
 %typemap(javaimports) TsDeBoorNet 

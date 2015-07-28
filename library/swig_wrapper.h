@@ -6,6 +6,7 @@ public:
     TsDeBoorNet* ts_deboornet;
     TsBSpline* ts_bspline;
 
+    TsFloatList() : ts_deboornet(nullptr), ts_bspline(nullptr) {}
     virtual ~TsFloatList() {}
 
     float ts_get(const int index)
@@ -50,10 +51,12 @@ public:
         std::string s = "[";
         const int lst = ts_len() - 1;
         for (int i = 0; i < lst; i++) {
-          s += std::to_string(ts_ptr()[i]);
-          s += ", ";
+            s += std::to_string(ts_ptr()[i]);
+            s += ", ";
         }
-        s += std::to_string(ts_ptr()[lst]);
+        if (lst < 0) {
+            s += std::to_string(ts_ptr()[lst]);
+        }
         s += "]";
         return s;
     }
@@ -67,7 +70,11 @@ class TsPointList : public TsFloatList
 public:
     virtual ~TsPointList() {}
     virtual float* ts_ptr() {return ts_deboornet->points();}
-    virtual int ts_len() {return ts_deboornet->nPoints() * ts_deboornet->dim();}
+    virtual int ts_len()
+    {
+        return ts_deboornet == nullptr ? 0 :
+            ts_deboornet->nPoints() * ts_deboornet->dim();
+    }
 };
 
 class TsResultList : public TsFloatList
@@ -75,7 +82,11 @@ class TsResultList : public TsFloatList
 public:
     virtual ~TsResultList() {}
     virtual float* ts_ptr() {return ts_deboornet->result();}
-    virtual int ts_len() {return ts_deboornet->dim();}
+    virtual int ts_len()
+    {
+        return ts_deboornet == nullptr ? 0 :
+            ts_deboornet->dim();
+    }
 };
 
 class TsCtrlpList : public TsFloatList
@@ -83,7 +94,11 @@ class TsCtrlpList : public TsFloatList
 public:
     virtual ~TsCtrlpList() {}
     virtual float* ts_ptr() {return ts_bspline->ctrlp();}
-    virtual int ts_len() {return ts_bspline->nCtrlp() * ts_bspline->dim();}
+    virtual int ts_len()
+    {
+        return ts_bspline == nullptr ? 0 :
+            ts_bspline->nCtrlp() * ts_bspline->dim();
+    }
 };
 
 class TsKnotList : public TsFloatList
@@ -91,5 +106,9 @@ class TsKnotList : public TsFloatList
 public:
     virtual ~TsKnotList() {}
     virtual float* ts_ptr() {return ts_bspline->knots();}
-    virtual int ts_len() {return ts_bspline->nKnots();}
+    virtual int ts_len()
+    {
+        return ts_bspline == nullptr ? 0 :
+            ts_bspline->nKnots();
+    }
 };

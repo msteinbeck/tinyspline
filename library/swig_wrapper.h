@@ -1,7 +1,6 @@
 #include "tinysplinecpp.h"
 
-class TsFloatList
-{
+class TsFloatList {
 public:
     TsDeBoorNet* ts_deboornet;
     TsBSpline* ts_bspline;
@@ -65,8 +64,7 @@ public:
     virtual int ts_len() = 0;
 };
 
-class TsPointList : public TsFloatList
-{
+class TsPointList : public TsFloatList {
 public:
     virtual ~TsPointList() {}
     virtual float* ts_ptr() {return ts_deboornet->points();}
@@ -77,8 +75,7 @@ public:
     }
 };
 
-class TsResultList : public TsFloatList
-{
+class TsResultList : public TsFloatList {
 public:
     virtual ~TsResultList() {}
     virtual float* ts_ptr() {return ts_deboornet->result();}
@@ -89,8 +86,7 @@ public:
     }
 };
 
-class TsCtrlpList : public TsFloatList
-{
+class TsCtrlpList : public TsFloatList {
 public:
     virtual ~TsCtrlpList() {}
     virtual float* ts_ptr() {return ts_bspline->ctrlp();}
@@ -101,8 +97,7 @@ public:
     }
 };
 
-class TsKnotList : public TsFloatList
-{
+class TsKnotList : public TsFloatList {
 public:
     virtual ~TsKnotList() {}
     virtual float* ts_ptr() {return ts_bspline->knots();}

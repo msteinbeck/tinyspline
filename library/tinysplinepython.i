@@ -41,15 +41,23 @@ TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("In
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsBSpline.ctrlpList = TsCtrlpList()
-TsBSpline.knotList = TsKnotList()
+TsBSpline.ctrlpList = None
+TsBSpline.knotList = None
 
-def ts_initBList(l, b):
-    l.ts_bspline = b
-    return l
+def ts_initCtrlpList(self):
+    if self.ctrlpList is None:
+        self.ctrlpList = TsCtrlpList()
+        self.ctrlpList.ts_bspline = self
+    return self.ctrlpList
 
-TsBSpline.ctrlp = property(lambda self: ts_initBList(self.ctrlpList, self))
-TsBSpline.knots = property(lambda self: ts_initBList(self.knotList, self))
+def ts_initKnotList(self):
+    if self.knotList is None:
+        self.knotList = TsKnotList()
+        self.knotList.ts_bspline = self
+    return self.knotList
+
+TsBSpline.ctrlp = property(lambda self: ts_initCtrlpList(self))
+TsBSpline.knots = property(lambda self: ts_initKnotList(self))
 %}
 
 //********************************************************
@@ -58,15 +66,23 @@ TsBSpline.knots = property(lambda self: ts_initBList(self.knotList, self))
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsDeBoorNet.pointList = TsPointList()
-TsDeBoorNet.resultList = TsResultList()
+TsDeBoorNet.pointList = None
+TsDeBoorNet.resultList = None
     
-def ts_initDList(l, d):
-    l.ts_deboornet = d
-    return l
-    
-TsDeBoorNet.points = property(lambda self: ts_initDList(self.pointList, self))
-TsDeBoorNet.result = property(lambda self: ts_initDList(self.resultList, self))
+def ts_initPointList(self):
+    if self.pointList is None:
+        self.pointList = TsPointList()
+        self.pointList.ts_deboornet = self
+    return self.pointList
+
+def ts_initResultList(self):
+    if self.resultList is None:
+        self.resultList = TsResultList()
+        self.resultList.ts_deboornet = self
+    return self.resultList
+
+TsDeBoorNet.points = property(lambda self: ts_initPointList(self))
+TsDeBoorNet.result = property(lambda self: ts_initResultList(self))
 %}
 
 

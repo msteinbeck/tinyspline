@@ -14,6 +14,19 @@ extern "C" {
 * Data                                                  *
 *                                                       *
 ********************************************************/
+/**
+ * This enum contains all error codes used by TinySpline.
+ *
+ * The following snippet shows how to handle errors:
+ *      TsError err = ...       // any function call here
+ *      if (err < 0) {          // or use err != TS_SUCCESS
+ *          printf("we got an error!");
+ *
+ *          // you may want to reuse error codes
+ *          // over several functions
+ *          return err;
+ *      }
+ */
 typedef enum
 {
     TS_SUCCESS = 0,         /* no error */
@@ -27,11 +40,15 @@ typedef enum
     TS_INPUT_EQ_OUTPUT = -7 /* input parameter is equals to output parameter */
 } tsError;
 
+/**
+ * This enum describes how to fill the knot vector of a spline.
+ *
+ * If you don't know what an opened or clamped spline is, take a look at:
+ * www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
+ */
 typedef enum 
 {
-/* If you don't know what an opened or clamped b-splines is, take a look at:
- * www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
- * setup knots as... */
+/* setup knots as... */
     TS_OPENED = 0,  /* [uniformly spaced] */
     TS_CLAMPED = 1, /* [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n] */
     TS_NONE = 2     /* do not setup the knots; they may have any values */

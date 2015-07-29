@@ -163,8 +163,8 @@ tsError ts_bspline_copy(
  * On error all values of \result are 0/NULL.
  *
  * @return TS_SUCCESS           on success.
- * @return TS_MALLOC            if \original != \result and
- *                              allocating memory failed.
+ * @return TS_MALLOC            if \original != \result and allocating
+ *                              memory failed.
  */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
@@ -205,6 +205,29 @@ tsError ts_bspline_split(
     tsBSpline* split, size_t* k
 );
 
+/**
+ * Buckles \original by \b and stores the result in \buckled.
+ *
+ * This function is based on:
+ *      Holten, Danny. "Hierarchical edge bundles: Visualization of adjacency
+ *      relations in hierarchical data." Visualization and Computer Graphics,
+ *      IEEE Transactions on 12.5 (2006): 741-748.
+ * Holten calls it "straightening" (page 744, equation 1).
+ *
+ * Usually the range of \b is: 0 <= \b <= 1, where 0 results in a line between
+ * the first and the last control point (no buckle) and 1 keeps the original
+ * shape (maximum buckle). If \b < 0 or \b > 1 the behaviour is undefined,
+ * though it will not result in an error.
+ *
+ * This function creates a deep copy of \original, if \original != \buckled
+ * and will never fail if \original == \buckled (always returns TS_SUCCESS).
+ *
+ * On error all values of \buckled are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if \original != \buckled and allocating
+ *                              memory failed.
+ */
 tsError ts_bspline_buckle(
     const tsBSpline* original, const float b,
     tsBSpline* buckled

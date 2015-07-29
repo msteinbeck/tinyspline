@@ -154,12 +154,37 @@ tsError ts_bspline_copy(
         tsBSpline* copy
 );
 
-
+/**
+ * Fills the knot vector of \result according to \type.
+ *
+ * This function creates a deep copy of \original, if \original != \result
+ * and will never fail if \original == \result (always returns TS_SUCCESS).
+ *
+ * On error all values of \result are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if \original != \result and
+ *                              allocating memory failed.
+ */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
     tsBSpline* result
 );
 
+/**
+ * Evaluates \bspline at knot value \u and stores result in \deBoorNet.
+ *
+ * This function does not free already allocated memory in \deBoorNet.
+ * If you want to reuse an instance of tsDeBoorNet by using it in multiple
+ * calls of this function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * On error all values of \deBoorNet are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if allocating memory failed.
+ * @return TS_MULTIPLICITY      if multiplicity of \u > order of \bspline.
+ * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
+ */
 tsError ts_bspline_evaluate(
     const tsBSpline* bspline, const float u, 
     tsDeBoorNet* deBoorNet

@@ -125,7 +125,12 @@ tsError ts_bspline_new(
 /**
  * The copy constructor of tsDeBoorNet.
  *
- * Creates a deep copy of \original.
+ * Creates a deep copy of \original and stores the result in \copy. This
+ * function does not free already allocated memory in \copy. If you want to
+ * reuse an instance of tsDeBoorNet by using it in multiple calls of this
+ * function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * Unlike most other functions \original and \copy may not be the same pointer!
  *
  * On error all values of \copy are 0/NULL.
  *
@@ -141,7 +146,12 @@ tsError ts_deboornet_copy(
 /**
  * The copy constructor of tsBSpline.
  *
- * Create a deep copy of \original.
+ * Creates a deep copy of \original and stores the result in \copy. This
+ * function does not free already allocated memory in \copy. If you want to
+ * reuse an instance of tsBSpline by using it in multiple calls of this
+ * function, make sure to call ::ts_bspline_free beforehand.
+ *
+ * Unlike most other functions \original and \copy may not be the same pointer!
  *
  * On error all values of \copy are 0/NULL.
  *
@@ -155,7 +165,8 @@ tsError ts_bspline_copy(
 );
 
 /**
- * Fills the knot vector of \result according to \type.
+ * Fills the knot vector of \original according to \type and stores the result
+ * in \result.
  *
  * This function creates a deep copy of \original, if \original != \result
  * and will never fail if \original == \result (always returns TS_SUCCESS).
@@ -244,6 +255,12 @@ tsError ts_bspline_to_beziers(
 * Utility                                               *
 *                                                       *
 ********************************************************/
+/**
+ * Compares the float values \x and \y by using absolute and relative epsilon.
+ *
+ * @return 1    if \x is equals to \y.
+ * @return 0    otherwise.
+ */
 int ts_fequals(const float x, const float y);
 
 

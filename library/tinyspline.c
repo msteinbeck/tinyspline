@@ -202,7 +202,8 @@ void ts_bspline_free(tsBSpline* bspline)
 }
 
 tsError ts_bspline_new(
-        const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+        const size_t deg, const size_t dim,
+        const size_t n_ctrlp, const tsBSplineType type,
         tsBSpline* bspline
 )
 {

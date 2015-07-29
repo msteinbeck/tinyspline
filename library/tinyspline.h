@@ -63,7 +63,7 @@ typedef struct
     size_t n_ctrlp; /* number of control points */
     size_t n_knots; /* number of knots (n_ctrlp + deg + 1) */
     float* ctrlp;   /* the control points of the spline */
-    float* knots;   /* the knot vector of the b-spline (ascending) */
+    float* knots;   /* the knot vector of the spline (ascending) */
 } tsBSpline;
 
 
@@ -72,33 +72,87 @@ typedef struct
 * Methods                                               *
 *                                                       *
 ********************************************************/
-/* ============ default constructors ============ */
+/**
+ * The default constructor of tsDeBoorNet.
+ *
+ * All values of \deBoorNet are set to 0/NULL.
+ */
 void ts_deboornet_default(tsDeBoorNet* deBoorNet);
+
+/**
+ * The destructor of tsDeBoorNet.
+ *
+ * Frees all dynamically allocated memory and calls ::ts_deboornet_default
+ * afterwards.
+ */
 void ts_deboornet_free(tsDeBoorNet* deBoorNet);
+
+/**
+ * The default constructor of tsBSpline.
+ *
+ * All values of \bspline are set to 0/NULL.
+ */
 void ts_bspline_default(tsBSpline* bspline);
+
+/**
+ * The destructor of tsBSpline.
+ *
+ * Frees all dynamically allocated memory and calls ::ts_deboornet_free
+ * afterwards.
+ */
 void ts_bspline_free(tsBSpline* bspline);
-/* ============================================== */
 
-
-/* ============== new constructors ============== */
+/**
+ * A convenient constructor for tsBSpline.
+ *
+ * Create a new spline of degree \deg with dimension \dim and \n_ctrlp
+ * many control points. This function automatically calculates the necessary
+ * number of knots and fills the knot vector according to \type.
+ *
+ * On error all values of \bspline are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_DIM_ZERO          if \deg == 0.
+ * @return TS_DEG_GE_NCTRLP     if \deg >= \n_ctrlp.
+ * @return TS_MALLOC            if allocating memory failed.
+ */
 tsError ts_bspline_new(
-        const size_t deg, const size_t dim, const size_t n_ctrlp, const tsBSplineType type,
+        const size_t deg, const size_t dim,
+        const size_t n_ctrlp, const tsBSplineType type,
         tsBSpline* bspline
 );
-/* ============================================== */
 
-
-/* ============= copy constructors ============== */
+/**
+ * The copy constructor of tsDeBoorNet.
+ *
+ * Creates a deep copy of \original.
+ *
+ * On error all values of \copy are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_INPUT_EQ_OUTPUT   if \original == \copy
+ * @return TS_MALLOC            if allocating memory failed.
+ */
 tsError ts_deboornet_copy(
     const tsDeBoorNet* original,
     tsDeBoorNet* copy
 );
 
+/**
+ * The copy constructor of tsBSpline.
+ *
+ * Create a deep copy of \original.
+ *
+ * On error all values of \copy are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_INPUT_EQ_OUTPUT   if \original == \copy.
+ * @return TS_MALLOC            if allocating memory failed.
+ */
 tsError ts_bspline_copy(
         const tsBSpline* original,
         tsBSpline* copy
 );
-/* ============================================== */
 
 
 tsError ts_bspline_setup_knots(

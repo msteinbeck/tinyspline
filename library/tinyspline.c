@@ -503,18 +503,19 @@ tsError ts_bspline_resize(
         return TS_SUCCESS;
     
     const size_t deg = bspline->deg;
+    const size_t dim = bspline->dim;
     const size_t n_ctrlp = bspline->n_ctrlp;
     const size_t new_n_ctrlp = n_ctrlp + n;
-    
-    /* check input */
+    const size_t n_knots = bspline->n_knots;
+    const size_t new_n_knots = n_knots+n;
+
     if (new_n_ctrlp <= deg)
         goto err_deg_ge_nctrlp;
     else if (n < 0 && new_n_ctrlp > n_ctrlp)
         goto err_over_underflow;
-    
-    const size_t dim = bspline->dim;
-    const size_t n_knots = bspline->n_knots;
-    const size_t new_n_knots = n_knots+n;
+    else if (n > 0 && new_n_knots < n_knots)
+        goto err_over_underflow;
+
     const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
     const size_t min_n_knots = n < 0 ? new_n_knots : n_knots;
     

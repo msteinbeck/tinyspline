@@ -223,6 +223,32 @@ tsError ts_bspline_insert_knot(
     tsBSpline* result, size_t* k
 );
 
+/**
+ * Resizes \bspline by \n (number of control points) and stores the result in
+ * \resized. If \back != 0 the resulting splines is resized at the end. If
+ * \back == 0 the resulting spline is resized at the front.
+ *
+ * Resizing a spline at the end is usually faster, because the current values
+ * don't need to be copied.
+ *
+ * This function creates a deep copy of \bspline, if \bspline != \resized.
+ *
+ * On error (and if \bspline != \resized) all values of \resized are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_DEG_GE_NCTRLP     if the degree of \resized would be >= the number
+ *                              of the control points of \resized.
+ * @return TS_OVER_UNDERFLOW    if adding \n to the current length of the
+ *                              control point/knot array would cause a
+ *                              over/underflow.
+ * @return TS_MALLOC            if (re)allocating memory failed.
+ *
+ * if \bspline != \resized:
+ *      @return TS_DIM_ZERO         if the degree of \bspline == 0.
+ *      @return TS_DEG_GE_NCTRLP    if the degree of \bspline >= the number of
+ *                                  the control points of \bspline.
+ *      @return TS_MALLOC           if allocating memory failed.
+ */
 tsError ts_bspline_resize(
     const tsBSpline* bspline, const int n, const int back,
     tsBSpline* resized

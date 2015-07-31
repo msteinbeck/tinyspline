@@ -99,9 +99,9 @@ the wrapper class. Thus, you don't need to take care of memory management
 in C++ and the bindings.
 
 #####Error Handling
-Error handling has been implemented in a single struct (`tsError`). This makes
-it easier to reuse the error codes over several functions. Error checking should
-be straight forward:
+The error handling of TinySpline has been implemented with error codes.
+The enum `tsError` contains all available errors and should be used to reuse
+error codes over several functions. Error checking should be straightforward:
 
 ```c
 tsBSpline spline;

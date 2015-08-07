@@ -47,16 +47,39 @@ The directory
 [example](https://github.com/retuxx/tinyspline/tree/master/example) contains
 some examples written in OpenGL.
 
+###Bindings and Libraries
+Alongside a suitable Swig executable, each binding may have additional
+dependencies to generate the source of the target language. The following
+table gives an overview:
+
+Language | Dependencies to Generate Source | (Relative) Output Directory
+-------- | ------------------------------- | ---------------------------
+C#       | -                               | csharp
+Java     | JNI headers                     | so/tinyspline
+Python   | Python headers                  | python
+
+By design of Swig each binding generates and compiles its own shared library
+which is necessary to use a binding. Depending on your operating system
+and the used compiler the actual names of the shared libraries may vary.
+The following table shows the names of the shared libraries compiled with
+GCC on Linux:
+
+Language | Shared Library
+-------- | ----------------------
+C#       | libtinysplinecsharp.so
+Java     | libtinysplinejava.so
+Python   | _tinysplinepython.so
+
 ###API
 
 #####Data Structures
 The C library of TinySpline consists of two enums and two structs:
 
-Name | Description
----- | -----------
-`tsError` (enum) | Defines some error codes
+Name                   | Description
+---------------------- | -----------------------------------------------------
+`tsError` (enum)       | Defines some error codes
 `tsBSplineType` (enum) | Defines how to setup knots while creating splines
-`tsBSpline` (struct) | The spline itself
+`tsBSpline` (struct)   | The spline itself
 `tsDeBoorNet` (struct) | The result of spline evaluation (De Boor's algorithm)
 
 The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely 

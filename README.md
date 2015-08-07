@@ -75,12 +75,19 @@ Thus, you have to do it manually by placing the following code *before* the firs
 usage of TinySpline:
 
 ```java
-// load shared library
+// loads the shared library
 System.loadLibrary("tinysplinejava");
-
-// fails if the shared library has not been loaded beforehand
-TsBSpline spline = new TsBSpline(3, 3, 7, tsBSplineType.TS_CLAMPED);
 ```
+
+Usually compiled languages such as C# and Java provide some kind of container
+for compiled source code. To simplify the usage of TinySpline these containers
+will be generated if possible. The following table gives an overview of the
+necessary tools and the created containers:
+
+Language | Tools                            | Output
+-------- | -------------------------------- | ----------------
+C#       | Any of: csc, mcs, dmcs, gmcs     | tinysplinecs.dll
+Java     | javac and jar (available in JDK) | tinyspline.jar
 
 ###API
 

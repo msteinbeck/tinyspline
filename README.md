@@ -49,7 +49,7 @@ some examples written in OpenGL.
 
 ###Bindings
 Alongside Swig, each binding may have additional dependencies to generate the 
-source of the target language. The following table gives an overview:
+source code of the target language. The following table gives an overview:
 
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
@@ -57,7 +57,7 @@ C#       | -                               | csharp
 Java     | JNI headers                     | so/tinyspline
 Python   | Python headers                  | python
 
-By design of Swig each binding generates and compiles its own shared library
+By design of Swig, each binding generates and compiles its own shared library
 which is necessary to use the binding. Depending on your operating system
 and the used compiler the actual names of the shared libraries may vary.
 The following table shows the names of the shared libraries compiled with
@@ -79,15 +79,18 @@ usage of TinySpline:
 System.loadLibrary("tinysplinejava");
 ```
 
-To simplify the usage of the bindings the generated source code will be compiled
+To simplify the usage of the bindings, the generated source code will be compiled
 and/or packaged according to the target language idiom. The following table gives
-an overview of the neccessary tools and the output files.
+an overview of the neccessary tools and the resulting output files.
 
 Language | Necessary Tools                  | Output File
 -------- | -------------------------------- | ----------------
 C#       | Any of: csc, mcs, dmcs, gmcs     | tinysplinecs.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
-Python   | -                                | tinyspline.py
+Python   | -                                | tinyspline.py*
+
+\* These bindings just get copied from the source code directory into
+the build directory and may be renamed for convenience.
 
 ###API
 

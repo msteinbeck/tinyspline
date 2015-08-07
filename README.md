@@ -47,10 +47,9 @@ The directory
 [example](https://github.com/retuxx/tinyspline/tree/master/example) contains
 some examples written in OpenGL.
 
-###Bindings and Libraries
-Alongside a suitable Swig executable, each binding may have additional
-dependencies to generate the source of the target language. The following
-table gives an overview:
+###Bindings
+Alongside Swig, each binding may have additional dependencies to generate the 
+source of the target language. The following table gives an overview:
 
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
@@ -59,7 +58,7 @@ Java     | JNI headers                     | so/tinyspline
 Python   | Python headers                  | python
 
 By design of Swig each binding generates and compiles its own shared library
-which is necessary to use a binding. Depending on your operating system
+which is necessary to use the binding. Depending on your operating system
 and the used compiler the actual names of the shared libraries may vary.
 The following table shows the names of the shared libraries compiled with
 GCC on Linux:
@@ -69,6 +68,19 @@ Language | Shared Library
 C#       | libtinysplinecsharp.so
 Java     | libtinysplinejava.so
 Python   | _tinysplinepython.so
+
+**Note:** In order to use a binding make sure its shared library is available
+in the library path. Java does not load its shared libraries automatically.
+Thus, you have to do it manually by placing the following code *before* the first
+usage of TinySpline:
+
+```java
+// load shared library
+System.loadLibrary("tinysplinejava");
+
+// fails if the shared library has not been loaded beforehand
+TsBSpline spline = new TsBSpline(3, 3, 7, tsBSplineType.TS_CLAMPED);
+```
 
 ###API
 

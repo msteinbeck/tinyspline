@@ -79,15 +79,15 @@ usage of TinySpline:
 System.loadLibrary("tinysplinejava");
 ```
 
-Usually compiled languages such as C# and Java provide some kind of container
-for compiled source code. To simplify the usage of TinySpline these containers
-will be generated if possible. The following table gives an overview of the
-necessary tools and the created containers:
+To simplify the usage of the bindings the generated source code will be compiled
+and/or packaged according to the target language idiom. The following table gives
+an overview of the neccessary tools and the output files.
 
-Language | Tools                            | Output
+Language | Necessary Tools                  | Output File
 -------- | -------------------------------- | ----------------
 C#       | Any of: csc, mcs, dmcs, gmcs     | tinysplinecs.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
+Python   | -                                | tinyspline.py
 
 ###API
 

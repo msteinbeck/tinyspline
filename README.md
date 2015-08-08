@@ -3,7 +3,7 @@ TinySpline
 
 TinySpline is a C library for 
 [NURBS](https://de.wikipedia.org/wiki/Non-Uniform_Rational_B-Spline),
-[B-Splines](https://en.wikipedia.org/wiki/B-spline),
+[B-Splines](https://en.wikipedia.org/wiki/B-spline) and
 [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 (even lines and points) with a modern C++11 wrapper and bindings for C#,
 Java and Python (via Swig). The goal of this project is to provide a small

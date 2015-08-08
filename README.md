@@ -7,8 +7,8 @@ TinySpline is a C library for
 [Bézier curves](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)
 (even lines and points) with a modern C++11 wrapper and bindings for C#,
 Java and Python (via Swig). The goal of this project is to provide a small
-library with a minimum of dependencies which is easy and intuitively to use.
-Moreover, the integration of TinySpline into OpenGL is straightforward.
+library with a minimum of set dependencies which is easy and intuitively to
+use. Moreover, the integration of TinySpline into OpenGL is straightforward.
 
 TinySpline is licensed under [the MIT License](http://opensource.org/licenses/MIT),
 so feel free to use it anywhere.

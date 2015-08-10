@@ -496,7 +496,7 @@ tsError ts_bspline_resize(
 {
     tsError err;
 
-    /* if n is 0 the b-spline must not be resized */
+    /* if n is 0 the spline must not be resized */
     if (n == 0 && bspline != resized)
         return ts_bspline_copy(bspline, resized);
     if (n == 0 && bspline == resized)
@@ -516,55 +516,55 @@ tsError ts_bspline_resize(
     else if (n > 0 && new_n_knots < n_knots)
         goto err_over_underflow;
 
-    const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
-    const size_t min_n_knots = n < 0 ? new_n_knots : n_knots;
+    const size_t size_flt = sizeof(float);
+    const size_t size_ctrlp = dim*size_flt;
+    float* from_ctrlp = bspline->ctrlp;
+    float* from_knots = bspline->knots;
+    float* to_ctrlp;
+    float* to_knots;
     
     if (bspline != resized) {
         err = ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
         if (err < 0)
             return err;
+        to_ctrlp = resized->ctrlp;
+        to_knots = resized->knots;
+    } else {
+        to_ctrlp = (float*) malloc(new_n_ctrlp * size_ctrlp);
+        if (to_ctrlp == NULL)
+            goto err_malloc;
+        to_knots = (float*) malloc(new_n_knots * size_flt);
+        if (to_knots == NULL) {
+            free(to_ctrlp); /* prevent memory leak */
+            goto err_malloc;
+        }
     }
 
-    float* from_ctrlp = bspline->ctrlp;
-    float* from_knots = bspline->knots;
-    float* to_ctrlp = resized->ctrlp;
-    float* to_knots = resized->knots;
+    const size_t min_n_ctrlp = n < 0 ? new_n_ctrlp : n_ctrlp;
+    const size_t min_n_knots = n < 0 ? new_n_knots : n_knots;
+
     if (!back && n < 0) {
-        from_ctrlp -= n*dim;
-        from_knots -= n;
+        memcpy(to_ctrlp, from_ctrlp - n*dim, min_n_ctrlp * size_ctrlp);
+        memcpy(to_knots, from_knots - n, min_n_knots * size_flt);
     } else if (!back && n > 0) {
-        to_ctrlp += n*dim;
-        to_knots += n;
-    }
-    
-    const size_t size_flt = sizeof(float);
-    const size_t size_ctrlp = dim*size_flt;
-    
-    if (bspline != resized) {
+        memcpy(to_ctrlp + n*dim, from_ctrlp, min_n_ctrlp * size_ctrlp);
+        memcpy(to_knots + n, from_knots, min_n_knots * size_flt);
+    } else {
+        /* n != 0 implies back == true */
         memcpy(to_ctrlp, from_ctrlp, min_n_ctrlp * size_ctrlp);
         memcpy(to_knots, from_knots, min_n_knots * size_flt);
-    } else {
-        if (!back && n < 0) {
-            memmove(to_ctrlp, from_ctrlp, min_n_ctrlp * size_ctrlp);
-            memmove(to_knots, from_knots, min_n_knots * size_flt);
-        }
-        float* tmp; /* used to not loose pointer if realloc fails */
-        /* resize control points */
-        tmp = (float*) realloc(resized->ctrlp, new_n_ctrlp * size_ctrlp);
-        if (tmp == NULL)
-            goto err_malloc;
-        resized->ctrlp = tmp;
+    }
+
+    if (bspline == resized) {
+        /* free old memory */
+        free(from_ctrlp);
+        free(from_knots);
+
+        /* assign new values */
+        resized->ctrlp = to_ctrlp;
+        resized->knots = to_knots;
         resized->n_ctrlp = new_n_ctrlp;
-        /* resize knots */
-        tmp = (float*) realloc(resized->knots, new_n_knots * size_flt);
-        if (tmp == NULL)
-            goto err_malloc;
-        resized->knots = tmp;
         resized->n_knots = new_n_knots;
-        if (!back && n > 0) {
-            memmove(to_ctrlp, from_ctrlp, min_n_ctrlp * size_ctrlp);
-            memmove(to_knots, from_knots, min_n_knots * size_flt);
-        }
     }
     
     return TS_SUCCESS;

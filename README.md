@@ -159,8 +159,8 @@ else
   // no error
 ```
 
-The C++11 wrapper uses std::exception instead. All bindings map std::exception
-into their own exception types.
+The C++11 wrapper uses std::runtime_error instead. All bindings map 
+std::runtime_error into their own exception types.
 
 #####OpenGL Integration
 Using TinySpline within OpenGL is very easy because the structs provide 

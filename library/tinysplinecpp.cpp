@@ -1,34 +1,5 @@
 #include "tinysplinecpp.h"
-#include <exception>
-
-class TsException : public std::exception {
-public:
-    TsException(tsError err) :err(err) {}
-    const char* what () const throw ()
-    {
-        if (err == TS_MALLOC)
-            return "malloc/realloc failed";
-        else if (err == TS_OVER_UNDERFLOW)
-            return "over/underflow detected";
-        else if (err == TS_DIM_ZERO)
-            return "dim == 0";
-        else if (err == TS_DEG_GE_NCTRLP)
-            return "deg >= nCtrlp";
-        else if (err == TS_U_UNDEFINED)
-            return "u is undefined";
-        else if (err == TS_MULTIPLICITY)
-            return "s > order";
-        else if (err == TS_INPUT_EQ_OUTPUT)
-            return "input == output";
-        return "Internal bug.  An exception was thrown without any error.";
-    }
-
-private:
-    const tsError err;
-};
-
-
-
+#include <stdexcept>
 
 TsDeBoorNet::TsDeBoorNet()
 {
@@ -38,7 +9,7 @@ TsDeBoorNet::TsDeBoorNet()
 TsDeBoorNet::TsDeBoorNet(const TsDeBoorNet &other) {
     const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 TsDeBoorNet::~TsDeBoorNet()
@@ -50,7 +21,7 @@ TsDeBoorNet &TsDeBoorNet::operator=(const TsDeBoorNet &other) {
     if (this != &other) {
         const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
         if (err < 0)
-            throw TsException(err);
+            throw std::runtime_error(ts_enum_str(err));
     }
     return *this;
 }
@@ -112,14 +83,14 @@ TsBSpline::TsBSpline(const TsBSpline& other)
 {
     const tsError err = ts_bspline_copy(&other.bspline, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 TsBSpline::TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
                      const tsBSplineType type) {
     const tsError err = ts_bspline_new(deg, dim, nCtrlp, type, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 TsBSpline::~TsBSpline()
@@ -131,7 +102,7 @@ TsBSpline &TsBSpline::operator=(const TsBSpline &other) {
     if (this != &other) {
         const tsError err = ts_bspline_copy(&other.bspline, &bspline);
         if (err < 0)
-            throw TsException(err);
+            throw std::runtime_error(ts_enum_str(err));
     }
     return *this;
 }
@@ -190,7 +161,7 @@ void TsBSpline::setOrder(const size_t order)
 {
     const size_t deg = order-1;
     if (deg >= bspline.n_ctrlp)
-        throw TsException(TS_DEG_GE_NCTRLP);
+        throw std::runtime_error(ts_enum_str(TS_DEG_GE_NCTRLP));
     bspline.order = order;
     bspline.deg = deg;
 }
@@ -199,7 +170,7 @@ void TsBSpline::setupKnots(const tsBSplineType type)
 {
     const tsError err = ts_bspline_setup_knots(&bspline, type, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 size_t TsBSpline::insertKnot(const float u, const size_t n)
@@ -207,7 +178,7 @@ size_t TsBSpline::insertKnot(const float u, const size_t n)
     size_t k;
     const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bspline, &k);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
     return k;
 }
 
@@ -215,7 +186,7 @@ void TsBSpline::resize(const int n, const int back)
 {
     const tsError err = ts_bspline_resize(&bspline, n, back, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 size_t TsBSpline::split(const float u)
@@ -223,7 +194,7 @@ size_t TsBSpline::split(const float u)
     size_t k;
     const tsError err = ts_bspline_split(&bspline, u, &bspline, &k);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
     return k;
 }
 
@@ -231,14 +202,14 @@ void TsBSpline::buckle(const float b)
 {
     const tsError err = ts_bspline_buckle(&bspline, b, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 void TsBSpline::toBeziers()
 {
     const tsError err = ts_bspline_to_beziers(&bspline, &bspline);
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 TsDeBoorNet TsBSpline::evaluate(const float u) const
@@ -246,6 +217,6 @@ TsDeBoorNet TsBSpline::evaluate(const float u) const
     TsDeBoorNet deBoorNet;
     const tsError err = ts_bspline_evaluate(&bspline, u, deBoorNet.data());
     if (err < 0)
-        throw TsException(err);
+        throw std::runtime_error(ts_enum_str(err));
     return deBoorNet;
 }

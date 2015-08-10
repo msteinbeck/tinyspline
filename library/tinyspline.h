@@ -306,6 +306,11 @@ tsError ts_bspline_to_beziers(
  */
 int ts_fequals(const float x, const float y);
 
+/**
+ * Returns the error message associated to \err.
+ */
+char* ts_enum_str(const tsError err);
+
 
 #ifdef	__cplusplus
 }

@@ -700,3 +700,21 @@ int ts_fequals(const float x, const float y)
         return r <= FLT_MAX_REL_ERROR;
     }
 }
+
+char* ts_enum_str(const tsError err) {
+    if (err == TS_MALLOC)
+        return "malloc failed";
+    else if (err == TS_OVER_UNDERFLOW)
+        return "over/underflow detected";
+    else if (err == TS_DIM_ZERO)
+        return "dim == 0";
+    else if (err == TS_DEG_GE_NCTRLP)
+        return "deg >= number of control points";
+    else if (err == TS_U_UNDEFINED)
+        return "spline is undefined at given u";
+    else if (err == TS_MULTIPLICITY)
+        return "s > order";
+    else if (err == TS_INPUT_EQ_OUTPUT)
+        return "input == output";
+    return "unkown error";
+}

@@ -13,7 +13,7 @@
     $action
   } catch (const std::out_of_range& e) {
     SWIG_exception(SWIG_IndexError, e.what());
-  } catch (const std::exception& e) {
+  } catch (const std::runtime_error& e) {
     SWIG_exception(SWIG_RuntimeError, e.what());
   }
 }

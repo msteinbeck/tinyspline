@@ -3,6 +3,9 @@
 %ignore TsDeBoorNet::operator=;
 %ignore TsBSpline::operator=;
 
+%include <pyabc.i>
+%pythonabc(TsFloatList, collections.MutableSequence);
+
 %include "tinyspline.i"
 
 // NOTE:

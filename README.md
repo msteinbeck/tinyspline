@@ -114,7 +114,7 @@ constructors and destructors are provided.
 With a few exceptions, all functions of the C library provide input and output
 parameter, in which all input parameter are const. Except of the copy functions
 (`ts_***_copy`), the pointer of the input may be equal to the pointer of the
-output, so you can modify a spline by using it as input and output at once:
+output. To modify a spline use, it as input and output at once:
 
 ```c
 tsBSpline spline;

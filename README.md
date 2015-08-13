@@ -11,7 +11,7 @@ library with a minimum set of dependencies which is easy and intuitively to
 use. Moreover, the integration of TinySpline into OpenGL is straightforward.
 
 TinySpline is licensed under [the MIT License](http://opensource.org/licenses/MIT),
-so feel free to use it anywhere.
+hence feel free to use it anywhere.
 
 ###Some Features of This Library
 - TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.

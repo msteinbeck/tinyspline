@@ -119,10 +119,10 @@ superset of `A` iff `B > A`. Then the following equation applies:
 `NURBS > B-Splines > Béziers > Lines > Points`
 
 It goes without saying that the struct `tsBSpline` can be used directly for
-B-Splines because it provies `control points` and `knots`. Now let's have
+B-Splines because it provides `control points` and `knots`. Now let's have
 a look at Bézier curves. A Bézier curve `c` of degree `n` has `n + 1`
 control points where `c` is tangent to control point `p_0` and tangent 
-to the control point `p_n+1`. The following code snippet shows how to create 
+to control point `p_n+1`. The following code snippet shows how to create 
 a Bézier curve `c` of degree 3 in 2D:
 
 ```c
@@ -130,12 +130,27 @@ tsBSpline c;
 ts_bspline_new(3, 2, 4, TS_CLAMPED, &c);
 ```
 
-The first paramter is the degree (3) of `c` and the second one the 
-dimension (2). As already mentioned a Bézier curve has `n + 1` control
-points. Thus, the third paramter (number of control points) is 4.
-The enum `TS_CLAMPED` ensures that `c` is tangent to the first and
-last control point. That it! TODO... finish this.
+The first paramter is the degree (3) of `c` and the second one the
+dimension (2) of `c`. As already mentioned a Bézier curve has
+`n + 1` control points. Thus, the third paramter
+(number of control points) is 4. The enum `TS_CLAMPED` ensures that
+`c` is tangent to the first and last control point. That's it!  
 
+But wait... you may ask yourself what `tsBSpline.knots` looks like.
+Due to the fact that `c` is a Bézier curve and all Bézier curves are
+B-Splines, `c` actually **is** a B-Splines. Furthermore, a B-Spline of
+degree `n` with `m` control points has `m + n + 1` knots. Thus, `c` has
+`3 + 4 + 1 = 8` knots. To ensure a B-Splines is tangent to the first and
+last control point the first `n + 1` and the last `n + 1` knots need to
+be equals. Since `c` has 8 knots the knot vector may look like:
+
+`[0, 0, 0, 0, 1, 1, 1, 1]`
+
+Keep in mind that `u_i <= u_i + 1` must apply for all knot values `u` and
+`i = 0 ... m + n - 1`. In conclusion all knot values of `c` are either `0`
+or `1`. Thus you don't need to take care about the knot vector of `c`.
+
+TODO... finish this
 
 #####Functions 
 With a few exceptions, all functions of the C library provide input and output

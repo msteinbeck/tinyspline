@@ -130,9 +130,9 @@ tsBSpline c;
 ts_bspline_new(3, 2, 4, TS_CLAMPED, &c);
 ```
 
-The first paramter is the degree (3) of `c` and the second one the
+The first parameter is the degree (3) of `c` and the second one the
 dimension (2) of `c`. As already mentioned a Bézier curve has
-`n + 1` control points. Thus, the third paramter
+`n + 1` control points. Thus, the third parameter
 (number of control points) is 4. The enum `TS_CLAMPED` ensures that
 `c` is tangent to the first and last control point. That's it!
 
@@ -147,12 +147,14 @@ be equals. Since `c` has 8 knots the knot vector may look like:
 `[0, 0, 0, 0, 1, 1, 1, 1]`
 
 **Note:** Keep in mind that `u_i <= u_i + 1` must apply for all knot
-values `u` and `i = 0 ... m + n - 1`. 
+values `u` and `i = 0...m + n - 1`. 
 
-In conclusion all knot values of `c` are either `0` or `1`. That's the
-reason why you don't need to take care about the knot vector of `c`.
+In conclusion all knot values of `c` are either `0` or `1`.
+Without getting too much into details, that's the reason why you
+don't need to take care about the knot vector of `c` and 
+Bézier curves in general.
 
-After looking closly to Bézier curves it should be obvious how to
+After looking closely to Bézier curves it should be obvious how to
 create lines and points. Lines are Bézier curves of degree 1 with
 2 control points:
 

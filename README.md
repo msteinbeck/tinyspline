@@ -171,7 +171,30 @@ tsBSpline point;
 ts_bspline_new(0, dim, 1, TS_CLAMPED, &point);
 ```
 
-TODO... finish this
+**Note:** If you want to create a sequence of connected lines, you
+just have to increase the number of control points. A sequence of
+8 connected lines, for example, is of degree 1 with 8 control 
+points.
+
+Finally, we should have a look at NURBS. NURBS are generalizations
+of B-Splines and can be expressed by
+[homogeneous coordinates](https://en.wikipedia.org/wiki/Homogeneous_coordinates).
+If you want to create a NURBS of degree `n` with `m` control points
+in 3D, then you have to create a B-Spline of degree `n` with `m`
+control points in 4D:
+
+```c
+tsBSpline nurbs;
+ts_bspline_new(n, 4, m, TS_CLAMPED, &nurbs);
+// setup homogeneous coordinates
+```
+
+The forth component of the dimension is used to weight the other
+three components. You can find  an example of a NURBS in
+[nurbs.c](https://github.com/retuxx/tinyspline/blob/master/example/nurbs.c).
+
+**Note:** All functions of TinySpline (e.g. `ts_bspline_evaluate`)
+are capable of handling NURBS, B-Splines, Béziers, lines and points.
 
 #####Functions 
 With a few exceptions, all functions of the C library provide input and output

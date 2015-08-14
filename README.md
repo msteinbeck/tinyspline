@@ -110,9 +110,36 @@ The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely
 `TsBSpline` and `tsDeBoorNet`) and maps functions into methods. Furthermore,
 constructors and destructors are provided.
 
+#####NURBS, B-Splines, Béziers, Lines and Points
+Let `<` be the [subset](https://en.wikipedia.org/wiki/Subset) relation with
+`A` is subset  of `B` iff `A < B` and `>` be the
+[superset](https://en.wiktionary.org/wiki/superset) relation with `B` is
+superset of `A` iff `B > A`. Then the following equation applies:
+
+`NURBS > B-Splines > Béziers > Lines > Points`
+
+It goes without saying that the struct `tsBSpline` can be used directly for
+B-Splines because it provies `control points` and `knots`. Now let's have
+a look at Bézier curves. A Bézier curve `c` of degree `n` has `n + 1`
+control points where `c` is tangent to control point `p_0` and tangent 
+to the control point `p_n+1`. The following code snippet shows how to create 
+a Bézier curve `c` of degree 3 in 2D:
+
+```c
+tsBSpline c;
+ts_bspline_new(3, 2, 4, TS_CLAMPED, &c);
+```
+
+The first paramter is the degree (3) of `c` and the second one the 
+dimension (2). As already mentioned a Bézier curve has `n + 1` control
+points. Thus, the third paramter (number of control points) is 4.
+The enum `TS_CLAMPED` ensures that `c` is tangent to the first and
+last control point. That it! TODO... finish this.
+
+
 #####Functions 
 With a few exceptions, all functions of the C library provide input and output
-parameter, in which all input parameter are const. Except of the copy functions
+parameter, where all input parameter are const. Except of the copy functions
 (`ts_***_copy`), the pointer of the input may be equal to the pointer of the
 output. To modify a spline use, it as input and output at once:
 

@@ -122,7 +122,7 @@ It goes without saying that the struct `tsBSpline` can be used directly for
 B-Splines because it provides `control points` and `knots`. Now let's have
 a look at Bézier curves. A Bézier curve `c` of degree `n` has `n + 1`
 control points where `c` is tangent to control point `p_0` and tangent 
-to control point `p_n+1`. The following code snippet shows how to create 
+to control point `p_n`. The following code snippet shows how to create 
 a Bézier curve `c` of degree 3 in 2D:
 
 ```c

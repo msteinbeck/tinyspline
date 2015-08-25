@@ -17,9 +17,9 @@ hence feel free to use it anywhere.
 - TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.
 - Create splines of any degree with any dimensions.
 - Evaluate splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
-- Insert knots and split splines by keeping the splines shape.
+- Insert knots and split splines while keeping the splines shape.
 - Subdivide B-Splines into Béziers.
-- A modern C++11 wrapper.
+- A C++11 wrapper.
 - Bindings for C#, Java and Python.
 
 ###Project Structure

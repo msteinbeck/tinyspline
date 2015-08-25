@@ -17,9 +17,9 @@ hence feel free to use it anywhere.
 - TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.
 - Create splines of any degree with any dimensions.
 - Evaluate splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
-- Insert knots and split splines by keeping the splines shape.
+- Insert knots and split splines while keeping the splines shape.
 - Subdivide B-Splines into Béziers.
-- A modern C++11 wrapper.
+- A C++11 wrapper.
 - Bindings for C#, Java and Python.
 
 ###Project Structure
@@ -27,12 +27,12 @@ The core of TinySpline is written in ANSI C and consists of the files
 [tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.h) 
 and [tinyspline.c](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.c).
 You can either copy those files into your project or use CMake to create
-a static and shared library.
+a static or shared library.
 
 The C++11 wrapper consists of the files [tinysplinecpp.h](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.h)
 and [tinysplinecpp.cpp](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.cpp).
 As for the C library, you can copy those files (alongside tinyspline.h and
-tinyspline.c) into your project or use CMake to create a static and shared library.
+tinyspline.c) into your project or use CMake to create a static or shared library.
 
 All bindings of TinySpline work on top of the C++11 wrapper and will be 
 generated with [Swig](http://www.swig.org/) (3.0.1 or above). While
@@ -74,7 +74,7 @@ Python   | _tinysplinepython.so
 **Note:** In order to use a binding make sure its shared library is available
 in the library path. Java does not load its shared libraries automatically.
 Thus, you have to do it manually by placing the following code *before* the first
-usage of TinySpline:
+use of TinySpline:
 
 ```java
 // loads the shared library
@@ -91,7 +91,7 @@ C#       | Any of: csc, mcs, dmcs, gmcs     | tinysplinecs.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
 Python   | -                                | tinyspline.py*
 
-\* These bindings just get copied from the source code directory into
+\* The Python bindings are copied from the source code directory into
 the build directory and may be renamed for convenience.
 
 ###API
@@ -107,7 +107,7 @@ Name                   | Description
 `tsDeBoorNet` (struct) | The result of spline evaluation (De Boor's algorithm)
 
 The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely 
-`TsBSpline` and `tsDeBoorNet`) and maps functions into methods. Furthermore,
+`TsBSpline` and `TsDeBoorNet`) and maps functions into methods. Furthermore,
 constructors and destructors are provided.
 
 #####NURBS, B-Splines, Béziers, Lines and Points
@@ -138,11 +138,11 @@ dimension (2) of `c`. As already mentioned a Bézier curve has
 
 But wait... you may ask yourself what `tsBSpline.knots` looks like.
 Due to the fact that `c` is a Bézier curve and all Bézier curves are
-B-Splines, `c` actually **is** a B-Splines. Furthermore, a B-Spline of
+B-Splines, `c` actually **is** a B-Spline. Furthermore, a B-Spline of
 degree `n` with `m` control points has `m + n + 1` knots. Thus, `c` has
 `3 + 4 + 1 = 8` knots. To ensure a B-Splines is tangent to the first and
 last control point the first `n + 1` and the last `n + 1` knots need to
-be equals. Since `c` has 8 knots the knot vector may look like:
+be equal. Since `c` has 8 knots the knot vector may look like:
 
 `[0, 0, 0, 0, 1, 1, 1, 1]`
 
@@ -211,9 +211,8 @@ ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
 
 #####Memory Management
 Due to the fact that TinySpline provides generic splines in size, degree and
-dimension, the structs `tsBSpline` and `tsDeBoorNet` contain pointer to 
-dynamically allocated memory. In conclusion that means, although you don't
-have to allocate the structs on heap, you have to free the memory using one 
+dimension, the structs `tsBSpline` and `tsDeBoorNet` contain pointers to 
+dynamically allocated memory. That means you have to free the memory using one 
 of the `ts_***_free` functions to prevent memory leaks:
 
 ```c
@@ -234,7 +233,7 @@ in C++ and the bindings.
 #####Error Handling
 The error handling of TinySpline has been implemented with error codes.
 The enum `tsError` contains all available errors and should be used to reuse
-error codes over several functions. Error checking should be straightforward:
+error codes over several functions. Error checking is straightforward:
 
 ```c
 tsBSpline spline;
@@ -249,7 +248,7 @@ The C++11 wrapper uses std::runtime_error instead. All bindings map
 std::runtime_error into their own exception types.
 
 #####OpenGL Integration
-Using TinySpline within OpenGL is very easy because the structs provide 
+Using TinySpline within OpenGL is simple because the structs provide 
 all necessary fields.
 
 ```c
@@ -286,7 +285,7 @@ glEnd();
 Although evaluating a spline at a given knot value is straightforward,
 there are some notes you should know about.
 
-1. TinySpline uses floats for both, control points and knots. Now if you want 
+1. TinySpline uses floats for control points and knots. Now if you want 
    to evaluate a spline `s` at knot value `u`, the function `ts_bspline_evaluate`
    tries to find `u` within the knot vector of `s` and count its multiplicity
    (as part of [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm)).

@@ -111,10 +111,8 @@ The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely
 constructors and destructors are provided.
 
 #####NURBS, B-Splines, Béziers, Lines and Points
-Let `<` be the [subset](https://en.wikipedia.org/wiki/Subset) relation with
-`A` is subset  of `B` iff `A < B` and `>` be the
-[superset](https://en.wiktionary.org/wiki/superset) relation with `B` is
-superset of `A` iff `B > A`. Then the following equation applies:
+Let `>` be the [superset](https://en.wiktionary.org/wiki/superset) relation
+with `A` is superset of `B` iff `A > B`. Then the following equation applies:
 
 `NURBS > B-Splines > Béziers > Lines > Points`
 

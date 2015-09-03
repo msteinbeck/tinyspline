@@ -171,7 +171,7 @@ ts_bspline_new(0, dim, 1, TS_CLAMPED, &point);
 
 **Note:** If you want to create a sequence of connected lines, you
 just have to increase the number of control points. A sequence of
-8 connected lines, for example, is of degree 1 with 8 control 
+8 connected lines, for example, is of degree 1 with 7 control 
 points.
 
 Finally, we should have a look at NURBS. NURBS are generalizations

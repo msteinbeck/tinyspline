@@ -20,6 +20,7 @@ hence feel free to use it anywhere.
 - [API](#api)
 - [Current Development](#development)
 - [Theoretical Backgrounds](#backgrounds)
+- [Installation](#installation)
 
 <a name="features" />
 ###Some Features of This Library
@@ -359,7 +360,10 @@ minimal distance ||P - Q||<sub>2</sub>.
 [[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html)
 &nbsp;&nbsp; is useful if you want to use NURBS in TinySpline.
 
-###Compiling TinySpline From Source
+<a name="installation" />
+###Installation
+
+####Compiling From Source
 TinySpline uses the CMake build system. The C library is written in 
 ANSI C and should be compilable with nearly every compiler. All
 other features of TinySpline are optional and will be disabled

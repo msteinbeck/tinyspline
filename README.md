@@ -279,6 +279,31 @@ glEnd();
 ...
 ```
 
+If your spline is a Bézier curve, you can use the following code instead:
+
+```c
+tsBSpline spline;
+ts_bspline_new(3, 2, 4, TS_CLAMPED, &spline); // create bezier curve
+// setup control points
+
+// setup evaluator
+glMap1f(
+  GL_MAP1_VERTEX_3, // MAP1 = curve, VERTEX_3 = 3 dimensions
+  0.0, // u_min, usually 0 
+  1.0, // u_max, usually 1
+  spline.dim,
+  spline.order, // no need to calc deg + 1
+  spline.ctrlp
+);
+glEnable(GL_MAP1_VERTEX_3);
+
+// draw bezier curve
+glBegin(GL_LINE_STRIP);
+  for (i = 0; i <= 30; i++) 
+    glEvalCoord1f((GLfloat) i/30.0);
+glEnd();
+```
+
 #####Spline Evaluation and Discontinuity
 Although evaluating a spline at a given knot value is straightforward,
 there are some notes you should know about.

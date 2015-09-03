@@ -117,7 +117,7 @@ the build directory and may be renamed for convenience.
 ###API
 
 <a name="structs" />
-#####Data Structures
+####Data Structures
 The C library of TinySpline consists of two enums and two structs:
 
 Name                   | Description
@@ -132,7 +132,7 @@ The C++11 wrapper wraps `tsBSpline` and `tsDeBoorNet` into classes (namely
 constructors and destructors are provided.
 
 <a name="types" />
-#####NURBS, B-Splines, Béziers, Lines and Points
+####NURBS, B-Splines, Béziers, Lines and Points
 Let `>` be the [superset](https://en.wiktionary.org/wiki/superset) relation
 with `A` is superset of `B` iff `A > B`. Then the following equation applies:
 
@@ -217,7 +217,7 @@ three components. You can find  an example of a NURBS in
 are capable of handling NURBS, B-Splines, Béziers, lines and points.
 
 <a name="functions" />
-#####Functions 
+####Functions 
 With a few exceptions, all functions of the C library provide input and output
 parameter, where all input parameter are const. Except of the copy functions
 (`ts_***_copy`), the pointer of the input may be equal to the pointer of the
@@ -231,7 +231,7 @@ ts_bspline_buckle(&spline, 0.6f, &spline); // modify spline
 ```
 
 <a name="memory" />
-#####Memory Management
+####Memory Management
 Due to the fact that TinySpline provides generic splines in size, degree and
 dimension, the structs `tsBSpline` and `tsDeBoorNet` contain pointers to 
 dynamically allocated memory. That means you have to free the memory using one 
@@ -253,7 +253,7 @@ the wrapper class. Thus, you don't need to take care of memory management
 in C++ and the bindings.
 
 <a name="error" />
-#####Error Handling
+####Error Handling
 The error handling of TinySpline has been implemented with error codes.
 The enum `tsError` contains all available errors and should be used to reuse
 error codes over several functions. Error checking is straightforward:
@@ -271,7 +271,7 @@ The C++11 wrapper uses std::runtime_error instead. All bindings map
 std::runtime_error into their own exception types.
 
 <a name="opengl" />
-#####OpenGL Integration
+####OpenGL Integration
 Using TinySpline within OpenGL is simple because the structs provide 
 all necessary fields.
 
@@ -331,7 +331,7 @@ glEnd();
 ```
 
 <a name="evaldisc" />
-#####Spline Evaluation and Discontinuity
+####Spline Evaluation and Discontinuity
 Although evaluating a spline at a given knot value is straightforward,
 there are some notes you should know about.
 

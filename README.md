@@ -13,6 +13,15 @@ use. Moreover, the integration of TinySpline into OpenGL is straightforward.
 TinySpline is licensed under [the MIT License](http://opensource.org/licenses/MIT),
 hence feel free to use it anywhere.
 
+###Table of Contents
+- [Some Features of This Library](#features)
+- [Project Structure](#structure)
+- [Bindings](#bindings)
+- [API](#api)
+- [Current Development](#development)
+- [Theoretical Backgrounds](#backgrounds)
+
+<a name="features" />
 ###Some Features of This Library
 - TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.
 - Create splines of any degree with any dimensions.
@@ -22,6 +31,7 @@ hence feel free to use it anywhere.
 - A C++11 wrapper.
 - Bindings for C#, Java and Python.
 
+<a name="structure" />
 ###Project Structure
 The core of TinySpline is written in ANSI C and consists of the files
 [tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.h) 
@@ -49,6 +59,7 @@ The directory
 [example](https://github.com/retuxx/tinyspline/tree/master/example) contains
 some examples written in OpenGL.
 
+<a name="bindings" />
 ###Bindings
 Alongside Swig, each binding may have additional dependencies to generate the 
 source code of the target language. The following table gives an overview:
@@ -94,6 +105,7 @@ Python   | -                                | tinyspline.py*
 \* The Python bindings are copied from the source code directory into
 the build directory and may be renamed for convenience.
 
+<a name="api" />
 ###API
 
 #####Data Structures
@@ -328,6 +340,7 @@ there are some notes you should know about.
 
 **Note:** Keep in mind that these are rare cases. Usually you do not need to take care of this.
 
+<a name="development" />
 ###Current Development
 - Deriving splines.
 - Knot removal.
@@ -335,6 +348,7 @@ there are some notes you should know about.
 minimal distance ||P - Q||<sub>2</sub>.
 - Bindings for Rust and Julia.
 
+<a name="backgrounds" />
 ###Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html)
 &nbsp;&nbsp; is a very good entry point for B-Splines.  
@@ -344,7 +358,6 @@ minimal distance ||P - Q||<sub>2</sub>.
 &nbsp;&nbsp; provides a good overview of NURBS with some mathematical background.  
 [[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html)
 &nbsp;&nbsp; is useful if you want to use NURBS in TinySpline.
-
 
 ###Compiling TinySpline From Source
 TinySpline uses the CMake build system. The C library is written in 
@@ -372,7 +385,7 @@ make
 You will find all static and shared libraries, jars etc. in
 `tinyspline/build/library`
 
-###Cross Compiling
+####Cross Compiling
 TinySpline provides toolchain files for mingw and arm. Use the following
 command within your build directory for cross compiling
 ```bash

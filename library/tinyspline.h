@@ -46,7 +46,7 @@ typedef enum
  * If you don't know what an opened or clamped spline is, take a look at:
  * www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
  */
-typedef enum 
+typedef enum
 {
 /* setup knots as... */
     TS_OPENED = 0,  /* [uniformly spaced] */
@@ -139,6 +139,11 @@ tsError ts_bspline_new(
         tsBSpline* bspline
 );
 
+tsError ts_bspline_interpolate(
+    const float* points, const size_t len, const size_t dim,
+    tsBSpline* bspline
+);
+
 /**
  * The copy constructor of tsDeBoorNet.
  *
@@ -214,7 +219,7 @@ tsError ts_bspline_setup_knots(
  * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
  */
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const float u, 
+    const tsBSpline* bspline, const float u,
     tsDeBoorNet* deBoorNet
 );
 

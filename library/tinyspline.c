@@ -54,7 +54,7 @@ tsError ts_internal_bspline_find_u(
  * @return ::TS_SUCCESS, ::TS_MULTIPLICITY, ::TS_OVER_UNDERFLOW
  */
 tsError ts_internal_bspline_insert_knot(
-    const tsBSpline* bspline, const tsDeBoorNet* deBoorNet, const size_t n, 
+    const tsBSpline* bspline, const tsDeBoorNet* deBoorNet, const size_t n,
     tsBSpline* result
 )
 {
@@ -70,7 +70,7 @@ tsError ts_internal_bspline_insert_knot(
         return TS_SUCCESS;
 
     const size_t deg = bspline->deg;
-    const size_t dim = bspline->dim;  
+    const size_t dim = bspline->dim;
     const size_t k = deBoorNet->k;
     const size_t N = deBoorNet->h+1; /* the number of affected ctrlps
  * n > 0 implies s <= deg implies a regular evaluation implies h+1 is valid */
@@ -93,17 +93,17 @@ tsError ts_internal_bspline_insert_knot(
     memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
     memmove(
         result->ctrlp + (cidx+n)*dim, /* n >= 0 implies cidx+n >= cidx */
-        bspline->ctrlp + cidx*dim, 
+        bspline->ctrlp + cidx*dim,
         (result->n_ctrlp-n-cidx) * size_ctrlp
     );
     /* copy knots */
     memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
     memmove(
         result->knots+kidx+n, /* n >= 0 implies kidx+n >= kidx */
-        bspline->knots+kidx, 
+        bspline->knots+kidx,
         (result->n_knots-n-kidx) * sizeof(float)
     );
-    
+
     /* 2.
      *
      * a) copy left hand side control points from de boor net
@@ -142,7 +142,7 @@ tsError ts_internal_bspline_insert_knot(
     }
 
     return TS_SUCCESS;
-    
+
     /* error handling */
     err_multiplicity:
         err = TS_MULTIPLICITY;
@@ -151,6 +151,60 @@ tsError ts_internal_bspline_insert_knot(
         if (bspline != result)
             ts_bspline_default(result);
         return err;
+}
+
+tsError ts_internal_bspline_thomas_algorithm(
+    const float* points,
+    tsBSpline* bspline /* must already be initialized
+* Assumes dim > 0 and n_ctrlp >= 4 */
+)
+{
+    const size_t dim = bspline->dim;
+    const size_t n = bspline->n_ctrlp;
+    const size_t k = (n-1)*dim; /* n >= 4 implies n-1 >= 3 */
+    const size_t size_flt = sizeof(float);
+
+    size_t i, d; /* loop counter */
+
+    /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
+    const size_t len_m = n-2; /* n >= 4 implies len_m >= 2 */
+    float* m = malloc(len_m*size_flt);
+    if (m == NULL)
+        return TS_MALLOC;
+    m[0] = 0.25f;
+    for (i = 1; i < len_m+1; i++)
+        m[i] = 1.f/(4 - m[i-1]);
+
+    memset(bspline->ctrlp, 0, n*dim*size_flt);
+    memcpy(bspline->ctrlp+k, points+k, dim*size_flt);
+
+    /* forward sweep */
+    for (d = 0; d < dim; d++) {
+        bspline->ctrlp[dim + d] = 6*points[dim + d];
+        bspline->ctrlp[dim + d] -= points[d];
+    }
+    for (i = 2; i <= n-2; i++) {
+        for (d = 0; d < dim; d++) {
+            bspline->ctrlp[i*dim + d] = 6*points[i*dim + d];
+            bspline->ctrlp[i*dim + d] -= bspline->ctrlp[(i+1)*dim + d];
+            bspline->ctrlp[i*dim + d] -= m[i-2]*bspline->ctrlp[(i-1)*dim + d];
+        }
+    }
+
+    /* back substitution */
+    memset(bspline->ctrlp+k, 0, dim*size_flt);
+    for (i = n-2; i >= 1; i--) {
+        for (d = 0; d < dim; d++) {
+            bspline->ctrlp[i*dim + d] -= bspline->ctrlp[(i+1)*dim + d];
+            bspline->ctrlp[i*dim + d] *= m[i-1];
+        }
+    }
+    memcpy(bspline->ctrlp, points, dim*size_flt);
+    memcpy(bspline->ctrlp+k, points+k, dim*size_flt);
+
+    /* we are done */
+    free(m);
+    return TS_SUCCESS;
 }
 
 
@@ -247,6 +301,35 @@ tsError ts_bspline_new(
         goto cleanup;
     cleanup:
         ts_bspline_free(bspline);
+        return err;
+}
+
+tsError ts_bspline_interpolate(
+    const float* points, const size_t n_points, const size_t dim,
+    tsBSpline* bspline
+)
+{
+    tsError err;
+    if (dim == 0)
+        goto err_dim_zero;
+    if (n_points < 4)
+        goto err_deg_ge_nctrlp;
+
+    err = ts_bspline_new(3, dim, n_points, TS_CLAMPED, bspline);
+    if (err < 0)
+        return err;
+
+    return ts_internal_bspline_thomas_algorithm(points, bspline);
+
+    /* error handling */
+    err_dim_zero:
+        err = TS_DIM_ZERO;
+        goto cleanup;
+    err_deg_ge_nctrlp:
+        err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    cleanup:
+        ts_bspline_default(bspline);
         return err;
 }
 
@@ -361,13 +444,13 @@ tsError ts_bspline_setup_knots(
 }
 
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const float u, 
+    const tsBSpline* bspline, const float u,
     tsDeBoorNet* deBoorNet
 )
 {
     tsError err;
     ts_deboornet_default(deBoorNet);
-    
+
     /* 1. Find index k such that u is in between [u_k, u_k+1).
      * 2. Setup already known values.
      * 3. Decide by multiplicity of u how to calculate point P(u). */
@@ -401,7 +484,7 @@ tsError ts_bspline_evaluate(
         /* only one of the two control points exists */
         if (k == deg ||                  /* only the first control point */
             k == bspline->n_knots - 1) { /* only the last control point */
-            
+
             deBoorNet->points = (float*) malloc(size_ctrlp);
             if (deBoorNet->points == NULL)
                 goto err_malloc;
@@ -431,23 +514,23 @@ tsError ts_bspline_evaluate(
         if (deBoorNet->points == NULL)
             goto err_malloc;
         deBoorNet->result = deBoorNet->points + (deBoorNet->n_points-1)*dim;
-        
+
         /* copy initial values to output */
         memcpy(deBoorNet->points, bspline->ctrlp + fst*dim, N * size_ctrlp);
-        
+
         int lidx = 0;            /* the current left index */
         int ridx = (int)dim;     /* the current right index */
         int tidx = (int)(N*dim); /* the current to index */
-        
+
         size_t r = 1;
         for (;r <= deBoorNet->h; r++) {
             size_t i = fst + r;
             for (; i <= lst; i++) {
                 const float ui    = bspline->knots[i];
-                const float a     = (deBoorNet->u - ui) / 
+                const float a     = (deBoorNet->u - ui) /
                                     (bspline->knots[i+deg-r+1] - ui);
                 const float a_hat = 1.f-a;
-                
+
                 size_t d;
                 for (d = 0; d < dim; d++) {
                     deBoorNet->points[tidx++] =
@@ -461,7 +544,7 @@ tsError ts_bspline_evaluate(
     }
 
     return TS_SUCCESS;
-    
+
     /* error handling */
     err_malloc:
         err = TS_MALLOC;
@@ -501,7 +584,7 @@ tsError ts_bspline_resize(
         return ts_bspline_copy(bspline, resized);
     if (n == 0 && bspline == resized)
         return TS_SUCCESS;
-    
+
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
     const size_t n_ctrlp = bspline->n_ctrlp;
@@ -522,7 +605,7 @@ tsError ts_bspline_resize(
     float* from_knots = bspline->knots;
     float* to_ctrlp;
     float* to_knots;
-    
+
     if (bspline != resized) {
         err = ts_bspline_new(deg, dim, new_n_ctrlp, TS_NONE, resized);
         if (err < 0)
@@ -566,9 +649,9 @@ tsError ts_bspline_resize(
         resized->n_ctrlp = new_n_ctrlp;
         resized->n_knots = new_n_knots;
     }
-    
+
     return TS_SUCCESS;
-    
+
     /* error handling */
     err_deg_ge_nctrlp:
         err = TS_DEG_GE_NCTRLP;
@@ -618,22 +701,22 @@ tsError ts_bspline_buckle(
         if (err < 0)
             return err;
     }
-    
+
     const float b_hat  = 1.f-b;
     const size_t dim   = buckled->dim;
     const size_t N     = buckled->n_ctrlp;
     const float* p0    = buckled->ctrlp;
     const float* pn_1  = p0 + (N-1)*dim;
-    
+
     size_t i, d;
     for (i = 0; i < N; i++) {
         for (d = 0; d < dim; d++) {
-            buckled->ctrlp[i*dim + d] = 
-                    b * buckled->ctrlp[i*dim + d] + 
+            buckled->ctrlp[i*dim + d] =
+                    b * buckled->ctrlp[i*dim + d] +
                 b_hat * (p0[d] + ((float)i / (N-1)) * (pn_1[d] - p0[d]));
         }
     }
-    
+
     return TS_SUCCESS;
 }
 
@@ -643,16 +726,16 @@ tsError ts_bspline_to_beziers(
 )
 {
     tsError err;
-    
+
     if (bspline != beziers) {
         err = ts_bspline_copy(bspline, beziers);
         if (err < 0)
             return err;
     }
-    
+
     const size_t deg = beziers->deg;
     const size_t order = beziers->order;
-    
+
     /* fix first control point if necessary */
     const float u_min = beziers->knots[deg];
     if (!ts_fequals(beziers->knots[0], u_min)) {
@@ -678,7 +761,7 @@ tsError ts_bspline_to_beziers(
         if (err < 0)
             return err;
     }
-    
+
     size_t k = order;
     while (k < beziers->n_knots - order) {
         err = ts_bspline_split(beziers, beziers->knots[k], beziers, &k);
@@ -686,7 +769,7 @@ tsError ts_bspline_to_beziers(
             return err;
         k++;
     }
-    
+
     return TS_SUCCESS;
 }
 

@@ -139,10 +139,10 @@ tsError ts_bspline_new(
         tsBSpline* bspline
 );
 
-tsError ts_bspline_interpolate(
+/*tsError ts_bspline_interpolate(
     const float* points, const size_t len, const size_t dim,
     tsBSpline* bspline
-);
+);*/
 
 /**
  * The copy constructor of tsDeBoorNet.

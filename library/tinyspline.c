@@ -154,20 +154,30 @@ tsError ts_internal_bspline_insert_knot(
 }
 
 tsError ts_internal_bspline_thomas_algorithm(
-    const float* points,
-    tsBSpline* bspline /* must already be initialized
-* Assumes dim > 0 and n_ctrlp >= 4 */
+    const float* points, const size_t n, const size_t dim,
+    float* output
 )
 {
-    const size_t dim = bspline->dim;
-    const size_t n = bspline->n_ctrlp;
-    const size_t k = (n-1)*dim; /* n >= 4 implies n-1 >= 3 */
-    const size_t size_flt = sizeof(float);
+    if (points == output)
+        return TS_INPUT_EQ_OUTPUT;
+    if (dim == 0)
+        return TS_DIM_ZERO;
+    if (n == 0)
+        return TS_DEG_GE_NCTRLP;
 
+    const size_t size_flt = sizeof(float);
+    const size_t ndsf = n*dim*size_flt;
+
+    if (n <= 2) {
+        memcpy(output, points, ndsf);
+        return TS_SUCCESS;
+    }
+
+    /* in the following n >= 3 applies */
     size_t i, d; /* loop counter */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
-    const size_t len_m = n-2; /* n >= 4 implies len_m >= 2 */
+    const size_t len_m = n-2; /* n >= 3 implies n-2 >= 1 */
     float* m = malloc(len_m*size_flt);
     if (m == NULL)
         return TS_MALLOC;
@@ -175,32 +185,33 @@ tsError ts_internal_bspline_thomas_algorithm(
     for (i = 1; i < len_m+1; i++)
         m[i] = 1.f/(4 - m[i-1]);
 
-    memset(bspline->ctrlp, 0, n*dim*size_flt);
-    memcpy(bspline->ctrlp+k, points+k, dim*size_flt);
+    const size_t k = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
+    memset(output, 0, ndsf);
+    memcpy(output+k, points+k, dim*size_flt);
 
     /* forward sweep */
     for (d = 0; d < dim; d++) {
-        bspline->ctrlp[dim + d] = 6*points[dim + d];
-        bspline->ctrlp[dim + d] -= points[d];
+        output[dim + d] = 6*points[dim + d];
+        output[dim + d] -= points[d];
     }
     for (i = 2; i <= n-2; i++) {
         for (d = 0; d < dim; d++) {
-            bspline->ctrlp[i*dim + d] = 6*points[i*dim + d];
-            bspline->ctrlp[i*dim + d] -= bspline->ctrlp[(i+1)*dim + d];
-            bspline->ctrlp[i*dim + d] -= m[i-2]*bspline->ctrlp[(i-1)*dim + d];
+            output[i*dim + d] = 6*points[i*dim + d];
+            output[i*dim + d] -= output[(i+1)*dim + d];
+            output[i*dim + d] -= m[i-2]*output[(i-1)*dim + d];
         }
     }
 
     /* back substitution */
-    memset(bspline->ctrlp+k, 0, dim*size_flt);
+    memset(output+k, 0, dim*size_flt);
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
-            bspline->ctrlp[i*dim + d] -= bspline->ctrlp[(i+1)*dim + d];
-            bspline->ctrlp[i*dim + d] *= m[i-1];
+            output[i*dim + d] -= output[(i+1)*dim + d];
+            output[i*dim + d] *= m[i-1];
         }
     }
-    memcpy(bspline->ctrlp, points, dim*size_flt);
-    memcpy(bspline->ctrlp+k, points+k, dim*size_flt);
+    memcpy(output, points, dim*size_flt);
+    memcpy(output+k, points+k, dim*size_flt);
 
     /* we are done */
     free(m);
@@ -310,27 +321,14 @@ tsError ts_bspline_interpolate(
 )
 {
     tsError err;
-    if (dim == 0)
-        goto err_dim_zero;
-    if (n_points < 4)
-        goto err_deg_ge_nctrlp;
-
     err = ts_bspline_new(3, dim, n_points, TS_CLAMPED, bspline);
     if (err < 0)
         return err;
 
-    return ts_internal_bspline_thomas_algorithm(points, bspline);
+    err = ts_internal_bspline_thomas_algorithm(
+            points, n_points, dim, bspline->ctrlp);
 
-    /* error handling */
-    err_dim_zero:
-        err = TS_DIM_ZERO;
-        goto cleanup;
-    err_deg_ge_nctrlp:
-        err = TS_DEG_GE_NCTRLP;
-        goto cleanup;
-    cleanup:
-        ts_bspline_default(bspline);
-        return err;
+    return err;
 }
 
 tsError ts_deboornet_copy(

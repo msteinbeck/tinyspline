@@ -361,9 +361,9 @@ void ts_bspline_free(tsBSpline* bspline)
 }
 
 tsError ts_bspline_new(
-        const size_t deg, const size_t dim,
-        const size_t n_ctrlp, const tsBSplineType type,
-        tsBSpline* bspline
+    const size_t deg, const size_t dim,
+    const size_t n_ctrlp, const tsBSplineType type,
+    tsBSpline* bspline
 )
 {
     tsError err;
@@ -434,8 +434,8 @@ tsError ts_bspline_interpolate(
 }
 
 tsError ts_deboornet_copy(
-        const tsDeBoorNet* original,
-        tsDeBoorNet* copy
+    const tsDeBoorNet* original,
+    tsDeBoorNet* copy
 )
 {
     if (original == copy)
@@ -499,8 +499,8 @@ tsError ts_bspline_copy(
 }
 
 tsError ts_bspline_setup_knots(
-        const tsBSpline* original, const tsBSplineType type,
-        tsBSpline* result
+    const tsBSpline* original, const tsBSplineType type,
+    tsBSpline* result
 )
 {
     if (original != result) {

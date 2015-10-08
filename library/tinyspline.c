@@ -175,6 +175,7 @@ tsError ts_internal_bspline_thomas_algorithm(
 
     /* in the following n >= 3 applies */
     size_t i, d; /* loop counter */
+    size_t j, k, l; /* temporary indices */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
     const size_t len_m = n-2; /* n >= 3 implies n-2 >= 1 */
@@ -185,37 +186,125 @@ tsError ts_internal_bspline_thomas_algorithm(
     for (i = 1; i < len_m+1; i++)
         m[i] = 1.f/(4 - m[i-1]);
 
-    const size_t k = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
+    const size_t lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
     memset(output, 0, ndsf);
-    memcpy(output+k, points+k, dim*size_flt);
+    memcpy(output+lst, points+lst, dim*size_flt);
 
     /* forward sweep */
     for (d = 0; d < dim; d++) {
-        output[dim + d] = 6*points[dim + d];
-        output[dim + d] -= points[d];
+        k = dim+d;
+        output[k] = 6*points[k];
+        output[k] -= points[d];
     }
     for (i = 2; i <= n-2; i++) {
         for (d = 0; d < dim; d++) {
-            output[i*dim + d] = 6*points[i*dim + d];
-            output[i*dim + d] -= output[(i+1)*dim + d];
-            output[i*dim + d] -= m[i-2]*output[(i-1)*dim + d];
+            j = (i-1)*dim+d;
+            k = i*dim+d;
+            l = (i+1)*dim+d;
+            output[k] = 6*points[k];
+            output[k] -= output[l];
+            output[k] -= m[i-2]*output[j];
         }
     }
 
     /* back substitution */
-    memset(output+k, 0, dim*size_flt);
+    memset(output+lst, 0, dim*size_flt);
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
-            output[i*dim + d] -= output[(i+1)*dim + d];
-            output[i*dim + d] *= m[i-1];
+            k = i*dim+d;
+            l = (i+1)*dim+d;
+            output[k] -= output[l];
+            output[k] *= m[i-1];
         }
     }
     memcpy(output, points, dim*size_flt);
-    memcpy(output+k, points+k, dim*size_flt);
+    memcpy(output+lst, points+lst, dim*size_flt);
 
     /* we are done */
     free(m);
     return TS_SUCCESS;
+}
+
+tsError ts_internal_relaxed_uniform_cubic_bspline(
+    const float* points, const size_t n, const size_t dim,
+    tsBSpline* bspline
+)
+{
+    tsError err;
+    ts_bspline_default(bspline);
+
+    if (n <= 1)
+        goto err_deg_ge_nctrlp;
+    /* in the following n >= 2 applies */
+
+    err = ts_bspline_new(3, dim, (n-1)*4, TS_CLAMPED, bspline); /* n >= 2
+ * implies n-1 >= 1 implies (n-1)*4 >= 4 */
+    if (err < 0)
+        return err;
+
+    const size_t dsf = dim*sizeof(float);
+    float* s = malloc(n*dsf);
+    if (s == NULL)
+        goto err_malloc;
+
+    /* set s_0 to b_0 and s_n = b_n */
+    const float* b = points; /* for convenience */
+    memcpy(s, b, dsf);
+    memcpy(s + (n-1)*dim, b + (n-1)*dim, dsf);
+
+    size_t i, d; /* loop counter */
+    size_t j, k, l; /* temporary indices */
+
+    /* set s_i = 1/6*b_i + 2/3*b_{i-1} + 1/6*b_{i+1}*/
+    const float as = 1.f/6.f;
+    const float at = 1.f/3.f;
+    const float tt = 2.f/3.f;
+    for (i = 1; i < n-1; i++) {
+        for (d = 0; d < dim; d++) {
+            j = (i-1)*dim+d;
+            k = i*dim+d;
+            l = (i+1)*dim+d;
+            s[k] = as * b[j];
+            s[k] += tt * b[k];
+            s[k] += as * b[l];
+        }
+    }
+
+    /* create beziers from b and s */
+    for (i = 0; i < n-1; i++) {
+        for (d = 0; d < dim; d++) {
+            j = i*dim+d;
+            k = i*4*dim+d;
+            l = (i+1)*dim+d;
+            bspline->ctrlp[k] = s[j];
+            bspline->ctrlp[k+dim] = tt*b[j] + at*b[l];
+            bspline->ctrlp[k+2*dim] = at*b[j] + tt*b[l];
+            bspline->ctrlp[k+3*dim] = s[l];
+        }
+    }
+
+    const float u0 = bspline->knots[0];
+    const float u1 = bspline->knots[bspline->n_knots-1];
+    const float u = (u1-u0) / (n-1);
+    for (i = 1; i < n-1; i++) {
+        for (d = 0; d < dim+1; d++) {
+            bspline->knots[i*(dim+1)+d] = i*u;
+        }
+    }
+
+    free(s);
+    return TS_SUCCESS;
+
+    /* error handling */
+    err_deg_ge_nctrlp:
+        err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_malloc:
+        err = TS_MALLOC;
+        goto cleanup;
+    cleanup:
+        ts_bspline_free(bspline);
+        return err;
 }
 
 
@@ -316,19 +405,27 @@ tsError ts_bspline_new(
 }
 
 tsError ts_bspline_interpolate(
-    const float* points, const size_t n_points, const size_t dim,
+    const float* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 )
 {
     tsError err;
-    err = ts_bspline_new(3, dim, n_points, TS_CLAMPED, bspline);
+
+    float* thomas = malloc(n*dim*sizeof(float));
+    if (thomas == NULL)
+        return TS_MALLOC;
+
+    err = ts_internal_bspline_thomas_algorithm(points, n, dim, thomas);
     if (err < 0)
+        goto exit;
+    err = ts_internal_relaxed_uniform_cubic_bspline(thomas, n, dim, bspline);
+    if (err < 0)
+        goto exit;
+
+    err = TS_SUCCESS;
+    exit:
+        free(thomas);
         return err;
-
-    err = ts_internal_bspline_thomas_algorithm(
-            points, n_points, dim, bspline->ctrlp);
-
-    return err;
 }
 
 tsError ts_deboornet_copy(

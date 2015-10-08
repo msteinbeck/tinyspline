@@ -233,6 +233,8 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(
     tsError err;
     ts_bspline_default(bspline);
 
+    if (dim == 0)
+        goto err_dim_zero;
     if (n <= 1)
         goto err_deg_ge_nctrlp;
     /* in the following n >= 2 applies */
@@ -298,6 +300,9 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(
     /* error handling */
     err_deg_ge_nctrlp:
         err = TS_DEG_GE_NCTRLP;
+        goto cleanup;
+    err_dim_zero:
+        err = TS_DIM_ZERO;
         goto cleanup;
     err_malloc:
         err = TS_MALLOC;

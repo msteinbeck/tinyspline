@@ -139,10 +139,33 @@ tsError ts_bspline_new(
         tsBSpline* bspline
 );
 
-/*tsError ts_bspline_interpolate(
-    const float* points, const size_t len, const size_t dim,
+/**
+ * Performs a cubic spline interpolation using thomas algorithm.
+ * https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
+ * http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
+ * http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
+ *
+ * The resulting spline is a sequence of bezier curves connecting each point in
+ * \points. Each bezier curve is of degree 3 with dimension \dim. The total
+ * number of control points is (n-1)*4.
+ *
+ * This function does not free already allocated memory in \bspline.
+ * If you want to reuse an instance of tsBSpline by using it in multiple
+ * calls of this function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * On error all values of \bspline are 0/NULL.
+ *
+ * Note: \n is the number of points in \points and not the length of \points.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_DIM_ZERO          if \dim == 0.
+ * @return TS_DEG_GE_NCTRLP     if \n < 2.
+ * @return TS_MALLOC            if allocating memory failed.
+ */
+tsError ts_bspline_interpolate(
+    const float* points, const size_t n, const size_t dim,
     tsBSpline* bspline
-);*/
+);
 
 /**
  * The copy constructor of tsDeBoorNet.

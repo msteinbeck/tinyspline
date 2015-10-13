@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 # create c libs
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -ansi")
-add_library(tinyspline SHARED tinyspline.c)
+add_library(tinyspline_shared SHARED tinyspline.c)
+set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline")
 add_library(tinyspline_static STATIC tinyspline.c)
-install(TARGETS tinyspline tinyspline_static
+set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline")
+install(TARGETS tinyspline_shared tinyspline_static
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
@@ -15,9 +17,11 @@ install(FILES tinyspline.h
 # create c++ libs
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -std=c++11")
-  add_library(tinysplinecpp SHARED tinyspline.c tinysplinecpp.cpp)
+  add_library(tinysplinecpp_shared SHARED tinyspline.c tinysplinecpp.cpp)
+  set_target_properties(tinysplinecpp_shared PROPERTIES OUTPUT_NAME "tinysplinecpp")
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
-  install(TARGETS tinysplinecpp tinysplinecpp_static
+  set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp")
+  install(TARGETS tinysplinecpp_shared tinysplinecpp_static
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )

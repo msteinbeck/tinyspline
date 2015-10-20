@@ -33,7 +33,7 @@ hence feel free to use it anywhere.
 ###Some Features of This Library
 - TinySpline provides NURBS, B-Splines, Béziers, lines and points within a single struct.
 - Create splines of any degree with any dimensions.
-- Perform a cubic spline interpolation using [Thomas' algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm)
+- Perform cubic spline interpolation using [Thomas' algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm).
 - Evaluate splines using [De Boor's algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
 - Insert knots and split splines while keeping the splines shape.
 - Subdivide B-Splines into Béziers.

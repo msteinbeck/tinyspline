@@ -59,13 +59,38 @@ import java.util.RandomAccess;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
+%javamethodmodifiers TsBSpline::TsBSpline(const float *points,
+    const size_t nPoints, const size_t dim) "private";
+
 %typemap(javaimports) TsBSpline
 %{
 import java.util.List;
+import java.lang.IllegalArgumentException;
 %}
 
 %typemap(javacode) TsBSpline
 %{
+  private static SWIGTYPE_p_float prepareInterpolation(
+      final List<Float> points, final long dim) {
+    if (points == null) {
+      throw new IllegalArgumentException("points must not be null.");
+    } else if (dim <= 0) {
+      throw new IllegalArgumentException("dim must be >= 1.");
+    }
+
+    final int size = points.size();
+    final SWIGTYPE_p_float array = tinysplinejava.new_floatArray(size);
+    for (int i = 0; i < size; i++) {
+      tinysplinejava.floatArray_setitem(array, i, points.get(i));
+    }
+
+    return array;
+  }
+
+  public TsBSpline(final List<Float> points, final long dim) {
+    this(prepareInterpolation(points, dim), points.size(), dim);
+  }
+
   private final TsFloatList ctrlpList = new TsCtrlpList();
   private final TsFloatList knotList = new TsKnotList();
 

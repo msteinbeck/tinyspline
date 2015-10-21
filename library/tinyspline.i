@@ -35,6 +35,10 @@
 // make strings directly accessible
 %include "std_string.i"
 
+// make float arrays available
+%include "carrays.i"
+%array_functions(float, floatArray);
+
 // ignore wrapped structs and data fields
 %ignore tsError;
 %ignore tsDeBoorNet;

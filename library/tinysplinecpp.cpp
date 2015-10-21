@@ -87,8 +87,16 @@ TsBSpline::TsBSpline(const TsBSpline& other)
 }
 
 TsBSpline::TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
-                     const tsBSplineType type) {
+                     const tsBSplineType type)
+{
     const tsError err = ts_bspline_new(deg, dim, nCtrlp, type, &bspline);
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
+}
+
+TsBSpline::TsBSpline(const float *points, const size_t nPoints, const size_t dim)
+{
+    const tsError err = ts_bspline_interpolate(points, nPoints, dim, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }

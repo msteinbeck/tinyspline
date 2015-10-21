@@ -131,13 +131,36 @@ using System.Collections.Generic;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
+%csmethodmodifiers TsBSpline::TsBSpline(const float *points,
+    const size_t nPoints, const size_t dim) "private";
+
 %typemap(csimports) TsBSpline
 %{
+using System;
+using System.Collections;
 using System.Collections.Generic;
 %}
 
 %typemap(cscode) TsBSpline
 %{
+  private static SWIGTYPE_p_float prepareInterpolation(
+      IList<float> points, uint dim) {
+    if (points == null) {
+      throw new ArgumentNullException();
+    }
+
+    int count = points.Count;
+    SWIGTYPE_p_float array = tinysplinecsharp.new_floatArray(count);
+    for (int i = 0; i < count; i++) {
+      tinysplinecsharp.floatArray_setitem(array, i, points[i]);
+    }
+
+    return array;
+  }
+
+  public TsBSpline(IList<float> points, uint dim)
+      : this(prepareInterpolation(points, dim), (uint)points.Count, dim) {}
+
   TsCtrlpList ctrlpList = new TsCtrlpList();
   TsKnotList knotList = new TsKnotList();
 

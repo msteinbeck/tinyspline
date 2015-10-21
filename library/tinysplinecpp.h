@@ -30,6 +30,7 @@ public:
     TsBSpline(const TsBSpline& other);
     TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
               const tsBSplineType type);
+    TsBSpline(const float* points, const size_t nPoints, const size_t dim);
     ~TsBSpline();
 
     TsBSpline& operator=(const TsBSpline& other);

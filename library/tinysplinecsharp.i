@@ -161,20 +161,15 @@ using System.Collections.Generic;
   public TsBSpline(IList<float> points, uint dim)
       : this(prepareInterpolation(points, dim), (uint)points.Count, dim) {}
 
-  TsCtrlpList ctrlpList = new TsCtrlpList();
-  TsKnotList knotList = new TsKnotList();
-
   public IList<float> ctrlp {
     get {
-      ctrlpList.ts_bspline = this;
-      return ctrlpList;
+      return new TsCtrlpList(this);
     }
   }
 
   public IList<float> knots {
     get {
-      knotList.ts_bspline = this;
-      return knotList;
+      return new TsKnotList(this);
     }
   }
 %}
@@ -193,20 +188,15 @@ using System.Collections.Generic;
 
 %typemap(cscode) TsDeBoorNet
 %{
-  TsPointList pointList = new TsPointList();
-  TsResultList resultList = new TsResultList();
-
   public IList<float> points {
     get {
-      pointList.ts_deboornet = this;
-      return pointList;
+      return new TsPointList(this);
     }
   }
 
   public IList<float> result {
     get {
-      resultList.ts_deboornet = this;
-      return resultList;
+      return new TsResultList(this);
     }
   }
 %}

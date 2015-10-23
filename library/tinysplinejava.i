@@ -91,17 +91,12 @@ import java.lang.IllegalArgumentException;
     this(prepareInterpolation(points, dim), points.size(), dim);
   }
 
-  private final TsFloatList ctrlpList = new TsCtrlpList();
-  private final TsFloatList knotList = new TsKnotList();
-
   public List<Float> getCtrlp() {
-    ctrlpList.setTs_bspline(this);
-    return ctrlpList;
+    return new TsCtrlpList(this);
   }
 
   public List<Float> getKnots() {
-    knotList.setTs_bspline(this);
-    return knotList;
+    return new TsKnotList(this);
   }
 %}
 
@@ -119,19 +114,13 @@ import java.util.List;
 
 %typemap(javacode) TsDeBoorNet
 %{
-  private final TsFloatList pointList = new TsPointList();
-  private final TsFloatList resultList = new TsResultList();
-
   public List<Float> getPoints() {
-    pointList.setTs_deboornet(this);
-    return pointList;
+    return new TsPointList(this);
   }
 
   public List<Float> getResult() {
-    resultList.setTs_deboornet(this);
-    return resultList;
+    return new TsResultList(this);
   }
 %}
-
 
 %include "tinyspline.i"

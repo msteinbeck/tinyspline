@@ -1,11 +1,17 @@
+/* NOTE:
+ *
+ * All method names start with 'ts_' to prevent clashes
+ * with method/function names of target languages.
+ */
 #include "tinysplinecpp.h"
 
+/********************************************************
+*                                                       *
+* TsFloatList                                           *
+*                                                       *
+********************************************************/
 class TsFloatList {
 public:
-    TsDeBoorNet* ts_deboornet;
-    TsBSpline* ts_bspline;
-
-    TsFloatList() : ts_deboornet(nullptr), ts_bspline(nullptr) {}
     virtual ~TsFloatList() {}
 
     float ts_get(const int index)
@@ -53,57 +59,90 @@ public:
             s += std::to_string(ts_ptr()[i]);
             s += ", ";
         }
-        if (lst < 0) {
+        if (lst >= 0) {
             s += std::to_string(ts_ptr()[lst]);
         }
         s += "]";
         return s;
     }
 
-    virtual float* ts_ptr() = 0;
     virtual int ts_len() = 0;
+protected:
+    virtual float* ts_ptr() = 0;
 };
 
-class TsPointList : public TsFloatList {
+
+/********************************************************
+*                                                       *
+* TsBSpline related lists                               *
+*                                                       *
+********************************************************/
+class TsBSplineList : public TsFloatList {
+protected:
+    TsBSpline* bspline;
 public:
-    virtual ~TsPointList() {}
-    virtual float* ts_ptr() {return ts_deboornet->points();}
-    virtual int ts_len()
-    {
-        return ts_deboornet == nullptr ? 0 :
-            ts_deboornet->nPoints() * ts_deboornet->dim();
-    }
+    TsBSplineList(TsBSpline* bspline) : bspline(bspline) {}
+    virtual ~TsBSplineList() {}
 };
 
-class TsResultList : public TsFloatList {
+class TsCtrlpList : public TsBSplineList {
 public:
-    virtual ~TsResultList() {}
-    virtual float* ts_ptr() {return ts_deboornet->result();}
-    virtual int ts_len()
-    {
-        return ts_deboornet == nullptr ? 0 :
-            ts_deboornet->dim();
-    }
-};
-
-class TsCtrlpList : public TsFloatList {
-public:
+    TsCtrlpList(TsBSpline* bspline) : TsBSplineList(bspline) {}
     virtual ~TsCtrlpList() {}
-    virtual float* ts_ptr() {return ts_bspline->ctrlp();}
+    virtual float* ts_ptr() {return bspline->ctrlp();}
     virtual int ts_len()
     {
-        return ts_bspline == nullptr ? 0 :
-            ts_bspline->nCtrlp() * ts_bspline->dim();
+        return bspline == nullptr ? 0 :
+               static_cast<int>(bspline->nCtrlp() * bspline->dim());
     }
 };
 
-class TsKnotList : public TsFloatList {
+class TsKnotList : public TsBSplineList {
 public:
+    TsKnotList(TsBSpline* bspline) : TsBSplineList(bspline) {}
     virtual ~TsKnotList() {}
-    virtual float* ts_ptr() {return ts_bspline->knots();}
+    virtual float* ts_ptr() {return bspline->knots();}
     virtual int ts_len()
     {
-        return ts_bspline == nullptr ? 0 :
-            ts_bspline->nKnots();
+        return bspline == nullptr ? 0 :
+               static_cast<int>(bspline->nKnots());
+    }
+};
+
+
+/********************************************************
+*                                                       *
+* TsDeBoorNet related lists                             *
+*                                                       *
+********************************************************/
+class TsDeBoorNetList : public TsFloatList {
+protected:
+    TsDeBoorNet* deboornet;
+public:
+    TsDeBoorNetList(TsDeBoorNet* deboornet) : deboornet(deboornet) {}
+    virtual ~TsDeBoorNetList() {}
+};
+
+class TsPointList : public TsDeBoorNetList {
+public:
+    TsPointList(TsDeBoorNet* deboornet) : TsDeBoorNetList(deboornet) {}
+    virtual ~TsPointList() {}
+    virtual float* ts_ptr() {return deboornet->points();}
+    virtual int ts_len()
+    {
+        return deboornet == nullptr ? 0 :
+               static_cast<int>(deboornet->nPoints() * deboornet->dim());
+    }
+};
+
+class TsResultList : public TsDeBoorNetList {
+public:
+    TsResultList(TsDeBoorNet* deboornet) : TsDeBoorNetList(deboornet) {}
+    virtual ~TsResultList() {}
+    virtual float* ts_ptr() {return deboornet->result();}
+    virtual int ts_len()
+    {
+        return deboornet == nullptr ? 0 :
+               static_cast<int>(deboornet->dim());
     }
 };

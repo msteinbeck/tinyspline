@@ -44,23 +44,8 @@ TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("In
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsBSpline.ctrlpList = None
-TsBSpline.knotList = None
-
-def ts_initCtrlpList(self):
-    if self.ctrlpList is None:
-        self.ctrlpList = TsCtrlpList()
-        self.ctrlpList.ts_bspline = self
-    return self.ctrlpList
-
-def ts_initKnotList(self):
-    if self.knotList is None:
-        self.knotList = TsKnotList()
-        self.knotList.ts_bspline = self
-    return self.knotList
-
-TsBSpline.ctrlp = property(lambda self: ts_initCtrlpList(self))
-TsBSpline.knots = property(lambda self: ts_initKnotList(self))
+TsBSpline.ctrlp = property(lambda self: TsCtrlpList(self))
+TsBSpline.knots = property(lambda self: TsCtrlpList(self))
 %}
 
 //********************************************************
@@ -69,23 +54,8 @@ TsBSpline.knots = property(lambda self: ts_initKnotList(self))
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsDeBoorNet.pointList = None
-TsDeBoorNet.resultList = None
-    
-def ts_initPointList(self):
-    if self.pointList is None:
-        self.pointList = TsPointList()
-        self.pointList.ts_deboornet = self
-    return self.pointList
-
-def ts_initResultList(self):
-    if self.resultList is None:
-        self.resultList = TsResultList()
-        self.resultList.ts_deboornet = self
-    return self.resultList
-
-TsDeBoorNet.points = property(lambda self: ts_initPointList(self))
-TsDeBoorNet.result = property(lambda self: ts_initResultList(self))
+TsDeBoorNet.points = property(lambda self: TsPointList(self))
+TsDeBoorNet.result = property(lambda self: TsResultList(self))
 %}
 
 

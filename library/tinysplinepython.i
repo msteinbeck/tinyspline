@@ -66,6 +66,7 @@ TsFloatList.__setitem__ = lambda self, index, value: self.ts_set(index, value)
 TsFloatList.index = ts_indexOf
 TsFloatList.__contains__ = lambda self, value: self.ts_contains(value)
 TsFloatList.__str__ = lambda self: self.ts_toString()
+TsFloatList.__len__ = lambda self: self.ts_len()
 TsFloatList.__delitem__ = lambda self, index: ts_raise(NotImplementedError("Deleting items is not supported."))
 TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("Inserting items is not supported."))
 %}

@@ -1,21 +1,53 @@
 %module tinysplinepython
 
-%ignore TsDeBoorNet::operator=;
-%ignore TsBSpline::operator=;
-
+//********************************************************
+//*                                                      *
+//* TsFloatList (Python) Part I                          *
+//*                                                      *
+//********************************************************
 %include <pyabc.i>
 %pythonabc(TsFloatList, collections.MutableSequence);
 
-%include "tinyspline.i"
+//********************************************************
+//*                                                      *
+//* TsBSpline (Python) Part I                            *
+//*                                                      *
+//********************************************************
+%ignore TsBSpline::operator=;
 
-// NOTE:
-//
-// The following code must be included AFTER "tinyspline.i",
-// otherwise the classes TsFloatList, TsBSpline and TsDeBoorNet are unknown
+%feature("pythonprepend") TsBSpline::TsBSpline %{
+if len(args) == 3 and \
+        type(args[1]) is int and \
+        type(args[2]) is int:
+    try:
+        ts_col = args[0]
+        ts_len = len(ts_col)
+        ts_arr = new_floatArray(ts_len)
+        for i in range(ts_len):
+            floatArray_setitem(ts_arr, i, ts_col[i])
+        args = (ts_arr, args[1], args[2])
+    except TypeError:
+        pass
+%}
 
 //********************************************************
 //*                                                      *
-//* TsFloatList (Python)                                 *
+//* TsDeBoorNet (Python) Part I                          *
+//*                                                      *
+//********************************************************
+%ignore TsDeBoorNet::operator=;
+
+
+// NOTE:
+//
+// The following code must be included AFTER "tinyspline.i", otherwise the
+// classes TsFloatList, TsBSpline and TsDeBoorNet are unknown.
+%include "tinyspline.i"
+
+
+//********************************************************
+//*                                                      *
+//* TsFloatList (Python) Part II                         *
 //*                                                      *
 //********************************************************
 %pythoncode %{
@@ -40,7 +72,7 @@ TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("In
 
 //********************************************************
 //*                                                      *
-//* TsBSpline (Python)                                   *
+//* TsBSpline (Python) Part II                           *
 //*                                                      *
 //********************************************************
 %pythoncode %{
@@ -50,7 +82,7 @@ TsBSpline.knots = property(lambda self: TsCtrlpList(self))
 
 //********************************************************
 //*                                                      *
-//* TsDeBoorNet (Python)                                 *
+//* TsDeBoorNet (Python) Part II                         *
 //*                                                      *
 //********************************************************
 %pythoncode %{

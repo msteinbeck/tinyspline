@@ -16,6 +16,12 @@
 %ignore TsBSpline::operator=;
 
 %feature("pythonprepend") TsBSpline::TsBSpline %{
+"""
+__init__(self) -> TsBSpline
+__init__(self, other) -> TsBSpline
+__init__(self, deg, dim, nCtrlp, type) -> TsBSpline
+__init__(self, points, dim) -> TsBSpline
+"""
 if len(args) == 2 and type(args[1]) is int:
     ts_col = args[0]
     ts_dim = args[1]

@@ -146,7 +146,11 @@ using System.Collections.Generic;
   private static SWIGTYPE_p_float prepareInterpolation(
       IList<float> points, uint dim) {
     if (points == null) {
-      throw new ArgumentNullException();
+      throw new ArgumentNullException("points must not be null.");
+    } else if (dim == 0) {
+      throw new ArgumentException("dim must be >= 1.");
+    } else if ((uint)points.Count % dim != 0) {
+      throw new ArgumentException("points.Count % dim == 0 failed.");
     }
 
     int count = points.Count;
@@ -159,7 +163,7 @@ using System.Collections.Generic;
   }
 
   public TsBSpline(IList<float> points, uint dim)
-      : this(prepareInterpolation(points, dim), (uint)points.Count, dim) {}
+      : this(prepareInterpolation(points, dim), (uint)points.Count/dim, dim) {}
 
   public IList<float> ctrlp {
     get {

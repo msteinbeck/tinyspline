@@ -16,16 +16,21 @@
 %ignore TsBSpline::operator=;
 
 %feature("pythonprepend") TsBSpline::TsBSpline %{
-if len(args) == 3 and \
-        type(args[1]) is int and \
-        type(args[2]) is int:
+if len(args) == 2 and type(args[1]) is int:
+    ts_col = args[0]
+    ts_dim = args[1]
+    if ts_col is None:
+        raise ValueError("points must not be None.")
+    if ts_dim <= 0:
+        raise ValueError("dim must be >= 1.")
     try:
-        ts_col = args[0]
         ts_len = len(ts_col)
+        if ts_len % ts_dim != 0:
+            raise ValueError("len(points) % dim == 0 failed.")
         ts_arr = new_floatArray(ts_len)
         for i in range(ts_len):
             floatArray_setitem(ts_arr, i, ts_col[i])
-        args = (ts_arr, args[1], args[2])
+        args = (ts_arr, ts_len/ts_dim, ts_dim)
     except TypeError:
         pass
 %}

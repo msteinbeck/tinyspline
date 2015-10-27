@@ -76,6 +76,8 @@ import java.lang.IllegalArgumentException;
       throw new IllegalArgumentException("points must not be null.");
     } else if (dim <= 0) {
       throw new IllegalArgumentException("dim must be >= 1.");
+    } else if (points.size() % dim != 0) {
+      throw new IllegalArgumentException("points.size() % dim == 0 failed.");
     }
 
     final int size = points.size();
@@ -88,7 +90,7 @@ import java.lang.IllegalArgumentException;
   }
 
   public TsBSpline(final List<Float> points, final long dim) {
-    this(prepareInterpolation(points, dim), points.size(), dim);
+    this(prepareInterpolation(points, dim), points.size()/dim, dim);
   }
 
   public List<Float> getCtrlp() {

@@ -195,10 +195,11 @@ actually are:
 `c1.knots = [0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1]`
 
 As you can see `c0` and `c1` share the knot value `0.5` and because of `s(u)
-= n+1` for all `u`, `c0` and `c1` are tangent their first and last control
-point respectively. If your B-Spline does not fulfill the requirements of the
-trivial case, you have to convert it by using the `ts_bspline_to_beziers`
-function. TODO, Describe this function in a new section and create a reference
+= n+1` for all `u`, `c0` and `c1` are tangent to their first and last
+control point respectively. If your B-Spline does not fulfill the
+requirements of the trivial case, you have to convert it by using the
+`ts_bspline_to_beziers` function. TODO, Describe this function in a new
+section and create a reference
 
 After looking closely to Bézier curves it should be obvious how to create
 lines and points. Lines are Bézier curves of degree 1 with 2 control points:

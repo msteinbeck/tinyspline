@@ -191,8 +191,7 @@ control points `p0, p1, p2, p3` and `c1` has control points `p4, p5, p6, p7`.
 Although the knot vector of `c0` and `c1` can be ignored (see above) they
 actually are:
 
-`c0.knots = [0, 0, 0, 0, 0.5, 0.5, 0.5, 0.5]`
-
+`c0.knots = [0, 0, 0, 0, 0.5, 0.5, 0.5, 0.5]`  
 `c1.knots = [0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1]`
 
 As you can see `c0` and `c1` share the knot value `0.5` and because of `s(u)

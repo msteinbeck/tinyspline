@@ -297,7 +297,7 @@ std::runtime_error into their own exception types.
 
 <a name="opengl" />
 ####OpenGL Integration
-The structs `tsBSpline` and `tsDeBoorNet` provides all necessary fields to
+The structs `tsBSpline` and `tsDeBoorNet` provide all necessary fields to
 use OpenGL without complex calculations:
 
 ```c

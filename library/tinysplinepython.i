@@ -89,7 +89,7 @@ TsFloatList.insert = lambda self, index, value: ts_raise(NotImplementedError("In
 //********************************************************
 %pythoncode %{
 TsBSpline.ctrlp = property(lambda self: TsCtrlpList(self))
-TsBSpline.knots = property(lambda self: TsCtrlpList(self))
+TsBSpline.knots = property(lambda self: TsKnotList(self))
 %}
 
 //********************************************************

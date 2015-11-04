@@ -5,8 +5,8 @@
 //* TsFloatList (Python) Part I                          *
 //*                                                      *
 //********************************************************
-%include <pyabc.i>
-%pythonabc(TsFloatList, collections.MutableSequence);
+//%include <pyabc.i>
+//%pythonabc(TsFloatList, collections.MutableSequence);
 
 //********************************************************
 //*                                                      *

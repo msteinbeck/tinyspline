@@ -1,0 +1,3 @@
+recursive-include library *
+include LICENSE
+include README.md

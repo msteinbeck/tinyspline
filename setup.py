@@ -1,59 +1,85 @@
-from os import path, makedirs, chdir
-import subprocess
 from distutils.core import setup
 from distutils.command.build import build as _build
 
+from shutil import rmtree
+from os import path, makedirs, chdir
+import subprocess
+import sys
+
 cmake_bin = "cmake"
-cmake_dir = "build-python-distutils"
 cmake_build_config = "Release"
 cmake_build_target = "_tinysplinepython"
 
+build_dir_name = "build-python-distutils"
+
 script_dir = path.dirname(path.realpath(__file__))
-build_dir = script_dir + path.sep + cmake_dir
+src_dir = path.join(script_dir, "library")
+build_dir = path.join(script_dir, build_dir_name)
 
 
-class BuildWithCmake(_build):
+class build(_build):
     def run(self):
-        # create the build directory if necessary
-        if not path.exists(build_dir):
-            makedirs(build_dir)
+        try:
+            # create build directory if necessary
+            if not path.exists(build_dir):
+                print("creating " + build_dir_name)
+                makedirs(build_dir)
 
-        # generate make files
-        chdir(build_dir)
-        cmake_cmd = [cmake_bin, "..",
-                     "-DCMAKE_BUILD_TYPE=" + cmake_build_config]
-        if subprocess.call(cmake_cmd) != 0:
-            raise EnvironmentError("error calling cmake")
-        chdir(script_dir)
+            # generate make files (or any kind of project)
+            chdir(build_dir)
+            cmake_cmd = [cmake_bin, src_dir,
+                         "-DCMAKE_BUILD_TYPE=" + cmake_build_config]
+            if subprocess.call(cmake_cmd) != 0:
+                raise EnvironmentError("error calling cmake")
+            chdir(script_dir)
 
-        # build the python binding
-        cmake_cmd = [cmake_bin, "--build", build_dir,
-                     "--config", cmake_build_config,
-                     "--target", cmake_build_target]
-        if subprocess.call(cmake_cmd) != 0:
-            raise EnvironmentError("error building project")
+            # build the python binding
+            cmake_cmd = [cmake_bin, "--build", build_dir,
+                         "--config", cmake_build_config,
+                         "--target", cmake_build_target]
+            if subprocess.call(cmake_cmd) != 0:
+                raise EnvironmentError("error building project")
 
-        # can't use super() here because _build is an
-        # old style class in 2.7
-        _build.run(self)
+            # distutils uses old-style classes, so no super()
+            _build.run(self)
+        except EnvironmentError as e:
+            print(e.strerror)
+        finally:
+            # remove build directory if necessary
+            if path.exists(build_dir):
+                print("removing " + build_dir_name)
+                rmtree(build_dir)
 
 
-setup(name='tinyspline',
-      version='0.1.0.dev',
-      description='Python binding for TinySpline',
-      long_description='''
+# ********************************************************
+# *                                                      *
+# * Main                                                 *
+# *                                                      *
+# ********************************************************
+if len(sys.argv) >= 2 and sys.argv[1] == "sdist":
+    print("preparing for sdist")
+    package_dir = "."
+    package_data = []
+else:
+    package_dir = build_dir_name
+    package_data = ["*tinysplinepython*"]
+
+setup(name="tinyspline",
+      version="0.1.0.dev",
+      description="Python binding for TinySpline",
+      long_description="""
       TinySpline is a C library for NURBS, B-Splines and Bezier curves
       (even lines and points) with a modern C++11 wrapper and bindings
       for C#, Java and Python (via Swig). The goal of this project is
       to provide a small library with a minimum set of dependencies
-      which is easy and intuitively to use.''',
-      author='Marcel Steinbeck',
-      author_email='github@retux.de',
-      license='MIT',
-      url='https://github.com/retuxx/tinyspline',
-      platforms='Any',
-      cmdclass={'build': BuildWithCmake},
-      packages=['tinyspline'],
-      package_dir={'tinyspline': cmake_dir + '/library'},
-      package_data={'tinyspline': ['*tinysplinepython*']}
-)
+      which is easy and intuitively to use.""",
+      author="Marcel Steinbeck",
+      author_email="github@retux.de",
+      license="MIT",
+      url="https://github.com/retuxx/tinyspline",
+      platforms="Any",
+      cmdclass={"build": build},
+      packages=["tinyspline"],
+      package_dir={"tinyspline": package_dir},
+      package_data={"tinyspline": package_data}
+      )

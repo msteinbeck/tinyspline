@@ -22,10 +22,11 @@ class build(_build):
         try:
             # create build directory if necessary
             if not path.exists(build_dir):
-                print("creating " + build_dir_name)
+                print("creating directory: " + build_dir_name)
                 makedirs(build_dir)
 
             # generate make files (or any kind of project)
+            print("generating cmake tree")
             chdir(build_dir)
             cmake_cmd = [cmake_bin, src_dir,
                          "-DCMAKE_BUILD_TYPE=" + cmake_build_config]
@@ -34,11 +35,18 @@ class build(_build):
             chdir(script_dir)
 
             # build the python binding
+            print("generating python binding")
             cmake_cmd = [cmake_bin, "--build", build_dir,
                          "--config", cmake_build_config,
                          "--target", cmake_build_target]
             if subprocess.call(cmake_cmd) != 0:
                 raise EnvironmentError("error building project")
+
+            # create __init__.py
+            print("creating file: __init__.py")
+            init_file = open(path.join(build_dir, "__init__.py"), "w+")
+            init_file.writelines("from tinyspline import *")
+            init_file.close()
 
             # distutils uses old-style classes, so no super()
             _build.run(self)
@@ -47,7 +55,7 @@ class build(_build):
         finally:
             # remove build directory if necessary
             if path.exists(build_dir):
-                print("removing " + build_dir_name)
+                print("removing directory: " + build_dir_name)
                 rmtree(build_dir)
 
 

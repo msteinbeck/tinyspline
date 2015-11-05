@@ -30,7 +30,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   )
 endif()
 
-# create proxies
+# create bindings
+if(DEFINED ENV{SWIG_EXECUTABLE})
+  message(STATUS "Using environment variable SWIG_EXECUTABLE")
+  set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE})
+endif()
 find_package(SWIG 3.0.1)
 if(SWIG_FOUND)
   include(${SWIG_USE_FILE})

@@ -1,29 +1,31 @@
 from distutils.core import setup
-from distutils.command.build import build as _build
+from distutils.command.build_py import build_py as _build_py
 
-from shutil import rmtree
-from os import path, makedirs, chdir
+from shutil import rmtree, copy2
+from os import path, chdir
+from glob import glob
 import subprocess
-import sys
 
 cmake_bin = "cmake"
 cmake_build_config = "Release"
 cmake_build_target = "_tinysplinepython"
 
-build_dir_name = "build-python-distutils"
 
-script_dir = path.dirname(path.realpath(__file__))
-src_dir = path.join(script_dir, "library")
-build_dir = path.join(script_dir, build_dir_name)
-
-
-class build(_build):
+class build_py(_build_py):
     def run(self):
+        script_dir = path.dirname(path.realpath(__file__))
+        src_dir = path.join(script_dir, "library")
+        build_dir = path.join(script_dir, self.build_lib, "build")
+        bin_dir = path.join(script_dir, self.build_lib, "tinyspline")
+
         try:
-            # create build directory if necessary
             if not path.exists(build_dir):
-                print("creating directory: " + build_dir_name)
-                makedirs(build_dir)
+                print("creating cmake build directory")
+                self.mkpath(build_dir)
+
+            if not path.exists(bin_dir):
+                print("creating binary directory")
+                self.mkpath(bin_dir)
 
             # generate make files (or any kind of project)
             print("generating cmake tree")
@@ -42,35 +44,23 @@ class build(_build):
             if subprocess.call(cmake_cmd) != 0:
                 raise EnvironmentError("error building project")
 
-            # create __init__.py
+            # copy resulting files into bin_dir
+            for bin_file in glob(path.join(build_dir, "*tinyspline*")):
+                copy2(bin_file, bin_dir)
+
+            # create __init__.py in bin_dir
             print("creating file: __init__.py")
-            init_file = open(path.join(build_dir, "__init__.py"), "w+")
+            init_file = open(path.join(bin_dir, "__init__.py"), "w+")
             init_file.writelines("from tinyspline import *\n")
             init_file.close()
 
             # distutils uses old-style classes, so no super()
-            _build.run(self)
-        except EnvironmentError as e:
-            print(e.strerror)
+            _build_py.run(self)
         finally:
-            # remove build directory if necessary
             if path.exists(build_dir):
-                print("removing directory: " + build_dir_name)
+                print("removing cmake build directory")
                 rmtree(build_dir)
 
-
-# ********************************************************
-# *                                                      *
-# * Main                                                 *
-# *                                                      *
-# ********************************************************
-if len(sys.argv) >= 2 and sys.argv[1] == "sdist":
-    print("preparing for sdist")
-    package_dir = "."
-    package_data = []
-else:
-    package_dir = build_dir_name
-    package_data = ["*tinysplinepython*"]
 
 setup(name="tinyspline",
       version="0.1.0.dev",
@@ -93,8 +83,7 @@ setup(name="tinyspline",
           "Operating System :: OS Independent",
           "License :: OSI Approved :: MIT License"
       ],
-      cmdclass={"build": build},
+      cmdclass={"build_py": build_py},
       packages=["tinyspline"],
-      package_dir={"tinyspline": package_dir},
-      package_data={"tinyspline": package_data}
+      package_dir={"tinyspline": "."}
       )

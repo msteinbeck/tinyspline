@@ -45,7 +45,7 @@ class build(_build):
             # create __init__.py
             print("creating file: __init__.py")
             init_file = open(path.join(build_dir, "__init__.py"), "w+")
-            init_file.writelines("from tinyspline import *")
+            init_file.writelines("from tinyspline import *\n")
             init_file.close()
 
             # distutils uses old-style classes, so no super()
@@ -86,6 +86,13 @@ setup(name="tinyspline",
       license="MIT",
       url="https://github.com/retuxx/tinyspline",
       platforms="Any",
+      classifiers=[
+          "Topic :: Scientific/Engineering :: Mathematics",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "Programming Language :: Python",
+          "Operating System :: OS Independent",
+          "License :: OSI Approved :: MIT License"
+      ],
       cmdclass={"build": build},
       packages=["tinyspline"],
       package_dir={"tinyspline": package_dir},

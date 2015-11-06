@@ -51,7 +51,7 @@ class build_py(_build_py):
             # create __init__.py in bin_dir
             print("creating file: __init__.py")
             init_file = open(path.join(bin_dir, "__init__.py"), "w+")
-            init_file.writelines("from tinyspline import *\n")
+            init_file.writelines("from .tinyspline import *\n")
             init_file.close()
 
             # distutils uses old-style classes, so no super()

@@ -25,4 +25,7 @@ if(GLUT_FOUND AND OPENGL_FOUND)
 
   add_executable(beziers beziers.c)
   target_link_libraries(beziers LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
+  add_executable(interpolation interpolation.c)
+  target_link_libraries(interpolation LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 endif()

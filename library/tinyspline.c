@@ -183,7 +183,7 @@ tsError ts_internal_bspline_thomas_algorithm(
     if (m == NULL)
         return TS_MALLOC;
     m[0] = 0.25f;
-    for (i = 1; i < len_m+1; i++)
+    for (i = 1; i < len_m; i++)
         m[i] = 1.f/(4 - m[i-1]);
 
     const size_t lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */

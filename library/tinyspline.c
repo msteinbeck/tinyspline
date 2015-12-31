@@ -98,13 +98,13 @@ tsError ts_internal_bspline_insert_knot(
      * d) copy right hand side knots form original b-spline */
     /* copy control points */
     memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
-    from = bspline->ctrlp + (k-deg+N)     *dim;
-    to   = result->ctrlp  + (k-deg+N + n) *dim; /* n >= 0 implies to >= from */
+    from = bspline->ctrlp + dim*(k-deg+N);
+    to   = result->ctrlp  + dim*(k-deg+N+n); /* n >= 0 implies to >= from */
     memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * size_ctrlp);
     /* copy knots */
     memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
     from = bspline->knots + k+1;
-    to   = result->knots  + k+1 + n; /* n >= 0 implies to >= from */
+    to   = result->knots  + k+1+n; /* n >= 0 implies to >= from */
     memmove(to, from, (result->n_knots-n-(k+1)) * sizeof(float));
 
     /* 2.

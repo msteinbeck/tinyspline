@@ -60,6 +60,19 @@ tsError ts_internal_bspline_insert_knot(
 {
     tsError err;
 
+    /* Constant variables. */
+    const size_t deg = bspline->deg;
+    const size_t dim = bspline->dim;
+    const size_t k = deBoorNet->k;
+    const size_t size_ctrlp = dim * sizeof(float);
+    size_t N; /* The number of affected control points. */
+
+    /* Mutable variables. */
+    float* from; /* The pointer to copy the values from. */
+    float* to; /* The pointer to copy the values to. */
+    int stride; /* The stride of the next pointer to copy. */
+    size_t i; /* Used in for loops. */
+
     if (deBoorNet->s+n > bspline->order)
         goto err_multiplicity;
 
@@ -69,12 +82,8 @@ tsError ts_internal_bspline_insert_knot(
     if (n == 0) /* nothing to insert */
         return TS_SUCCESS;
 
-    const size_t deg = bspline->deg;
-    const size_t dim = bspline->dim;
-    const size_t k = deBoorNet->k;
-    const size_t N = deBoorNet->h+1; /* the number of affected ctrlps
- * n > 0 implies s <= deg implies a regular evaluation implies h+1 is valid */
-    const size_t size_ctrlp = dim * sizeof(float);
+    N = deBoorNet->h+1; /* n > 0 implies s <= deg implies a regular evaluation
+ * implies h+1 is valid. */
 
     /* 1. Copy all necessary control points and knots from
      *    the original B-Spline.
@@ -87,22 +96,16 @@ tsError ts_internal_bspline_insert_knot(
      * b) copy right hand side control points from original b-spline
      * c) copy left hand side knots from original b-spline
      * d) copy right hand side knots form original b-spline */
-    const size_t cidx = k-deg+N;
-    const size_t kidx = k+1;
     /* copy control points */
     memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
-    memmove(
-        result->ctrlp + (cidx+n)*dim, /* n >= 0 implies cidx+n >= cidx */
-        bspline->ctrlp + cidx*dim,
-        (result->n_ctrlp-n-cidx) * size_ctrlp
-    );
+    from = bspline->ctrlp + (k-deg+N)     *dim;
+    to   = result->ctrlp  + (k-deg+N + n) *dim; /* n >= 0 implies to >= from */
+    memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * size_ctrlp);
     /* copy knots */
     memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
-    memmove(
-        result->knots+kidx+n, /* n >= 0 implies kidx+n >= kidx */
-        bspline->knots+kidx,
-        (result->n_knots-n-kidx) * sizeof(float)
-    );
+    from = bspline->knots + k+1;
+    to   = result->knots  + k+1 + n; /* n >= 0 implies to >= from */
+    memmove(to, from, (result->n_knots-n-(k+1)) * sizeof(float));
 
     /* 2.
      *
@@ -110,10 +113,9 @@ tsError ts_internal_bspline_insert_knot(
      * b) copy middle part control points from de boor net
      * c) copy right hand side control points from de boor net
      * d) insert knots with u_k */
-    size_t i; /* used in for loops */
-    float* from = deBoorNet->points;
-    float* to = result->ctrlp + (k-deg)*dim;
-    int stride = (int)(N*dim); /* will be negative in c), thus use int */
+    from = deBoorNet->points;
+    to = result->ctrlp + (k-deg)*dim;
+    stride = (int)(N*dim); /* will be negative in c), thus use int */
 
     /* copy control points */
     for (i = 0; i < n; i++) { /* a) */

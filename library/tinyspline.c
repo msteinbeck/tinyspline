@@ -60,14 +60,14 @@ tsError ts_internal_bspline_insert_knot(
 {
     tsError err;
 
-    /* Constant variables. */
+    /* constant variables */
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
     const size_t k = deBoorNet->k;
     const size_t size_ctrlp = dim * sizeof(float);
     size_t N; /* The number of affected control points. */
 
-    /* Mutable variables. */
+    /* mutable variables */
     float* from; /* The pointer to copy the values from. */
     float* to; /* The pointer to copy the values to. */
     int stride; /* The stride of the next pointer to copy. */
@@ -76,6 +76,8 @@ tsError ts_internal_bspline_insert_knot(
     if (deBoorNet->s+n > bspline->order)
         goto err_multiplicity;
 
+    /* Use ::ts_bspline_resize even if \n is 0 to copy
+     * the spline if necessary. */
     err = ts_bspline_resize(bspline, (int)n, 1, result);
     if (err < 0)
         return err;

@@ -70,7 +70,8 @@ tsError ts_internal_bspline_insert_knot(
     /* mutable variables */
     float* from; /* The pointer to copy the values from. */
     float* to; /* The pointer to copy the values to. */
-    int stride; /* The stride of the next pointer to copy. */
+    int stride; /* The stride of the next pointer to copy. Will be negative
+ * later on, thus use int. */
     size_t i; /* Used in for loops. */
 
     if (deBoorNet->s+n > bspline->order)
@@ -94,30 +95,30 @@ tsError ts_internal_bspline_insert_knot(
 
     /* 1.
      *
-     * a) copy left hand side control points from original b-spline
-     * b) copy right hand side control points from original b-spline
-     * c) copy left hand side knots from original b-spline
-     * d) copy right hand side knots form original b-spline */
+     * a) Copy left hand side control points from original b-spline.
+     * b) Copy right hand side control points from original b-spline.
+     * c) Copy left hand side knots from original b-spline.
+     * d) Copy right hand side knots form original b-spline. */
     /* copy control points */
-    memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp);
+    memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp); /* a) */
     from = bspline->ctrlp + dim*(k-deg+N);
     to   = result->ctrlp  + dim*(k-deg+N+n); /* n >= 0 implies to >= from */
-    memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * size_ctrlp);
+    memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * size_ctrlp); /* b) */
     /* copy knots */
-    memmove(result->knots, bspline->knots, (k+1) * sizeof(float));
+    memmove(result->knots, bspline->knots, (k+1) * sizeof(float)); /* c) */
     from = bspline->knots + k+1;
     to   = result->knots  + k+1+n; /* n >= 0 implies to >= from */
-    memmove(to, from, (result->n_knots-n-(k+1)) * sizeof(float));
+    memmove(to, from, (result->n_knots-n-(k+1)) * sizeof(float)); /* d) */
 
     /* 2.
      *
-     * a) copy left hand side control points from de boor net
-     * b) copy middle part control points from de boor net
-     * c) copy right hand side control points from de boor net
-     * d) insert knots with u_k */
+     * a) Copy left hand side control points from de boor net.
+     * b) Copy middle part control points from de boor net.
+     * c) Copy right hand side control points from de boor net.
+     * d) Insert knots with u_k. */
     from = deBoorNet->points;
     to = result->ctrlp + (k-deg)*dim;
-    stride = (int)(N*dim); /* will be negative in c), thus use int */
+    stride = (int)(N*dim);
 
     /* copy control points */
     for (i = 0; i < n; i++) { /* a) */

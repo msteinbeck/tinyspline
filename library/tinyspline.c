@@ -200,7 +200,7 @@ tsError ts_internal_bspline_thomas_algorithm(
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
     len_m = n-2; /* n >= 3 implies n-2 >= 1 */
-    m = malloc(len_m* sof_f);
+    m = malloc(len_m * sof_f);
     if (m == NULL)
         return TS_MALLOC;
     m[0] = 0.25f;
@@ -252,36 +252,49 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(
 )
 {
     tsError err;
+
+    /* constant variables */
+    const float as = 1.f/6.f; /* The value 'a sixth'. */
+    const float at = 1.f/3.f; /* The value 'a third'. */
+    const float tt = 2.f/3.f; /* The value 'two third'. */
+    size_t sof_c; /* The size of a single control point. */
+    const float* b = points; /* The array of the b values (used for
+ * convenience). */
+    float* s; /* The array of the s values. */
+    float u0; /* The first knot value of the interpolated spline. */
+    float u1; /* The last knot value of the interpolated spline. */
+    float u; /* The distance of two successional knot values of the
+ * interpolated spline. Used to properly setup the knot vector. */
+
+    /* mutable variables */
+    size_t i, d; /* Used in for loops */
+    size_t j, k, l; /* Uses as temporary indices. */
+
     ts_bspline_default(bspline);
 
+    /* input validation */
     if (dim == 0)
         goto err_dim_zero;
     if (n <= 1)
         goto err_deg_ge_nctrlp;
     /* in the following n >= 2 applies */
 
+    /* setup the spline */
     err = ts_bspline_new(3, dim, (n-1)*4, TS_CLAMPED, bspline); /* n >= 2
  * implies n-1 >= 1 implies (n-1)*4 >= 4 */
     if (err < 0)
         return err;
 
-    const size_t dsf = dim*sizeof(float);
-    float* s = malloc(n*dsf);
+    sof_c = dim * sizeof(float); /* dim > 0 implies sof_c > 0 */
+    s = malloc(n * sof_c);
     if (s == NULL)
         goto err_malloc;
 
     /* set s_0 to b_0 and s_n = b_n */
-    const float* b = points; /* for convenience */
-    memcpy(s, b, dsf);
-    memcpy(s + (n-1)*dim, b + (n-1)*dim, dsf);
-
-    size_t i, d; /* loop counter */
-    size_t j, k, l; /* temporary indices */
+    memcpy(s, b, sof_c);
+    memcpy(s + (n-1)*dim, b + (n-1)*dim, sof_c);
 
     /* set s_i = 1/6*b_i + 2/3*b_{i-1} + 1/6*b_{i+1}*/
-    const float as = 1.f/6.f;
-    const float at = 1.f/3.f;
-    const float tt = 2.f/3.f;
     for (i = 1; i < n-1; i++) {
         for (d = 0; d < dim; d++) {
             j = (i-1)*dim+d;
@@ -306,9 +319,9 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(
         }
     }
 
-    const float u0 = bspline->knots[0];
-    const float u1 = bspline->knots[bspline->n_knots-1];
-    const float u = (u1-u0) / (n-1);
+    u0 = bspline->knots[0];
+    u1 = bspline->knots[bspline->n_knots-1];
+    u = (u1-u0) / (n-1);
     for (i = 1; i < n-1; i++) {
         for (d = 0; d < dim+1; d++) {
             bspline->knots[i*(dim+1)+d] = i*u;

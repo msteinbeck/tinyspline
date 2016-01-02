@@ -163,6 +163,20 @@ tsError ts_internal_bspline_thomas_algorithm(
     float* output
 )
 {
+    /* constant variables */
+    size_t sof_f; /* The size of a float. */
+    size_t sof_c; /* The size of a single control point. */
+    size_t ndsf; /* The size of all (n) control points. */
+    size_t len_m; /* The length m. */
+    float* m; /* The array of weights. */
+    size_t lst; /* The index of the first component of the last control point
+ * in \points. */
+
+    /* mutable variables */
+    size_t i, d; /* Used in for loops. */
+    size_t j, k, l; /* Used as temporary indices. */
+
+    /* input validation */
     if (points == output)
         return TS_INPUT_EQ_OUTPUT;
     if (dim == 0)
@@ -170,8 +184,9 @@ tsError ts_internal_bspline_thomas_algorithm(
     if (n == 0)
         return TS_DEG_GE_NCTRLP;
 
-    const size_t size_flt = sizeof(float);
-    const size_t ndsf = n*dim*size_flt;
+    sof_f = sizeof(float);
+    sof_c = dim * sof_f; /* dim > 0 implies sof_c > 0 */
+    ndsf = n * sof_c; /* n > 0 and sof_c > 0 implies ndsf > 0 */
 
     if (n <= 2) {
         memcpy(output, points, ndsf);
@@ -179,21 +194,19 @@ tsError ts_internal_bspline_thomas_algorithm(
     }
 
     /* in the following n >= 3 applies */
-    size_t i, d; /* loop counter */
-    size_t j, k, l; /* temporary indices */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
-    const size_t len_m = n-2; /* n >= 3 implies n-2 >= 1 */
-    float* m = malloc(len_m*size_flt);
+    len_m = n-2; /* n >= 3 implies n-2 >= 1 */
+    m = malloc(len_m* sof_f);
     if (m == NULL)
         return TS_MALLOC;
     m[0] = 0.25f;
     for (i = 1; i < len_m; i++)
         m[i] = 1.f/(4 - m[i-1]);
 
-    const size_t lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
+    lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
     memset(output, 0, ndsf);
-    memcpy(output+lst, points+lst, dim*size_flt);
+    memcpy(output+lst, points+lst, sof_c);
 
     /* forward sweep */
     for (d = 0; d < dim; d++) {
@@ -213,7 +226,7 @@ tsError ts_internal_bspline_thomas_algorithm(
     }
 
     /* back substitution */
-    memset(output+lst, 0, dim*size_flt);
+    memset(output+lst, 0, sof_c);
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
             k = i*dim+d;
@@ -222,8 +235,8 @@ tsError ts_internal_bspline_thomas_algorithm(
             output[k] *= m[i-1];
         }
     }
-    memcpy(output, points, dim*size_flt);
-    memcpy(output+lst, points+lst, dim*size_flt);
+    memcpy(output, points, sof_c);
+    memcpy(output+lst, points+lst, sof_c);
 
     /* we are done */
     free(m);

@@ -64,7 +64,8 @@ tsError ts_internal_bspline_insert_knot(
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
     const size_t k = deBoorNet->k;
-    const size_t size_ctrlp = dim * sizeof(float);
+    size_t sof_f; /* The size of a float. */
+    size_t sof_c; /* The size of a single control point. */
     size_t N; /* The number of affected control points. */
 
     /* mutable variables */
@@ -74,9 +75,9 @@ tsError ts_internal_bspline_insert_knot(
  * later on, thus use int. */
     size_t i; /* Used in for loops. */
 
+    /* input validation */
     if (deBoorNet->s+n > bspline->order)
         goto err_multiplicity;
-
     /* Use ::ts_bspline_resize even if \n is 0 to copy
      * the spline if necessary. */
     err = ts_bspline_resize(bspline, (int)n, 1, result);
@@ -85,6 +86,8 @@ tsError ts_internal_bspline_insert_knot(
     if (n == 0) /* nothing to insert */
         return TS_SUCCESS;
 
+    sof_f = sizeof(float);
+    sof_c = dim * sof_f; /* dim > 0 implies sof_c > 0 */
     N = deBoorNet->h+1; /* n > 0 implies s <= deg implies a regular evaluation
  * implies h+1 is valid. */
 
@@ -100,15 +103,15 @@ tsError ts_internal_bspline_insert_knot(
      * c) Copy left hand side knots from original b-spline.
      * d) Copy right hand side knots form original b-spline. */
     /* copy control points */
-    memmove(result->ctrlp, bspline->ctrlp, (k-deg) * size_ctrlp); /* a) */
+    memmove(result->ctrlp, bspline->ctrlp, (k-deg) * sof_c); /* a) */
     from = bspline->ctrlp + dim*(k-deg+N);
     to   = result->ctrlp  + dim*(k-deg+N+n); /* n >= 0 implies to >= from */
-    memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * size_ctrlp); /* b) */
+    memmove(to, from, (result->n_ctrlp-n-(k-deg+N)) * sof_c); /* b) */
     /* copy knots */
-    memmove(result->knots, bspline->knots, (k+1) * sizeof(float)); /* c) */
+    memmove(result->knots, bspline->knots, (k+1) * sof_f); /* c) */
     from = bspline->knots + k+1;
     to   = result->knots  + k+1+n; /* n >= 0 implies to >= from */
-    memmove(to, from, (result->n_knots-n-(k+1)) * sizeof(float)); /* d) */
+    memmove(to, from, (result->n_knots-n-(k+1)) * sof_f); /* d) */
 
     /* 2.
      *
@@ -122,19 +125,19 @@ tsError ts_internal_bspline_insert_knot(
 
     /* copy control points */
     for (i = 0; i < n; i++) { /* a) */
-        memcpy(to, from, size_ctrlp);
+        memcpy(to, from, sof_c);
         from += stride;
         to += dim;
         stride -= dim;
     }
-    memcpy(to, from, (N-n) * size_ctrlp); /* b) */
+    memcpy(to, from, (N-n) * sof_c); /* b) */
 
     from -= dim;
     to += (N-n)*dim;
     stride = (int)(-(N-n+1)*dim);
 
     for (i = 0; i < n; i++) { /* c) */
-        memcpy(to, from, size_ctrlp);
+        memcpy(to, from, sof_c);
         from += stride;
         stride -= dim;
         to += dim;

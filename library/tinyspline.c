@@ -401,16 +401,22 @@ tsError ts_bspline_new(
 )
 {
     tsError err;
+
+    /* constant variables */
+    const size_t order = deg + 1; /* The order of the spline to create. */
+    const size_t n_knots = n_ctrlp + order; /* The number of knots. */
+    const size_t sof_f = sizeof(float); /* The size of a float. */
+    const size_t sof_nk = n_knots * sof_f; /* the size of all knots. */
+    const size_t sof_nc = n_ctrlp * dim * sof_f; /* the size of all control
+ * points. */
+
     ts_bspline_default(bspline);
 
+    /* input validation */
     if (dim < 1)
         goto err_dim_zero;
     if (deg >= n_ctrlp)
         goto err_deg_ge_nctrlp;
-
-    const size_t order = deg + 1;
-    const size_t n_knots = n_ctrlp + order;
-    const size_t size_flt = sizeof(float);
 
     /* setup b-spline */
     bspline->deg     = deg;
@@ -418,10 +424,10 @@ tsError ts_bspline_new(
     bspline->dim     = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
-    bspline->ctrlp   = (float*) malloc(n_ctrlp*dim*size_flt);
+    bspline->ctrlp   = (float*) malloc(sof_nc);
     if (bspline->ctrlp == NULL)
         goto err_malloc;
-    bspline->knots   = (float*) malloc(n_knots*size_flt);
+    bspline->knots   = (float*) malloc(sof_nk);
     if (bspline->knots == NULL)
         goto err_malloc;
     ts_bspline_setup_knots(bspline, type, bspline);

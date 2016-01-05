@@ -64,7 +64,7 @@ tsError ts_internal_bspline_insert_knot(
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
     const size_t k = deBoorNet->k;
-    size_t sof_f; /* The size of a float. */
+    const size_t sof_f = sizeof(float); /* The size of a float. */
     size_t sof_c; /* The size of a single control point. */
     size_t N; /* The number of affected control points. */
 
@@ -86,7 +86,6 @@ tsError ts_internal_bspline_insert_knot(
     if (n == 0) /* nothing to insert */
         return TS_SUCCESS;
 
-    sof_f = sizeof(float);
     sof_c = dim * sof_f; /* dim > 0 implies sof_c > 0 */
     N = deBoorNet->h+1; /* n > 0 implies s <= deg implies a regular evaluation
  * implies h+1 is valid. */
@@ -167,7 +166,7 @@ tsError ts_internal_bspline_thomas_algorithm(
 )
 {
     /* constant variables */
-    size_t sof_f; /* The size of a float. */
+    const size_t sof_f = sizeof(float); /* The size of a float. */
     size_t sof_c; /* The size of a single control point. */
     size_t ndsf; /* The size of all (n) control points. */
     size_t len_m; /* The length m. */
@@ -187,7 +186,6 @@ tsError ts_internal_bspline_thomas_algorithm(
     if (n == 0)
         return TS_DEG_GE_NCTRLP;
 
-    sof_f = sizeof(float);
     sof_c = dim * sof_f; /* dim > 0 implies sof_c > 0 */
     ndsf = n * sof_c; /* n > 0 and sof_c > 0 implies ndsf > 0 */
 
@@ -196,7 +194,7 @@ tsError ts_internal_bspline_thomas_algorithm(
         return TS_SUCCESS;
     }
 
-    /* in the following n >= 3 applies */
+    /* In the following n >= 3 applies. */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
     len_m = n-2; /* n >= 3 implies n-2 >= 1 */
@@ -403,12 +401,13 @@ tsError ts_bspline_new(
     tsError err;
 
     /* constant variables */
-    const size_t order = deg + 1; /* The order of the spline to create. */
-    const size_t n_knots = n_ctrlp + order; /* The number of knots. */
     const size_t sof_f = sizeof(float); /* The size of a float. */
-    const size_t sof_nk = n_knots * sof_f; /* the size of all knots. */
-    const size_t sof_nc = n_ctrlp * dim * sof_f; /* the size of all control
- * points. */
+    const size_t order = deg + 1; /* The order of the spline to create. */
+    size_t n_knots; /* The number of knots. */
+    size_t sof_nc; /* the size of all control points. */
+    size_t sof_nk; /* the size of all knots. */
+
+    /* In the following order >= 1 applies. */
 
     ts_bspline_default(bspline);
 
@@ -417,6 +416,14 @@ tsError ts_bspline_new(
         goto err_dim_zero;
     if (deg >= n_ctrlp)
         goto err_deg_ge_nctrlp;
+
+    /* In the following dim >= 1 and n_ctrlp >= 1 applies. */
+
+    n_knots = n_ctrlp + order; /* n_ctrlp >= 1 and order >= 1 implies
+ * n_knots >= 2. */
+    sof_nc = n_ctrlp * dim * sof_f; /* n_ctrlp >= 1 and dim >= 1 implies
+ * sof_nc > 0 */
+    sof_nk = n_knots * sof_f; /* n_knots >= 1 implies sof_nk > 0 */
 
     /* setup b-spline */
     bspline->deg     = deg;

@@ -1,8 +1,8 @@
 #include "tinyspline.h"
 
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
+#include <stdlib.h> /* malloc, free */
+#include <math.h> /* fabs */
+#include <string.h> /* memcpy, memmove */
 
 /********************************************************
 *                                                       *

@@ -35,9 +35,8 @@ typedef enum
     TS_DIM_ZERO = -3,       /* the dimension of the control points are 0 */
     TS_DEG_GE_NCTRLP = -4,  /* degree of spline >= number of control points */
     TS_U_UNDEFINED = -5,    /* spline is not defined at u */
-    TS_MULTIPLICITY = -6,   /* the multiplicity of a knot is greater than
+    TS_MULTIPLICITY = -6    /* the multiplicity of a knot is greater than
                              * the order of the spline */
-    TS_INPUT_EQ_OUTPUT = -7 /* input parameter is equals to output parameter */
 } tsError;
 
 /**
@@ -175,12 +174,10 @@ tsError ts_bspline_interpolate(
  * reuse an instance of tsDeBoorNet by using it in multiple calls of this
  * function, make sure to call ::ts_deboornet_free beforehand.
  *
- * Unlike most other functions \original and \copy may not be the same pointer!
- *
- * On error all values of \copy are 0/NULL.
+ * On error all values of \copy are 0/NULL. The function does nothing if
+ * \original == \result
  *
  * @return TS_SUCCESS           on success.
- * @return TS_INPUT_EQ_OUTPUT   if \original == \copy
  * @return TS_MALLOC            if allocating memory failed.
  */
 tsError ts_deboornet_copy(
@@ -196,12 +193,10 @@ tsError ts_deboornet_copy(
  * reuse an instance of tsBSpline by using it in multiple calls of this
  * function, make sure to call ::ts_bspline_free beforehand.
  *
- * Unlike most other functions \original and \copy may not be the same pointer!
- *
- * On error all values of \copy are 0/NULL.
+ * On error all values of \copy are 0/NULL. The function does nothing if
+ * \original == \result
  *
  * @return TS_SUCCESS           on success.
- * @return TS_INPUT_EQ_OUTPUT   if \original == \copy.
  * @return TS_MALLOC            if allocating memory failed.
  */
 tsError ts_bspline_copy(

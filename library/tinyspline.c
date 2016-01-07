@@ -179,8 +179,6 @@ tsError ts_internal_bspline_thomas_algorithm(
     size_t j, k, l; /* Used as temporary indices. */
 
     /* input validation */
-    if (points == output)
-        return TS_INPUT_EQ_OUTPUT;
     if (dim == 0)
         return TS_DIM_ZERO;
     if (n == 0)
@@ -489,7 +487,7 @@ tsError ts_deboornet_copy(
     const size_t size = original->n_points * original->dim * sizeof(float);
 
     if (original == copy)
-        return TS_INPUT_EQ_OUTPUT;
+        return TS_SUCCESS;
 
     copy->u   = original->u;
     copy->k   = original->k;
@@ -521,7 +519,7 @@ tsError ts_bspline_copy(
     size_t size; /* The size to copy (control points and knots). */
 
     if (original == copy)
-        return TS_INPUT_EQ_OUTPUT;
+        return TS_SUCCESS;
 
     copy->deg     = original->deg;
     copy->order   = original->order;
@@ -563,11 +561,9 @@ tsError ts_bspline_setup_knots(
     size_t current, end; /* Used by loops. */
     size_t numerator, dominator; /* To fill uniformly spaced elements. */
 
-    if (original != result) {
-        const tsError ret = ts_bspline_copy(original, result);
-        if (ret < 0)
-            return ret;
-    }
+    const tsError ret = ts_bspline_copy(original, result);
+    if (ret < 0)
+        return ret;
 
     if (type == TS_NONE)
         return TS_SUCCESS;
@@ -769,10 +765,8 @@ tsError ts_bspline_resize(
     float* to_knots; /* The pointer to copy the knots to. */
 
     /* if n is 0 the spline must not be resized */
-    if (n == 0 && bspline != resized)
+    if (n == 0)
         return ts_bspline_copy(bspline, resized);
-    if (n == 0 && bspline == resized)
-        return TS_SUCCESS;
 
     if (new_n_ctrlp <= deg)
         goto err_deg_ge_nctrlp;
@@ -851,8 +845,7 @@ tsError ts_bspline_split(
             ts_bspline_default(split);
         *k = 0;
     } else if (net.s == bspline->order) {
-        if (bspline != split)
-            err = ts_bspline_copy(bspline, split);
+        err = ts_bspline_copy(bspline, split);
         *k = err < 0 ? 0 : net.k;
     } else {
         err = ts_internal_bspline_insert_knot(bspline, &net, net.h+1, split);
@@ -874,11 +867,9 @@ tsError ts_bspline_buckle(
     const float* pn_1  = p0 + (N-1)*dim; /* The pointer to the last ctrlp. */
     size_t i, d; /* Used in for loops. */
 
-    if (bspline != buckled) {
-        const tsError err = ts_bspline_copy(bspline, buckled);
-        if (err < 0)
-            return err;
-    }
+    const tsError err = ts_bspline_copy(bspline, buckled);
+    if (err < 0)
+        return err;
 
     for (i = 0; i < N; i++) {
         for (d = 0; d < dim; d++) {
@@ -905,11 +896,9 @@ tsError ts_bspline_to_beziers(
     float u_min; /* The minimum of the knot values. */
     float u_max; /* The maximum of the knot values. */
 
-    if (bspline != beziers) {
-        err = ts_bspline_copy(bspline, beziers);
-        if (err < 0)
-            return err;
-    }
+    err = ts_bspline_copy(bspline, beziers);
+    if (err < 0)
+        return err;
 
     /* fix first control point if necessary */
     u_min = beziers->knots[deg];
@@ -970,7 +959,5 @@ char* ts_enum_str(const tsError err) {
         return "spline is undefined at given u";
     else if (err == TS_MULTIPLICITY)
         return "s > order";
-    else if (err == TS_INPUT_EQ_OUTPUT)
-        return "input == output";
     return "unkown error";
 }

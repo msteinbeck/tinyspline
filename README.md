@@ -243,10 +243,9 @@ capable of handling NURBS, B-Splines, Béziers, lines and points.
 <a name="functions" />
 ####Functions
 With a few exceptions, all functions of the C library provide input and
-output parameter. The input parameter are always const and except of the
-copy functions (`ts_***_copy`), the pointer of the input may be equal to the
-pointer of the output. In order to modify a spline, use it as input and
-output at once:
+output parameter. The input parameter are always const and the pointer of the
+input may be equal to the pointer of the output. In order to modify a spline,
+use it as input and output at once:
 
 ```c
 tsBSpline spline;

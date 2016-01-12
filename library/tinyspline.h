@@ -31,11 +31,10 @@ typedef enum
 {
     TS_SUCCESS = 0,         /* no error */
     TS_MALLOC = -1,         /* malloc/realloc returned null */
-    TS_OVER_UNDERFLOW = -2, /* overflow/underflow detected */
-    TS_DIM_ZERO = -3,       /* the dimension of the control points are 0 */
-    TS_DEG_GE_NCTRLP = -4,  /* degree of spline >= number of control points */
-    TS_U_UNDEFINED = -5,    /* spline is not defined at u */
-    TS_MULTIPLICITY = -6    /* the multiplicity of a knot is greater than
+    TS_DIM_ZERO = -2,       /* the dimension of the control points are 0 */
+    TS_DEG_GE_NCTRLP = -3,  /* degree of spline >= number of control points */
+    TS_U_UNDEFINED = -4,    /* spline is not defined at u */
+    TS_MULTIPLICITY = -5    /* the multiplicity of a knot is greater than
                              * the order of the spline */
 } tsError;
 
@@ -79,7 +78,12 @@ typedef struct
     size_t n_ctrlp; /* number of control points */
     size_t n_knots; /* number of knots (n_ctrlp + deg + 1) */
     float* ctrlp;   /* the control points of the spline */
-    float* knots;   /* the knot vector of the spline (ascending) */
+    float* knots;   /* the knot vector of the spline (ascending)
+ * Technically ctrlp and knots share the same array. The first elements of
+ * this array are the control points and the last elements are the knots. Keep
+ * in mind that you should never assign two different arrays to ctrlp and knots
+ * otherwise function provided by this library may result in undefined
+ * behaviour. */
 } tsBSpline;
 
 

@@ -36,7 +36,7 @@ if len(args) == 2 and type(args[1]) is int:
         ts_arr = new_floatArray(ts_len)
         for i in range(ts_len):
             floatArray_setitem(ts_arr, i, ts_col[i])
-        args = (ts_arr, ts_len/ts_dim, ts_dim)
+        args = (ts_arr, int(ts_len/ts_dim), ts_dim)
     except TypeError:
         pass
 %}

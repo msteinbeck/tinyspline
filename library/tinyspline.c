@@ -732,7 +732,7 @@ void ts_internal_bspline_set_ctrlp(
 {
     const size_t s = bspline->n_ctrlp * bspline->dim * sizeof(float);
     ts_internal_bspline_copy(bspline, result, buf);
-    memmove(result->ctrlp, bspline->ctrlp, s);
+    memmove(result->ctrlp, ctrlp, s);
 }
 
 void ts_internal_bspline_set_knots(
@@ -742,7 +742,7 @@ void ts_internal_bspline_set_knots(
 {
     const size_t s = bspline->n_knots * sizeof(float);
     ts_internal_bspline_copy(bspline, result, buf);
-    memmove(result->knots, bspline->knots, s);
+    memmove(result->knots, knots, s);
 }
 
 

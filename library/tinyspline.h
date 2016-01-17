@@ -209,6 +209,21 @@ tsError ts_bspline_copy(
 );
 
 /**
+ * Creates a deep copy of \bspline (only if \bspline != \result) and copies the
+ * given control points to \result using memmove.
+ *
+ * On error (and if \bspline != \result) all values of \result are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if \bspline != \result and allocating
+ *                              memory failed.
+ */
+tsError ts_bspline_set_ctrlp(
+    const tsBSpline* bspline, const float* ctrlp,
+    tsBSpline* result
+);
+
+/**
  * Fills the knot vector of \original according to \type and stores the result
  * in \result.
  *

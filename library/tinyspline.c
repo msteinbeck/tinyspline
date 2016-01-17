@@ -725,6 +725,16 @@ void ts_internal_bspline_to_beziers(
     }
 }
 
+void ts_internal_bspline_set_ctrlp(
+    const tsBSpline* bspline, const float* ctrlp,
+    tsBSpline* result, jmp_buf buf
+)
+{
+    const size_t s = bspline->n_ctrlp * bspline->dim * sizeof(float);
+    ts_internal_bspline_copy(bspline, result, buf);
+    memmove(result->ctrlp, bspline->ctrlp, s);
+}
+
 
 /********************************************************
 *                                                       *
@@ -827,6 +837,22 @@ tsError ts_bspline_copy(
     CATCH
         if (original != copy)
             ts_bspline_default(copy);
+    ETRY
+    return err;
+}
+
+tsError ts_bspline_set_ctrlp(
+    const tsBSpline* bspline, const float* ctrlp,
+    tsBSpline* result
+)
+{
+    tsError err;
+    jmp_buf buf;
+    TRY(buf, err)
+        ts_internal_bspline_set_ctrlp(bspline, ctrlp, result, buf);
+    CATCH
+        if (bspline != result)
+            ts_bspline_default(result);
     ETRY
     return err;
 }

@@ -35,20 +35,18 @@
 // make strings directly accessible
 %include "std_string.i"
 
-// make float arrays available
-%include "carrays.i"
-%array_functions(float, floatArray);
+// make std::vector<float> available
+%include "std_vector.i"
+namespace std {
+  %template(TsFloatVector) vector<float>;
+};
 
 // ignore wrapped structs and data fields
 %ignore tsError;
 %ignore tsDeBoorNet;
 %ignore TsDeBoorNet::data;
-%ignore TsDeBoorNet::points;
-%ignore TsDeBoorNet::result;
 %ignore tsBSpline;
 %ignore TsBSpline::data;
-%ignore TsBSpline::ctrlp;
-%ignore TsBSpline::knots;
 
 %{
     #include "tinyspline.h"

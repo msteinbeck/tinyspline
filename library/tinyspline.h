@@ -210,7 +210,9 @@ tsError ts_bspline_copy(
 
 /**
  * Creates a deep copy of \bspline (only if \bspline != \result) and copies the
- * given control points to \result using memmove.
+ * first bspline->n_ctrlp * bspline->dim control points from \ctrlp to \result
+ * using memmove. The behaviour of this function is undefined if the length of
+ * \ctrlp is less than bspline->n_ctrlp * bspline->dim.
  *
  * On error (and if \bspline != \result) all values of \result are 0/NULL.
  *
@@ -225,7 +227,9 @@ tsError ts_bspline_set_ctrlp(
 
 /**
  * Creates a deep copy of \bspline (only if \bspline != \result) and copies the
- * given knots to \result using memmove.
+ * the first bspline->n_knots from \knots to \result using memmove. The
+ * behaviour of this function is undefined if the length of \knots is less than
+ * bspline->n_knots.
  *
  * On error (and if \bspline != \result) all values of \result are 0/NULL.
  *

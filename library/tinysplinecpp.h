@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tinyspline.h"
+#include <vector>
 
 class TsDeBoorNet {
 public:
@@ -16,8 +17,8 @@ public:
     size_t h() const;
     size_t dim() const;
     size_t nPoints() const;
-    float* points();
-    float* result();
+    std::vector<float> points() const;
+    std::vector<float> result() const;
     tsDeBoorNet* data();
     
 private:
@@ -30,7 +31,7 @@ public:
     TsBSpline(const TsBSpline& other);
     TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
               const tsBSplineType type);
-    TsBSpline(const float* points, const size_t nPoints, const size_t dim);
+    TsBSpline(const std::vector<float> points, const size_t dim);
     ~TsBSpline();
 
     TsBSpline& operator=(const TsBSpline& other);
@@ -41,12 +42,14 @@ public:
     size_t dim() const;
     size_t nCtrlp() const;
     size_t nKnots() const;
-    float* ctrlp();
-    float* knots();
+    std::vector<float> ctrlp() const;
+    std::vector<float> knots() const;
     tsBSpline* data();
     
     void setDeg(const size_t deg);
     void setOrder(const size_t order);
+    void setCtrlp(const std::vector<float> ctrlp);
+    void setKnots(const std::vector<float> knots);
     
     void setupKnots(const tsBSplineType type);
     void resize(const int n, const int back);

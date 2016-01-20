@@ -7,47 +7,58 @@
 //********************************************************
 %typemap(javaimports) TsFloatList
 %{
+import java.util.List;
 import java.util.AbstractList;
-import java.lang.NullPointerException;
-import java.lang.RuntimeException;
 import java.util.RandomAccess;
+import java.lang.NullPointerException;
 %}
 
 %typemap(javabase) TsFloatList "AbstractList<Float>"
 %typemap(javainterfaces) TsFloatList "RandomAccess"
-%typemap(javaclassmodifiers) TsFloatList "public abstract class"
 
 %typemap(javacode) TsFloatList
 %{
   @Override
-  public Float get(int index) {
+  public Float get(final int index) {
     return ts_get(index);
   }
-    
+
   @Override
-  public Float set(int index, Float element) {
+  public Float set(final int index, final Float element) {
     if (element == null)
-      throw new NullPointerException();
+      throw new NullPointerException("Element is null");
     return ts_set(index, element);
   }
 
   @Override
+  public void add(final int index, final Float element) {
+    if (element == null)
+      throw new NullPointerException("Element is null");
+    ts_insert(index, element);
+  }
+
+  @Override
+  public Float remove(final int index) {
+    return ts_remove(index);
+  }
+
+  @Override
   public int size() {
-    return ts_len();
+    return ts_size();
   }
 
   @Override
-  public int indexOf(Object o) {
-    if (o == null)
-      throw new NullPointerException();
-    else if (! (o instanceof Float))
-      throw new ClassCastException();
-    return ts_indexOf((Float) o);
+  public String toString() {
+    return ts_toString();
   }
 
-  @Override
-  public boolean contains(Object o) {
-    return indexOf(o) >= 0;
+  static TsFloatVector listToVector(final List<Float> list) {
+    if (list == null)
+      throw new IllegalArgumentException("The given list must not be null.");
+
+    final TsFloatVector vec = new TsFloatVector();
+    for(final float f : list) vec.add(f);
+    return vec;
   }
 %}
 
@@ -59,46 +70,46 @@ import java.util.RandomAccess;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
+%rename(ctrlp_p) TsBSpline::ctrlp;
+%rename(setCtrlp_p) TsBSpline::setCtrlp;
+%rename(knots_p) TsBSpline::knots;
+%rename(setKnots_p) TsBSpline::setKnots;
+
 %javamethodmodifiers TsBSpline::TsBSpline(const float *points,
     const size_t nPoints, const size_t dim) "private";
+%javamethodmodifiers TsBSpline::ctrlp "private";
+%javamethodmodifiers TsBSpline::setCtrlp "private";
+%javamethodmodifiers TsBSpline::knots "private";
+%javamethodmodifiers TsBSpline::setKnots "private";
 
 %typemap(javaimports) TsBSpline
 %{
 import java.util.List;
-import java.lang.IllegalArgumentException;
 %}
 
 %typemap(javacode) TsBSpline
 %{
-  private static SWIGTYPE_p_float prepareInterpolation(
-      final List<Float> points, final long dim) {
-    if (points == null) {
-      throw new IllegalArgumentException("points must not be null.");
-    } else if (dim <= 0) {
-      throw new IllegalArgumentException("dim must be >= 1.");
-    } else if (points.size() % dim != 0) {
-      throw new IllegalArgumentException("points.size() % dim == 0 failed.");
-    }
-
-    final int size = points.size();
-    final SWIGTYPE_p_float array = tinysplinejava.new_floatArray(size);
-    for (int i = 0; i < size; i++) {
-      tinysplinejava.floatArray_setitem(array, i, points.get(i));
-    }
-
-    return array;
-  }
-
   public TsBSpline(final List<Float> points, final long dim) {
-    this(prepareInterpolation(points, dim), points.size()/dim, dim);
+    // implicitly checks null
+    this(TsFloatList.listToVector(points), dim);
   }
 
   public List<Float> getCtrlp() {
-    return new TsCtrlpList(this);
+    return new TsFloatList(ctrlp_p());
+  }
+
+  public void setCtrlp(final List<Float> ctrlp) {
+    // implicitly checks null
+    setCtrlp_p(TsFloatList.listToVector(ctrlp));
   }
 
   public List<Float> getKnots() {
-    return new TsKnotList(this);
+    return new TsFloatList(knots_p());
+  }
+
+  public void setKnots(final List<Float> knots) {
+    // implicitly checks null
+    setKnots_p(TsFloatList.listToVector(knots));
   }
 %}
 
@@ -109,6 +120,12 @@ import java.lang.IllegalArgumentException;
 //********************************************************
 %ignore TsDeBoorNet::operator=;
 
+%rename(points_p) TsDeBoorNet::points;
+%rename(result_p) TsDeBoorNet::result;
+
+%javamethodmodifiers TsDeBoorNet::points "private";
+%javamethodmodifiers TsDeBoorNet::result "private";
+
 %typemap(javaimports) TsDeBoorNet 
 %{
 import java.util.List;
@@ -117,11 +134,11 @@ import java.util.List;
 %typemap(javacode) TsDeBoorNet
 %{
   public List<Float> getPoints() {
-    return new TsPointList(this);
+    return new TsFloatList(points_p());
   }
 
   public List<Float> getResult() {
-    return new TsResultList(this);
+    return new TsFloatList(result_p());
   }
 %}
 

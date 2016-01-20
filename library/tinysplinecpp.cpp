@@ -54,14 +54,18 @@ size_t TsDeBoorNet::nPoints() const
     return deBoorNet.n_points;
 }
 
-float* TsDeBoorNet::points()
+std::vector<float> TsDeBoorNet::points() const
 {
-    return deBoorNet.points;
+    const float* begin = deBoorNet.points;
+    const float* end = begin + (deBoorNet.n_points-1)*deBoorNet.dim;
+    return std::vector<float>(begin, end);
 }
 
-float* TsDeBoorNet::result()
+std::vector<float> TsDeBoorNet::result() const
 {
-    return deBoorNet.result;
+    const float* begin = deBoorNet.result;
+    const float* end = begin + deBoorNet.dim;
+    return std::vector<float>(begin, end);
 }
 
 tsDeBoorNet* TsDeBoorNet::data()
@@ -92,9 +96,14 @@ TsBSpline::TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsBSpline::TsBSpline(const float *points, const size_t nPoints, const size_t dim)
+TsBSpline::TsBSpline(const std::vector<float> points, const size_t dim)
 {
-    const tsError err = ts_bspline_interpolate(points, nPoints, dim, &bspline);
+    if (dim == 0)
+        throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
+    if (points.size() % dim != 0)
+        throw std::runtime_error("#points % dim == 0 failed");
+    const tsError err = ts_bspline_interpolate(
+            points.data(), points.size()/dim, dim, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
@@ -141,14 +150,18 @@ size_t TsBSpline::nKnots() const
     return bspline.n_knots;
 }
 
-float* TsBSpline::ctrlp()
+std::vector<float> TsBSpline::ctrlp() const
 {
-    return bspline.ctrlp;
+    const float* begin  = bspline.ctrlp;
+    const float* end = begin + (bspline.n_ctrlp-1)*bspline.dim;
+    return std::vector<float>(begin, end);
 }
 
-float* TsBSpline::knots()
+std::vector<float> TsBSpline::knots() const
 {
-    return bspline.knots;
+    const float* begin = bspline.knots;
+    const float* end = begin + (bspline.n_knots-1);
+    return std::vector<float>(begin, end);
 }
 
 tsBSpline* TsBSpline::data()
@@ -168,6 +181,29 @@ void TsBSpline::setOrder(const size_t order)
         throw std::runtime_error(ts_enum_str(TS_DEG_GE_NCTRLP));
     bspline.order = order;
     bspline.deg = deg;
+}
+
+void TsBSpline::setCtrlp(const std::vector<float> ctrlp)
+{
+    if (ctrlp.size() != nCtrlp() * dim()) {
+        throw std::runtime_error("The number of values must be equals to the"
+            " spline's number of control points multiplied by the dimension "
+            " of each control point.");
+    }
+    const tsError err = ts_bspline_set_ctrlp(&bspline, ctrlp.data(), &bspline);
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
+}
+
+void TsBSpline::setKnots(const std::vector<float> knots)
+{
+    if (knots.size() != nKnots()) {
+        throw std::runtime_error("The number of values must be equals to the"
+        " spline's number of knots.");
+    }
+    const tsError err = ts_bspline_set_knots(&bspline, knots.data(), &bspline);
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
 }
 
 void TsBSpline::setupKnots(const tsBSplineType type)

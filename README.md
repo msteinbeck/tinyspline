@@ -62,8 +62,8 @@ library.
 
 All bindings of TinySpline work on top of the C++11 wrapper and will be
 generated with [Swig](http://www.swig.org/) (3.0.1 or above). While
-[tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinysp
-line.i) configures all language independent settings, tinysplineXYZ.i adds
+[tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.i)
+configures all language independent settings, tinysplineXYZ.i adds
 language related features. The file
 [swig_wrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swig_wrapper.h)
 contains functions which are necessary to provide collections

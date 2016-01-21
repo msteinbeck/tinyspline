@@ -46,27 +46,27 @@ algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
 <a name="structure" />
 ###Project Structure
 The core of TinySpline is written in ANSI C and consists of the files
-[tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinysp
-line.h) and
-[tinyspline.c](https://github.com/retuxx/tinyspline/blob/master/library/tinysp
-line.c). You can either copy those files into your project or use CMake to
+[tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.h)
+and
+[tinyspline.c](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.c).
+You can either copy those files into your project or use CMake to
 create a static or shared library.
 
 The C++11 wrapper consists of the files
-[tinysplinecpp.h](https://github.com/retuxx/tinyspline/blob/master/library/tin
-ysplinecpp.h) and
-[tinysplinecpp.cpp](https://github.com/retuxx/tinyspline/blob/master/library/t
-inysplinecpp.cpp). As for the C library, you can copy those files
-(alongside tinyspline.h and tinyspline.c) into your project or use CMake to
-create a static or shared library.
+[tinysplinecpp.h](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.h)
+and
+[tinysplinecpp.cpp](https://github.com/retuxx/tinyspline/blob/master/library/tinysplinecpp.cpp).
+As for the C library, you can copy those files (alongside tinyspline.h and
+tinyspline.c) into your project or use CMake to create a static or shared
+library.
 
 All bindings of TinySpline work on top of the C++11 wrapper and will be
 generated with [Swig](http://www.swig.org/) (3.0.1 or above). While
 [tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinysp
 line.i) configures all language independent settings, tinysplineXYZ.i adds
 language related features. The file
-[swig_wrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swig
-_wrapper.h) contains functions which are necessary to provide collections
+[swig_wrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swig_wrapper.h)
+contains functions which are necessary to provide collections
 instead of plain C arrays. Using CMake to create the bindings is recommended.
 
 <a name="bindings" />

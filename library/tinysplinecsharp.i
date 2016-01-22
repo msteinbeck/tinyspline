@@ -13,7 +13,6 @@ using System.Collections.Generic;
 %}
 
 %typemap(csinterfaces) TsFloatList "IList<float>"
-%typemap(csclassmodifiers) TsFloatList "public abstract class"
 
 %typemap(cscode) TsFloatList
 %{
@@ -49,9 +48,10 @@ using System.Collections.Generic;
     public void Dispose() {}
   }
 
+
   public int Count {
     get {
-      return ts_len();
+      return ts_size();
     }
   }
 
@@ -71,15 +71,31 @@ using System.Collections.Generic;
   }
 
   public void CopyTo(float[] array, int arrayIndex) {
-    if (array == null)
-      throw new ArgumentNullException();
-    if (arrayIndex < 0)
-      throw new ArgumentOutOfRangeException("Index: " + arrayIndex);
-    int size = this.Count;
-    if (array.Length < size)
-      throw new ArgumentException("Array: " + array.Length + ", List: " + size);
-    for (; arrayIndex < size; arrayIndex++)
-      array[arrayIndex] = ts_get(arrayIndex);
+    int count = this.Count;
+
+    if (array == null) {
+      throw new ArgumentNullException(
+        "The given array must not be null.");
+    }
+    if (array.Rank > 1) {
+      throw new ArgumentException(
+        "Multi dimensional arrays are not supported.");
+    }
+    if (arrayIndex < 0) {
+      throw new ArgumentOutOfRangeException(
+        "Negative index: " + arrayIndex);
+    }
+    if (arrayIndex >= array.Length) {
+      throw new ArgumentOutOfRangeException(
+        "Index: " + arrayIndex + ", Size of array: " + array.Length);
+    }
+    if (count > array.Length - arrayIndex) {
+      throw new ArgumentException(
+        "Number of elements to copy is too large.");
+    }
+
+    for (int i = 0; i < count; i++, arrayIndex++)
+        array[arrayIndex] = ts_get(i);
   }
 
   public int IndexOf(float item) {
@@ -99,27 +115,36 @@ using System.Collections.Generic;
   }
 
   public void Add(float item) {
-    throw new NotSupportedException("Adding items is not supported.");
+    ts_insert(ts_size(), item);
   }
 
   public void Insert(int index, float item) {
-    throw new NotSupportedException("Inserting items is not supported.");
+    ts_insert(index, item);
   }
 
   public bool Remove(float item) {
-    throw new NotSupportedException("Removing items is not supported.");
+    return ts_remove(item);
   }
 
   public void RemoveAt(int index) {
-    throw new NotSupportedException("Removing items is not supported.");
+    ts_remove(index);
   }
 
   public void Clear() {
-    throw new NotSupportedException("Removing items is not supported.");
+    ts_clear();
   }
 
   public override string ToString() {
     return ts_toString();
+  }
+
+  internal static TsFloatVector listToVector(IList<float> list) {
+    if (list == null)
+      throw new ArgumentNullException("The given list must not be null.");
+
+    TsFloatVector vec = new TsFloatVector();
+    foreach (float f in list) vec.Add(f);
+    return vec;
   }
 %}
 
@@ -131,8 +156,17 @@ using System.Collections.Generic;
 %ignore TsBSpline::operator();
 %ignore TsBSpline::operator=;
 
+%rename(ctrlp_p) TsBSpline::ctrlp;
+%rename(setCtrlp_p) TsBSpline::setCtrlp;
+%rename(knots_p) TsBSpline::knots;
+%rename(setKnots_p) TsBSpline::setKnots;
+
 %csmethodmodifiers TsBSpline::TsBSpline(const float *points,
     const size_t nPoints, const size_t dim) "private";
+%csmethodmodifiers TsBSpline::ctrlp "private";
+%csmethodmodifiers TsBSpline::setCtrlp "private";
+%csmethodmodifiers TsBSpline::knots "private";
+%csmethodmodifiers TsBSpline::setKnots "private";
 
 %typemap(csimports) TsBSpline
 %{
@@ -143,37 +177,27 @@ using System.Collections.Generic;
 
 %typemap(cscode) TsBSpline
 %{
-  private static SWIGTYPE_p_float prepareInterpolation(
-      IList<float> points, uint dim) {
-    if (points == null) {
-      throw new ArgumentNullException("points must not be null.");
-    } else if (dim == 0) {
-      throw new ArgumentException("dim must be >= 1.");
-    } else if ((uint)points.Count % dim != 0) {
-      throw new ArgumentException("points.Count % dim == 0 failed.");
-    }
-
-    int count = points.Count;
-    SWIGTYPE_p_float array = tinysplinecsharp.new_floatArray(count);
-    for (int i = 0; i < count; i++) {
-      tinysplinecsharp.floatArray_setitem(array, i, points[i]);
-    }
-
-    return array;
-  }
-
   public TsBSpline(IList<float> points, uint dim)
-      : this(prepareInterpolation(points, dim), (uint)points.Count/dim, dim) {}
+      // implicitly checks null
+      : this(TsFloatList.listToVector(points), dim) {}
 
   public IList<float> ctrlp {
     get {
-      return new TsCtrlpList(this);
+      return new TsFloatList(ctrlp_p());
+    }
+    set {
+      // implicitly checks null
+      setCtrlp_p(TsFloatList.listToVector(value));
     }
   }
 
   public IList<float> knots {
     get {
-      return new TsKnotList(this);
+      return new TsFloatList(knots_p());
+    }
+    set {
+      // implicitly checks null
+      setKnots_p(TsFloatList.listToVector(value));
     }
   }
 %}
@@ -185,6 +209,12 @@ using System.Collections.Generic;
 //********************************************************
 %ignore TsDeBoorNet::operator=;
 
+%rename(points_p) TsDeBoorNet::points;
+%rename(result_p) TsDeBoorNet::result;
+
+%csmethodmodifiers TsDeBoorNet::points "private";
+%csmethodmodifiers TsDeBoorNet::result "private";
+
 %typemap(csimports) TsDeBoorNet
 %{
 using System.Collections.Generic;
@@ -194,13 +224,13 @@ using System.Collections.Generic;
 %{
   public IList<float> points {
     get {
-      return new TsPointList(this);
+      return new TsFloatList(points_p());
     }
   }
 
   public IList<float> result {
     get {
-      return new TsResultList(this);
+      return new TsFloatList(result_p());
     }
   }
 %}

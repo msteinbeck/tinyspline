@@ -65,9 +65,9 @@ generated with [Swig](http://www.swig.org/) (3.0.1 or above). While
 [tinyspline.i](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.i)
 configures all language independent settings, tinysplineXYZ.i adds
 language related features. The file
-[swig_wrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swig_wrapper.h)
-contains functions which are necessary to provide collections
-instead of plain C arrays. Using CMake to create the bindings is recommended.
+[swigwrapper.h](https://github.com/retuxx/tinyspline/blob/master/library/swigwrapper.h)
+contains functions which are necessary to provide language related collections.
+Using CMake to create the bindings is recommended.
 
 <a name="bindings" />
 ###Bindings

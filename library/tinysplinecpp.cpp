@@ -187,7 +187,7 @@ void TsBSpline::setCtrlp(const std::vector<float> ctrlp)
 {
     if (ctrlp.size() != nCtrlp() * dim()) {
         throw std::runtime_error("The number of values must be equals to the"
-            " spline's number of control points multiplied by the dimension "
+            " spline's number of control points multiplied by the dimension"
             " of each control point.");
     }
     const tsError err = ts_bspline_set_ctrlp(&bspline, ctrlp.data(), &bspline);

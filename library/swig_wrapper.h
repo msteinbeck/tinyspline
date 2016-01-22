@@ -60,6 +60,10 @@ public:
         return idx >= 0;
     }
 
+    void ts_clear() {
+        vec.clear();
+    }
+
     int ts_indexOf(const float value) const {
         const int size = ts_size();
         for (int i = 0; i < size; i++) {

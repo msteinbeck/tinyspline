@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.AbstractList;
 import java.util.RandomAccess;
 import java.lang.NullPointerException;
+import java.lang.ClassCastException;
 %}
 
 %typemap(javabase) TsFloatList "AbstractList<Float>"
@@ -40,6 +41,20 @@ import java.lang.NullPointerException;
   @Override
   public Float remove(final int index) {
     return ts_remove(index);
+  }
+
+  @Override
+  public int indexOf(Object o) {
+    if (o == null)
+      throw new NullPointerException();
+    else if (! (o instanceof Float))
+      throw new ClassCastException();
+    return ts_indexOf((Float) o);
+  }
+
+  @Override
+  public boolean contains(Object o) {
+    return indexOf(o) >= 0;
   }
 
   @Override

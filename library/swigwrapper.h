@@ -17,7 +17,7 @@
 class TsFloatList {
 public:
     TsFloatList() {}
-    TsFloatList(const std::vector<float> vec) : vec(vec) {}
+    TsFloatList(const std::vector<float>& vec) : vec(vec) {}
 
     float ts_get(const int index) const {
         if (index < 0) {

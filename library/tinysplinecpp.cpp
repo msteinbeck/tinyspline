@@ -57,7 +57,7 @@ size_t TsDeBoorNet::nPoints() const
 std::vector<float> TsDeBoorNet::points() const
 {
     const float* begin = deBoorNet.points;
-    const float* end = begin + (deBoorNet.n_points-1)*deBoorNet.dim;
+    const float* end = begin + deBoorNet.n_points*deBoorNet.dim;
     return std::vector<float>(begin, end);
 }
 
@@ -153,14 +153,14 @@ size_t TsBSpline::nKnots() const
 std::vector<float> TsBSpline::ctrlp() const
 {
     const float* begin  = bspline.ctrlp;
-    const float* end = begin + (bspline.n_ctrlp-1)*bspline.dim;
+    const float* end = begin + bspline.n_ctrlp*bspline.dim;
     return std::vector<float>(begin, end);
 }
 
 std::vector<float> TsBSpline::knots() const
 {
     const float* begin = bspline.knots;
-    const float* end = begin + (bspline.n_knots-1);
+    const float* end = begin + bspline.n_knots;
     return std::vector<float>(begin, end);
 }
 

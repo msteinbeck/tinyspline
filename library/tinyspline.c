@@ -566,6 +566,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(
         tsBSpline* bspline, jmp_buf buf
 )
 {
+    const size_t order = 4; /* The order of the spline to interpolate. */
     const float as = 1.f/6.f; /* The value 'a sixth'. */
     const float at = 1.f/3.f; /* The value 'a third'. */
     const float tt = 2.f/3.f; /* The value 'two third'. */
@@ -592,7 +593,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     sof_c = dim * sizeof(float); /* dim > 0 implies sof_c > 0 */
 
     /* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
-    ts_internal_bspline_new(3, dim, (n-1)*4, TS_CLAMPED, bspline, buf);
+    ts_internal_bspline_new(order-1, dim, (n-1)*4, TS_CLAMPED, bspline, buf);
 
     TRY(b_, e_)
         s = (float*) malloc(n * sof_c);
@@ -636,8 +637,8 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     u1 = bspline->knots[bspline->n_knots-1];
     u = (u1-u0) / (n-1);
     for (i = 1; i < n-1; i++) {
-        for (d = 0; d < dim+1; d++) {
-            bspline->knots[i*(dim+1)+d] = i*u;
+        for (d = 0; d < order; d++) {
+            bspline->knots[i*order+d] = i*u;
         }
     }
 

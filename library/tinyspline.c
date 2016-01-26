@@ -21,8 +21,8 @@
 * System dependent configuration                        *
 *                                                       *
 ********************************************************/
-#define FLT_MAX_ABS_ERROR 1e-7
-#define FLT_MAX_REL_ERROR 1e-5
+#define FLT_MAX_ABS_ERROR 1e-5
+#define FLT_MAX_REL_ERROR 1e-8
 
 
 /********************************************************

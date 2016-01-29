@@ -117,37 +117,49 @@ void ts_internal_bspline_copy(
 
 void ts_internal_bspline_setup_knots(
         const tsBSpline* original, const tsBSplineType type,
+        const float min, const float max,
         tsBSpline* result, jmp_buf buf
 )
 {
     const size_t n_knots = original->n_knots;
     const size_t deg = original->deg;
-    const size_t order = original->order;
-    size_t current, end; /* Used in for loops. */
-    size_t numerator, dominator; /* Used to calculate an actual knot value. */
+    const size_t order = deg+1; /* Using deg+1 instead of original->order
+ * ensures order >= 1. */
+    float fac; /* The factor used to calculate the knot values. */
+    size_t i; /* Used in for loops. */
 
+    /* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
+    if (n_knots < 2*order)
+        longjmp(buf, TS_DEG_GE_NCTRLP);
+    if (min > max || ts_fequals(min, max))
+        longjmp(buf, TS_KNOTS_DECR);
+
+    /* copy spline even if type is TS_NONE */
     ts_internal_bspline_copy(original, result, buf);
+    if (type == TS_NONE)
+        return;
 
     if (type == TS_OPENED) {
-        current = numerator = 0;
-        end = n_knots;
-        dominator = end-1;
-        for (;current < end; current++, numerator++)
-            result->knots[current] = (float) numerator / dominator;
+        /* ensures that the first knot value is exactly \min */
+        result->knots[0] = min; /* n_knots >= 2 */
+
+        fac = (max-min) / (n_knots-1); /* n_knots >= 2 */
+        for (i = 1; i < n_knots-1; i++)
+            result->knots[i] = min + i*fac;
+
+        /* ensure that the last knot value is exactly \max */
+        result->knots[i] = max;
     } else if (type == TS_CLAMPED) {
-        current = 0;
-        end = order;
-        for (;current < end; current++)
-            result->knots[current] = 0.f;
-        end = n_knots - order;
-        numerator = 1;
-        dominator = n_knots - (2 * deg) - 1;
-        for (;current < end; current++, numerator++)
-            result->knots[current] = (float) numerator / dominator;
-        end = n_knots;
-        for (;current < end; current++)
-            result->knots[current] = 1.f;
-    } /* else if (type == TS_NONE)  Nothing to do here. */
+        /* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
+        fac = (max-min) / (n_knots - 2*deg - 1);
+
+        for (i = 0; i < order; i++)
+            result->knots[i] = min;
+        for (;i < n_knots-order; i++)
+            result->knots[i] = min + (i-deg)*fac;
+        for (;i < original->n_knots; i++)
+            result->knots[i] = max;
+    }
 }
 
 void ts_internal_bspline_new(
@@ -182,7 +194,7 @@ void ts_internal_bspline_new(
      * it might be worthwhile adding error handling in order to prevent
      * memory leaks. */
     TRY(b, e)
-        ts_internal_bspline_setup_knots(bspline, type, bspline, b);
+        ts_internal_bspline_setup_knots(bspline, type, 0.f, 1.f, bspline, b);
     CATCH
         free(bspline->ctrlp);
         longjmp(buf, e);
@@ -886,13 +898,14 @@ tsError ts_bspline_set_knots(
 
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
+    const float min, const float max,
     tsBSpline* result
 )
 {
     tsError err;
     jmp_buf buf;
     TRY(buf, err)
-        ts_internal_bspline_setup_knots(original, type, result, buf);
+        ts_internal_bspline_setup_knots(original, type, min, max, result, buf);
     CATCH
         if (original != result)
             ts_bspline_default(result);
@@ -1018,10 +1031,12 @@ char* ts_enum_str(const tsError err) {
     else if (err == TS_DIM_ZERO)
         return "dim == 0";
     else if (err == TS_DEG_GE_NCTRLP)
-        return "deg >= number of control points";
+        return "deg >= #ctrlp";
     else if (err == TS_U_UNDEFINED)
         return "spline is undefined at given u";
     else if (err == TS_MULTIPLICITY)
         return "s > order";
+    else if (err == TS_KNOTS_DECR)
+        return "decreasing knot vector";
     return "unkown error";
 }

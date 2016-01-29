@@ -34,8 +34,9 @@ typedef enum
     TS_DIM_ZERO = -2,       /* the dimension of the control points are 0 */
     TS_DEG_GE_NCTRLP = -3,  /* degree of spline >= number of control points */
     TS_U_UNDEFINED = -4,    /* spline is not defined at u */
-    TS_MULTIPLICITY = -5    /* the multiplicity of a knot is greater than
+    TS_MULTIPLICITY = -5,   /* the multiplicity of a knot is greater than
                              * the order of the spline */
+    TS_KNOTS_DECR = -6      /* decreasing knot vector */
 } tsError;
 
 /**
@@ -243,20 +244,28 @@ tsError ts_bspline_set_knots(
 );
 
 /**
- * Fills the knot vector of \original according to \type and stores the result
- * in \result.
+ * Fills the knot vector of \original according to \type with minimum knot
+ * value \min to maximum knot value \max and stores the result in \result.
  *
- * This function creates a deep copy of \original, if \original != \result
- * and will never fail if \original == \result (always returns TS_SUCCESS).
+ * This function creates a deep copy of \original, if \original != \result.
  *
  * On error all values of \result are 0/NULL.
  *
  * @return TS_SUCCESS           on success.
  * @return TS_MALLOC            if \original != \result and allocating
  *                              memory failed.
+ * @return TS_DEG_GE_NCTRLP     if \original->n_knots < 2*(\original->deg+1).
+ * (We can reuse the error code TS_DEG_GE_NCTRLP because n_knots < 2*(deg+1)
+ * implies deg >= n_ctrlp. To be more fail-safe the function uses
+ * \original->deg+1 instead of \original->order to make sure
+ * \original->deg+1 >= 1)
+ *
+ * @return TS_KNOTS_DECR        if \min >= \max.
+ * (The function uses ::ts_fequals in order to determine if \min == \max)
  */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
+    const float min, const float max,
     tsBSpline* result
 );
 

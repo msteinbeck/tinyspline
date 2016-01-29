@@ -51,7 +51,8 @@ public:
     void setCtrlp(const std::vector<float> ctrlp);
     void setKnots(const std::vector<float> knots);
     
-    void setupKnots(const tsBSplineType type);
+    void setupKnots(const tsBSplineType type,
+                    const float min, const float max);
     void resize(const int n, const int back);
     void buckle(const float b);
     void toBeziers();

@@ -206,9 +206,11 @@ void TsBSpline::setKnots(const std::vector<float> knots)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void TsBSpline::setupKnots(const tsBSplineType type)
+void TsBSpline::setupKnots(const tsBSplineType type,
+                           const float min, const float max)
 {
-    const tsError err = ts_bspline_setup_knots(&bspline, type, &bspline);
+    const tsError err = ts_bspline_setup_knots(
+            &bspline, type, min, max, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }

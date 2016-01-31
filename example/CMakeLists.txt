@@ -12,6 +12,10 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 link_directories(${OPENGL_LIBRARY_DIRS})
 add_definitions(${OPENGL_DEFINITIONS})
 
+if(APPLE)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -framework OpenGL -framework GLUT")
+endif(APPLE)
+
 # create examples
 if(GLUT_FOUND AND OPENGL_FOUND)
   add_executable(bspline bspline.c)

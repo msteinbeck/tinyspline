@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 # create c libs
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -ansi")
+if(APPLE)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic")
+else()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -ansi")
+endif(APPLE)
 add_library(tinyspline_shared SHARED tinyspline.c)
 set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline")
 add_library(tinyspline_static STATIC tinyspline.c)

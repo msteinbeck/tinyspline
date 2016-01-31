@@ -45,7 +45,7 @@ algorithm](https://en.wikipedia.org/wiki/De_Boor%27s_algorithm).
 
 <a name="structure" />
 ###Project Structure
-The core of TinySpline is written in ANSI C and consists of the files
+The core of TinySpline has been implemented in ANSI C and consists of the files
 [tinyspline.h](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.h)
 and
 [tinyspline.c](https://github.com/retuxx/tinyspline/blob/master/library/tinyspline.c).

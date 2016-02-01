@@ -1,6 +1,6 @@
 // NOTE:
 //
-// This file configures all language independent settings. It gets 
+// This file configures all language independent settings. It gets
 // included in each concrete module.
 //
 // For some reason you MUST include this file AFTER typemaps.
@@ -20,8 +20,8 @@
 
 // generate getter/setter
 %include <attribute.i>
-%attribute(TsBSpline, size_t, deg, deg, setDeg);
-%attribute(TsBSpline, size_t, order, order, setOrder);
+%attribute(TsBSpline, size_t, deg, deg);
+%attribute(TsBSpline, size_t, order, order);
 %attribute(TsBSpline, size_t, dim, dim);
 %attribute(TsBSpline, size_t, nCtrlp, nCtrlp);
 %attribute(TsBSpline, size_t, nKnots, nKnots);

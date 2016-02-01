@@ -76,7 +76,7 @@ tsDeBoorNet* TsDeBoorNet::data()
 
 
 
-TsBSpline::TsBSpline() 
+TsBSpline::TsBSpline()
 {
     ts_bspline_default(&bspline);
 }
@@ -167,20 +167,6 @@ std::vector<float> TsBSpline::knots() const
 tsBSpline* TsBSpline::data()
 {
     return &bspline;
-}
-
-void TsBSpline::setDeg(const size_t deg)
-{
-    setOrder(deg+1);
-}
-
-void TsBSpline::setOrder(const size_t order)
-{
-    const size_t deg = order-1;
-    if (deg >= bspline.n_ctrlp)
-        throw std::runtime_error(ts_enum_str(TS_DEG_GE_NCTRLP));
-    bspline.order = order;
-    bspline.deg = deg;
 }
 
 void TsBSpline::setCtrlp(const std::vector<float> ctrlp)

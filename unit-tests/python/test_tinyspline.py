@@ -75,18 +75,10 @@ class TestTsBSpline(unittest.TestCase):
 
     def testEvaulateAlongAStraightLine(self):
         spline = self.MakeValid2DBSplineAlongAStraightLine()
-        
+
         self.assertEqual(spline.evaluate(0).result, [1, 1])
         self.assertEqual(spline.evaluate(1).result, [3, 1])
         self.assertEqual(spline.evaluate(0.25).result, [1.5, 1])
-
-    def testSetDegChangesSplineShape(self):
-        spline = self.MakeValid2DBSplineAlong5SkewedPoints()
-        point_on_order_2_spline = spline.evaluate(0.7).result
-        spline.deg = 3
-        point_on_order_3_spline = spline.evaluate(0.7).result
-        self.assertNotEqual(
-            point_on_order_2_spline, point_on_order_3_spline)
 
 
 if __name__ == '__main__':

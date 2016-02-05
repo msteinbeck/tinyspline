@@ -10,9 +10,8 @@ points) with a modern C++11 wrapper and bindings for C#, Java and Python
 minimum set of dependencies which is easy and intuitively to use. Moreover,
 the integration of TinySpline into OpenGL is straightforward.
 
-TinySpline is licensed under [the MIT
-License](http://opensource.org/licenses/MIT), hence feel free to use it
-anywhere.
+###License
+MIT License - see the LICENSE file in the source distribution.
 
 ###Table of Contents
 - [Some Features of This Library](#features)

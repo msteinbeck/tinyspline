@@ -20,17 +20,17 @@
 
 // generate getter/setter
 %include <attribute.i>
-%attribute(TsBSpline, size_t, deg, deg);
-%attribute(TsBSpline, size_t, order, order);
-%attribute(TsBSpline, size_t, dim, dim);
-%attribute(TsBSpline, size_t, nCtrlp, nCtrlp);
-%attribute(TsBSpline, size_t, nKnots, nKnots);
-%attribute(TsDeBoorNet, float, u, u);
-%attribute(TsDeBoorNet, size_t, k, k);
-%attribute(TsDeBoorNet, size_t, s, s);
-%attribute(TsDeBoorNet, size_t, h, h);
-%attribute(TsDeBoorNet, size_t, dim, dim);
-%attribute(TsDeBoorNet, size_t, nPoints, nPoints);
+%attribute(ts::BSpline, size_t, deg, deg);
+%attribute(ts::BSpline, size_t, order, order);
+%attribute(ts::BSpline, size_t, dim, dim);
+%attribute(ts::BSpline, size_t, nCtrlp, nCtrlp);
+%attribute(ts::BSpline, size_t, nKnots, nKnots);
+%attribute(ts::DeBoorNet, float, u, u);
+%attribute(ts::DeBoorNet, size_t, k, k);
+%attribute(ts::DeBoorNet, size_t, s, s);
+%attribute(ts::DeBoorNet, size_t, h, h);
+%attribute(ts::DeBoorNet, size_t, dim, dim);
+%attribute(ts::DeBoorNet, size_t, nPoints, nPoints);
 
 // make strings directly accessible
 %include "std_string.i"
@@ -38,15 +38,15 @@
 // make std::vector<float> available
 %include "std_vector.i"
 namespace std {
-  %template(TsFloatVector) vector<float>;
+  %template(FloatVector) vector<float>;
 };
 
 // ignore wrapped structs and data fields
 %ignore tsError;
 %ignore tsDeBoorNet;
-%ignore TsDeBoorNet::data;
+%ignore ts::DeBoorNet::data;
 %ignore tsBSpline;
-%ignore TsBSpline::data;
+%ignore ts::BSpline::data;
 
 %{
     #include "tinyspline.h"

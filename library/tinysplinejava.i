@@ -2,10 +2,10 @@
 
 //********************************************************
 //*                                                      *
-//* TsFloatList (Java)                                   *
+//* FloatList (Java)                                     *
 //*                                                      *
 //********************************************************
-%typemap(javaimports) TsFloatList
+%typemap(javaimports) ts::FloatList
 %{
 import java.util.List;
 import java.util.AbstractList;
@@ -14,10 +14,10 @@ import java.lang.NullPointerException;
 import java.lang.ClassCastException;
 %}
 
-%typemap(javabase) TsFloatList "AbstractList<Float>"
-%typemap(javainterfaces) TsFloatList "RandomAccess"
+%typemap(javabase) ts::FloatList "AbstractList<Float>"
+%typemap(javainterfaces) ts::FloatList "RandomAccess"
 
-%typemap(javacode) TsFloatList
+%typemap(javacode) ts::FloatList
 %{
   @Override
   public Float get(final int index) {
@@ -67,11 +67,11 @@ import java.lang.ClassCastException;
     return ts_toString();
   }
 
-  static TsFloatVector listToVector(final List<Float> list) {
+  static FloatVector listToVector(final List<Float> list) {
     if (list == null)
       throw new IllegalArgumentException("The given list must not be null.");
 
-    final TsFloatVector vec = new TsFloatVector();
+    final FloatVector vec = new FloatVector();
     for(final float f : list) vec.add(f);
     return vec;
   }
@@ -79,81 +79,81 @@ import java.lang.ClassCastException;
 
 //********************************************************
 //*                                                      *
-//* TsBSpline (Java)                                     *
+//* BSpline (Java)                                       *
 //*                                                      *
 //********************************************************
-%ignore TsBSpline::operator();
-%ignore TsBSpline::operator=;
+%ignore ts::BSpline::operator();
+%ignore ts::BSpline::operator=;
 
-%rename(ctrlp_p) TsBSpline::ctrlp;
-%rename(setCtrlp_p) TsBSpline::setCtrlp;
-%rename(knots_p) TsBSpline::knots;
-%rename(setKnots_p) TsBSpline::setKnots;
+%rename(ctrlp_p) ts::BSpline::ctrlp;
+%rename(setCtrlp_p) ts::BSpline::setCtrlp;
+%rename(knots_p) ts::BSpline::knots;
+%rename(setKnots_p) ts::BSpline::setKnots;
 
-%javamethodmodifiers TsBSpline::TsBSpline(const float *points,
+%javamethodmodifiers ts::BSpline::BSpline(const float *points,
     const size_t nPoints, const size_t dim) "private";
-%javamethodmodifiers TsBSpline::ctrlp "private";
-%javamethodmodifiers TsBSpline::setCtrlp "private";
-%javamethodmodifiers TsBSpline::knots "private";
-%javamethodmodifiers TsBSpline::setKnots "private";
+%javamethodmodifiers ts::BSpline::ctrlp "private";
+%javamethodmodifiers ts::BSpline::setCtrlp "private";
+%javamethodmodifiers ts::BSpline::knots "private";
+%javamethodmodifiers ts::BSpline::setKnots "private";
 
-%typemap(javaimports) TsBSpline
+%typemap(javaimports) ts::BSpline
 %{
 import java.util.List;
 %}
 
-%typemap(javacode) TsBSpline
+%typemap(javacode) ts::BSpline
 %{
-  public TsBSpline(final List<Float> points, final long dim) {
+  public BSpline(final List<Float> points, final long dim) {
     // implicitly checks null
-    this(TsFloatList.listToVector(points), dim);
+    this(FloatList.listToVector(points), dim);
   }
 
   public List<Float> getCtrlp() {
-    return new TsFloatList(ctrlp_p());
+    return new FloatList(ctrlp_p());
   }
 
   public void setCtrlp(final List<Float> ctrlp) {
     // implicitly checks null
-    setCtrlp_p(TsFloatList.listToVector(ctrlp));
+    setCtrlp_p(FloatList.listToVector(ctrlp));
   }
 
   public List<Float> getKnots() {
-    return new TsFloatList(knots_p());
+    return new FloatList(knots_p());
   }
 
   public void setKnots(final List<Float> knots) {
     // implicitly checks null
-    setKnots_p(TsFloatList.listToVector(knots));
+    setKnots_p(FloatList.listToVector(knots));
   }
 %}
 
 //********************************************************
 //*                                                      *
-//* TsDeBoorNet (Java)                                   *
+//* DeBoorNet (Java)                                     *
 //*                                                      *
 //********************************************************
-%ignore TsDeBoorNet::operator=;
+%ignore ts::DeBoorNet::operator=;
 
-%rename(points_p) TsDeBoorNet::points;
-%rename(result_p) TsDeBoorNet::result;
+%rename(points_p) ts::DeBoorNet::points;
+%rename(result_p) ts::DeBoorNet::result;
 
-%javamethodmodifiers TsDeBoorNet::points "private";
-%javamethodmodifiers TsDeBoorNet::result "private";
+%javamethodmodifiers ts::DeBoorNet::points "private";
+%javamethodmodifiers ts::DeBoorNet::result "private";
 
-%typemap(javaimports) TsDeBoorNet 
+%typemap(javaimports) ts::DeBoorNet
 %{
 import java.util.List;
 %}
 
-%typemap(javacode) TsDeBoorNet
+%typemap(javacode) ts::DeBoorNet
 %{
   public List<Float> getPoints() {
-    return new TsFloatList(points_p());
+    return new FloatList(points_p());
   }
 
   public List<Float> getResult() {
-    return new TsFloatList(result_p());
+    return new FloatList(result_p());
   }
 %}
 

@@ -14,10 +14,12 @@
  *
  */
 
-class TsFloatList {
+namespace ts {
+
+class FloatList {
 public:
-    TsFloatList() {}
-    TsFloatList(const std::vector<float>& vec) : vec(vec) {}
+    FloatList() {}
+    FloatList(const std::vector<float>& vec) : vec(vec) {}
 
     float ts_get(const int index) const {
         if (index < 0) {
@@ -107,3 +109,5 @@ public:
 private:
     std::vector<float> vec;
 };
+
+}

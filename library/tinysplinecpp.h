@@ -3,13 +3,15 @@
 #include "tinyspline.h"
 #include <vector>
 
-class TsDeBoorNet {
-public:
-    TsDeBoorNet();
-    TsDeBoorNet(const TsDeBoorNet& other);
-    ~TsDeBoorNet();
+namespace ts {
 
-    TsDeBoorNet& operator=(const TsDeBoorNet& other);
+class DeBoorNet {
+public:
+    DeBoorNet();
+    DeBoorNet(const DeBoorNet& other);
+    ~DeBoorNet();
+
+    DeBoorNet& operator=(const DeBoorNet& other);
 
     float u() const;
     size_t k() const;
@@ -25,17 +27,17 @@ private:
     tsDeBoorNet deBoorNet;
 };
 
-class TsBSpline {
+class BSpline {
 public:
-    TsBSpline();
-    TsBSpline(const TsBSpline& other);
-    TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
-              const tsBSplineType type);
-    TsBSpline(const std::vector<float> points, const size_t dim);
-    ~TsBSpline();
+    BSpline();
+    BSpline(const BSpline& other);
+    BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
+            const tsBSplineType type);
+    BSpline(const std::vector<float> points, const size_t dim);
+    ~BSpline();
 
-    TsBSpline& operator=(const TsBSpline& other);
-    TsDeBoorNet operator()(const float u) const;
+    BSpline& operator=(const BSpline& other);
+    DeBoorNet operator()(const float u) const;
 
     size_t deg() const;
     size_t order() const;
@@ -56,8 +58,10 @@ public:
     void toBeziers();
     size_t insertKnot(const float u, const size_t n);
     size_t split(const float u);
-    TsDeBoorNet evaluate(const float u) const;
+    DeBoorNet evaluate(const float u) const;
 
 private:
     tsBSpline bspline;
 };
+
+}

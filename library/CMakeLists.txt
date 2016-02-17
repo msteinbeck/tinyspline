@@ -107,10 +107,11 @@ if(SWIG_FOUND)
         ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_tsError.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejava.java
         ${TS_GENERATED_JAVA_DIR}/tinysplinejavaJNI.java
-        ${TS_GENERATED_JAVA_DIR}/TsBSpline.java
+        ${TS_GENERATED_JAVA_DIR}/BSpline.java
         ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
-        ${TS_GENERATED_JAVA_DIR}/TsDeBoorNet.java
-        ${TS_GENERATED_JAVA_DIR}/TsFloatList.java
+        ${TS_GENERATED_JAVA_DIR}/DeBoorNet.java
+        ${TS_GENERATED_JAVA_DIR}/FloatList.java
+        ${TS_GENERATED_JAVA_DIR}/FloatVector.java
         OUTPUT_NAME tinyspline
       )
       add_dependencies(tinysplinejar tinysplinejava)
@@ -122,7 +123,7 @@ if(SWIG_FOUND)
 
   # csharp
   set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
-  set(CMAKE_SWIG_FLAGS -O)
+  set(CMAKE_SWIG_FLAGS -namespace ts -O)
   set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
   swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
   install(TARGETS tinysplinecsharp

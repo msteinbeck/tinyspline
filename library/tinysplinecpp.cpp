@@ -1,74 +1,76 @@
 #include "tinysplinecpp.h"
 #include <stdexcept>
 
-TsDeBoorNet::TsDeBoorNet()
+ts::DeBoorNet::DeBoorNet()
 {
     ts_deboornet_default(&deBoorNet);
 }
 
-TsDeBoorNet::TsDeBoorNet(const TsDeBoorNet &other) {
+ts::DeBoorNet::DeBoorNet(const ts::DeBoorNet& other)
+{
     const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsDeBoorNet::~TsDeBoorNet()
+ts::DeBoorNet::~DeBoorNet()
 {
     ts_deboornet_free(&deBoorNet);
 }
 
-TsDeBoorNet &TsDeBoorNet::operator=(const TsDeBoorNet &other) {
+ts::DeBoorNet& ts::DeBoorNet::operator=(const ts::DeBoorNet& other)
+{
     const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
     return *this;
 }
 
-float TsDeBoorNet::u() const
+float ts::DeBoorNet::u() const
 {
     return deBoorNet.u;
 }
 
-size_t TsDeBoorNet::k() const
+size_t ts::DeBoorNet::k() const
 {
     return deBoorNet.k;
 }
 
-size_t TsDeBoorNet::s() const
+size_t ts::DeBoorNet::s() const
 {
     return deBoorNet.s;
 }
 
-size_t TsDeBoorNet::h() const
+size_t ts::DeBoorNet::h() const
 {
     return deBoorNet.h;
 }
 
-size_t TsDeBoorNet::dim() const
+size_t ts::DeBoorNet::dim() const
 {
     return deBoorNet.dim;
 }
 
-size_t TsDeBoorNet::nPoints() const
+size_t ts::DeBoorNet::nPoints() const
 {
     return deBoorNet.n_points;
 }
 
-std::vector<float> TsDeBoorNet::points() const
+std::vector<float> ts::DeBoorNet::points() const
 {
     const float* begin = deBoorNet.points;
     const float* end = begin + deBoorNet.n_points*deBoorNet.dim;
     return std::vector<float>(begin, end);
 }
 
-std::vector<float> TsDeBoorNet::result() const
+std::vector<float> ts::DeBoorNet::result() const
 {
     const float* begin = deBoorNet.result;
     const float* end = begin + deBoorNet.dim;
     return std::vector<float>(begin, end);
 }
 
-tsDeBoorNet* TsDeBoorNet::data()
+tsDeBoorNet* ts::DeBoorNet::data()
 {
     return &deBoorNet;
 }
@@ -76,19 +78,19 @@ tsDeBoorNet* TsDeBoorNet::data()
 
 
 
-TsBSpline::TsBSpline()
+ts::BSpline::BSpline()
 {
     ts_bspline_default(&bspline);
 }
 
-TsBSpline::TsBSpline(const TsBSpline& other)
+ts::BSpline::BSpline(const ts::BSpline& other)
 {
     const tsError err = ts_bspline_copy(&other.bspline, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsBSpline::TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
+ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
                      const tsBSplineType type)
 {
     const tsError err = ts_bspline_new(deg, dim, nCtrlp, type, &bspline);
@@ -96,7 +98,7 @@ TsBSpline::TsBSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsBSpline::TsBSpline(const std::vector<float> points, const size_t dim)
+ts::BSpline::BSpline(const std::vector<float> points, const size_t dim)
 {
     if (dim == 0)
         throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
@@ -108,68 +110,69 @@ TsBSpline::TsBSpline(const std::vector<float> points, const size_t dim)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsBSpline::~TsBSpline()
+ts::BSpline::~BSpline()
 {
     ts_bspline_free(&bspline);
 }
 
-TsBSpline &TsBSpline::operator=(const TsBSpline &other) {
+ts::BSpline& ts::BSpline::operator=(const ts::BSpline& other)
+{
     const tsError err = ts_bspline_copy(&other.bspline, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
     return *this;
 }
 
-TsDeBoorNet TsBSpline::operator()(const float u) const
+ts::DeBoorNet ts::BSpline::operator()(const float u) const
 {
     return evaluate(u);
 }
 
-size_t TsBSpline::deg() const
+size_t ts::BSpline::deg() const
 {
     return bspline.deg;
 }
 
-size_t TsBSpline::order() const
+size_t ts::BSpline::order() const
 {
     return bspline.order;
 }
 
-size_t TsBSpline::dim() const
+size_t ts::BSpline::dim() const
 {
     return bspline.dim;
 }
 
-size_t TsBSpline::nCtrlp() const
+size_t ts::BSpline::nCtrlp() const
 {
     return bspline.n_ctrlp;
 }
 
-size_t TsBSpline::nKnots() const
+size_t ts::BSpline::nKnots() const
 {
     return bspline.n_knots;
 }
 
-std::vector<float> TsBSpline::ctrlp() const
+std::vector<float> ts::BSpline::ctrlp() const
 {
     const float* begin  = bspline.ctrlp;
     const float* end = begin + bspline.n_ctrlp*bspline.dim;
     return std::vector<float>(begin, end);
 }
 
-std::vector<float> TsBSpline::knots() const
+std::vector<float> ts::BSpline::knots() const
 {
     const float* begin = bspline.knots;
     const float* end = begin + bspline.n_knots;
     return std::vector<float>(begin, end);
 }
 
-tsBSpline* TsBSpline::data()
+tsBSpline* ts::BSpline::data()
 {
     return &bspline;
 }
 
-void TsBSpline::setCtrlp(const std::vector<float> ctrlp)
+void ts::BSpline::setCtrlp(const std::vector<float> ctrlp)
 {
     if (ctrlp.size() != nCtrlp() * dim()) {
         throw std::runtime_error("The number of values must be equals to the"
@@ -181,7 +184,7 @@ void TsBSpline::setCtrlp(const std::vector<float> ctrlp)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void TsBSpline::setKnots(const std::vector<float> knots)
+void ts::BSpline::setKnots(const std::vector<float> knots)
 {
     if (knots.size() != nKnots()) {
         throw std::runtime_error("The number of values must be equals to the"
@@ -192,8 +195,8 @@ void TsBSpline::setKnots(const std::vector<float> knots)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void TsBSpline::setupKnots(const tsBSplineType type,
-                           const float min, const float max)
+void ts::BSpline::setupKnots(const tsBSplineType type,
+                             const float min, const float max)
 {
     const tsError err = ts_bspline_setup_knots(
             &bspline, type, min, max, &bspline);
@@ -201,7 +204,7 @@ void TsBSpline::setupKnots(const tsBSplineType type,
         throw std::runtime_error(ts_enum_str(err));
 }
 
-size_t TsBSpline::insertKnot(const float u, const size_t n)
+size_t ts::BSpline::insertKnot(const float u, const size_t n)
 {
     size_t k;
     const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bspline, &k);
@@ -210,14 +213,14 @@ size_t TsBSpline::insertKnot(const float u, const size_t n)
     return k;
 }
 
-void TsBSpline::resize(const int n, const int back)
+void ts::BSpline::resize(const int n, const int back)
 {
     const tsError err = ts_bspline_resize(&bspline, n, back, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-size_t TsBSpline::split(const float u)
+size_t ts::BSpline::split(const float u)
 {
     size_t k;
     const tsError err = ts_bspline_split(&bspline, u, &bspline, &k);
@@ -226,23 +229,23 @@ size_t TsBSpline::split(const float u)
     return k;
 }
 
-void TsBSpline::buckle(const float b)
+void ts::BSpline::buckle(const float b)
 {
     const tsError err = ts_bspline_buckle(&bspline, b, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void TsBSpline::toBeziers()
+void ts::BSpline::toBeziers()
 {
     const tsError err = ts_bspline_to_beziers(&bspline, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-TsDeBoorNet TsBSpline::evaluate(const float u) const
+ts::DeBoorNet ts::BSpline::evaluate(const float u) const
 {
-    TsDeBoorNet deBoorNet;
+    DeBoorNet deBoorNet;
     const tsError err = ts_bspline_evaluate(&bspline, u, deBoorNet.data());
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));

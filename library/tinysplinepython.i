@@ -2,48 +2,48 @@
 
 //********************************************************
 //*                                                      *
-//* TsBSpline (Python) Part I                            *
+//* BSpline (Python) Part I                              *
 //*                                                      *
 //********************************************************
-%ignore TsBSpline::operator=;
+%ignore ts::BSpline::operator=;
 
-%rename(__ctrlp) TsBSpline::ctrlp;
-%rename(__setCtrlp) TsBSpline::setCtrlp;
-%rename(__knots) TsBSpline::knots;
-%rename(__setKnots) TsBSpline::setKnots;
+%rename(__ctrlp) ts::BSpline::ctrlp;
+%rename(__setCtrlp) ts::BSpline::setCtrlp;
+%rename(__knots) ts::BSpline::knots;
+%rename(__setKnots) ts::BSpline::setKnots;
 
-%feature("pythonprepend") TsBSpline::TsBSpline %{
+%feature("pythonprepend") ts::BSpline::BSpline %{
 """
-__init__(self) -> TsBSpline
-__init__(self, other) -> TsBSpline
-__init__(self, deg, dim, nCtrlp, type) -> TsBSpline
-__init__(self, points, dim) -> TsBSpline
+__init__(self) -> BSpline
+__init__(self, other) -> BSpline
+__init__(self, deg, dim, nCtrlp, type) -> BSpline
+__init__(self, points, dim) -> BSpline
 """
 %}
 
 //********************************************************
 //*                                                      *
-//* TsDeBoorNet (Python) Part I                          *
+//* DeBoorNet (Python) Part I                            *
 //*                                                      *
 //********************************************************
-%ignore TsDeBoorNet::operator=;
+%ignore ts::DeBoorNet::operator=;
 
-%rename(__points) TsDeBoorNet::points;
-%rename(__setPoints) TsDeBoorNet::setPoints;
-%rename(__result) TsDeBoorNet::result;
-%rename(__setResult) TsDeBoorNet::setResult;
+%rename(__points) ts::DeBoorNet::points;
+%rename(__setPoints) ts::DeBoorNet::setPoints;
+%rename(__result) ts::DeBoorNet::result;
+%rename(__setResult) ts::DeBoorNet::setResult;
 
 
 // NOTE:
 //
 // The following code must be included AFTER "tinyspline.i", otherwise the
-// classes TsFloatList, TsBSpline and TsDeBoorNet are unknown.
+// classes FloatList, BSpline and DeBoorNet are unknown.
 %include "tinyspline.i"
 
 
 //********************************************************
 //*                                                      *
-//* TsFloatList (Python) Part II                         *
+//* FloatList (Python) Part II                           *
 //*                                                      *
 //********************************************************
 %pythoncode %{
@@ -57,34 +57,34 @@ def ts_indexOf(self, value):
         return i
     raise ValueError
 
-TsFloatList.__getitem__ = lambda self, index: self.ts_get(index)
-TsFloatList.__setitem__ = lambda self, index, value: self.ts_set(index, value)
-TsFloatList.index = ts_indexOf
-TsFloatList.__contains__ = lambda self, value: self.ts_contains(value)
-TsFloatList.__str__ = lambda self: self.ts_toString()
-TsFloatList.__len__ = lambda self: self.ts_size()
-TsFloatList.__delitem__ = lambda self, index: self.ts_remove(index)
-TsFloatList.insert = lambda self, index, value: self.ts_insert(index, value)
+FloatList.__getitem__ = lambda self, index: self.ts_get(index)
+FloatList.__setitem__ = lambda self, index, value: self.ts_set(index, value)
+FloatList.index = ts_indexOf
+FloatList.__contains__ = lambda self, value: self.ts_contains(value)
+FloatList.__str__ = lambda self: self.ts_toString()
+FloatList.__len__ = lambda self: self.ts_size()
+FloatList.__delitem__ = lambda self, index: self.ts_remove(index)
+FloatList.insert = lambda self, index, value: self.ts_insert(index, value)
 %}
 
 //********************************************************
 //*                                                      *
-//* TsBSpline (Python) Part II                           *
+//* BSpline (Python) Part II                             *
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsBSpline.ctrlp = property(lambda self: TsFloatList(self.__ctrlp()), lambda self, value: self.__setCtrlp(value))
-TsBSpline.knots = property(lambda self: TsFloatList(self.__knots()), lambda self, value: self.__setKnots(value))
+BSpline.ctrlp = property(lambda self: FloatList(self.__ctrlp()), lambda self, value: self.__setCtrlp(value))
+BSpline.knots = property(lambda self: FloatList(self.__knots()), lambda self, value: self.__setKnots(value))
 %}
 
 //********************************************************
 //*                                                      *
-//* TsDeBoorNet (Python) Part II                         *
+//* DeBoorNet (Python) Part II                           *
 //*                                                      *
 //********************************************************
 %pythoncode %{
-TsDeBoorNet.points = property(lambda self: TsFloatList(self.__points()), lambda self, value: self.__setPoints(value))
-TsDeBoorNet.result = property(lambda self: TsFloatList(self.__result()), lambda self, value: self.__setResult(value))
+DeBoorNet.points = property(lambda self: FloatList(self.__points()), lambda self, value: self.__setPoints(value))
+DeBoorNet.result = property(lambda self: FloatList(self.__result()), lambda self, value: self.__setResult(value))
 %}
 
 

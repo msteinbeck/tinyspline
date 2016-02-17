@@ -2,25 +2,25 @@
 
 //********************************************************
 //*                                                      *
-//* TsFloatList (C#)                                     *
+//* FloatList (C#)                                       *
 //*                                                      *
 //********************************************************
-%typemap(csimports) TsFloatList
+%typemap(csimports) ts::FloatList
 %{
 using System;
 using System.Collections;
 using System.Collections.Generic;
 %}
 
-%typemap(csinterfaces) TsFloatList "IList<float>"
+%typemap(csinterfaces) ts::FloatList "IList<float>"
 
-%typemap(cscode) TsFloatList
+%typemap(cscode) ts::FloatList
 %{
   private class TsEnumerator : IEnumerator<float> {
-    private TsFloatList list;
+    private FloatList list;
     private int idx;
 
-    public TsEnumerator(TsFloatList list) {
+    public TsEnumerator(FloatList list) {
       this.list = list;
       this.idx = 0;
     }
@@ -138,11 +138,11 @@ using System.Collections.Generic;
     return ts_toString();
   }
 
-  internal static TsFloatVector listToVector(IList<float> list) {
+  internal static FloatVector listToVector(IList<float> list) {
     if (list == null)
       throw new ArgumentNullException("The given list must not be null.");
 
-    TsFloatVector vec = new TsFloatVector();
+    FloatVector vec = new FloatVector();
     foreach (float f in list) vec.Add(f);
     return vec;
   }
@@ -150,87 +150,87 @@ using System.Collections.Generic;
 
 //********************************************************
 //*                                                      *
-//* TsBSpline (C#)                                       *
+//* BSpline (C#)                                         *
 //*                                                      *
 //********************************************************
-%ignore TsBSpline::operator();
-%ignore TsBSpline::operator=;
+%ignore ts::BSpline::operator();
+%ignore ts::BSpline::operator=;
 
-%rename(ctrlp_p) TsBSpline::ctrlp;
-%rename(setCtrlp_p) TsBSpline::setCtrlp;
-%rename(knots_p) TsBSpline::knots;
-%rename(setKnots_p) TsBSpline::setKnots;
+%rename(ctrlp_p) ts::BSpline::ctrlp;
+%rename(setCtrlp_p) ts::BSpline::setCtrlp;
+%rename(knots_p) ts::BSpline::knots;
+%rename(setKnots_p) ts::BSpline::setKnots;
 
-%csmethodmodifiers TsBSpline::TsBSpline(const float *points,
+%csmethodmodifiers ts::BSpline::BSpline(const float *points,
     const size_t nPoints, const size_t dim) "private";
-%csmethodmodifiers TsBSpline::ctrlp "private";
-%csmethodmodifiers TsBSpline::setCtrlp "private";
-%csmethodmodifiers TsBSpline::knots "private";
-%csmethodmodifiers TsBSpline::setKnots "private";
+%csmethodmodifiers ts::BSpline::ctrlp "private";
+%csmethodmodifiers ts::BSpline::setCtrlp "private";
+%csmethodmodifiers ts::BSpline::knots "private";
+%csmethodmodifiers ts::BSpline::setKnots "private";
 
-%typemap(csimports) TsBSpline
+%typemap(csimports) ts::BSpline
 %{
 using System;
 using System.Collections;
 using System.Collections.Generic;
 %}
 
-%typemap(cscode) TsBSpline
+%typemap(cscode) ts::BSpline
 %{
-  public TsBSpline(IList<float> points, uint dim)
+  public BSpline(IList<float> points, uint dim)
       // implicitly checks null
-      : this(TsFloatList.listToVector(points), dim) {}
+      : this(FloatList.listToVector(points), dim) {}
 
   public IList<float> ctrlp {
     get {
-      return new TsFloatList(ctrlp_p());
+      return new FloatList(ctrlp_p());
     }
     set {
       // implicitly checks null
-      setCtrlp_p(TsFloatList.listToVector(value));
+      setCtrlp_p(FloatList.listToVector(value));
     }
   }
 
   public IList<float> knots {
     get {
-      return new TsFloatList(knots_p());
+      return new FloatList(knots_p());
     }
     set {
       // implicitly checks null
-      setKnots_p(TsFloatList.listToVector(value));
+      setKnots_p(FloatList.listToVector(value));
     }
   }
 %}
 
 //********************************************************
 //*                                                      *
-//* TsDeBoorNet (C#)                                     *
+//* DeBoorNet (C#)                                       *
 //*                                                      *
 //********************************************************
-%ignore TsDeBoorNet::operator=;
+%ignore ts::DeBoorNet::operator=;
 
-%rename(points_p) TsDeBoorNet::points;
-%rename(result_p) TsDeBoorNet::result;
+%rename(points_p) ts::DeBoorNet::points;
+%rename(result_p) ts::DeBoorNet::result;
 
-%csmethodmodifiers TsDeBoorNet::points "private";
-%csmethodmodifiers TsDeBoorNet::result "private";
+%csmethodmodifiers ts::DeBoorNet::points "private";
+%csmethodmodifiers ts::DeBoorNet::result "private";
 
-%typemap(csimports) TsDeBoorNet
+%typemap(csimports) ts::DeBoorNet
 %{
 using System.Collections.Generic;
 %}
 
-%typemap(cscode) TsDeBoorNet
+%typemap(cscode) ts::DeBoorNet
 %{
   public IList<float> points {
     get {
-      return new TsFloatList(points_p());
+      return new FloatList(points_p());
     }
   }
 
   public IList<float> result {
     get {
-      return new TsFloatList(result_p());
+      return new FloatList(result_p());
     }
   }
 %}

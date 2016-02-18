@@ -2,6 +2,7 @@
 
 #include "tinyspline.h"
 #include <vector>
+#include <string>
 
 namespace ts {
 
@@ -62,6 +63,15 @@ public:
 
 private:
     tsBSpline bspline;
+};
+
+class Utils {
+public:
+    Utils() = delete;
+
+    static bool fequals(const float x, const float y);
+    static std::string enum_str(const tsError err);
+    static tsError str_enum(const std::string str);
 };
 
 }

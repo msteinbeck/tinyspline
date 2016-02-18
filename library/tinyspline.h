@@ -377,9 +377,18 @@ tsError ts_bspline_to_beziers(
 int ts_fequals(const float x, const float y);
 
 /**
- * Returns the error message associated to \err.
+ * Returns the error message associated to \err. Returns "unknown error" if
+ * \err is not associated (indicating a bug) or is TS_SUCCESS (which is not an
+ * actual error).
  */
 char* ts_enum_str(const tsError err);
+
+/**
+ * Returns the error code associated to \str or TS_SUCCESS if \str is not
+ * associated. Keep in mind that by concept "unknown error" is not associated,
+ * though, TS_SUCCESS is returned.
+ */
+tsError ts_str_enum(const char* str);
 
 
 #ifdef	__cplusplus

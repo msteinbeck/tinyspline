@@ -2,7 +2,7 @@
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h> /* fabs */
-#include <string.h> /* memcpy, memmove */
+#include <string.h> /* memcpy, memmove, strcmp */
 #include <setjmp.h> /* setjmp, longjmp */
 
 
@@ -1025,7 +1025,8 @@ int ts_fequals(const float x, const float y)
     }
 }
 
-char* ts_enum_str(const tsError err) {
+char* ts_enum_str(const tsError err)
+{
     if (err == TS_MALLOC)
         return "malloc failed";
     else if (err == TS_DIM_ZERO)
@@ -1038,5 +1039,22 @@ char* ts_enum_str(const tsError err) {
         return "s > order";
     else if (err == TS_KNOTS_DECR)
         return "decreasing knot vector";
-    return "unkown error";
+    return "unknown error";
+}
+
+tsError ts_str_enum(const char* str)
+{
+    if (strcmp(str, ts_enum_str(TS_MALLOC)))
+        return TS_MALLOC;
+    else if (strcmp(str, ts_enum_str(TS_DIM_ZERO)))
+        return TS_DIM_ZERO;
+    else if (strcmp(str, ts_enum_str(TS_DEG_GE_NCTRLP)))
+        return TS_DEG_GE_NCTRLP;
+    else if (strcmp(str, ts_enum_str(TS_U_UNDEFINED)))
+        return TS_U_UNDEFINED;
+    else if (strcmp(str, ts_enum_str(TS_MULTIPLICITY)))
+        return TS_MULTIPLICITY;
+    else if (strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
+        return TS_KNOTS_DECR;
+    return TS_SUCCESS;
 }

@@ -251,3 +251,20 @@ ts::DeBoorNet ts::BSpline::evaluate(const float u) const
         throw std::runtime_error(ts_enum_str(err));
     return deBoorNet;
 }
+
+
+
+bool ts::Utils::fequals(const float x, const float y)
+{
+    return ts_fequals(x, y) == 1;
+}
+
+std::string ts::Utils::enum_str(const tsError err)
+{
+    return std::string(ts_enum_str(err));
+}
+
+tsError ts::Utils::str_enum(const std::string str)
+{
+    return ts_str_enum(str.c_str());
+}

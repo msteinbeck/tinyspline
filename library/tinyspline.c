@@ -1044,17 +1044,17 @@ char* ts_enum_str(const tsError err)
 
 tsError ts_str_enum(const char* str)
 {
-    if (strcmp(str, ts_enum_str(TS_MALLOC)))
+    if (!strcmp(str, ts_enum_str(TS_MALLOC)))
         return TS_MALLOC;
-    else if (strcmp(str, ts_enum_str(TS_DIM_ZERO)))
+    else if (!strcmp(str, ts_enum_str(TS_DIM_ZERO)))
         return TS_DIM_ZERO;
-    else if (strcmp(str, ts_enum_str(TS_DEG_GE_NCTRLP)))
+    else if (!strcmp(str, ts_enum_str(TS_DEG_GE_NCTRLP)))
         return TS_DEG_GE_NCTRLP;
-    else if (strcmp(str, ts_enum_str(TS_U_UNDEFINED)))
+    else if (!strcmp(str, ts_enum_str(TS_U_UNDEFINED)))
         return TS_U_UNDEFINED;
-    else if (strcmp(str, ts_enum_str(TS_MULTIPLICITY)))
+    else if (!strcmp(str, ts_enum_str(TS_MULTIPLICITY)))
         return TS_MULTIPLICITY;
-    else if (strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
+    else if (!strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
         return TS_KNOTS_DECR;
     return TS_SUCCESS;
 }

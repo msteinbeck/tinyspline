@@ -536,7 +536,8 @@ void ts_internal_bspline_thomas_algorithm(
         m[i] = 1.f/(4 - m[i-1]);
 
     lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
-    memset(output, 0, ndsf);
+    for (i = 0; i < lst; i++)
+        output[i] = 0.f;
     memcpy(output+lst, points+lst, sof_c);
 
     /* forward sweep */
@@ -557,11 +558,17 @@ void ts_internal_bspline_thomas_algorithm(
     }
 
     /* back substitution */
-    memset(output+lst, 0, sof_c);
+    if (n > 3) { /* n >= 3 */
+        for (d = 0; d < dim; d++)
+            output[lst+d] = 0.f;
+    }
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
             k = i*dim+d;
             l = (i+1)*dim+d;
+            /* The following line is the reason why it's important to not fill
+             * output with 0 if n = 3. On the other hand, if n > 3 subtracting
+             * 0 is exactly what we want. */
             output[k] -= output[l];
             output[k] *= m[i-1];
         }

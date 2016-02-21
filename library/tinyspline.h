@@ -390,6 +390,11 @@ char* ts_enum_str(const tsError err);
  */
 tsError ts_str_enum(const char* str);
 
+/**
+ * Fills the given array \arr with \val from \arr+0 to \arr+\num (exclusive).
+ */
+void ts_ffill(float* arr, const size_t num, const float val);
+
 
 #ifdef	__cplusplus
 }

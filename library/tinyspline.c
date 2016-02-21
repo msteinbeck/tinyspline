@@ -501,12 +501,10 @@ void ts_internal_bspline_thomas_algorithm(
 )
 {
     const size_t sof_f = sizeof(float); /* The size of a float. */
-    size_t sof_c; /* The size of a single control point. */
-    size_t ndsf; /* The size of all (n) control points. */
+    const size_t sof_c = dim * sof_f; /* The size of a single control point. */
     size_t len_m; /* The length m. */
     float* m; /* The array of weights. */
-    size_t lst; /* The index of the first component of the last control point
- * in \points. */
+    size_t lst; /* The index of the last control point in \points. */
     size_t i, d; /* Used in for loops. */
     size_t j, k, l; /* Used as temporary indices. */
 
@@ -516,18 +514,16 @@ void ts_internal_bspline_thomas_algorithm(
     if (n == 0)
         longjmp(buf, TS_DEG_GE_NCTRLP);
 
-    sof_c = dim * sof_f; /* dim > 0 implies sof_c > 0 */
-    ndsf = n * sof_c; /* n > 0 and sof_c > 0 implies ndsf > 0 */
-
     if (n <= 2) {
-        memcpy(output, points, ndsf);
+        memcpy(output, points, n * sof_c);
         return;
     }
 
-    /* In the following n >= 3 applies. */
+    /* In the following n >= 3 applies... */
+    len_m = n-2; /* ... len_m >= 1 */
+    lst = (n-1)*dim; /* ... lst >= 2*dim */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
-    len_m = n-2; /* n >= 3 implies n-2 >= 1 */
     m = (float*) malloc(len_m * sof_f);
     if (m == NULL)
         longjmp(buf, TS_MALLOC);
@@ -535,12 +531,10 @@ void ts_internal_bspline_thomas_algorithm(
     for (i = 1; i < len_m; i++)
         m[i] = 1.f/(4 - m[i-1]);
 
-    lst = (n-1)*dim; /* n >= 3 implies n-1 >= 2 */
-    for (i = 0; i < lst; i++)
-        output[i] = 0.f;
-    memcpy(output+lst, points+lst, sof_c);
-
     /* forward sweep */
+    ts_ffill(output, n*dim, 0.f);
+    memcpy(output, points, sof_c);
+    memcpy(output+lst, points+lst, sof_c);
     for (d = 0; d < dim; d++) {
         k = dim+d;
         output[k] = 6*points[k];
@@ -553,15 +547,13 @@ void ts_internal_bspline_thomas_algorithm(
             l = (i+1)*dim+d;
             output[k] = 6*points[k];
             output[k] -= output[l];
-            output[k] -= m[i-2]*output[j];
+            output[k] -= m[i-2]*output[j]; /* i >= 2 */
         }
     }
 
     /* back substitution */
-    if (n > 3) { /* n >= 3 */
-        for (d = 0; d < dim; d++)
-            output[lst+d] = 0.f;
-    }
+    if (n > 3)
+        ts_ffill(output+lst, dim , 0.f);
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
             k = i*dim+d;
@@ -570,11 +562,11 @@ void ts_internal_bspline_thomas_algorithm(
              * output with 0 if n = 3. On the other hand, if n > 3 subtracting
              * 0 is exactly what we want. */
             output[k] -= output[l];
-            output[k] *= m[i-1];
+            output[k] *= m[i-1]; /* i >= 1 */
         }
     }
-    memcpy(output, points, sof_c);
-    memcpy(output+lst, points+lst, sof_c);
+    if (n > 3)
+        memcpy(output+lst, points+lst, sof_c);
 
     /* we are done */
     free(m);
@@ -1064,4 +1056,11 @@ tsError ts_str_enum(const char* str)
     else if (!strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
         return TS_KNOTS_DECR;
     return TS_SUCCESS;
+}
+
+void ts_ffill(float* arr, const size_t num, const float val)
+{
+    size_t i;
+    for (i = 0; i < num; i++)
+        arr[i] = val;
 }

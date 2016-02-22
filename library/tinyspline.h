@@ -36,7 +36,8 @@ typedef enum
     TS_U_UNDEFINED = -4,    /* spline is not defined at u */
     TS_MULTIPLICITY = -5,   /* the multiplicity of a knot is greater than
                              * the order of the spline */
-    TS_KNOTS_DECR = -6      /* decreasing knot vector */
+    TS_KNOTS_DECR = -6,     /* decreasing knot vector */
+    TS_NUM_KNOTS = -7       /* unexpected number of knots */
 } tsError;
 
 /**
@@ -50,7 +51,8 @@ typedef enum
 /* setup knots as... */
     TS_OPENED = 0,  /* [uniformly spaced] */
     TS_CLAMPED = 1, /* [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n] */
-    TS_NONE = 2     /* do not setup the knots; they may have any values */
+    TS_BEZIERS = 2, /* uniformly spaced with s(u) = order for all u in knots */
+    TS_NONE = 3     /* do not setup the knots; they may have any values */
 } tsBSplineType;
 
 typedef struct
@@ -132,10 +134,11 @@ void ts_bspline_free(tsBSpline* bspline);
  *
  * On error all values of \bspline are 0/NULL.
  *
- * @return TS_SUCCESS           on success.
- * @return TS_DIM_ZERO          if \deg == 0.
- * @return TS_DEG_GE_NCTRLP     if \deg >= \n_ctrlp.
- * @return TS_MALLOC            if allocating memory failed.
+ * @return TS_SUCCESS          on success.
+ * @return TS_DIM_ZERO         if \deg == 0.
+ * @return TS_DEG_GE_NCTRLP    if \deg >= \n_ctrlp.
+ * @return TS_NUM_KNOTS        if \type == TS_BEZIERS and \n_ctrlp % \deg+1 != 0
+ * @return TS_MALLOC           if allocating memory failed.
  */
 tsError ts_bspline_new(
     const size_t deg, const size_t dim,
@@ -256,10 +259,12 @@ tsError ts_bspline_set_knots(
  *                              memory failed.
  * @return TS_DEG_GE_NCTRLP     if \original->n_knots < 2*(\original->deg+1).
  * (We can reuse the error code TS_DEG_GE_NCTRLP because n_knots < 2*(deg+1)
- * implies deg >= n_ctrlp. To be more fail-safe the function uses
- * \original->deg+1 instead of \original->order to make sure
- * \original->deg+1 >= 1)
+ * implies deg >= n_ctrlp. Furthermore, using TS_DEG_GE_NCTRLP instead of
+ * TS_NUM_KNOTS ensures that TS_NUM_KNOTS is not used twice for this function.
+ * To be more fail-safe, \original->deg+1 instead of \original->order is used,
+ * to make sure that \original->deg+1 >= 1)
  *
+ * @return TS_NUM_KNOTS         if \type == TS_BEZIERS and n_knots % order != 0
  * @return TS_KNOTS_DECR        if \min >= \max.
  * (The function uses ::ts_fequals in order to determine if \min == \max)
  */

@@ -131,13 +131,13 @@ void ts_internal_bspline_setup_knots(
     /* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
     if (n_knots < 2*order)
         longjmp(buf, TS_DEG_GE_NCTRLP);
+    if (type == TS_BEZIERS && n_knots % order != 0)
+        longjmp(buf, TS_NUM_KNOTS);
     if (min > max || ts_fequals(min, max))
         longjmp(buf, TS_KNOTS_DECR);
 
     /* copy spline even if type is TS_NONE */
     ts_internal_bspline_copy(original, result, buf);
-    if (type == TS_NONE)
-        return;
 
     if (type == TS_OPENED) {
         /* ensures that the first knot value is exactly \min */
@@ -153,12 +153,18 @@ void ts_internal_bspline_setup_knots(
         /* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
         fac = (max-min) / (n_knots - 2*deg - 1);
 
-        for (i = 0; i < order; i++)
-            result->knots[i] = min;
-        for (;i < n_knots-order; i++)
+        ts_ffill(result->knots, order, min);
+        for (i = order ;i < n_knots-order; i++)
             result->knots[i] = min + (i-deg)*fac;
-        for (;i < original->n_knots; i++)
-            result->knots[i] = max;
+        ts_ffill(result->knots + i, order, max);
+    } else if (type == TS_BEZIERS) {
+        /* n_knots >= 2*order implies n_knots/order >= 2 */
+        fac = (max-min) / (n_knots/order - 1);
+
+        ts_ffill(result->knots, order, min);
+        for (i = order; i < n_knots-order; i += order)
+            ts_ffill(result->knots + i, order, min + (i/order)*fac);
+        ts_ffill(result->knots + i, order, max);
     }
 }
 
@@ -190,9 +196,6 @@ void ts_internal_bspline_new(
         longjmp(buf, TS_MALLOC);
     bspline->knots = bspline->ctrlp + n_ctrlp*dim;
 
-    /* Although this function should never fail because of input == output
-     * it might be worthwhile adding error handling in order to prevent
-     * memory leaks. */
     TRY(b, e)
         ts_internal_bspline_setup_knots(bspline, type, 0.f, 1.f, bspline, b);
     CATCH
@@ -582,13 +585,8 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     const float at = 1.f/3.f; /* The value 'a third'. */
     const float tt = 2.f/3.f; /* The value 'two third'. */
     size_t sof_c; /* The size of a single control point. */
-    const float* b = points; /* The array of the b values (used for
- * convenience). */
+    const float* b = points; /* The array of the b values (for convenience). */
     float* s; /* The array of the s values. */
-    float u0; /* The first knot value of the interpolated spline. */
-    float u1; /* The last knot value of the interpolated spline. */
-    float u; /* The distance of two successional knot values of the
- * interpolated spline. Used to properly setup the knot vector. */
     size_t i, d; /* Used in for loops */
     size_t j, k, l; /* Uses as temporary indices. */
     tsError e_;
@@ -604,7 +602,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     sof_c = dim * sizeof(float); /* dim > 0 implies sof_c > 0 */
 
     /* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
-    ts_internal_bspline_new(order-1, dim, (n-1)*4, TS_CLAMPED, bspline, buf);
+    ts_internal_bspline_new(order-1, dim, (n-1)*4, TS_BEZIERS, bspline, buf);
 
     TRY(b_, e_)
         s = (float*) malloc(n * sof_c);
@@ -641,15 +639,6 @@ void ts_internal_relaxed_uniform_cubic_bspline(
             bspline->ctrlp[k+dim] = tt*b[j] + at*b[l];
             bspline->ctrlp[k+2*dim] = at*b[j] + tt*b[l];
             bspline->ctrlp[k+3*dim] = s[l];
-        }
-    }
-
-    u0 = bspline->knots[0];
-    u1 = bspline->knots[bspline->n_knots-1];
-    u = (u1-u0) / (n-1);
-    for (i = 1; i < n-1; i++) {
-        for (d = 0; d < order; d++) {
-            bspline->knots[i*order+d] = i*u;
         }
     }
 
@@ -1038,6 +1027,8 @@ char* ts_enum_str(const tsError err)
         return "s > order";
     else if (err == TS_KNOTS_DECR)
         return "decreasing knot vector";
+    else if (err == TS_NUM_KNOTS)
+        return "unexpected number of knots";
     return "unknown error";
 }
 
@@ -1055,6 +1046,8 @@ tsError ts_str_enum(const char* str)
         return TS_MULTIPLICITY;
     else if (!strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
         return TS_KNOTS_DECR;
+    else if (!strcmp(str, ts_enum_str(TS_NUM_KNOTS)))
+        return TS_NUM_KNOTS;
     return TS_SUCCESS;
 }
 

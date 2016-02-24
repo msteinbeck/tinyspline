@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 # and setup TS_CPP_AVAILABLE
 set(TS_CPP_AVAILABLE FALSE) # by default the c++ library is not created
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -ansi")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -std=c89")
 
   # http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.7)
@@ -16,7 +16,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # do not use -ansi with clang
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -std=c89")
 
   # http://stackoverflow.com/questions/10408849/how-can-i-use-c-11-features-in-clang
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 3.3)

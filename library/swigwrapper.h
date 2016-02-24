@@ -55,7 +55,7 @@ public:
         return val;
     }
 
-    bool ts_remove(const float value) const {
+    bool ts_remove(const float value) {
         const int idx = ts_indexOf(value);
         if (idx >= 0)
             ts_remove(idx);

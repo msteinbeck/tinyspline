@@ -346,7 +346,10 @@ void ts_internal_bspline_insert_knot(
 
     from -= dim;
     to += (N-n)*dim;
-    stride = (int)(-(N-n+1)*dim);
+    stride = -(int)(N-n+1) * (int)dim; /* N = h+1 with h = deg-s
+ * (ts_internal_bspline_evaluate) implies N = deg-s+1 = order-s.
+ * n <= order-s implies N-n+1 >= order-s - order-s + 1 = 1. Thus,
+ * -(int)(N-n+1) <= -1. */
 
     for (i = 0; i < n; i++) { /* c) */
         memcpy(to, from, sof_c);

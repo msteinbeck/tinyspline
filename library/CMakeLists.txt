@@ -30,7 +30,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
     # using WX causes to many errors in generated source code, thus, use W4 instead
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /W4 /wd4702")
     set(TS_CPP_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")

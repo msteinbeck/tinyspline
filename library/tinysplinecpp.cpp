@@ -26,9 +26,11 @@ ts::DeBoorNet::~DeBoorNet()
 
 ts::DeBoorNet& ts::DeBoorNet::operator=(const ts::DeBoorNet& other)
 {
-    const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
-    if (err < 0)
-        throw std::runtime_error(ts_enum_str(err));
+    if (&other != this) {
+        const tsError err = ts_deboornet_copy(&other.deBoorNet, &deBoorNet);
+        if (err < 0)
+            throw std::runtime_error(ts_enum_str(err));
+    }
     return *this;
 }
 
@@ -152,9 +154,11 @@ ts::BSpline::~BSpline()
 
 ts::BSpline& ts::BSpline::operator=(const ts::BSpline& other)
 {
-    const tsError err = ts_bspline_copy(&other.bspline, &bspline);
-    if (err < 0)
-        throw std::runtime_error(ts_enum_str(err));
+    if (&other != this) {
+        const tsError err = ts_bspline_copy(&other.bspline, &bspline);
+        if (err < 0)
+            throw std::runtime_error(ts_enum_str(err));
+    }
     return *this;
 }
 

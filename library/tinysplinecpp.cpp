@@ -45,7 +45,6 @@ void ts::DeBoorNet::swap(ts::DeBoorNet& other)
 {
     if (&other != this) {
         std::swap(deBoorNet.u, other.deBoorNet.u);
-        std::swap(deBoorNet.u, other.deBoorNet.u);
         std::swap(deBoorNet.k, other.deBoorNet.k);
         std::swap(deBoorNet.s, other.deBoorNet.s);
         std::swap(deBoorNet.h, other.deBoorNet.h);

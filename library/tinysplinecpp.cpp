@@ -13,6 +13,12 @@ ts::DeBoorNet::DeBoorNet(const ts::DeBoorNet& other)
         throw std::runtime_error(ts_enum_str(err));
 }
 
+ts::DeBoorNet::DeBoorNet(DeBoorNet&& other)
+{
+    ts_deboornet_default(&deBoorNet);
+    swap(other);
+}
+
 ts::DeBoorNet::~DeBoorNet()
 {
     ts_deboornet_free(&deBoorNet);
@@ -24,6 +30,29 @@ ts::DeBoorNet& ts::DeBoorNet::operator=(const ts::DeBoorNet& other)
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
     return *this;
+}
+
+ts::DeBoorNet& ts::DeBoorNet::operator=(ts::DeBoorNet&& other)
+{
+    if (&other != this) {
+        ts_deboornet_free(&deBoorNet);
+        swap(other);
+    }
+    return *this;
+}
+
+void ts::DeBoorNet::swap(ts::DeBoorNet& other)
+{
+    if (&other != this) {
+        std::swap(deBoorNet.u, other.deBoorNet.u);
+        std::swap(deBoorNet.k, other.deBoorNet.k);
+        std::swap(deBoorNet.s, other.deBoorNet.s);
+        std::swap(deBoorNet.h, other.deBoorNet.h);
+        std::swap(deBoorNet.dim, other.deBoorNet.dim);
+        std::swap(deBoorNet.n_points, other.deBoorNet.n_points);
+        std::swap(deBoorNet.points, other.deBoorNet.points);
+        std::swap(deBoorNet.result, other.deBoorNet.result);
+    }
 }
 
 float ts::DeBoorNet::u() const
@@ -90,6 +119,12 @@ ts::BSpline::BSpline(const ts::BSpline& other)
         throw std::runtime_error(ts_enum_str(err));
 }
 
+ts::BSpline::BSpline(ts::BSpline&& other)
+{
+    ts_bspline_default(&bspline);
+    swap(other);
+}
+
 ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
                      const tsBSplineType type)
 {
@@ -121,6 +156,28 @@ ts::BSpline& ts::BSpline::operator=(const ts::BSpline& other)
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
     return *this;
+}
+
+ts::BSpline& ts::BSpline::operator=(ts::BSpline&& other)
+{
+    if (&other != this) {
+        ts_bspline_free(&bspline);
+        swap(other);
+    }
+    return *this;
+}
+
+void ts::BSpline::swap(ts::BSpline &other)
+{
+    if (&other != this) {
+        std::swap(bspline.deg, other.bspline.deg);
+        std::swap(bspline.order, other.bspline.order);
+        std::swap(bspline.dim, other.bspline.dim);
+        std::swap(bspline.n_ctrlp, other.bspline.n_ctrlp);
+        std::swap(bspline.n_knots, other.bspline.n_knots);
+        std::swap(bspline.ctrlp, other.bspline.ctrlp);
+        std::swap(bspline.knots, other.bspline.knots);
+    }
 }
 
 ts::DeBoorNet ts::BSpline::operator()(const float u) const

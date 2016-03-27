@@ -47,6 +47,11 @@ namespace std {
 %ignore ts::DeBoorNet::data;
 %ignore tsBSpline;
 %ignore ts::BSpline::data;
+// ignore move semantics
+%ignore ts::DeBoorNet::DeBoorNet(DeBoorNet &&);
+%ignore ts::swap(DeBoorNet &, DeBoorNet &);
+%ignore ts::BSpline::BSpline(BSpline &&);
+%ignore ts::swap(BSpline &, BSpline &);
 
 %{
     #include "tinyspline.h"

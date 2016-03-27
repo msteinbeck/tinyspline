@@ -14,6 +14,9 @@ public:
 
     DeBoorNet& operator=(const DeBoorNet& other);
 
+    void swap(DeBoorNet& other);
+    friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
+
     float u() const;
     size_t k() const;
     size_t s() const;
@@ -38,6 +41,10 @@ public:
     ~BSpline();
 
     BSpline& operator=(const BSpline& other);
+
+    void swap(BSpline& other);
+    friend void swap(BSpline &left, BSpline &right) { left.swap(right); }
+
     DeBoorNet operator()(const float u) const;
 
     size_t deg() const;

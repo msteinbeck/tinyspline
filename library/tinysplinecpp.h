@@ -14,6 +14,7 @@ public:
     ~DeBoorNet();
 
     DeBoorNet& operator=(const DeBoorNet& other);
+    DeBoorNet& operator=(DeBoorNet&& other);
 
     void swap(DeBoorNet& other);
     friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
@@ -43,6 +44,7 @@ public:
     ~BSpline();
 
     BSpline& operator=(const BSpline& other);
+    BSpline& operator=(BSpline&& other);
 
     void swap(BSpline& other);
     friend void swap(BSpline &left, BSpline &right) { left.swap(right); }

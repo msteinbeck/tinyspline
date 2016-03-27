@@ -13,6 +13,12 @@ ts::DeBoorNet::DeBoorNet(const ts::DeBoorNet& other)
         throw std::runtime_error(ts_enum_str(err));
 }
 
+ts::DeBoorNet::DeBoorNet(DeBoorNet&& other)
+{
+    ts_deboornet_default(&deBoorNet);
+    swap(other);
+}
+
 ts::DeBoorNet::~DeBoorNet()
 {
     ts_deboornet_free(&deBoorNet);
@@ -103,6 +109,12 @@ ts::BSpline::BSpline(const ts::BSpline& other)
     const tsError err = ts_bspline_copy(&other.bspline, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+}
+
+ts::BSpline::BSpline(ts::BSpline&& other)
+{
+    ts_bspline_default(&bspline);
+    swap(other);
 }
 
 ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,

@@ -10,6 +10,7 @@ class DeBoorNet {
 public:
     DeBoorNet();
     DeBoorNet(const DeBoorNet& other);
+    DeBoorNet(DeBoorNet&& other);
     ~DeBoorNet();
 
     DeBoorNet& operator=(const DeBoorNet& other);
@@ -35,6 +36,7 @@ class BSpline {
 public:
     BSpline();
     BSpline(const BSpline& other);
+    BSpline(BSpline&& other);
     BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
             const tsBSplineType type);
     BSpline(const std::vector<float> points, const size_t dim);

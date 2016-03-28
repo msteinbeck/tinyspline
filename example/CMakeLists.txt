@@ -35,4 +35,7 @@ if(GLUT_FOUND AND OPENGL_FOUND)
 
   add_executable(interpolation interpolation.c)
   target_link_libraries(interpolation LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
+  add_executable(derivative derivative.c)
+  target_link_libraries(derivative LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 endif()

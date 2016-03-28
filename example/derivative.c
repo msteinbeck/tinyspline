@@ -97,13 +97,10 @@ void display(void)
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
     tsDeBoorNet net1, net2;
-    float l = 0.f;
     ts_bspline_evaluate(&spline, u, &net1);
     ts_bspline_evaluate(&derivative, u, &net2);
     for (i = 0; i < net2.dim; i++)
-        l += net2.result[i] * net2.result[i];
-    for (i = 0; i < net2.dim; i++)
-        net2.result[i] = net1.result[i] + net2.result[i] / sqrtf(l);
+        net2.result[i] = net1.result[i] + net2.result[i] / 4.f; // subdivided by 4 just to avoid the tangent to exit from the window
     glBegin(GL_LINES);
         glVertex3fv(net1.result);
         glVertex3fv(net2.result);

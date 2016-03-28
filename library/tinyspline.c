@@ -4,6 +4,7 @@
 #include <math.h> /* fabs */
 #include <string.h> /* memcpy, memmove, strcmp */
 #include <setjmp.h> /* setjmp, longjmp */
+#include <float.h>  /* FLT_MAX */
 
 
 /********************************************************
@@ -669,6 +670,42 @@ void ts_internal_bspline_interpolate(
         longjmp(buf, e);
 }
 
+void ts_internal_bspline_derivative(
+    const tsBSpline* original,
+    tsBSpline* derivative, jmp_buf buf
+)
+{
+    tsError e;
+    jmp_buf b;
+    size_t dim = original->dim;
+    size_t deg = original->deg;
+    size_t N = original->n_ctrlp;
+    size_t M = original->n_knots;
+    size_t i, j;
+
+    if (dim == 0 || deg == 0 || N < 2)
+        e = TS_DIM_ZERO;
+
+    TRY(b, e)
+        ts_internal_bspline_new(deg-1, dim, N-1, TS_OPENED, derivative, b);
+    ETRY
+    TRY(b, e)
+    for (i = 0; i < N-1; i++)
+        for (j = 0; j < dim; j++) {
+            if (ts_fequals(original->knots[i + deg + 1], original->knots[i + 1]))
+                derivative->ctrlp[i*dim + j] = FLT_MAX;
+            else
+                derivative->ctrlp[i*dim + j] = (original->ctrlp[(i+1)*dim + j] - original->ctrlp[i*dim + j])
+                                             * deg
+                                             / (original->knots[i + deg + 1] - original->knots[i + 1]);
+        }
+    memcpy(derivative->knots, original->knots+1, (M-2)*sizeof(float));
+    ETRY
+
+    if (e < 0)
+        longjmp(buf, e);
+}
+
 void ts_internal_bspline_buckle(
     const tsBSpline* bspline, const float b,
     tsBSpline* buckled, jmp_buf buf
@@ -819,6 +856,21 @@ tsError ts_bspline_interpolate(
         ts_internal_bspline_interpolate(points, n, dim, bspline, buf);
     CATCH
         ts_bspline_default(bspline);
+    ETRY
+    return err;
+}
+
+tsError ts_bspline_derivative(
+    const tsBSpline* original,
+    tsBSpline* derivative
+)
+{
+    tsError err;
+    jmp_buf buf;
+    TRY(buf, err)
+        ts_internal_bspline_derivative(original, derivative, buf);
+    CATCH
+        ts_bspline_default(derivative);
     ETRY
     return err;
 }

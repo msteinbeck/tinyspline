@@ -175,6 +175,35 @@ tsError ts_bspline_interpolate(
 );
 
 /**
+ * Computes the derivative of \original.
+ * http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
+ *
+ * The derivative of a spline \original of degree \original->deg with
+ * \original->n_ctrlp control points and \original->n_knots knots
+ * is another spline of degree \original->deg-1 with \original->n_ctrl-1
+ * control points and \original->n_knots-2 knots, defined over \original as
+ * C'(u) = Sum_{i=0}^{n-1} N_{i+1,p-1}(u) * (P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1})
+ *       = Sum_{i=1}^{n} N_{i,p-1}(u) * (P_{i} - P_{i-1}) * p / (u_{i+p}-u_{i})
+ * If \original is clamped, it can be shown that
+ * C'(u) = Sum_{i=0}^{n-1} N_{i,p-1}(u) * (P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1})
+ * where the multiplicity of the first and the last u is p rather than p+1.
+ *
+ * This function does not free already allocated memory in \derivative.
+ * If you want to reuse an instance of tsBSpline by using it in multiple
+ * calls of this function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * On error all values of \derivative are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if allocating memory failed.
+ * @return TS_DIM_ZERO          if \original->deg == 0 || \original->dim == 0 || \original->n_ctrlp < 2.
+ */
+tsError ts_bspline_derivative(
+   const tsBSpline* original,
+   tsBSpline* derivative
+);
+
+/**
  * The copy constructor of tsDeBoorNet.
  *
  * Creates a deep copy of \original and stores the result in \copy. This

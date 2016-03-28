@@ -313,6 +313,15 @@ ts::DeBoorNet ts::BSpline::evaluate(const float u) const
     return deBoorNet;
 }
 
+ts::BSpline ts::BSpline::derivate() const
+{
+    BSpline derivative;
+    const tsError err = ts_bspline_derivative(&bspline, &derivative.bspline);
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
+    return derivative;
+}
+
 
 
 bool ts::Utils::fequals(const float x, const float y)

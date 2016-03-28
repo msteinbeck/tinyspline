@@ -72,6 +72,8 @@ public:
     size_t split(const float u);
     DeBoorNet evaluate(const float u) const;
 
+    BSpline derivate() const;
+
 private:
     tsBSpline bspline;
 };

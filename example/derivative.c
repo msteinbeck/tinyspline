@@ -56,7 +56,7 @@ void setup()
     spline.ctrlp[19] = 0.0;
     spline.ctrlp[20] = 0.0;
 
-    ts_bspline_derivative(&spline, &derivative);
+    ts_bspline_derive(&spline, &derivative);
 }
 
 void tear_down()

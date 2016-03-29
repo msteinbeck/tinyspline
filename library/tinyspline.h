@@ -204,7 +204,7 @@ tsError ts_bspline_interpolate(
  *                              \original. NOTE: This will be fixed in the
  *                              future.
  */
-tsError ts_bspline_derivative(
+tsError ts_bspline_derive(
    const tsBSpline* original,
    tsBSpline* derivative
 );

@@ -68,11 +68,10 @@ public:
     void resize(const int n, const int back);
     void buckle(const float b);
     void toBeziers();
+    void derive();
     size_t insertKnot(const float u, const size_t n);
     size_t split(const float u);
     DeBoorNet evaluate(const float u) const;
-
-    BSpline derivative() const;
 
 private:
     tsBSpline bspline;

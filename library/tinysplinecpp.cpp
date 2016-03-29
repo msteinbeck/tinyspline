@@ -304,6 +304,13 @@ void ts::BSpline::toBeziers()
         throw std::runtime_error(ts_enum_str(err));
 }
 
+void ts::BSpline::derive()
+{
+    const tsError err = ts_bspline_derive(&bspline, &bspline);
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
+}
+
 ts::DeBoorNet ts::BSpline::evaluate(const float u) const
 {
     DeBoorNet deBoorNet;
@@ -313,14 +320,6 @@ ts::DeBoorNet ts::BSpline::evaluate(const float u) const
     return deBoorNet;
 }
 
-ts::BSpline ts::BSpline::derivative() const
-{
-    BSpline derivative;
-    const tsError err = ts_bspline_derivative(&bspline, &derivative.bspline);
-    if (err < 0)
-        throw std::runtime_error(ts_enum_str(err));
-    return derivative;
-}
 
 
 

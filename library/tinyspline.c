@@ -669,7 +669,7 @@ void ts_internal_bspline_interpolate(
         longjmp(buf, e);
 }
 
-void ts_internal_bspline_derivative(
+void ts_internal_bspline_derive(
     const tsBSpline* original,
     tsBSpline* derivative, jmp_buf buf
 )
@@ -881,7 +881,7 @@ tsError ts_bspline_interpolate(
     return err;
 }
 
-tsError ts_bspline_derivative(
+tsError ts_bspline_derive(
     const tsBSpline* original,
     tsBSpline* derivative
 )
@@ -889,7 +889,7 @@ tsError ts_bspline_derivative(
     tsError err;
     jmp_buf buf;
     TRY(buf, err)
-        ts_internal_bspline_derivative(original, derivative, buf);
+        ts_internal_bspline_derive(original, derivative, buf);
     CATCH
         if (original != derivative)
             ts_bspline_default(derivative);

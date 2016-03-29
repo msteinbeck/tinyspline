@@ -193,7 +193,8 @@ tsError ts_bspline_interpolate(
  * If you want to reuse an instance of tsBSpline by using it in multiple
  * calls of this function, make sure to call ::ts_deboornet_free beforehand.
  *
- * On error all values of \derivative are 0/NULL.
+ * On error (and if \original != \derivative) all values of \derivative are
+ * 0/NULL.
  *
  * @return TS_SUCCESS           on success.
  * @return TS_MALLOC            if allocating memory failed.

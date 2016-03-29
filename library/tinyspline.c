@@ -1106,6 +1106,8 @@ char* ts_enum_str(const tsError err)
         return "decreasing knot vector";
     else if (err == TS_NUM_KNOTS)
         return "unexpected number of knots";
+    else if (err == TS_UNDERIVABLE)
+        return "spline is not derivable";
     return "unknown error";
 }
 
@@ -1125,6 +1127,8 @@ tsError ts_str_enum(const char* str)
         return TS_KNOTS_DECR;
     else if (!strcmp(str, ts_enum_str(TS_NUM_KNOTS)))
         return TS_NUM_KNOTS;
+    else if (!strcmp(str, ts_enum_str(TS_UNDERIVABLE)))
+        return TS_UNDERIVABLE;
     return TS_SUCCESS;
 }
 

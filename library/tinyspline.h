@@ -37,7 +37,8 @@ typedef enum
     TS_MULTIPLICITY = -5,   /* the multiplicity of a knot is greater than
                              * the order of the spline */
     TS_KNOTS_DECR = -6,     /* decreasing knot vector */
-    TS_NUM_KNOTS = -7       /* unexpected number of knots */
+    TS_NUM_KNOTS = -7,      /* unexpected number of knots */
+    TS_UNDERIVABLE = -8     /* spline is not derivable */
 } tsError;
 
 /**
@@ -196,7 +197,12 @@ tsError ts_bspline_interpolate(
  *
  * @return TS_SUCCESS           on success.
  * @return TS_MALLOC            if allocating memory failed.
- * @return TS_DIM_ZERO          if \original->deg == 0 || \original->dim == 0 || \original->n_ctrlp < 2.
+ * @return TS_UNDERIVABLE       if \original->deg < 1 or
+ *                              if \original->n_ctrlp < 2 or
+ *                              if the multiplicity of an internal knot of
+ *                              \original is greater than the degree of
+ *                              \original. NOTE: This will be fixed in the
+ *                              future.
  */
 tsError ts_bspline_derivative(
    const tsBSpline* original,

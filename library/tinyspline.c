@@ -4,7 +4,6 @@
 #include <math.h> /* fabs */
 #include <string.h> /* memcpy, memmove, strcmp */
 #include <setjmp.h> /* setjmp, longjmp */
-#include <float.h>  /* FLT_MAX */
 
 
 /********************************************************
@@ -675,35 +674,57 @@ void ts_internal_bspline_derivative(
     tsBSpline* derivative, jmp_buf buf
 )
 {
-    tsError e;
-    jmp_buf b;
-    size_t dim = original->dim;
-    size_t deg = original->deg;
-    size_t N = original->n_ctrlp;
-    size_t M = original->n_knots;
-    size_t i, j;
+    const size_t sof_f = sizeof(float);
+    const size_t dim = original->dim;
+    const size_t deg = original->deg;
+    const size_t nc = original->n_ctrlp;
+    const size_t nk = original->n_knots;
+    float* from_ctrlp = original->ctrlp;
+    float* from_knots = original->knots;
+    float* to_ctrlp = NULL;
+    float* to_knots = NULL;
+    size_t i, j, k;
 
-    if (dim == 0 || deg == 0 || N < 2)
-        e = TS_DIM_ZERO;
+    if (deg < 1 || nc < 2)
+        longjmp(buf, TS_UNDERIVABLE);
 
-    TRY(b, e)
-        ts_internal_bspline_new(deg-1, dim, N-1, TS_OPENED, derivative, b);
-    ETRY
-    TRY(b, e)
-    for (i = 0; i < N-1; i++)
+    if (original != derivative) {
+        ts_internal_bspline_new(deg-1, dim, nc-1, TS_NONE, derivative, buf);
+        to_ctrlp = derivative->ctrlp;
+        to_knots = derivative->knots;
+    } else {
+        to_ctrlp = malloc( ((nc-1)*dim + nk) * sof_f );
+        if (to_ctrlp == NULL)
+            longjmp(buf, TS_MALLOC);
+        to_knots = to_ctrlp + (nc-1)*dim;
+    }
+
+    for (i = 0; i < nc-1; i++) {
         for (j = 0; j < dim; j++) {
-            if (ts_fequals(original->knots[i + deg + 1], original->knots[i + 1]))
-                derivative->ctrlp[i*dim + j] = FLT_MAX;
-            else
-                derivative->ctrlp[i*dim + j] = (original->ctrlp[(i+1)*dim + j] - original->ctrlp[i*dim + j])
-                                             * deg
-                                             / (original->knots[i + deg + 1] - original->knots[i + 1]);
+            if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
+                free(to_ctrlp);
+                longjmp(buf, TS_UNDERIVABLE);
+            } else {
+                k = i*dim + j;
+                to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
+                to_ctrlp[k] *= deg;
+                to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
+            }
         }
-    memcpy(derivative->knots, original->knots+1, (M-2)*sizeof(float));
-    ETRY
+    }
+    memcpy(to_knots, from_knots+1, (nk-2)*sof_f);
 
-    if (e < 0)
-        longjmp(buf, e);
+    if (original == derivative) {
+        /* free old memory */
+        free(from_ctrlp);
+        /* assign new values */
+        derivative->deg = deg-1;
+        derivative->order = deg;
+        derivative->n_ctrlp = nc-1;
+        derivative->n_knots = nk-1;
+        derivative->ctrlp = to_ctrlp;
+        derivative->knots = to_knots;
+    }
 }
 
 void ts_internal_bspline_buckle(
@@ -870,7 +891,8 @@ tsError ts_bspline_derivative(
     TRY(buf, err)
         ts_internal_bspline_derivative(original, derivative, buf);
     CATCH
-        ts_bspline_default(derivative);
+        if (original != derivative)
+            ts_bspline_default(derivative);
     ETRY
     return err;
 }

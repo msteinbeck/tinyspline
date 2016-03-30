@@ -63,7 +63,7 @@ class build_py(_build_py):
 
 
 setup(name="tinyspline",
-      version="0.1.1",
+      version="0.1.2",
       description="Python binding for TinySpline",
       long_description="""
       TinySpline is a C library for NURBS, B-Splines and Bezier curves

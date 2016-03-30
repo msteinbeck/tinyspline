@@ -96,18 +96,23 @@ void display(void)
     // draw derivative
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    tsDeBoorNet net1, net2;
+    tsDeBoorNet net1, net2, net3;
     ts_bspline_evaluate(&spline, u, &net1);
     ts_bspline_evaluate(&derivative, u, &net2);
-    for (i = 0; i < net2.dim; i++)
-        net2.result[i] = net1.result[i] + net2.result[i] / 4.f; // subdivided by 4 just to avoid the tangent to exit from the window
+    ts_bspline_evaluate(&derivative, u, &net3);
+    for (i = 0; i < net2.dim; i++) {
+        // subdivided by 6 just to avoid the tangent to exit from the window
+        net2.result[i] = net1.result[i] + net2.result[i] / 6.f;
+        net3.result[i] = net1.result[i] - net3.result[i] / 6.f;
+    }
     glBegin(GL_LINES);
-        glVertex3fv(net1.result);
+        glVertex3fv(net3.result);
         glVertex3fv(net2.result);
     glEnd();
     ts_deboornet_free(&net1);
     ts_deboornet_free(&net2);
-    
+    ts_deboornet_free(&net3);
+
     u += 0.001;
     if (u > 1.f) {
         u = 0.f;

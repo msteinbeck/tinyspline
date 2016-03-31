@@ -2,78 +2,41 @@
 
 //********************************************************
 //*                                                      *
-//* FloatList (Java)                                     *
+//* Utils (Java)                                         *
 //*                                                      *
 //********************************************************
-%typemap(javaimports) ts::FloatList
+%typemap(javaimports) ts::Utils
 %{
 import java.util.List;
-import java.util.AbstractList;
-import java.util.RandomAccess;
-import java.lang.NullPointerException;
-import java.lang.ClassCastException;
+import java.util.ArrayList;
+import java.lang.Integer;
+import java.lang.IllegalArgumentException;
 %}
 
-%typemap(javabase) ts::FloatList "AbstractList<Float>"
-%typemap(javainterfaces) ts::FloatList "RandomAccess"
-
-%typemap(javacode) ts::FloatList
+%typemap(javacode) ts::Utils
 %{
-  @Override
-  public Float get(final int index) {
-    return ts_get(index);
-  }
-
-  @Override
-  public Float set(final int index, final Float element) {
-    if (element == null)
-      throw new NullPointerException("Element is null");
-    return ts_set(index, element);
-  }
-
-  @Override
-  public void add(final int index, final Float element) {
-    if (element == null)
-      throw new NullPointerException("Element is null");
-    ts_insert(index, element);
-  }
-
-  @Override
-  public Float remove(final int index) {
-    return ts_remove(index);
-  }
-
-  @Override
-  public int indexOf(Object o) {
-    if (o == null)
-      throw new NullPointerException();
-    else if (! (o instanceof Float))
-      throw new ClassCastException();
-    return ts_indexOf((Float) o);
-  }
-
-  @Override
-  public boolean contains(Object o) {
-    return indexOf(o) >= 0;
-  }
-
-  @Override
-  public int size() {
-    return ts_size();
-  }
-
-  @Override
-  public String toString() {
-    return ts_toString();
-  }
-
   static FloatVector listToVector(final List<Float> list) {
     if (list == null)
       throw new IllegalArgumentException("The given list must not be null.");
 
-    final FloatVector vec = new FloatVector();
+    final FloatVector vec = new FloatVector(list.size());
     for(final float f : list) vec.add(f);
     return vec;
+  }
+
+  static List<Float> vectorToList(final FloatVector vec) {
+    if (vec == null) {
+      throw new IllegalArgumentException("The given vector must not be null.");
+    }
+    final long size = vec.size();
+    if (size > (long)Integer.MAX_VALUE) {
+      throw new IllegalArgumentException(
+        "Unable to store " + size + " many float in a list.");
+    }
+
+    final List<Float> list = new ArrayList<Float>((int)size);
+    for (int i = 0; i < size; i++) list.add(vec.get(i));
+    return list;
   }
 %}
 
@@ -105,26 +68,23 @@ import java.util.List;
 %typemap(javacode) ts::BSpline
 %{
   public BSpline(final List<Float> points, final long dim) {
-    // implicitly checks null
-    this(FloatList.listToVector(points), dim);
+    this(Utils.listToVector(points), dim);
   }
 
   public List<Float> getCtrlp() {
-    return new FloatList(ctrlp_p());
+    return Utils.vectorToList(ctrlp_p());
   }
 
   public void setCtrlp(final List<Float> ctrlp) {
-    // implicitly checks null
-    setCtrlp_p(FloatList.listToVector(ctrlp));
+    setCtrlp_p(Utils.listToVector(ctrlp));
   }
 
   public List<Float> getKnots() {
-    return new FloatList(knots_p());
+    return Utils.vectorToList(knots_p());
   }
 
   public void setKnots(final List<Float> knots) {
-    // implicitly checks null
-    setKnots_p(FloatList.listToVector(knots));
+    setKnots_p(Utils.listToVector(knots));
   }
 %}
 
@@ -149,11 +109,11 @@ import java.util.List;
 %typemap(javacode) ts::DeBoorNet
 %{
   public List<Float> getPoints() {
-    return new FloatList(points_p());
+    return Utils.vectorToList(points_p());
   }
 
   public List<Float> getResult() {
-    return new FloatList(result_p());
+    return Utils.vectorToList(result_p());
   }
 %}
 

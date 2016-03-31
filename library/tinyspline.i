@@ -56,9 +56,7 @@ namespace std {
 %{
     #include "tinyspline.h"
     #include "tinysplinecpp.h"
-    #include "swigwrapper.h"
 %}
 
 %include "tinyspline.h"
 %include "tinysplinecpp.h"
-%include "swigwrapper.h"

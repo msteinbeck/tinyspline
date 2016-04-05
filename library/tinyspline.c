@@ -693,7 +693,7 @@ void ts_internal_bspline_derive(
         to_ctrlp = derivative->ctrlp;
         to_knots = derivative->knots;
     } else {
-        to_ctrlp = malloc( ((nc-1)*dim + (nk-2)) * sof_f );
+        to_ctrlp = (float*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
         if (to_ctrlp == NULL)
             longjmp(buf, TS_MALLOC);
         to_knots = to_ctrlp + (nc-1)*dim;

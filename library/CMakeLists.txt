@@ -112,9 +112,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND)
       COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
       ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
     )
-    install(TARGETS _tinysplinepython
-      LIBRARY DESTINATION lib
-    )
   endif()
 
   # java
@@ -126,9 +123,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND)
     set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
     swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
     swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
-    install(TARGETS tinysplinejava
-      LIBRARY DESTINATION lib
-    )
     
     find_package(Java COMPONENTS Development)
     if(Java_Development_FOUND)
@@ -148,9 +142,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND)
         OUTPUT_NAME tinyspline
       )
       add_dependencies(tinysplinejar tinysplinejava)
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.jar
-        DESTINATION share/java
-      )
     endif()
   endif()
 
@@ -159,9 +150,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND)
   set(CMAKE_SWIG_FLAGS -namespace ts -O)
   set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
   swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
-  install(TARGETS tinysplinecsharp
-    LIBRARY DESTINATION lib
-  )
   find_program(CSHARP_COMPILER
     NAMES csc mcs dmcs gmcs
     PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
@@ -174,9 +162,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND)
     # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD
       COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
-    )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tinysplinecs.dll
-      DESTINATION lib/mono/2.0
     )
   endif()
 

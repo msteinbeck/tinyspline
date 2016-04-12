@@ -67,7 +67,21 @@
             <configuration>
               <target>
                 <echo>Replacing Maven generated jar with CMake generated jar.</echo>
-                <copy file="${project.build.directory}/tinyspline.jar" tofile="${project.build.directory}/${project.artifactId}-${project.version}.jar" overwrite="yes"/>
+                <!-- delete original jar -->
+                <delete file="${project.build.directory}/${project.artifactId}-${project.version}.jar" />
+                <!-- create new jar that contains the shared library -->
+                <unzip src="${project.build.directory}/tinyspline.jar" dest="${project.build.directory}/tmp-java-dir" />
+                <copy todir="${project.build.directory}/tmp-java-dir">
+                  <fileset dir="${project.build.directory}">
+                    <include name="*.so" />
+                    <include name="*.dll" />
+                    <include name="*.dylib" />
+                  </fileset>
+                </copy>
+                <jar destfile="${project.build.directory}/${project.artifactId}-${project.version}.jar" basedir="${project.build.directory}/tmp-java-dir" />
+                <!-- cleanup -->
+                <delete dir="${project.build.directory}/tmp-java-dir" />
+                <delete file="${project.build.directory}/tinyspline.jar" />
               </target>
             </configuration>
           </execution>

@@ -265,59 +265,71 @@ void ts::BSpline::setKnots(const std::vector<float> knots)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void ts::BSpline::setupKnots(const tsBSplineType type,
-                             const float min, const float max)
+ts::BSpline ts::BSpline::setupKnots(const tsBSplineType type,
+                             const float min, const float max) const
 {
+    ts::BSpline bs;
     const tsError err = ts_bspline_setup_knots(
-            &bspline, type, min, max, &bspline);
+            &bspline, type, min, max, &bs.bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+    return bs;
 }
 
-size_t ts::BSpline::insertKnot(const float u, const size_t n)
+ts::BSpline ts::BSpline::insertKnot(const float u, const size_t n) const
 {
+    ts::BSpline bs;
     size_t k;
-    const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bspline, &k);
+    const tsError err = ts_bspline_insert_knot(&bspline, u, n, &bs.bspline, &k);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
-    return k;
+    return bs;
 }
 
-void ts::BSpline::resize(const int n, const int back)
+ts::BSpline ts::BSpline::resize(const int n, const int back) const
 {
-    const tsError err = ts_bspline_resize(&bspline, n, back, &bspline);
+    ts::BSpline bs;
+    const tsError err = ts_bspline_resize(&bspline, n, back, &bs.bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+    return bs;
 }
 
-size_t ts::BSpline::split(const float u)
+ts::BSpline ts::BSpline::split(const float u) const
 {
+    ts::BSpline bs;
     size_t k;
-    const tsError err = ts_bspline_split(&bspline, u, &bspline, &k);
+    const tsError err = ts_bspline_split(&bspline, u, &bs.bspline, &k);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
-    return k;
+    return bs;
 }
 
-void ts::BSpline::buckle(const float b)
+ts::BSpline ts::BSpline::buckle(const float b) const
 {
-    const tsError err = ts_bspline_buckle(&bspline, b, &bspline);
+    ts::BSpline bs;
+    const tsError err = ts_bspline_buckle(&bspline, b, &bs.bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+    return bs;
 }
 
-void ts::BSpline::toBeziers()
+ts::BSpline ts::BSpline::toBeziers() const
 {
-    const tsError err = ts_bspline_to_beziers(&bspline, &bspline);
+    ts::BSpline bs;
+    const tsError err = ts_bspline_to_beziers(&bspline, &bs.bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+    return bs;
 }
 
-void ts::BSpline::derive()
+ts::BSpline ts::BSpline::derive() const
 {
-    const tsError err = ts_bspline_derive(&bspline, &bspline);
+    ts::BSpline bs;
+    const tsError err = ts_bspline_derive(&bspline, &bs.bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
+    return bs;
 }
 
 

@@ -69,14 +69,14 @@ public:
     void setKnots(const std::vector<float> knots);
 
     /* Transformations */
-    void setupKnots(const tsBSplineType type,
-                    const float min, const float max);
-    size_t insertKnot(const float u, const size_t n);
-    void resize(const int n, const int back);
-    size_t split(const float u);
-    void buckle(const float b);
-    void toBeziers();
-    void derive();
+    BSpline setupKnots(const tsBSplineType type,
+                    const float min, const float max) const;
+    BSpline insertKnot(const float u, const size_t n) const;
+    BSpline resize(const int n, const int back) const;
+    BSpline split(const float u) const;
+    BSpline buckle(const float b) const;
+    BSpline toBeziers() const;
+    BSpline derive() const;
 
 private:
     tsBSpline bspline;

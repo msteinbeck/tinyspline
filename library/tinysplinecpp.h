@@ -35,6 +35,7 @@ private:
 
 class BSpline {
 public:
+    /* Constructors */
     BSpline();
     BSpline(const BSpline& other);
     BSpline(BSpline&& other);
@@ -43,14 +44,16 @@ public:
     BSpline(const std::vector<float> points, const size_t dim);
     ~BSpline();
 
+    /* Operators */
     BSpline& operator=(const BSpline& other);
     BSpline& operator=(BSpline&& other);
+    DeBoorNet operator()(const float u) const;
 
+    /* Used by move semantics */
     void swap(BSpline& other);
     friend void swap(BSpline &left, BSpline &right) { left.swap(right); }
 
-    DeBoorNet operator()(const float u) const;
-
+    /* Getter */
     size_t deg() const;
     size_t order() const;
     size_t dim() const;
@@ -59,19 +62,21 @@ public:
     std::vector<float> ctrlp() const;
     std::vector<float> knots() const;
     tsBSpline* data();
+    DeBoorNet evaluate(const float u) const;
 
+    /* Modifications */
     void setCtrlp(const std::vector<float> ctrlp);
     void setKnots(const std::vector<float> knots);
 
+    /* Transformations */
     void setupKnots(const tsBSplineType type,
                     const float min, const float max);
+    size_t insertKnot(const float u, const size_t n);
     void resize(const int n, const int back);
+    size_t split(const float u);
     void buckle(const float b);
     void toBeziers();
     void derive();
-    size_t insertKnot(const float u, const size_t n);
-    size_t split(const float u);
-    DeBoorNet evaluate(const float u) const;
 
 private:
     tsBSpline bspline;

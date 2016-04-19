@@ -46,7 +46,7 @@ properties for Python). Using CMake to create the bindings is recommended.
 Note: Use the file `debugging.h` to add some debugging features to the C interface.
 
 ###Getting Started
-The following example uses the C++ wrapper to give some insights into TinySpline.
+The following listing uses the C++ wrapper to give a short example of TinySpline:
 
 ```c
 // Create a clamped spline of degree 3 in 2D consisting of 7 control points.
@@ -88,14 +88,13 @@ std::cout << "x = " << net.result[0] << ", y = " << net.result[1] << std::endl;
 TinySpline uses the CMake build system to compile and package the interfaces. The C
 library has been implemented in C89 and, thus, should be compilable with nearly every
 compiler. All other features of TinySpline are optional and will be disabled if CMake does
-not find the required dependencies.
-
-No matter which interfaces you want to build, CMake and an appropriative C/C++ compiler
-must be available. TinySpline supports any of the following compiler suites: gcc, clang,
-and msvc. In order to compile the C++ wrapper or any of the bindings, your compiler suite
-(e.g. gcc) must support C++11. Additionally, Swig (in version 3.0.1 or above) is required
-to generate the bindings. Along Swig, each binding may have further dependencies to
-generate the source code of the target language. The following table gives an overview:
+not find the required dependencies. However, CMake and an appropriate C/C++ compiler must
+be available, regardless of the interface you want to build. TinySpline supports any of
+the following compiler suites: gcc, clang, and msvc. In order to compile the C++ wrapper
+or any of the bindings, your compiler suite (e.g. gcc) must support C++11. Additionally,
+Swig (in version 3.0.1 or above) is required to generate the bindings. Along Swig, each
+binding may have further dependencies to generate the source code of the target language.
+The following table gives an overview:
 
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------

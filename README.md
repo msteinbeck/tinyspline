@@ -39,7 +39,7 @@ the C interface, you can copy those files (along with `tinyspline.h` and `tinysp
 into your project or use CMake to create a static or shared library.
 
 All bindings of TinySpline work on top of the C++ wrapper and are generated with
-[Swig](http://www.swig.org/). The file `tinyspline.i` is used to configure the language
+[Swig](http://www.swig.org/). The file `tinyspline.i` is used to configure language
 independent settings. The file `tinysplineXYZ` adds language related features (e.g.
 properties for Python). Using CMake to create the bindings is recommended.
 

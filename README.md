@@ -181,9 +181,9 @@ cmake --build . --target install
 
 However, there are several binding related files that CMake does not install with this
 command because some languages use their own approach to install files to your system.
-Python, for instance, uses Distutils/Setuptools to copy files to appropriate directories
-that CMake is not aware of. Thus, TinySpline ships further, language related distribution
-tools that will be explained in the following sections.
+Python, for instance, uses Distutils/Setuptools to copy the resulting files to Python
+specific installation directories CMake is not aware of. Thus, TinySpline ships further,
+language related distribution tools that will be explained in the following sections.
 
 ####Install the Python Binding
 The root directory of TinySpline contains the Python script `setup.py` which uses

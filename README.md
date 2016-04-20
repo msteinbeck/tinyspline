@@ -188,8 +188,8 @@ language related distribution tools that will be explained in the following sect
 ####Install the Python Binding
 The root directory of TinySpline contains the Python script `setup.py` which uses
 Setuptools to wrap the CMake build process. Additionally, it copies the resulting files to
-the appropriate Python directory. Use the following command to build and install the
-Python binding of TinySpline:
+the appropriate Python installation directory. Use the following command to build and
+install the Python binding of TinySpline:
 
 ```bash
 python setup.py install
@@ -214,13 +214,13 @@ python setup.py install
 
 ####Install the Java Binding
 There are several tools to manage the build process of software implemented in Java.
-TinySpline provides Maven to create and install the Java binding as Maven is used in many
+TinySpline uses Maven to create and install the Java binding as Maven is used in many
 other projects and is well supported by various integrated development environments. You
 will find the `pom.xml` file that is used to configure Maven in the root directory of the
-source distribution. This file follows the usual mantra of TinySpline such that it simply
-wraps the build process of CMake to create the binding. Additionally, the shared library
-that is required to use the binding gets packaged into the jar archive, too. Use the
-following command to create and install the archive into your local maven repository:
+source distribution. This file follows the usual mantra of wrapping the CMake build
+process to create the binding. Additionally, the shared library that is required to use
+the binding gets packaged into the jar archive. Use the following command to create and
+install the archive into your local maven repository:
 
 ```bash
 mvn install

@@ -173,6 +173,16 @@ export PYTHON_INCLUDE_DIR=/usr/include/python2.7
 cmake ..
 ```
 
+####Ruby Interface File
+Unlike other programming languages such as Java and C#, Ruby bindings do not require
+additional interface files (.rb files) in order to give access to the underlaying C/C++
+functions. However, the `CMakeLists.txt` file located in `library` creates such a file to
+provide a more convenient interface. That is, the default module name `tinysplineruby`
+(created by CMake and SWIG) is renamed to `Tinyspline`. Furthermore, set properties are
+added to the classes `BSpline` and `DeBoorNet` in order to simplify the assignment of
+control points and knots. Thus, the usage of the interface file `tinyspline.rb` is
+recommended.
+
 ####Install the C and C++ Libraries
 The following command installs TinySpline:
 

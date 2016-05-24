@@ -237,24 +237,24 @@ install the archive into your local maven repository:
 mvn install
 ```
 
-If you are running this command on a system that does not support Unix makefiles, then you
-may get the following error message: "CMake Error: Could not create named generator Unix
-makefiles". The reason for this error is that Maven uses the
+If you run the above command on systems that do not support Unix makefiles by default (for
+instance the Windows operating system), you may get the following error message: "CMake
+Error: Could not create named generator Unix makefiles". This error results from the
 [cmake-maven-project](https://github.com/cmake-maven-project/cmake-maven-project) plug-in
-to wrap the CMake build process. Unfortunately, you have to specify a cmake generator in
-order to use the plug-in. That is, if you skip the generator configuration, Maven will
-fail with the following error message: "The parameters 'generator' for goal
+that requires an actual CMake generator to properly wrap the build process. That is, if
+you skip the generator configuration of `cmake-maven-project`, it fails with: "The
+parameters 'generator' for goal
 com.googlecode.cmake-maven-project:cmake-maven-plugin:3.4.1-b1:generate are missing or
-invalid". Thus, Maven uses the Unix makefiles generator by default. However, open the file
-`pom.xml` with you preferred text editor and replace the line:
+invalid". Thus, Maven has been configured to use the Unix makefiles generator by default.
+However, open the file `pom.xml` with you preferred text editor and replace the line:
 
 ```xml
 <generator>Unix Makefiles</generator>
 ```
 
 with one of the generators listed at:
-<http://www.cmake.org/cmake/help/v2.8.10/cmake.html#section_Generators>. Afterwards, rerun
-Maven with your new generator configuration:
+<http://www.cmake.org/cmake/help/v2.8.10/cmake.html#section_Generators>. Afterwards, build
+TinySpline with your new generator configuration:
 
 ```bash
 maven clean install

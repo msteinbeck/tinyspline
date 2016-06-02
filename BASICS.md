@@ -63,6 +63,6 @@ B-Spline `b` at `u` with `s(u) = p+1` *almost always* returns two points `q`, `r
 than one, though `q` and `r` may be the 'same' (`q = r`) and, thus, can be seen as a
 single point. As if all this wasn't complicated enough, there is a special case in which
 evaluating `b` always returns a single point regardless of `b`'s continuity at this point.
-It occurs when the evaluated point is the very first or rather very last point (you can
-think of a B-Spline's 'ending' points) of a B-Spline.
+It occurs when the evaluated point is the very first or rather very last point of a
+B-Spline (you can think of a B-Spline's 'ending' points).
 

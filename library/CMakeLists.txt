@@ -54,7 +54,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(TS_CPP_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711")
 
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
     # using WX causes to many errors in generated source code, thus, use W4 instead

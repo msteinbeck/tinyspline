@@ -340,7 +340,7 @@ void ts_internal_bspline_insert_knot(
         memcpy(to, from, sof_c);
         from += stride;
         to += dim;
-        stride -= dim;
+        stride -= (int)dim;
     }
     memcpy(to, from, (N-n) * sof_c); /* b) */
 
@@ -354,7 +354,7 @@ void ts_internal_bspline_insert_knot(
     for (i = 0; i < n; i++) { /* c) */
         memcpy(to, from, sof_c);
         from += stride;
-        stride -= dim;
+        stride -= (int)dim;
         to += dim;
     }
     /* copy knots */
@@ -467,8 +467,8 @@ void ts_internal_bspline_evaluate(
                             a * deBoorNet->points[ridx++];
                 }
             }
-            lidx += dim;
-            ridx += dim;
+            lidx += (int)dim;
+            ridx += (int)dim;
         }
     }
 }

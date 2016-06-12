@@ -20,7 +20,7 @@ MIT License - see the LICENSE file in the source distribution.
 - Insert knots and split splines without modifying the shape.
 - Derive splines of any degree.
 - Subdivide splines into Bézier curves.
-- A wrapper for C++ (C++11) and bindings for C#, Java, Python, and Ruby using SWIG.
+- A wrapper for C++ (C++11) and bindings for C#, Java, Python, and Ruby.
 - Easy to use with OpenGL.
 
 Feel free to ask for special features or to contribute to TinySpline :).
@@ -142,9 +142,9 @@ You will find the resulting libraries, jars, etc. in `tinyspline/build/library`.
 
 ####Cross Compiling
 In order to cross compile the C and C++ library, use one of the provided toolchain files.
-Currently, toolchain files for MinGW and ARM are available at the root directory of the
-source distribution (e.g. `Toolchain-arm.cmake`). Use the following command within your
-build directory to cross compile TinySpline to the desired platform:
+Currently, toolchain files for MinGW, ARM, and AVR are available at the root directory of
+the source distribution (e.g. `Toolchain-arm.cmake`). Use the following command within
+your build directory to cross compile TinySpline to the desired platform:
 
 ```bash
 cmake -DCMAKE_TOOLCHAIN_FILE=<path to root dir of tinypsline>/Toolchain-*.cmake ..

@@ -1,10 +1,33 @@
 cmake_minimum_required(VERSION 2.8)
 
+# setup some convenience variables
+set(TS_AVR_CROSSCOMPILE FALSE)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
+  set(TS_AVR_CROSSCOMPILE TRUE)
+endif()
+
+# determine whether shared libs are supported by target and setup
+# TARGET_SUPPORTS_SHARED_LIBS
+if(NOT DEFINED TARGET_SUPPORTS_SHARED_LIBS)
+  set(TARGET_SUPPORTS_SHARED_LIBS TRUE) # by default we claim yes
+  if(TS_AVR_CROSSCOMPILE)
+    set(TARGET_SUPPORTS_SHARED_LIBS FALSE)
+    # check further targets if necessary
+  endif()
+endif()
+
 # determine the used compiler and its version, configure compiler flags,
 # and setup TS_CPP_AVAILABLE
 set(TS_CPP_AVAILABLE FALSE) # by default the c++ library is not created
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic -std=c89")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic")
+  # avr uses the 'inline' keyword in some header files which is not
+  # supported by c89
+  if(TS_AVR_CROSSCOMPILE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+  else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
+  endif()
 
   # http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.7)
@@ -42,13 +65,24 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   # TODO: check for version 2014 or greater
   set(TS_CPP_AVAILABLE TRUE)
 endif()
+# disable the c++ library for specific targets by hand
+if(TS_AVR_CROSSCOMPILE)
+  set(TS_CPP_AVAILABLE FALSE) # avr is missing some required headers
+  # check further targets if necessary
+endif()
 
 # create c libs
-add_library(tinyspline_shared SHARED tinyspline.c)
-set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline")
+if(TARGET_SUPPORTS_SHARED_LIBS)
+  add_library(tinyspline_shared SHARED tinyspline.c)
+  set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline")
+  install(TARGETS tinyspline_shared
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+endif()
 add_library(tinyspline_static STATIC tinyspline.c)
 set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline")
-install(TARGETS tinyspline_shared tinyspline_static
+install(TARGETS tinyspline_static
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
@@ -58,11 +92,17 @@ install(FILES tinyspline.h
 
 # create c++ libs
 if(TS_CPP_AVAILABLE)
-  add_library(tinysplinecpp_shared SHARED tinyspline.c tinysplinecpp.cpp)
-  set_target_properties(tinysplinecpp_shared PROPERTIES OUTPUT_NAME "tinysplinecpp")
+  if(TARGET_SUPPORTS_SHARED_LIBS)
+    add_library(tinysplinecpp_shared SHARED tinyspline.c tinysplinecpp.cpp)
+    set_target_properties(tinysplinecpp_shared PROPERTIES OUTPUT_NAME "tinysplinecpp")
+    install(TARGETS tinysplinecpp_shared
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+    )
+  endif()
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
   set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp")
-  install(TARGETS tinysplinecpp_shared tinysplinecpp_static
+  install(TARGETS tinysplinecpp_static
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
@@ -77,7 +117,7 @@ if(DEFINED ENV{SWIG_EXECUTABLE})
   set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE})
 endif()
 find_package(SWIG 3.0.1)
-if(TS_CPP_AVAILABLE AND SWIG_FOUND)
+if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
   include(${SWIG_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -383,8 +383,8 @@ void ts_internal_bspline_evaluate(
     size_t lst; /* The last affected control point, inclusive. */
     size_t N; /* The number of affected control points. */
     /* the following indices are used to create the DeBoor net. */
-	size_t lidx; /* The current left index. */
-	size_t ridx; /* The current right index. */
+    size_t lidx; /* The current left index. */
+    size_t ridx; /* The current right index. */
     int tidx; /* The current to index. */
     size_t r, i, d; /* Used in for loop. */
     float ui; /* The knot value at index i. */

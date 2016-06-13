@@ -385,7 +385,7 @@ void ts_internal_bspline_evaluate(
     /* the following indices are used to create the DeBoor net. */
     size_t lidx; /* The current left index. */
     size_t ridx; /* The current right index. */
-    int tidx; /* The current to index. */
+    size_t tidx; /* The current to index. */
     size_t r, i, d; /* Used in for loop. */
     float ui; /* The knot value at index i. */
     float a, a_hat; /* The weighting factors of the control points. */
@@ -452,7 +452,7 @@ void ts_internal_bspline_evaluate(
 
         lidx = 0;
         ridx = dim;
-        tidx = (int)(N*dim); /* N >= 1 implies tidx > 0 */
+        tidx = N*dim; /* N >= 1 implies tidx > 0 */
         r = 1;
         for (;r <= deBoorNet->h; r++) {
             i = fst + r;

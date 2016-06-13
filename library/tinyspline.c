@@ -340,7 +340,7 @@ void ts_internal_bspline_insert_knot(
         memcpy(to, from, sof_c);
         from += stride;
         to += dim;
-        stride -= dim;
+        stride -= (int)dim;
     }
     memcpy(to, from, (N-n) * sof_c); /* b) */
 
@@ -354,7 +354,7 @@ void ts_internal_bspline_insert_knot(
     for (i = 0; i < n; i++) { /* c) */
         memcpy(to, from, sof_c);
         from += stride;
-        stride -= dim;
+        stride -= (int)dim;
         to += dim;
     }
     /* copy knots */
@@ -383,8 +383,8 @@ void ts_internal_bspline_evaluate(
     size_t lst; /* The last affected control point, inclusive. */
     size_t N; /* The number of affected control points. */
     /* the following indices are used to create the DeBoor net. */
-    int lidx; /* The current left index. */
-    int ridx; /* The current right index. */
+	size_t lidx; /* The current left index. */
+	size_t ridx; /* The current right index. */
     int tidx; /* The current to index. */
     size_t r, i, d; /* Used in for loop. */
     float ui; /* The knot value at index i. */
@@ -451,7 +451,7 @@ void ts_internal_bspline_evaluate(
         memcpy(deBoorNet->points, bspline->ctrlp + fst*dim, N * sof_c);
 
         lidx = 0;
-        ridx = (int)dim;
+        ridx = dim;
         tidx = (int)(N*dim); /* N >= 1 implies tidx > 0 */
         r = 1;
         for (;r <= deBoorNet->h; r++) {

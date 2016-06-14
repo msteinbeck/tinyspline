@@ -54,9 +54,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(TS_CPP_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711 /wd4255")
 
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18
+     OR NOT TS_CPP_WITH_MOVE_SEMANTICS )
     # using WX causes to many errors in generated source code, thus, use W4 instead
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /W4 /wd4702")
     set(TS_CPP_AVAILABLE TRUE)
@@ -122,118 +123,132 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
   # define the output dirs
-  set(TS_GENERATED_PYTHON_DIR ${CMAKE_CURRENT_BINARY_DIR}/python)
-  set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
-  set(TS_GENERATED_CSHARP_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp)
-  set(TS_GENERATED_RUBY_DIR ${CMAKE_CURRENT_BINARY_DIR}/ruby)
+  set(TS_GENERATED_PYTHON_DIR ${CMAKE_CURRENT_BINARY_DIR}/python CACHE STRING "Output folder for Python binding")
+  set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline CACHE STRING "Output folder for Java binding")
+  set(TS_GENERATED_CSHARP_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp CACHE STRING "Output folder for CSHARP binding")
+  set(TS_GENERATED_RUBY_DIR ${CMAKE_CURRENT_BINARY_DIR}/ruby CACHE STRING "Output folder for Ruby binding")
 
   # python
-  if(DEFINED ENV{PYTHON_LIBRARY} AND DEFINED ENV{PYTHON_INCLUDE_DIR})
-    message(STATUS "Using environment variables PYTHON_LIBRARY and PYTHON_INCLUDE_DIR")
-    set(PYTHON_LIBRARY $ENV{PYTHON_LIBRARY})
-    set(PYTHON_INCLUDE_DIR $ENV{PYTHON_INCLUDE_DIR})
-  endif()
-  find_package(PythonLibs)
-  if (PYTHONLIBS_FOUND)
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    set_source_files_properties(tinysplinepython.i PROPERTIES CPLUSPLUS ON)
-    if (${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
-      message(STATUS "Using Python 3 mode.")
-      set(CMAKE_SWIG_FLAGS -py3 -O)
-    else()
-      message(STATUS "Using Python 2 mode.")
-      set(CMAKE_SWIG_FLAGS -O)
+  if( TS_BINDING_PYTHON )
+    if(DEFINED ENV{PYTHON_LIBRARY} AND DEFINED ENV{PYTHON_INCLUDE_DIR})
+      message(STATUS "Using environment variables PYTHON_LIBRARY and PYTHON_INCLUDE_DIR")
+      set(PYTHON_LIBRARY $ENV{PYTHON_LIBRARY})
+      set(PYTHON_INCLUDE_DIR $ENV{PYTHON_INCLUDE_DIR})
     endif()
-    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_PYTHON_DIR})
-    swig_add_module(tinysplinepython python tinysplinepython.i tinyspline.c tinysplinecpp.cpp)
-    swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
-    # for some reason the generated make target for python is _tinysplinepython
-    add_custom_command(TARGET _tinysplinepython POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
-      ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
-    )
+    find_package(PythonLibs)
+    if (PYTHONLIBS_FOUND)
+      include_directories(${PYTHON_INCLUDE_DIRS})
+      set_source_files_properties(tinysplinepython.i PROPERTIES CPLUSPLUS ON)
+      if (${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+        message(STATUS "Using Python 3 mode.")
+        set(CMAKE_SWIG_FLAGS -py3 -O)
+      else()
+        message(STATUS "Using Python 2 mode.")
+        set(CMAKE_SWIG_FLAGS -O)
+      endif()
+      set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_PYTHON_DIR})
+      swig_add_module(tinysplinepython python tinysplinepython.i tinyspline.c tinysplinecpp.cpp)
+      swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
+      # for some reason the generated make target for python is _tinysplinepython
+      add_custom_command(TARGET _tinysplinepython POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
+        ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
+      )
+      set_target_properties(tinysplinepython PROPERTIES FOLDER "bindings")
+    endif()
   endif()
 
   # java
-  find_package(JNI)
-  if(JNI_FOUND)
-    include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
-    set_source_files_properties(tinysplinejava.i PROPERTIES CPLUSPLUS ON)
-    set(CMAKE_SWIG_FLAGS -package "so.tinyspline" -O)
-    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
-    swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
-    swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
-    
-    find_package(Java COMPONENTS Development)
-    if(Java_Development_FOUND)
-      include(UseJava)
-      add_jar(tinysplinejar 
-        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_float.java
-        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_size_t.java
-        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsBSpline.java
-        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsDeBoorNet.java
-        ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_tsError.java
-        ${TS_GENERATED_JAVA_DIR}/tinysplinejava.java
-        ${TS_GENERATED_JAVA_DIR}/tinysplinejavaJNI.java
-        ${TS_GENERATED_JAVA_DIR}/BSpline.java
-        ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
-        ${TS_GENERATED_JAVA_DIR}/DeBoorNet.java
-        ${TS_GENERATED_JAVA_DIR}/FloatVector.java
-        OUTPUT_NAME tinyspline
-      )
-      add_dependencies(tinysplinejar tinysplinejava)
+  if( TS_BINDING_JAVA )
+    find_package(JNI)
+    if(JNI_FOUND)
+      include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
+      set_source_files_properties(tinysplinejava.i PROPERTIES CPLUSPLUS ON)
+      set(CMAKE_SWIG_FLAGS -package "so.tinyspline" -O)
+      set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_JAVA_DIR})
+      swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
+      swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
+      
+      find_package(Java COMPONENTS Development)
+      if(Java_Development_FOUND)
+        include(UseJava)
+        add_jar(tinysplinejar 
+          ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_float.java
+          ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_size_t.java
+          ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsBSpline.java
+          ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_p_tsDeBoorNet.java
+          ${TS_GENERATED_JAVA_DIR}/SWIGTYPE_tsError.java
+          ${TS_GENERATED_JAVA_DIR}/tinysplinejava.java
+          ${TS_GENERATED_JAVA_DIR}/tinysplinejavaJNI.java
+          ${TS_GENERATED_JAVA_DIR}/BSpline.java
+          ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
+          ${TS_GENERATED_JAVA_DIR}/DeBoorNet.java
+          ${TS_GENERATED_JAVA_DIR}/FloatVector.java
+          OUTPUT_NAME tinyspline
+        )
+        add_dependencies(tinysplinejar tinysplinejava)
+        set_target_properties(tinysplinejar PROPERTIES FOLDER "bindings")
+      endif()
+      
+      set_target_properties(tinysplinejava PROPERTIES FOLDER "bindings")
     endif()
   endif()
 
   # csharp
-  set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
-  set(CMAKE_SWIG_FLAGS -namespace ts -O)
-  set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
-  swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
-  find_program(CSHARP_COMPILER
-    NAMES csc mcs dmcs gmcs
-    PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
-  )
-  if(NOT CSHARP_COMPILER)
-    message(STATUS "Could NOT find any suitable C# compiler.")
-  else()
-    message(STATUS "Using ${CSHARP_COMPILER} to compile C# sources.")
-    # append 'cs' to assembly name to ensure it doesn't clash
-    # with the c library.
-    add_custom_command(TARGET tinysplinecsharp POST_BUILD
-      COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
+  if( TS_BINDING_CSHARP )
+    set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
+    set(CMAKE_SWIG_FLAGS -namespace ts -O)
+    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_CSHARP_DIR})
+    swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
+    find_program(CSHARP_COMPILER
+      NAMES csc mcs dmcs gmcs
+      PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
     )
+    if(NOT CSHARP_COMPILER)
+      message(STATUS "Could NOT find any suitable C# compiler.")
+    else()
+      message(STATUS "Using ${CSHARP_COMPILER} to compile C# sources.")
+      # append 'cs' to assembly name to ensure it doesn't clash
+      # with the c library.
+      add_custom_command(TARGET tinysplinecsharp POST_BUILD
+        COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
+      )
+    endif()
+    set_target_properties(tinysplinecsharp PROPERTIES FOLDER "bindings")
   endif()
 
   # ruby
-  find_package(Ruby)
-  if(RUBY_FOUND)
-    include_directories(${RUBY_INCLUDE_DIRS})
-    set_source_files_properties(tinysplineruby.i PROPERTIES CPLUSPLUS ON)
-    set(CMAKE_SWIG_FLAGS -O)
-    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_RUBY_DIR})
-    swig_add_module(tinysplineruby ruby tinysplineruby.i tinyspline.c tinysplinecpp.cpp)
-    swig_link_libraries(tinysplineruby ${RUBY_LIBRARY})
-    # for additional information please see the 'tinysplineruby.i' SWIG file.
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb  "require 'tinysplineruby'\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "module Tinyspline\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class BSpline < Tinysplineruby::BSpline\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    def ctrlp=(ctrlp)\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "      setCtrlp(ctrlp)\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    end\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    def knots=(knots)\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "      setKnots(knots)\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    end\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class DeBoorNet < Tinysplineruby::DeBoorNet\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class Utils < Tinysplineruby::Utils\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "end")
+  if( TS_BINDING_RUBY )
+    find_package(Ruby)
+    if(RUBY_FOUND)
+      include_directories(${RUBY_INCLUDE_DIRS})
+      set_source_files_properties(tinysplineruby.i PROPERTIES CPLUSPLUS ON)
+      set(CMAKE_SWIG_FLAGS -O)
+      set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_RUBY_DIR})
+      swig_add_module(tinysplineruby ruby tinysplineruby.i tinyspline.c tinysplinecpp.cpp)
+      swig_link_libraries(tinysplineruby ${RUBY_LIBRARY})
+      # for additional information please see the 'tinysplineruby.i' SWIG file.
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb  "require 'tinysplineruby'\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "module Tinyspline\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class BSpline < Tinysplineruby::BSpline\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    def ctrlp=(ctrlp)\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "      setCtrlp(ctrlp)\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    end\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    def knots=(knots)\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "      setKnots(knots)\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "    end\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class DeBoorNet < Tinysplineruby::DeBoorNet\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class Utils < Tinysplineruby::Utils\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "end")
+      set_target_properties(tinysplineruby PROPERTIES FOLDER "bindings")
+    endif()
   endif()
 
   # add additional clean targets

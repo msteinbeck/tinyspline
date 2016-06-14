@@ -1,44 +1,41 @@
 %module tinysplinejava
 
-//********************************************************
-//*                                                      *
-//* Utils (Java)                                         *
-//*                                                      *
-//********************************************************
-%typemap(javaimports) ts::Utils
-%{
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.Integer;
-import java.lang.IllegalArgumentException;
-%}
+%typemap(jstype) std::vector<float> "List<Float>"
 
-%typemap(javacode) ts::Utils
-%{
-  static FloatVector listToVector(final List<Float> list) {
-    if (list == null)
-      throw new IllegalArgumentException("The given list must not be null.");
-
-    final FloatVector vec = new FloatVector(list.size());
-    for(final float f : list) vec.add(f);
-    return vec;
+%typemap(out) std::vector<float> {
+  const jclass listClass = jenv->FindClass("java/util/ArrayList");
+  const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
+  const jmethodID listAdd = jenv->GetMethodID(listClass, "add", "(Ljava/lang/Object;)V");
+  const jobject list = jenv->NewObject(listClass, listCtor);
+  
+  for (std::vector<float>::iterator it = $1.begin(); it != $1.end(); it++)
+  {
+    jenv->CallVoidMethod(list, listAdd, *it);
   }
+  *(jobject*)&$result = list;
+}
 
-  static List<Float> vectorToList(final FloatVector vec) {
-    if (vec == null) {
-      throw new IllegalArgumentException("The given vector must not be null.");
-    }
-    final long size = vec.size();
-    if (size > (long)Integer.MAX_VALUE) {
-      throw new IllegalArgumentException(
-        "Unable to store " + size + " many float in a list.");
-    }
-
-    final List<Float> list = new ArrayList<Float>((int)size);
-    for (int i = 0; i < size; i++) list.add(vec.get(i));
-    return list;
+%typemap(in) std::vector<float> {
+  $1 = std::vector<float>();
+  const jobject list = *(jobject*)&$input;
+  
+  const jclass listClass = jenv->FindClass("java/util/ArrayList");
+  const jmethodID listSize = jenv->GetMethodID(listClass, "size", "()I");
+  const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
+  
+  const jclass floatClass = jenv->FindClass("java/lang/Float");
+  const jmethodID floatFloatValue = jenv->GetMethodID(floatClass, "floatValue", "()I");
+  
+  const jint size = jenv->CallIntMethod(list, listSize);
+  jobject value; // intermediate result
+  jfloat val; // final resulat
+  for (jint i = 0; i < size; i++) {
+    value = jenv->CallObjectMethod(list, listGet, i);
+    val = jenv->CallFloatMethod(value, floatFloatValue);
+    jenv->DeleteLocalRef(value);
+    $1.push_back(val);
   }
-%}
+}
 
 //********************************************************
 //*                                                      *
@@ -47,45 +44,9 @@ import java.lang.IllegalArgumentException;
 //********************************************************
 %ignore ts::BSpline::operator();
 %ignore ts::BSpline::operator=;
-
-%rename(ctrlp_p) ts::BSpline::ctrlp;
-%rename(setCtrlp_p) ts::BSpline::setCtrlp;
-%rename(knots_p) ts::BSpline::knots;
-%rename(setKnots_p) ts::BSpline::setKnots;
-
-%javamethodmodifiers ts::BSpline::BSpline(const float *points,
-    const size_t nPoints, const size_t dim) "private";
-%javamethodmodifiers ts::BSpline::ctrlp "private";
-%javamethodmodifiers ts::BSpline::setCtrlp "private";
-%javamethodmodifiers ts::BSpline::knots "private";
-%javamethodmodifiers ts::BSpline::setKnots "private";
-
 %typemap(javaimports) ts::BSpline
 %{
 import java.util.List;
-%}
-
-%typemap(javacode) ts::BSpline
-%{
-  public BSpline(final List<Float> points, final long dim) {
-    this(Utils.listToVector(points), dim);
-  }
-
-  public List<Float> getCtrlp() {
-    return Utils.vectorToList(ctrlp_p());
-  }
-
-  public void setCtrlp(final List<Float> ctrlp) {
-    setCtrlp_p(Utils.listToVector(ctrlp));
-  }
-
-  public List<Float> getKnots() {
-    return Utils.vectorToList(knots_p());
-  }
-
-  public void setKnots(final List<Float> knots) {
-    setKnots_p(Utils.listToVector(knots));
-  }
 %}
 
 //********************************************************
@@ -94,27 +55,9 @@ import java.util.List;
 //*                                                      *
 //********************************************************
 %ignore ts::DeBoorNet::operator=;
-
-%rename(points_p) ts::DeBoorNet::points;
-%rename(result_p) ts::DeBoorNet::result;
-
-%javamethodmodifiers ts::DeBoorNet::points "private";
-%javamethodmodifiers ts::DeBoorNet::result "private";
-
 %typemap(javaimports) ts::DeBoorNet
 %{
 import java.util.List;
-%}
-
-%typemap(javacode) ts::DeBoorNet
-%{
-  public List<Float> getPoints() {
-    return Utils.vectorToList(points_p());
-  }
-
-  public List<Float> getResult() {
-    return Utils.vectorToList(result_p());
-  }
 %}
 
 //********************************************************

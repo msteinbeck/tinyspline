@@ -1,10 +1,10 @@
 %module tinysplinejava
 
 // let jni file return List<Float>
-%typemap(jtype) std::vector<float> "List<Float>"
+%typemap(jtype) std::vector<float> "java.util.List<Float>"
 
 // let java interface files return List<Float>
-%typemap(jstype) std::vector<float> "List<Float>"
+%typemap(jstype) std::vector<float> "java.util.List<Float>"
 
 // simply return jni result
 %typemap(javaout) std::vector<float> {
@@ -58,10 +58,6 @@
 //********************************************************
 %ignore ts::BSpline::operator();
 %ignore ts::BSpline::operator=;
-%typemap(javaimports) ts::BSpline
-%{
-import java.util.List;
-%}
 
 //********************************************************
 //*                                                      *
@@ -69,10 +65,6 @@ import java.util.List;
 //*                                                      *
 //********************************************************
 %ignore ts::DeBoorNet::operator=;
-%typemap(javaimports) ts::DeBoorNet
-%{
-import java.util.List;
-%}
 
 //********************************************************
 //*                                                      *

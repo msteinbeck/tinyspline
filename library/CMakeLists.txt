@@ -154,7 +154,7 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
         COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
         ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
       )
-      set_target_properties(tinysplinepython PROPERTIES FOLDER "bindings")
+      set_target_properties(_tinysplinepython PROPERTIES FOLDER "bindings")
     endif()
   endif()
 

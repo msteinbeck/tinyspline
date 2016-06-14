@@ -270,7 +270,7 @@ void ts::BSpline::setKnots(const std::vector<float> knots)
         throw std::runtime_error("The number of values must be equals to the"
         " spline's number of knots.");
     }
-    const tsError err = ts_bspline_set_knots(&bspline, knots.data(), &bspline);
+    const tsError err = ts_bspline_set_knots(&bspline, &knots.front(), &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }

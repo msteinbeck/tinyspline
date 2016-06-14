@@ -1,7 +1,20 @@
 %module tinysplinejava
 
+// let jni file return List<Float>
+%typemap(jtype) std::vector<float> "List<Float>"
+
+// let java interface files return List<Float>
 %typemap(jstype) std::vector<float> "List<Float>"
 
+// simply return jni result
+%typemap(javaout) std::vector<float> {
+  return $jnicall;
+}
+
+// simply redirect the parameter to jni
+%typemap(javain) std::vector<float> "$javainput"
+
+// std:vector<float> to List<Float>
 %typemap(out) std::vector<float> {
   const jclass listClass = jenv->FindClass("java/util/ArrayList");
   const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
@@ -15,6 +28,7 @@
   *(jobject*)&$result = list;
 }
 
+// List<Float> to std::vector<float>
 %typemap(in) std::vector<float> {
   $1 = std::vector<float>();
   const jobject list = *(jobject*)&$input;
@@ -28,7 +42,7 @@
   
   const jint size = jenv->CallIntMethod(list, listSize);
   jobject value; // intermediate result
-  jfloat val; // final resulat
+  jfloat val; // final result
   for (jint i = 0; i < size; i++) {
     value = jenv->CallObjectMethod(list, listGet, i);
     val = jenv->CallFloatMethod(value, floatFloatValue);

@@ -13,11 +13,13 @@ ts::DeBoorNet::DeBoorNet(const ts::DeBoorNet& other)
         throw std::runtime_error(ts_enum_str(err));
 }
 
+#ifdef WITH_MOVE_SEMANTICS
 ts::DeBoorNet::DeBoorNet(DeBoorNet&& other)
 {
     ts_deboornet_default(&deBoorNet);
     swap(other);
 }
+#endif
 
 ts::DeBoorNet::~DeBoorNet()
 {
@@ -34,6 +36,7 @@ ts::DeBoorNet& ts::DeBoorNet::operator=(const ts::DeBoorNet& other)
     return *this;
 }
 
+#ifdef WITH_MOVE_SEMANTICS
 ts::DeBoorNet& ts::DeBoorNet::operator=(ts::DeBoorNet&& other)
 {
     if (&other != this) {
@@ -56,6 +59,7 @@ void ts::DeBoorNet::swap(ts::DeBoorNet& other)
         std::swap(deBoorNet.result, other.deBoorNet.result);
     }
 }
+#endif
 
 float ts::DeBoorNet::u() const
 {
@@ -121,11 +125,13 @@ ts::BSpline::BSpline(const ts::BSpline& other)
         throw std::runtime_error(ts_enum_str(err));
 }
 
+#ifdef WITH_MOVE_SEMANTICS
 ts::BSpline::BSpline(ts::BSpline&& other)
 {
     ts_bspline_default(&bspline);
     swap(other);
 }
+#endif
 
 ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
                      const tsBSplineType type)
@@ -142,7 +148,7 @@ ts::BSpline::BSpline(const std::vector<float> points, const size_t dim)
     if (points.size() % dim != 0)
         throw std::runtime_error("#points % dim == 0 failed");
     const tsError err = ts_bspline_interpolate(
-            points.data(), points.size()/dim, dim, &bspline);
+            &points.front(), points.size()/dim, dim, &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
@@ -162,6 +168,7 @@ ts::BSpline& ts::BSpline::operator=(const ts::BSpline& other)
     return *this;
 }
 
+#ifdef WITH_MOVE_SEMANTICS
 ts::BSpline& ts::BSpline::operator=(ts::BSpline&& other)
 {
     if (&other != this) {
@@ -170,12 +177,14 @@ ts::BSpline& ts::BSpline::operator=(ts::BSpline&& other)
     }
     return *this;
 }
+#endif
 
 ts::DeBoorNet ts::BSpline::operator()(const float u) const
 {
     return evaluate(u);
 }
 
+#ifdef WITH_MOVE_SEMANTICS
 void ts::BSpline::swap(ts::BSpline &other)
 {
     if (&other != this) {
@@ -188,6 +197,7 @@ void ts::BSpline::swap(ts::BSpline &other)
         std::swap(bspline.knots, other.bspline.knots);
     }
 }
+#endif
 
 size_t ts::BSpline::deg() const
 {
@@ -249,7 +259,7 @@ void ts::BSpline::setCtrlp(const std::vector<float> ctrlp)
             " spline's number of control points multiplied by the dimension"
             " of each control point.");
     }
-    const tsError err = ts_bspline_set_ctrlp(&bspline, ctrlp.data(), &bspline);
+    const tsError err = ts_bspline_set_ctrlp(&bspline, &ctrlp.front(), &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }
@@ -260,7 +270,7 @@ void ts::BSpline::setKnots(const std::vector<float> knots)
         throw std::runtime_error("The number of values must be equals to the"
         " spline's number of knots.");
     }
-    const tsError err = ts_bspline_set_knots(&bspline, knots.data(), &bspline);
+    const tsError err = ts_bspline_set_knots(&bspline, &knots.front(), &bspline);
     if (err < 0)
         throw std::runtime_error(ts_enum_str(err));
 }

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TINYSPLINECPP_H
+#define	TINYSPLINECPP_H
 
 #include "tinyspline.h"
 #include <vector>
@@ -10,14 +11,18 @@ class DeBoorNet {
 public:
     DeBoorNet();
     DeBoorNet(const DeBoorNet& other);
+#ifdef USE_MOVE_SEMANTICS
     DeBoorNet(DeBoorNet&& other);
+#endif
     ~DeBoorNet();
 
     DeBoorNet& operator=(const DeBoorNet& other);
+#ifdef USE_MOVE_SEMANTICS
     DeBoorNet& operator=(DeBoorNet&& other);
 
     void swap(DeBoorNet& other);
     friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
+#endif
 
     float u() const;
     size_t k() const;
@@ -38,7 +43,9 @@ public:
     /* Constructors */
     BSpline();
     BSpline(const BSpline& other);
+#ifdef USE_MOVE_SEMANTICS
     BSpline(BSpline&& other);
+#endif
     BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
             const tsBSplineType type);
     BSpline(const std::vector<float> points, const size_t dim);
@@ -46,12 +53,16 @@ public:
 
     /* Operators */
     BSpline& operator=(const BSpline& other);
+#ifdef USE_MOVE_SEMANTICS
     BSpline& operator=(BSpline&& other);
+#endif
     DeBoorNet operator()(const float u) const;
 
+#ifdef USE_MOVE_SEMANTICS
     /* Used by move semantics */
     void swap(BSpline& other);
     friend void swap(BSpline &left, BSpline &right) { left.swap(right); }
+#endif
 
     /* Getter */
     size_t deg() const;
@@ -84,11 +95,15 @@ private:
 
 class Utils {
 public:
-    Utils() = delete;
 
     static bool fequals(const float x, const float y);
     static std::string enum_str(const tsError err);
     static tsError str_enum(const std::string str);
+
+private:
+	Utils() {}
 };
 
 }
+
+#endif	/* TINYSPLINECPP_H */

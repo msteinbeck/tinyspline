@@ -47,8 +47,8 @@
   const jmethodID floatFloatValue = jenv->GetMethodID(floatClass, "floatValue", "()F");
   
   const jint size = jenv->CallIntMethod(list, listSize);
-  jobject tmp; // intermediate result
-  jfloat value; // final result
+  jobject tmp;
+  jfloat value;
   for (jint i = 0; i < size; i++) {
     tmp = jenv->CallObjectMethod(list, listGet, i);
     value = jenv->CallFloatMethod(tmp, floatFloatValue);

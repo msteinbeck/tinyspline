@@ -178,7 +178,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
         ${TS_GENERATED_JAVA_DIR}/BSpline.java
         ${TS_GENERATED_JAVA_DIR}/tsBSplineType.java
         ${TS_GENERATED_JAVA_DIR}/DeBoorNet.java
-        ${TS_GENERATED_JAVA_DIR}/FloatVector.java
         OUTPUT_NAME tinyspline
       )
       add_dependencies(tinysplinejar tinysplinejava)

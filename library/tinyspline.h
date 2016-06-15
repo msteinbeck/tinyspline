@@ -127,6 +127,14 @@ void ts_bspline_default(tsBSpline* bspline);
 void ts_bspline_free(tsBSpline* bspline);
 
 /**
+ * The move constructor of tsBSpline.
+ *
+ * Moves all values from \from to \to and calls ::ts_bspline_default on \to
+ * afterwards.
+ */
+void ts_bspline_move(tsBSpline* from, tsBSpline* to);
+
+/**
  * A convenient constructor for tsBSpline.
  *
  * Create a new spline of degree \deg with dimension \dim and \n_ctrlp

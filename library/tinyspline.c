@@ -755,36 +755,49 @@ void ts_internal_bspline_to_beziers(
     tsBSpline* beziers, jmp_buf buf
 )
 {
+    tsError e;
+    jmp_buf b;
     const size_t deg = bspline->deg;
     const size_t order = bspline->order;
+    tsBSpline tmp;
     int resize; /* The number of control points to add/remove. */
     size_t k; /* The index of the splitted knot value. */
     float u_min; /* The minimum of the knot values. */
     float u_max; /* The maximum of the knot values. */
 
-    ts_internal_bspline_copy(bspline, beziers, buf);
+    ts_internal_bspline_copy(bspline, &tmp, buf);
 
-    /* fix first control point if necessary */
-    u_min = beziers->knots[deg];
-    if (!ts_fequals(beziers->knots[0], u_min)) {
-        ts_internal_bspline_split(beziers, u_min, beziers, &k, buf);
-        resize = (int)(-1*deg + (deg*2 - k));
-        ts_internal_bspline_resize(beziers, resize, 0, beziers, buf);
-    }
+    TRY(b, e)
+        /* fix first control point if necessary */
+        u_min = tmp.knots[deg];
+        if (!ts_fequals(tmp.knots[0], u_min)) {
+            ts_internal_bspline_split(&tmp, u_min, &tmp, &k, b);
+            resize = (int)(-1*deg + (deg*2 - k));
+            ts_internal_bspline_resize(&tmp, resize, 0, &tmp, b);
+        }
 
-    /* fix last control point if necessary */
-    u_max = beziers->knots[beziers->n_knots - order];
-    if (!ts_fequals(beziers->knots[beziers->n_knots-1], u_max)) {
-        ts_internal_bspline_split(beziers, u_max, beziers, &k, buf);
-        resize = (int)(-1*deg + (k - (beziers->n_knots - order)));
-        ts_internal_bspline_resize(beziers, resize, 1, beziers, buf);
-    }
+        /* fix last control point if necessary */
+        u_max = tmp.knots[tmp.n_knots - order];
+        if (!ts_fequals(tmp.knots[tmp.n_knots-1], u_max)) {
+            ts_internal_bspline_split(&tmp, u_max, &tmp, &k, b);
+            resize = (int)(-1*deg + (k - (tmp.n_knots - order)));
+            ts_internal_bspline_resize(&tmp, resize, 1, &tmp, b);
+        }
 
-    k = order;
-    while (k < beziers->n_knots - order) {
-        ts_internal_bspline_split(beziers, beziers->knots[k], beziers, &k, buf);
-        k++;
-    }
+        k = order;
+        while (k < tmp.n_knots - order) {
+            ts_internal_bspline_split(&tmp, tmp.knots[k], &tmp, &k, b);
+            k++;
+        }
+
+        if (bspline == beziers)
+            ts_bspline_free(beziers);
+        ts_bspline_move(&tmp, beziers);
+    ETRY
+
+    ts_bspline_free(&tmp);
+    if (e < 0)
+        longjmp(buf, e);
 }
 
 void ts_internal_bspline_set_ctrlp(
@@ -847,6 +860,18 @@ void ts_bspline_free(tsBSpline* bspline)
 {
     if (bspline->ctrlp != NULL)
         free(bspline->ctrlp);
+    ts_bspline_default(bspline);
+}
+
+void ts_bspline_move(tsBSpline* bspline, tsBSpline* moved)
+{
+    moved->deg = bspline->deg;
+    moved->order = bspline->order;
+    moved->dim = bspline->dim;
+    moved->n_ctrlp = bspline->n_ctrlp;
+    moved->n_knots = bspline->n_knots;
+    moved->ctrlp = bspline->ctrlp;
+    moved->knots = bspline->knots;
     ts_bspline_default(bspline);
 }
 

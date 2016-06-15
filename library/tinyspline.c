@@ -863,16 +863,16 @@ void ts_bspline_free(tsBSpline* bspline)
     ts_bspline_default(bspline);
 }
 
-void ts_bspline_move(tsBSpline* bspline, tsBSpline* moved)
+void ts_bspline_move(tsBSpline* from, tsBSpline* to)
 {
-    moved->deg = bspline->deg;
-    moved->order = bspline->order;
-    moved->dim = bspline->dim;
-    moved->n_ctrlp = bspline->n_ctrlp;
-    moved->n_knots = bspline->n_knots;
-    moved->ctrlp = bspline->ctrlp;
-    moved->knots = bspline->knots;
-    ts_bspline_default(bspline);
+    to->deg = from->deg;
+    to->order = from->order;
+    to->dim = from->dim;
+    to->n_ctrlp = from->n_ctrlp;
+    to->n_knots = from->n_knots;
+    to->ctrlp = from->ctrlp;
+    to->knots = from->knots;
+    ts_bspline_default(from);
 }
 
 tsError ts_bspline_new(

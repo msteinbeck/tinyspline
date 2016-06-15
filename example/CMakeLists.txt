@@ -1,16 +1,20 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 
 # find glut
 find_package(GLUT)
-include_directories(${GLUT_INCLUDE_DIR})
-link_directories(${GLUT_LIBRARY_DIRS})
-add_definitions(${GLUT_DEFINITIONS})
+if(GLUT_FOUND)
+  include_directories(${GLUT_INCLUDE_DIR})
+  link_directories(${GLUT_LIBRARY_DIRS})
+  add_definitions(${GLUT_DEFINITIONS})
+endif()
 
 # find opengl
 find_package(OpenGL)
-include_directories(${OPENGL_INCLUDE_DIRS})
-link_directories(${OPENGL_LIBRARY_DIRS})
-add_definitions(${OPENGL_DEFINITIONS})
+if(OPENGL_FOUND)
+  include_directories(${OPENGL_INCLUDE_DIRS})
+  link_directories(${OPENGL_LIBRARY_DIRS})
+  add_definitions(${OPENGL_DEFINITIONS})
+endif()
 
 if(APPLE)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -framework OpenGL -framework GLUT")

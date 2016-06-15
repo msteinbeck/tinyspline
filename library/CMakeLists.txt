@@ -152,6 +152,7 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
       COMMAND ${CMAKE_COMMAND} -E copy ${TS_GENERATED_PYTHON_DIR}/tinysplinepython.py
       ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py
     )
+    set_target_properties(_tinysplinepython PROPERTIES FOLDER "bindings")
   endif()
 
   # java
@@ -181,7 +182,9 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
         OUTPUT_NAME tinyspline
       )
       add_dependencies(tinysplinejar tinysplinejava)
+      set_target_properties(tinysplinejar PROPERTIES FOLDER "bindings")
     endif()
+    set_target_properties(tinysplinejava PROPERTIES FOLDER "bindings")
   endif()
 
   # csharp
@@ -203,7 +206,8 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
       COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:tinysplinecs.dll
     )
   endif()
-
+  set_target_properties(tinysplinecsharp PROPERTIES FOLDER "bindings")
+    
   # ruby
   find_package(Ruby)
   if(RUBY_FOUND)
@@ -233,6 +237,7 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  class Utils < Tinysplineruby::Utils\n")
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "  end\n")
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb "end")
+    set_target_properties(tinysplineruby PROPERTIES FOLDER "bindings")
   endif()
 
   # add additional clean targets

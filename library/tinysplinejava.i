@@ -18,12 +18,18 @@
 %typemap(out) std::vector<float> {
   const jclass listClass = jenv->FindClass("java/util/ArrayList");
   const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
-  const jmethodID listAdd = jenv->GetMethodID(listClass, "add", "(Ljava/lang/Object;)V");
+  const jmethodID listAdd = jenv->GetMethodID(listClass, "add", "(Ljava/lang/Object;)Z");
   const jobject list = jenv->NewObject(listClass, listCtor);
-  
+
+  const jclass floatClass = jenv->FindClass("java/lang/Float");
+  const jmethodID floatCtor = jenv->GetMethodID(floatClass, "<init>", "(F)V");
+
+  jobject value;
   for (std::vector<float>::iterator it = $1.begin(); it != $1.end(); it++)
   {
-    jenv->CallVoidMethod(list, listAdd, *it);
+    value = jenv->NewObject(floatClass, floatCtor, *it);
+    jenv->CallVoidMethod(list, listAdd, value);
+    jenv->DeleteLocalRef(value);
   }
   *(jobject*)&$result = list;
 }
@@ -38,16 +44,16 @@
   const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
   
   const jclass floatClass = jenv->FindClass("java/lang/Float");
-  const jmethodID floatFloatValue = jenv->GetMethodID(floatClass, "floatValue", "()I");
+  const jmethodID floatFloatValue = jenv->GetMethodID(floatClass, "floatValue", "()F");
   
   const jint size = jenv->CallIntMethod(list, listSize);
-  jobject value; // intermediate result
-  jfloat val; // final result
+  jobject tmp; // intermediate result
+  jfloat value; // final result
   for (jint i = 0; i < size; i++) {
-    value = jenv->CallObjectMethod(list, listGet, i);
-    val = jenv->CallFloatMethod(value, floatFloatValue);
-    jenv->DeleteLocalRef(value);
-    $1.push_back(val);
+    tmp = jenv->CallObjectMethod(list, listGet, i);
+    value = jenv->CallFloatMethod(tmp, floatFloatValue);
+    jenv->DeleteLocalRef(tmp);
+    $1.push_back(value);
   }
 }
 

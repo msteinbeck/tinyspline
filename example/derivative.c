@@ -79,11 +79,11 @@ void display(void)
     gluBeginCurve(theNurb);
     gluNurbsCurve(
                   theNurb,
-                  spline.n_knots,
+				  (GLint)spline.n_knots,
                   spline.knots,
-                  spline.dim,
+				  (GLint)spline.dim,
                   spline.ctrlp,
-                  spline.order,
+		          (GLint)spline.order,
                   GL_MAP1_VERTEX_3
                   );
     gluEndCurve(theNurb);
@@ -117,7 +117,7 @@ void display(void)
     ts_deboornet_free(&net2);
     ts_deboornet_free(&net3);
 
-    u += 0.001;
+    u += 0.001f;
     if (u > 1.f) {
         u = 0.f;
     }

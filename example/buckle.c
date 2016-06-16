@@ -16,11 +16,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
+#include <math.h> 
 
-tsBSpline spline, derivative;
+tsBSpline spline;
 GLUnurbsObj *theNurb;
-float u = 0.f;
+float b = 1.f;
 
 /********************************************************
 *                                                       *
@@ -30,62 +30,50 @@ float u = 0.f;
 void setup()
 {
     ts_bspline_new(
-        3,      // degree of spline
+        2,      // degree of spline
         3,      // dimension of each point
-        7,      // number of control points
+        3,      // number of control points
         TS_CLAMPED,// used to hit first and last control point
         &spline // the spline to setup
     );
     
     // Setup control points.
-    spline.ctrlp[0] = -1.75;
-    spline.ctrlp[1] = -1.0;
-    spline.ctrlp[2] = 0.0;
-    spline.ctrlp[3] = -1.5;
-    spline.ctrlp[4] = -0.5;
-    spline.ctrlp[5] = 0.0;
-    spline.ctrlp[6] = -1.5;
-    spline.ctrlp[7] = 0.0;
-    spline.ctrlp[8] = 0.0;
-    spline.ctrlp[9] = -1.25;
-    spline.ctrlp[10] = 0.5;
-    spline.ctrlp[11] = 0.0;
-    spline.ctrlp[12] = -0.75;
-    spline.ctrlp[13] = 0.75;
-    spline.ctrlp[14] = 0.0;
-    spline.ctrlp[15] = 0.0;
-    spline.ctrlp[16] = 0.5;
-    spline.ctrlp[17] = 0.0;
-    spline.ctrlp[18] = 0.5;
-    spline.ctrlp[19] = 0.0;
-    spline.ctrlp[20] = 0.0;
-
-    ts_bspline_derive(&spline, &derivative);
+    spline.ctrlp[0] = -1.0f;
+    spline.ctrlp[1] = 1.0f;
+    spline.ctrlp[2] = 0.0f;
+    spline.ctrlp[3] = 1.0f;
+    spline.ctrlp[4] = 1.0f;
+    spline.ctrlp[5] = 0.0f;
+    spline.ctrlp[6] = 1.0f;
+    spline.ctrlp[7] = -1.0f;
+    spline.ctrlp[8] = 0.0f;
 }
 
 void tear_down()
 {
     ts_bspline_free(&spline);
-    ts_bspline_free(&derivative);
 }
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    tsBSpline buckled;
+    ts_bspline_buckle(&spline, b, &buckled);
     
     // draw spline
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
-    gluNurbsCurve(
-                  theNurb,
-                  (GLint)spline.n_knots,
-                  spline.knots,
-                  (GLint)spline.dim,
-                  spline.ctrlp,
-                  (GLint)spline.order,
-                  GL_MAP1_VERTEX_3
-                  );
+        gluNurbsCurve(
+            theNurb, 
+            (GLint)buckled.n_knots,
+            buckled.knots,
+            (GLint)buckled.dim,
+            buckled.ctrlp,
+            (GLint)buckled.order,
+            GL_MAP1_VERTEX_3
+        );
     gluEndCurve(theNurb);
 
     // draw control points
@@ -97,33 +85,13 @@ void display(void)
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
     glEnd();
     
-    // draw derivative
-    glColor3f(0.0, 0.0, 1.0);
-    glPointSize(5.0);
-    tsDeBoorNet net1, net2, net3;
-    ts_bspline_evaluate(&spline, u, &net1);
-    ts_bspline_evaluate(&derivative, u, &net2);
-    ts_bspline_evaluate(&derivative, u, &net3);
-    for (i = 0; i < net2.dim; i++) {
-        // subdivided by 6 just to avoid the tangent to exit from the window
-        net2.result[i] = net1.result[i] + net2.result[i] / 6.f;
-        net3.result[i] = net1.result[i] - net3.result[i] / 6.f;
-    }
-    glBegin(GL_LINES);
-        glVertex3fv(net3.result);
-        glVertex3fv(net2.result);
-    glEnd();
-    ts_deboornet_free(&net1);
-    ts_deboornet_free(&net2);
-    ts_deboornet_free(&net3);
-
-    u += 0.001f;
-    if (u > 1.f) {
-        u = 0.f;
-    }
-    
     glutSwapBuffers();
     glutPostRedisplay();
+
+    b -= 0.001f;
+    if (b < 0.f) {
+        b = 1.f;
+    }
 }
 
 

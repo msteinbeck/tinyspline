@@ -79,11 +79,11 @@ void display(void)
     gluBeginCurve(theNurb);
         gluNurbsCurve(
             theNurb, 
-			(GLint)split.n_knots,
+            (GLint)split.n_knots,
             split.knots, 
-			(GLint)split.dim,
+            (GLint)split.dim,
             split.ctrlp, 
-			(GLint)split.order,
+            (GLint)split.order,
             GL_MAP1_VERTEX_3
         );
     gluEndCurve(theNurb);

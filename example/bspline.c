@@ -76,10 +76,10 @@ void display(void)
         gluNurbsCurve(
             theNurb, 
             (GLint)spline.n_knots, 
-			spline.knots,
-			(GLint)spline.dim,
+            spline.knots,
+            (GLint)spline.dim,
             spline.ctrlp, 
-			(GLint)spline.order,
+            (GLint)spline.order,
             GL_MAP1_VERTEX_3
         );
     gluEndCurve(theNurb);

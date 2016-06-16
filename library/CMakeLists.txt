@@ -54,6 +54,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(TS_CPP_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  # used to automatically create a .def file with all the global symbols for a shared library
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711")
 
   if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
@@ -81,7 +83,7 @@ if(TARGET_SUPPORTS_SHARED_LIBS)
   )
 endif()
 add_library(tinyspline_static STATIC tinyspline.c)
-set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline")
+set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline" PREFIX "lib")
 install(TARGETS tinyspline_static
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -101,7 +103,7 @@ if(TS_CPP_AVAILABLE)
     )
   endif()
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
-  set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp")
+  set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp" PREFIX "lib")
   install(TARGETS tinysplinecpp_static
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

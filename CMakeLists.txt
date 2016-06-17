@@ -5,4 +5,4 @@ project(tinyspline)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(library)
-add_subdirectory(example)
+add_subdirectory(examples)

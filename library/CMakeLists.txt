@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.4)
-
 # setup some convenience variables
 set(TS_AVR_CROSSCOMPILE FALSE)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")

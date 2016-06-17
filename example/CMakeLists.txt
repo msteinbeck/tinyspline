@@ -52,4 +52,8 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   add_executable(buckle buckle.c)
   target_link_libraries(buckle LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
   set_target_properties(buckle PROPERTIES FOLDER "examples/c")
+
+  add_executable(triangle triangle.c)
+  target_link_libraries(triangle LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(triangle PROPERTIES FOLDER "examples/c")
 endif()

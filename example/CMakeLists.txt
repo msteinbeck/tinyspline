@@ -27,22 +27,29 @@ endif()
 if(GLUT_FOUND AND OPENGL_FOUND)
   add_executable(bspline bspline.c)
   target_link_libraries(bspline LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(bspline PROPERTIES FOLDER "examples/c")
   
   add_executable(nurbs nurbs.c)
   target_link_libraries(nurbs LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(nurbs PROPERTIES FOLDER "examples/c")
   
   add_executable(split split.c)
   target_link_libraries(split LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(split PROPERTIES FOLDER "examples/c")
 
   add_executable(beziers beziers.c)
   target_link_libraries(beziers LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(beziers PROPERTIES FOLDER "examples/c")
 
   add_executable(interpolation interpolation.c)
   target_link_libraries(interpolation LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(interpolation PROPERTIES FOLDER "examples/c")
 
   add_executable(derivative derivative.c)
   target_link_libraries(derivative LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
-
+  set_target_properties(derivative PROPERTIES FOLDER "examples/c")
+  
   add_executable(buckle buckle.c)
   target_link_libraries(buckle LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(buckle PROPERTIES FOLDER "examples/c")
 endif()

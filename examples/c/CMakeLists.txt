@@ -54,4 +54,8 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   add_executable(triangle triangle.c)
   target_link_libraries(triangle LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
   set_target_properties(triangle PROPERTIES FOLDER "examples/c")
+
+  add_executable(triangle-nurbs triangle-nurbs.c)
+  target_link_libraries(triangle-nurbs LINK_PUBLIC tinyspline_static ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+  set_target_properties(triangle-nurbs PROPERTIES FOLDER "examples/c")
 endif()

@@ -85,7 +85,7 @@ void displayText(float x, float y, float r, float g, float b, const char *string
     size_t str_sz = strlen(string);
     glColor3f(r, g, b);
     glRasterPos2f(x, y);
-    for(int i = 0; i < str_sz; i++) {
+    for(i = 0; i < str_sz; i++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
     }
 }

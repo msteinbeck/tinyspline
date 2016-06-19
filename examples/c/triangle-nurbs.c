@@ -100,7 +100,7 @@ void display(void)
     glutSwapBuffers();
     glutPostRedisplay();
 
-    w *= 1.05f; // lon-linear update of `w`
+    w *= 1.05f; // non-linear update of `w`
     if (w > 100.f) {
         w = 0.001f;
     }

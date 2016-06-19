@@ -21,6 +21,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
+size_t i; // loop counter
 // the original second point of `spline` that is
 // weight with `w` in every call of ::display
 float B[4] = {1.0f, 1.0f, 0.0f, 1.0f};
@@ -61,6 +62,16 @@ void tear_down()
     ts_bspline_free(&spline);
 }
 
+void displayText( float x, float y, float r, float g, float b, const char *string )
+{
+    size_t str_sz = strlen( string );
+    glColor3f( r, g, b );
+    glRasterPos2f( x, y );
+    for(i = 0; i < str_sz; i++) {
+        glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, string[i] );
+    }
+}
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,6 +107,11 @@ void display(void)
          glVertex3fv(B);
          glVertex3fv(spline.ctrlp + 8);
     glEnd();
+
+    // display w
+    char buffer[256];
+    sprintf( buffer, "w: %.2f", w );
+    displayText( -.2f, 1.2f, 0.0, 1.0, 0.0, buffer );
     
     glutSwapBuffers();
     glutPostRedisplay();

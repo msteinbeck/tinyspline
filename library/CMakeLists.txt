@@ -17,7 +17,6 @@ endif()
 # determine the used compiler and its version, configure compiler flags,
 # and setup TS_CPP_AVAILABLE
 set(TS_CPP_AVAILABLE FALSE) # by default the c++ library is not created
-set(TS_CPP_AVAILABLE FALSE PARENT_SCOPE)  # for examples
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wfloat-equal -pedantic")
   # avr uses the 'inline' keyword in some header files which is not

@@ -38,7 +38,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-but-set-variable")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-qualifiers")
     set(TS_CPP_AVAILABLE TRUE)
-    set(TS_CPP_AVAILABLE TRUE PARENT_SCOPE)  # for examples
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # do not use -ansi with clang
@@ -52,7 +51,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-qualifiers")
     set(TS_CPP_AVAILABLE TRUE)
-    set(TS_CPP_AVAILABLE TRUE PARENT_SCOPE)  # for examples
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # used to automatically create a .def file with all the global symbols for a shared library
@@ -63,17 +61,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # using WX causes to many errors in generated source code, thus, use W4 instead
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall /W4 /wd4702")
     set(TS_CPP_AVAILABLE TRUE)
-    set(TS_CPP_AVAILABLE TRUE PARENT_SCOPE)  # for examples
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   # TODO: check for version 2014 or greater
   set(TS_CPP_AVAILABLE TRUE)
-  set(TS_CPP_AVAILABLE TRUE PARENT_SCOPE)  # for examples
 endif()
 # disable the c++ library for specific targets by hand
 if(TS_AVR_CROSSCOMPILE)
   set(TS_CPP_AVAILABLE FALSE) # avr is missing some required headers
-  set(TS_CPP_AVAILABLE FALSE PARENT_SCOPE)  # for examples
   # check further targets if necessary
 endif()
 

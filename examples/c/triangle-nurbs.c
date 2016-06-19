@@ -91,7 +91,6 @@ void display(void)
     // draw control points
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    size_t i;
     glBegin(GL_POINTS);
          glVertex3fv(spline.ctrlp);
          glVertex3fv(B);
@@ -101,7 +100,7 @@ void display(void)
     glutSwapBuffers();
     glutPostRedisplay();
 
-    w *= 1.05; // lon-linear update of `w`
+    w *= 1.05f; // lon-linear update of `w`
     if (w > 100.f) {
         w = 0.001f;
     }

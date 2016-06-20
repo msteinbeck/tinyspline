@@ -2,6 +2,10 @@
 find_package(GLUT)
 if(GLUT_FOUND)
   include_directories(${GLUT_INCLUDE_DIR})
+  if(MSVC)
+    # to fix a debug issue: http://stackoverflow.com/q/29110985/2741329
+    get_filename_component( GLUT_LIBRARY_DIRS ${GLUT_glut_LIBRARY} DIRECTORY)  
+  endif()  
   link_directories(${GLUT_LIBRARY_DIRS})
   add_definitions(${GLUT_DEFINITIONS})
 endif()

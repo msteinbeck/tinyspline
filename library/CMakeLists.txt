@@ -246,5 +246,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
   )
 endif()
 
-# make static lib of tinyspline available for examples
+# make static libs of tinyspline available for examples
 target_include_directories(tinyspline_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(tinysplinecpp_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

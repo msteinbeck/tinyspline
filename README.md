@@ -29,7 +29,7 @@ Feel free to ask for special features or to contribute to TinySpline :).
 The source distribution of TinySpline consists of two sub projects. The first one is the
 library itself that is located in the `library` directory. It contains all files that
 are required to build TinySpline. The second sub project provides some basic examples and
-is located in the `example` directory.
+is located in the `examples` directory.
 
 The core of TinySpline has been implemented in C and consists of the files `tinyspline.h`
 and `tinyspline.c`. In order to use the C interface of TinySpline you can either copy

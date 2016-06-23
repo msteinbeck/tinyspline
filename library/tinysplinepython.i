@@ -40,8 +40,8 @@ __init__(self, points, dim) -> BSpline
 
 // NOTE: The following code must be included AFTER "tinyspline.i".
 %pythoncode %{
-  BSpline.ctrlp = property(lambda self: self.__ctrlp(), lambda self, value: self.__setCtrlp(value))
-  BSpline.knots = property(lambda self: self.__knots(), lambda self, value: self.__setKnots(value))
-  DeBoorNet.points = property(lambda self: self.__points())
-  DeBoorNet.result = property(lambda self: self.__result())
+  BSpline.ctrlp = property(lambda self: list(self.__ctrlp()), lambda self, value: self.__setCtrlp(value))
+  BSpline.knots = property(lambda self: list(self.__knots()), lambda self, value: self.__setKnots(value))
+  DeBoorNet.points = property(lambda self: list(self.__points()))
+  DeBoorNet.result = property(lambda self: list(self.__result()))
 %}

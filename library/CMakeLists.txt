@@ -126,6 +126,7 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
   set(TS_GENERATED_JAVA_DIR ${CMAKE_CURRENT_BINARY_DIR}/so/tinyspline)
   set(TS_GENERATED_CSHARP_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp)
   set(TS_GENERATED_RUBY_DIR ${CMAKE_CURRENT_BINARY_DIR}/ruby)
+  set(TS_GENERATED_GO_DIR ${CMAKE_CURRENT_BINARY_DIR}/go)
 
   # python
   if(DEFINED ENV{PYTHON_LIBRARY} AND DEFINED ENV{PYTHON_INCLUDE_DIR})
@@ -240,9 +241,18 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
     set_target_properties(tinysplineruby PROPERTIES FOLDER "bindings")
   endif()
 
+  # go
+  find_program(TS_GO_COMPILER NAMES go)
+  if(TS_GO_COMPILER)
+    set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
+    set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
+    set(CMAKE_SWIG_OUTDIR ${TS_GENERATED_GO_DIR})
+    swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
+  endif()
+
   # add additional clean targets
   set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
-    "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py;${CMAKE_CURRENT_BINARY_DIR}/so;${TS_GENERATED_CSHARP_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinysplinecs.dll;${TS_GENERATED_RUBY_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb"
+    "${TS_GENERATED_PYTHON_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.py;${CMAKE_CURRENT_BINARY_DIR}/so;${TS_GENERATED_CSHARP_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinysplinecs.dll;${TS_GENERATED_RUBY_DIR};${CMAKE_CURRENT_BINARY_DIR}/tinyspline.rb;${TS_GENERATED_GO_DIR}"
   )
 endif()
 

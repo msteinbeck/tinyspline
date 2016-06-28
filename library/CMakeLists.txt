@@ -203,8 +203,6 @@ if(TS_CPP_AVAILABLE AND SWIG_FOUND AND TARGET_SUPPORTS_SHARED_LIBS)
     message(STATUS "Could NOT find any suitable C# compiler.")
   else()
     message(STATUS "Using ${CSHARP_COMPILER} to compile C# sources.")
-    # append 'cs' to assembly name to ensure it doesn't clash
-    # with the c library.
     add_custom_command(TARGET tinysplinecsharp POST_BUILD
       COMMAND ${CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TS_GENERATED_CSHARP_DIR}/*.cs" /out:TinySpline.dll
     )

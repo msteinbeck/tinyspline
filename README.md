@@ -111,7 +111,7 @@ required if you want to package the corresponding binding:
 
 Language | Required Tool(s)                 | Output File
 -------- | -------------------------------- | ----------------
-C#       | Any of: csc, mcs, dmcs, gmcs     | tinysplinecs.dll
+C#       | Any of: csc, mcs, dmcs, gmcs     | TinySpline.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
 
 The remaining bindings do not need to be packaged (usually the script languages).

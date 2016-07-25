@@ -37,7 +37,7 @@ void ts_internal_deboornet_copy(
 {
     const size_t dim = original->dim;
     const size_t n_points = original->n_points;
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t sof_p = n_points * dim * sof_f;
 
     if (original == copy)
@@ -49,7 +49,7 @@ void ts_internal_deboornet_copy(
     copy->h = original->h;
     copy->dim = dim;
     copy->n_points = n_points;
-    copy->points = (float*) malloc(sof_p);
+    copy->points = (tsRational*) malloc(sof_p);
     if (copy->points == NULL)
         longjmp(buf, TS_MALLOC);
     memcpy(copy->points, original->points, sof_p);
@@ -57,7 +57,7 @@ void ts_internal_deboornet_copy(
 }
 
 void ts_internal_bspline_find_u(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     size_t* k, size_t* s, jmp_buf buf
 )
 {
@@ -67,7 +67,7 @@ void ts_internal_bspline_find_u(
 
     *k = *s = 0;
     for (; *k < n_knots; (*k)++) {
-        const float uk = bspline->knots[*k];
+        const tsRational uk = bspline->knots[*k];
         if (ts_fequals(u, uk)) {
             (*s)++;
         } else if (u < uk) {
@@ -94,7 +94,7 @@ void ts_internal_bspline_copy(
 )
 {
     const size_t dim = original->dim;
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t n_ctrlp = original->n_ctrlp;
     const size_t n_knots = original->n_knots;
     const size_t sof_ck = (n_ctrlp*dim + n_knots) * sof_f;
@@ -108,7 +108,7 @@ void ts_internal_bspline_copy(
     copy->dim = original->dim;
     copy->n_ctrlp = original->n_ctrlp;
     copy->n_knots = original->n_knots;
-    copy->ctrlp = (float*) malloc(sof_ck);
+    copy->ctrlp = (tsRational*) malloc(sof_ck);
     if (copy->ctrlp == NULL)
         longjmp(buf, TS_MALLOC);
     memcpy(copy->ctrlp, original->ctrlp, sof_ck);
@@ -117,7 +117,7 @@ void ts_internal_bspline_copy(
 
 void ts_internal_bspline_setup_knots(
         const tsBSpline* original, const tsBSplineType type,
-        const float min, const float max,
+        const tsRational min, const tsRational max,
         tsBSpline* result, jmp_buf buf
 )
 {
@@ -125,7 +125,7 @@ void ts_internal_bspline_setup_knots(
     const size_t deg = original->deg;
     const size_t order = deg+1; /* Using deg+1 instead of original->order
  * ensures order >= 1. */
-    float fac; /* The factor used to calculate the knot values. */
+    tsRational fac; /* The factor used to calculate the knot values. */
     size_t i; /* Used in for loops. */
 
     /* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
@@ -176,7 +176,7 @@ void ts_internal_bspline_new(
 {
     const size_t order = deg + 1;
     const size_t n_knots = n_ctrlp + order;
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t sof_ck = (n_ctrlp*dim + n_knots) * sof_f;
     tsError e;
     jmp_buf b;
@@ -191,7 +191,7 @@ void ts_internal_bspline_new(
     bspline->dim = dim;
     bspline->n_ctrlp = n_ctrlp;
     bspline->n_knots = n_knots;
-    bspline->ctrlp = (float*) malloc(sof_ck);
+    bspline->ctrlp = (tsRational*) malloc(sof_ck);
     if (bspline->ctrlp == NULL)
         longjmp(buf, TS_MALLOC);
     bspline->knots = bspline->ctrlp + n_ctrlp*dim;
@@ -211,7 +211,7 @@ void ts_internal_bspline_resize(
 {
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t sof_c = dim * sof_f;
 
     const size_t n_ctrlp = bspline->n_ctrlp;
@@ -224,10 +224,10 @@ void ts_internal_bspline_resize(
     const size_t min_n_knots = n < 0 ? nn_knots : n_knots; /* the minimum of
  * the knots old and new size. */
 
-    float* from_ctrlp = bspline->ctrlp;
-    float* from_knots = bspline->knots;
-    float* to_ctrlp = NULL;
-    float* to_knots = NULL;
+    tsRational* from_ctrlp = bspline->ctrlp;
+    tsRational* from_knots = bspline->knots;
+    tsRational* to_ctrlp = NULL;
+    tsRational* to_knots = NULL;
 
     /* If n is 0 the spline must not be resized. */
     if (n == 0) {
@@ -242,7 +242,7 @@ void ts_internal_bspline_resize(
     } else {
         if (nn_ctrlp <= deg)
             longjmp(buf, TS_DEG_GE_NCTRLP);
-        to_ctrlp = (float*) malloc(sof_ncnk);
+        to_ctrlp = (tsRational*) malloc(sof_ncnk);
         if (to_ctrlp == NULL)
             longjmp(buf, TS_MALLOC);
         to_knots = to_ctrlp + nn_ctrlp*dim;
@@ -281,11 +281,11 @@ void ts_internal_bspline_insert_knot(
     const size_t deg = bspline->deg;
     const size_t dim = bspline->dim;
     const size_t k = deBoorNet->k;
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t sof_c = dim * sof_f;
     size_t N; /* The number of affected control points. */
-    float* from; /* The pointer to copy the values from. */
-    float* to; /* The pointer to copy the values to. */
+    tsRational* from; /* The pointer to copy the values from. */
+    tsRational* to; /* The pointer to copy the values to. */
     int stride; /* The stride of the next pointer to copy. Will be negative
  * later on, thus use int. */
     size_t i; /* Used in for loops. */
@@ -366,18 +366,18 @@ void ts_internal_bspline_insert_knot(
 }
 
 void ts_internal_bspline_evaluate(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsDeBoorNet* deBoorNet, jmp_buf buf
 )
 {
     const size_t deg = bspline->deg;
     const size_t order = bspline->order;
     const size_t dim = bspline->dim;
-    const size_t sof_c = dim * sizeof(float); /* The size of a single
+    const size_t sof_c = dim * sizeof(tsRational); /* The size of a single
  * control points.*/
     size_t k;
     size_t s;
-    float uk; /* The actual used u. */
+    tsRational uk; /* The actual used u. */
     size_t from; /* An offset used to copy values. */
     size_t fst; /* The first affected control point, inclusive. */
     size_t lst; /* The last affected control point, inclusive. */
@@ -387,8 +387,8 @@ void ts_internal_bspline_evaluate(
     size_t ridx; /* The current right index. */
     size_t tidx; /* The current to index. */
     size_t r, i, d; /* Used in for loop. */
-    float ui; /* The knot value at index i. */
-    float a, a_hat; /* The weighting factors of the control points. */
+    tsRational ui; /* The knot value at index i. */
+    tsRational a, a_hat; /* The weighting factors of the control points. */
 
     /* Setup the net with its default values. */
     ts_deboornet_default(deBoorNet);
@@ -404,8 +404,8 @@ void ts_internal_bspline_evaluate(
 
     /* 2. */
     uk = bspline->knots[k];                    /* Ensures that with any */
-    deBoorNet->u = ts_fequals(u, uk) ? uk : u; /* float precision the knot
-                                                * vector stays valid. */
+    deBoorNet->u = ts_fequals(u, uk) ? uk : u; /* tsRational precision the
+                                                * knot vector stays valid. */
     deBoorNet->h = deg < s ? 0 : deg-s; /* prevent underflow */
     deBoorNet->dim = dim;
 
@@ -420,7 +420,7 @@ void ts_internal_bspline_evaluate(
         if (k == deg ||                  /* only the first control point */
             k == bspline->n_knots - 1) { /* only the last control point */
 
-            deBoorNet->points = (float*) malloc(sof_c);
+            deBoorNet->points = (tsRational*) malloc(sof_c);
             if (deBoorNet->points == NULL)
                 longjmp(buf, TS_MALLOC);
             deBoorNet->result = deBoorNet->points;
@@ -428,7 +428,7 @@ void ts_internal_bspline_evaluate(
             from = k == deg ? 0 : (k-s) * dim;
             memcpy(deBoorNet->points, bspline->ctrlp + from, sof_c);
         } else {
-            deBoorNet->points = (float*) malloc(2 * sof_c);
+            deBoorNet->points = (tsRational*) malloc(2 * sof_c);
             if (deBoorNet->points == NULL)
                 longjmp(buf, TS_MALLOC);
             deBoorNet->result = deBoorNet->points+dim;
@@ -442,7 +442,7 @@ void ts_internal_bspline_evaluate(
         N = lst-fst + 1; /* lst <= fst implies N >= 1 */
 
         deBoorNet->n_points = (size_t)(N * (N+1) * 0.5f); /* always fits */
-        deBoorNet->points = (float*) malloc(deBoorNet->n_points * sof_c);
+        deBoorNet->points = (tsRational*) malloc(deBoorNet->n_points * sof_c);
         if (deBoorNet->points == NULL)
             longjmp(buf, TS_MALLOC);
         deBoorNet->result = deBoorNet->points + (deBoorNet->n_points-1)*dim;
@@ -474,7 +474,7 @@ void ts_internal_bspline_evaluate(
 }
 
 void ts_internal_bspline_split(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsBSpline* split, size_t* k, jmp_buf buf
 )
 {
@@ -502,14 +502,14 @@ void ts_internal_bspline_split(
 }
 
 void ts_internal_bspline_thomas_algorithm(
-        const float* points, const size_t n, const size_t dim,
-        float* output, jmp_buf buf
+        const tsRational* points, const size_t n, const size_t dim,
+        tsRational* output, jmp_buf buf
 )
 {
-    const size_t sof_f = sizeof(float); /* The size of a float. */
+    const size_t sof_f = sizeof(tsRational); /* The size of a tsRational. */
     const size_t sof_c = dim * sof_f; /* The size of a single control point. */
     size_t len_m; /* The length m. */
-    float* m; /* The array of weights. */
+    tsRational* m; /* The array of weights. */
     size_t lst; /* The index of the last control point in \points. */
     size_t i, d; /* Used in for loops. */
     size_t j, k, l; /* Used as temporary indices. */
@@ -530,7 +530,7 @@ void ts_internal_bspline_thomas_algorithm(
     lst = (n-1)*dim; /* ... lst >= 2*dim */
 
     /* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
-    m = (float*) malloc(len_m * sof_f);
+    m = (tsRational*) malloc(len_m * sof_f);
     if (m == NULL)
         longjmp(buf, TS_MALLOC);
     m[0] = 0.25f;
@@ -579,17 +579,17 @@ void ts_internal_bspline_thomas_algorithm(
 }
 
 void ts_internal_relaxed_uniform_cubic_bspline(
-        const float* points, const size_t n, const size_t dim,
+        const tsRational* points, const size_t n, const size_t dim,
         tsBSpline* bspline, jmp_buf buf
 )
 {
     const size_t order = 4; /* The order of the spline to interpolate. */
-    const float as = 1.f/6.f; /* The value 'a sixth'. */
-    const float at = 1.f/3.f; /* The value 'a third'. */
-    const float tt = 2.f/3.f; /* The value 'two third'. */
+    const tsRational as = 1.f/6.f; /* The value 'a sixth'. */
+    const tsRational at = 1.f/3.f; /* The value 'a third'. */
+    const tsRational tt = 2.f/3.f; /* The value 'two third'. */
     size_t sof_c; /* The size of a single control point. */
-    const float* b = points; /* The array of the b values (for convenience). */
-    float* s; /* The array of the s values. */
+    const tsRational* b = points; /* The array of the b values. */
+    tsRational* s; /* The array of the s values. */
     size_t i, d; /* Used in for loops */
     size_t j, k, l; /* Uses as temporary indices. */
     tsError e_;
@@ -602,13 +602,13 @@ void ts_internal_relaxed_uniform_cubic_bspline(
         longjmp(buf, TS_DEG_GE_NCTRLP);
     /* in the following n >= 2 applies */
 
-    sof_c = dim * sizeof(float); /* dim > 0 implies sof_c > 0 */
+    sof_c = dim * sizeof(tsRational); /* dim > 0 implies sof_c > 0 */
 
     /* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
     ts_internal_bspline_new(order-1, dim, (n-1)*4, TS_BEZIERS, bspline, buf);
 
     TRY(b_, e_)
-        s = (float*) malloc(n * sof_c);
+        s = (tsRational*) malloc(n * sof_c);
         if (s == NULL)
             longjmp(b_, TS_MALLOC);
     CATCH
@@ -649,13 +649,13 @@ void ts_internal_relaxed_uniform_cubic_bspline(
 }
 
 void ts_internal_bspline_interpolate(
-    const float* points, const size_t n, const size_t dim,
+    const tsRational* points, const size_t n, const size_t dim,
     tsBSpline* bspline, jmp_buf buf
 )
 {
     tsError e;
     jmp_buf b;
-    float* thomas = (float*) malloc(n*dim*sizeof(float));
+    tsRational* thomas = (tsRational*) malloc(n*dim*sizeof(tsRational));
     if (thomas == NULL)
         longjmp(buf, TS_MALLOC);
 
@@ -674,15 +674,15 @@ void ts_internal_bspline_derive(
     tsBSpline* derivative, jmp_buf buf
 )
 {
-    const size_t sof_f = sizeof(float);
+    const size_t sof_f = sizeof(tsRational);
     const size_t dim = original->dim;
     const size_t deg = original->deg;
     const size_t nc = original->n_ctrlp;
     const size_t nk = original->n_knots;
-    float* from_ctrlp = original->ctrlp;
-    float* from_knots = original->knots;
-    float* to_ctrlp = NULL;
-    float* to_knots = NULL;
+    tsRational* from_ctrlp = original->ctrlp;
+    tsRational* from_knots = original->knots;
+    tsRational* to_ctrlp = NULL;
+    tsRational* to_knots = NULL;
     size_t i, j, k;
 
     if (deg < 1 || nc < 2)
@@ -693,7 +693,7 @@ void ts_internal_bspline_derive(
         to_ctrlp = derivative->ctrlp;
         to_knots = derivative->knots;
     } else {
-        to_ctrlp = (float*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
+        to_ctrlp = (tsRational*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
         if (to_ctrlp == NULL)
             longjmp(buf, TS_MALLOC);
         to_knots = to_ctrlp + (nc-1)*dim;
@@ -728,15 +728,15 @@ void ts_internal_bspline_derive(
 }
 
 void ts_internal_bspline_buckle(
-    const tsBSpline* bspline, const float b,
+    const tsBSpline* bspline, const tsRational b,
     tsBSpline* buckled, jmp_buf buf
 )
 {
-    const float b_hat  = 1.f-b; /* The straightening factor. */
+    const tsRational b_hat  = 1.f-b; /* The straightening factor. */
     const size_t dim = bspline->dim;
     const size_t N = bspline->n_ctrlp;
-    const float* p0 = bspline->ctrlp; /* The pointer to the first ctrlp. */
-    const float* pn_1 = p0 + (N-1)*dim; /* The pointer to the last ctrlp. */
+    const tsRational* p0 = bspline->ctrlp; /* Pointer to first ctrlp. */
+    const tsRational* pn_1 = p0 + (N-1)*dim; /* Pointer to the last ctrlp. */
     size_t i, d; /* Used in for loops. */
 
     ts_internal_bspline_copy(bspline, buckled, buf);
@@ -745,7 +745,7 @@ void ts_internal_bspline_buckle(
         for (d = 0; d < dim; d++) {
             buckled->ctrlp[i*dim + d] =
                 b * buckled->ctrlp[i*dim + d] +
-                b_hat * (p0[d] + ((float)i / (N-1)) * (pn_1[d] - p0[d]));
+                b_hat * (p0[d] + ((tsRational)i / (N-1)) * (pn_1[d] - p0[d]));
         }
     }
 }
@@ -762,8 +762,8 @@ void ts_internal_bspline_to_beziers(
     tsBSpline tmp;
     int resize; /* The number of control points to add/remove. */
     size_t k; /* The index of the splitted knot value. */
-    float u_min; /* The minimum of the knot values. */
-    float u_max; /* The maximum of the knot values. */
+    tsRational u_min; /* The minimum of the knot values. */
+    tsRational u_max; /* The maximum of the knot values. */
 
     ts_internal_bspline_copy(bspline, &tmp, buf);
 
@@ -801,21 +801,21 @@ void ts_internal_bspline_to_beziers(
 }
 
 void ts_internal_bspline_set_ctrlp(
-    const tsBSpline* bspline, const float* ctrlp,
+    const tsBSpline* bspline, const tsRational* ctrlp,
     tsBSpline* result, jmp_buf buf
 )
 {
-    const size_t s = bspline->n_ctrlp * bspline->dim * sizeof(float);
+    const size_t s = bspline->n_ctrlp * bspline->dim * sizeof(tsRational);
     ts_internal_bspline_copy(bspline, result, buf);
     memmove(result->ctrlp, ctrlp, s);
 }
 
 void ts_internal_bspline_set_knots(
-    const tsBSpline* bspline, const float* knots,
+    const tsBSpline* bspline, const tsRational* knots,
     tsBSpline* result, jmp_buf buf
 )
 {
-    const size_t s = bspline->n_knots * sizeof(float);
+    const size_t s = bspline->n_knots * sizeof(tsRational);
     ts_internal_bspline_copy(bspline, result, buf);
     memmove(result->knots, knots, s);
 }
@@ -892,7 +892,7 @@ tsError ts_bspline_new(
 }
 
 tsError ts_bspline_interpolate(
-    const float* points, const size_t n, const size_t dim,
+    const tsRational* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 )
 {
@@ -955,7 +955,7 @@ tsError ts_bspline_copy(
 }
 
 tsError ts_bspline_set_ctrlp(
-    const tsBSpline* bspline, const float* ctrlp,
+    const tsBSpline* bspline, const tsRational* ctrlp,
     tsBSpline* result
 )
 {
@@ -971,7 +971,7 @@ tsError ts_bspline_set_ctrlp(
 }
 
 tsError ts_bspline_set_knots(
-    const tsBSpline* bspline, const float* knots,
+    const tsBSpline* bspline, const tsRational* knots,
     tsBSpline* result
 )
 {
@@ -988,7 +988,7 @@ tsError ts_bspline_set_knots(
 
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
-    const float min, const float max,
+    const tsRational min, const tsRational max,
     tsBSpline* result
 )
 {
@@ -1004,7 +1004,7 @@ tsError ts_bspline_setup_knots(
 }
 
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsDeBoorNet* deBoorNet
 )
 {
@@ -1019,7 +1019,7 @@ tsError ts_bspline_evaluate(
 }
 
 tsError ts_bspline_insert_knot(
-    const tsBSpline* bspline, const float u, const size_t n,
+    const tsBSpline* bspline, const tsRational u, const size_t n,
     tsBSpline* result, size_t* k
 )
 {
@@ -1057,7 +1057,7 @@ tsError ts_bspline_resize(
 }
 
 tsError ts_bspline_split(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsBSpline* split, size_t* k
 )
 {
@@ -1073,7 +1073,7 @@ tsError ts_bspline_split(
 }
 
 tsError ts_bspline_buckle(
-    const tsBSpline* bspline, const float b,
+    const tsBSpline* bspline, const tsRational b,
     tsBSpline* buckled
 )
 {
@@ -1104,13 +1104,13 @@ tsError ts_bspline_to_beziers(
     return err;
 }
 
-int ts_fequals(const float x, const float y)
+int ts_fequals(const tsRational x, const tsRational y)
 {
     if (fabs(x-y) <= FLT_MAX_ABS_ERROR) {
         return 1;
     } else {
-        const float r = (float)fabs(x) > (float)fabs(y) ?
-            (float)fabs((x-y) / x) : (float)fabs((x-y) / y);
+        const tsRational r = (tsRational)fabs(x) > (tsRational)fabs(y) ?
+            (tsRational)fabs((x-y) / x) : (tsRational)fabs((x-y) / y);
         return r <= FLT_MAX_REL_ERROR;
     }
 }
@@ -1157,7 +1157,7 @@ tsError ts_str_enum(const char* str)
     return TS_SUCCESS;
 }
 
-void ts_ffill(float* arr, const size_t num, const float val)
+void ts_ffill(tsRational* arr, const size_t num, const tsRational val)
 {
     size_t i;
     for (i = 0; i < num; i++)

@@ -19,14 +19,14 @@ public:
     void swap(DeBoorNet& other);
     friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
 
-    float u() const;
+    tsRational u() const;
     size_t k() const;
     size_t s() const;
     size_t h() const;
     size_t dim() const;
     size_t nPoints() const;
-    std::vector<float> points() const;
-    std::vector<float> result() const;
+    std::vector<tsRational> points() const;
+    std::vector<tsRational> result() const;
     tsDeBoorNet* data();
 
 private:
@@ -41,13 +41,13 @@ public:
     BSpline(BSpline&& other);
     BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
             const tsBSplineType type);
-    BSpline(const std::vector<float> points, const size_t dim);
+    BSpline(const std::vector<tsRational> points, const size_t dim);
     ~BSpline();
 
     /* Operators */
     BSpline& operator=(const BSpline& other);
     BSpline& operator=(BSpline&& other);
-    DeBoorNet operator()(const float u) const;
+    DeBoorNet operator()(const tsRational u) const;
 
     /* Used by move semantics */
     void swap(BSpline& other);
@@ -59,22 +59,22 @@ public:
     size_t dim() const;
     size_t nCtrlp() const;
     size_t nKnots() const;
-    std::vector<float> ctrlp() const;
-    std::vector<float> knots() const;
+    std::vector<tsRational> ctrlp() const;
+    std::vector<tsRational> knots() const;
     tsBSpline* data();
-    DeBoorNet evaluate(const float u) const;
+    DeBoorNet evaluate(const tsRational u) const;
 
     /* Modifications */
-    void setCtrlp(const std::vector<float> ctrlp);
-    void setKnots(const std::vector<float> knots);
+    void setCtrlp(const std::vector<tsRational> ctrlp);
+    void setKnots(const std::vector<tsRational> knots);
 
     /* Transformations */
     BSpline setupKnots(const tsBSplineType type,
-                    const float min, const float max) const;
-    BSpline insertKnot(const float u, const size_t n) const;
+                    const tsRational min, const tsRational max) const;
+    BSpline insertKnot(const tsRational u, const size_t n) const;
     BSpline resize(const int n, const int back) const;
-    BSpline split(const float u) const;
-    BSpline buckle(const float b) const;
+    BSpline split(const tsRational u) const;
+    BSpline buckle(const tsRational b) const;
     BSpline toBeziers() const;
     BSpline derive() const;
 
@@ -86,7 +86,7 @@ class Utils {
 public:
     Utils() = delete;
 
-    static bool fequals(const float x, const float y);
+    static bool fequals(const tsRational x, const tsRational y);
     static std::string enum_str(const tsError err);
     static tsError str_enum(const std::string str);
 };

@@ -8,6 +8,13 @@
 extern "C" {
 #endif
 
+/********************************************************
+*                                                       *
+* System dependent configuration                        *
+*                                                       *
+********************************************************/
+typedef float tsRational;
+
 
 /********************************************************
 *                                                       *
@@ -58,14 +65,14 @@ typedef enum
 
 typedef struct
 {
-    float u;         /* the knot u */
-    size_t k;        /* the index [u_k, u_k+1) */
-    size_t s;        /* the multiplicity of u_k */
-    size_t h;        /* how many times u must be inserted */
-    size_t dim;      /* dimension of a control point */
-    size_t n_points; /* number of control points */
-    float* points;   /* the control points of the de Boor net */
-    float* result;   /* the result of the evaluation
+    tsRational u;       /* the knot u */
+    size_t k;           /* the index [u_k, u_k+1) */
+    size_t s;           /* the multiplicity of u_k */
+    size_t h;           /* how many times u must be inserted */
+    size_t dim;         /* dimension of a control point */
+    size_t n_points;    /* number of control points */
+    tsRational* points; /* the control points of the de Boor net */
+    tsRational* result; /* the result of the evaluation
  * Technically it is a pointer to the last point in points. Any changes made
  * here will modify points and vice versa. In case of a discontinuous B-Spline
  * at u, points can be used to get access to the first point and result to get
@@ -74,15 +81,15 @@ typedef struct
 
 typedef struct
 {
-    size_t deg;     /* degree of b-spline basis function */
-    size_t order;   /* degree + 1
+    size_t deg;        /* degree of b-spline basis function */
+    size_t order;      /* degree + 1
  * This field is provided for convenience, because some libraries (e.g. OpenGL)
  * implicitly describing a polynomial of degree n with n + 1. */
-    size_t dim;     /* dimension of a control point */
-    size_t n_ctrlp; /* number of control points */
-    size_t n_knots; /* number of knots (n_ctrlp + deg + 1) */
-    float* ctrlp;   /* the control points of the spline */
-    float* knots;   /* the knot vector of the spline (ascending)
+    size_t dim;        /* dimension of a control point */
+    size_t n_ctrlp;    /* number of control points */
+    size_t n_knots;    /* number of knots (n_ctrlp + deg + 1) */
+    tsRational* ctrlp; /* the control points of the spline */
+    tsRational* knots; /* the knot vector of the spline (ascending)
  * Technically ctrlp and knots share the same array. The first elements of
  * this array are the control points and the last elements are the knots. Keep
  * in mind that you should never assign two different arrays to ctrlp and knots
@@ -179,7 +186,7 @@ tsError ts_bspline_new(
  * @return TS_MALLOC            if allocating memory failed.
  */
 tsError ts_bspline_interpolate(
-    const float* points, const size_t n, const size_t dim,
+    const tsRational* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 );
 
@@ -269,7 +276,7 @@ tsError ts_bspline_copy(
  *                              memory failed.
  */
 tsError ts_bspline_set_ctrlp(
-    const tsBSpline* bspline, const float* ctrlp,
+    const tsBSpline* bspline, const tsRational* ctrlp,
     tsBSpline* result
 );
 
@@ -286,7 +293,7 @@ tsError ts_bspline_set_ctrlp(
  *                              memory failed.
  */
 tsError ts_bspline_set_knots(
-    const tsBSpline* bspline, const float* knots,
+    const tsBSpline* bspline, const tsRational* knots,
     tsBSpline* result
 );
 
@@ -314,7 +321,7 @@ tsError ts_bspline_set_knots(
  */
 tsError ts_bspline_setup_knots(
     const tsBSpline* original, const tsBSplineType type,
-    const float min, const float max,
+    const tsRational min, const tsRational max,
     tsBSpline* result
 );
 
@@ -333,12 +340,12 @@ tsError ts_bspline_setup_knots(
  * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
  */
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsDeBoorNet* deBoorNet
 );
 
 tsError ts_bspline_insert_knot(
-    const tsBSpline* bspline, const float u, const size_t n,
+    const tsBSpline* bspline, const tsRational u, const size_t n,
     tsBSpline* result, size_t* k
 );
 
@@ -374,7 +381,7 @@ tsError ts_bspline_resize(
 );
 
 tsError ts_bspline_split(
-    const tsBSpline* bspline, const float u,
+    const tsBSpline* bspline, const tsRational u,
     tsBSpline* split, size_t* k
 );
 
@@ -402,7 +409,7 @@ tsError ts_bspline_split(
  *                              memory failed.
  */
 tsError ts_bspline_buckle(
-    const tsBSpline* original, const float b,
+    const tsBSpline* original, const tsRational b,
     tsBSpline* buckled
 );
 
@@ -418,12 +425,13 @@ tsError ts_bspline_to_beziers(
 *                                                       *
 ********************************************************/
 /**
- * Compares the float values \x and \y by using absolute and relative epsilon.
+ * Compares the tsRational values \x and \y by using absolute and relative
+ * epsilon.
  *
  * @return 1    if \x is equals to \y.
  * @return 0    otherwise.
  */
-int ts_fequals(const float x, const float y);
+int ts_fequals(const tsRational x, const tsRational y);
 
 /**
  * Returns the error message associated to \err. Returns "unknown error" if
@@ -442,7 +450,7 @@ tsError ts_str_enum(const char* str);
 /**
  * Fills the given array \arr with \val from \arr+0 to \arr+\num (exclusive).
  */
-void ts_ffill(float* arr, const size_t num, const float val);
+void ts_ffill(tsRational* arr, const size_t num, const tsRational val);
 
 
 #ifdef	__cplusplus

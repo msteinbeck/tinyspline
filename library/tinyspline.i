@@ -25,7 +25,7 @@
 %attribute(ts::BSpline, size_t, dim, dim);
 %attribute(ts::BSpline, size_t, nCtrlp, nCtrlp);
 %attribute(ts::BSpline, size_t, nKnots, nKnots);
-%attribute(ts::DeBoorNet, float, u, u);
+%attribute(ts::DeBoorNet, ts::rational, u, u);
 %attribute(ts::DeBoorNet, size_t, k, k);
 %attribute(ts::DeBoorNet, size_t, s, s);
 %attribute(ts::DeBoorNet, size_t, h, h);
@@ -34,12 +34,6 @@
 
 // make strings directly accessible
 %include "std_string.i"
-
-// make std::vector<float> available
-%include "std_vector.i"
-namespace std {
-  %template(FloatVector) vector<float>;
-};
 
 // ignore wrapped structs and data fields
 %ignore tsError;
@@ -60,3 +54,9 @@ namespace std {
 
 %include "tinyspline.h"
 %include "tinysplinecpp.h"
+
+// make std::vector<ts::rational> available
+%include "std_vector.i"
+namespace std {
+    %template(RationalVector) vector<ts::rational>;
+};

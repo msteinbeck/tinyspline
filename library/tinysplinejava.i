@@ -1,24 +1,20 @@
 %module tinysplinejava
 
-// let jni file use List<rational> instead of RationalVector
+// let jni file use List<Float/Double> instead of RationalVector
 %typemap(jtype) std::vector<float> "java.util.List<Float>"
 %typemap(jtype) std::vector<double> "java.util.List<Double>"
 
-// let java interface files use List<rational> instead of RationalVector
+// let java interface files use List<Float/Double> instead of RationalVector
 %typemap(jstype) std::vector<float> "java.util.List<Float>"
 %typemap(jstype) std::vector<double> "java.util.List<Double>"
 
-// simply return jni result
-%typemap(javaout) std::vector<float> {
-  return $jnicall;
-}
-%typemap(javaout) std::vector<double> {
+// return jni result
+%typemap(javaout) std::vector<ts::rational> {
   return $jnicall;
 }
 
-// simply redirect input parameters to jni
-%typemap(javain) std::vector<float> "$javainput"
-%typemap(javain) std::vector<double> "$javainput"
+// redirect input parameters to jni
+%typemap(javain) std::vector<ts::rational> "$javainput"
 
 // std:vector<float> to List<Float>
 %typemap(out) std::vector<float> {

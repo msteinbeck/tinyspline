@@ -1,28 +1,35 @@
 %module tinysplinecsharp
 
-%typemap(cstype) std::vector<float> "System.Collections.Generic.IList<float>"
-%typemap(csin) std::vector<float> "FloatVector.getCPtr(Utils.ListToVector($csinput))"
+// create a typemap that generalizes the types float and double into a single
+// type accessable with: $typemap(cstype, ts::rational)
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+  %typemap(cstype) ts::rational "double"
+#else
+  %typemap(cstype) ts::rational "float"
+#endif
+
+// let c# interface files use IList<float/double> instead of RationalVector
+%typemap(cstype) std::vector<ts::rational>
+  "System.Collections.Generic.IList<$typemap(cstype, ts::rational)>"
+
+// redirect input parameter to converter function
+%typemap(csin) std::vector<ts::rational>
+  "RationalVector.getCPtr(Utils.ListToVector($csinput))"
 
 //********************************************************
 //*                                                      *
 //* Utils (C#)                                           *
 //*                                                      *
 //********************************************************
-%typemap(csimports) ts::Utils
-%{
-using System;
-using System.Collections;
-using System.Collections.Generic;
-%}
-
 %typemap(cscode) ts::Utils
 %{
-  internal static FloatVector ListToVector(IList<float> list) {
+  internal static RationalVector ListToVector(
+      System.Collections.Generic.IList<$typemap(cstype, ts::rational)> list) {
     if (list == null)
-      throw new ArgumentNullException("The given list must not be null.");
+      throw new System.ArgumentNullException("List must not be null.");
 
-    FloatVector vec = new FloatVector(list.Count);
-    foreach (float f in list) vec.Add(f);
+    RationalVector vec = new RationalVector(list.Count);
+    foreach ($typemap(cstype, ts::rational) val in list) vec.Add(val);
     return vec;
   }
 %}
@@ -45,16 +52,9 @@ using System.Collections.Generic;
 %csmethodmodifiers ts::BSpline::knots "private";
 %csmethodmodifiers ts::BSpline::setKnots "private";
 
-%typemap(csimports) ts::BSpline
-%{
-using System;
-using System.Collections;
-using System.Collections.Generic;
-%}
-
 %typemap(cscode) ts::BSpline
 %{
-  public IList<float> ctrlp {
+  public System.Collections.Generic.IList<$typemap(cstype, ts::rational)> ctrlp {
     get {
       return ctrlp_p();
     }
@@ -63,7 +63,7 @@ using System.Collections.Generic;
     }
   }
 
-  public IList<float> knots {
+  public System.Collections.Generic.IList<$typemap(cstype, ts::rational)> knots {
     get {
       return knots_p();
     }
@@ -86,20 +86,15 @@ using System.Collections.Generic;
 %csmethodmodifiers ts::DeBoorNet::points "private";
 %csmethodmodifiers ts::DeBoorNet::result "private";
 
-%typemap(csimports) ts::DeBoorNet
-%{
-using System.Collections.Generic;
-%}
-
 %typemap(cscode) ts::DeBoorNet
 %{
-  public IList<float> points {
+  public System.Collections.Generic.IList<$typemap(cstype, ts::rational)> points {
     get {
       return points_p();
     }
   }
 
-  public IList<float> result {
+  public System.Collections.Generic.IList<$typemap(cstype, ts::rational)> result {
     get {
       return result_p();
     }

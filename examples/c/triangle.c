@@ -23,13 +23,13 @@
 tsBSpline spline;
 GLUnurbsObj *theNurb;
 size_t i; // loop counter
-float t = 0.f;
+tsRational t = 0.f;
 // A, C, D, and E are convenience variables and simple wrap the access
 // to the control points of `spline`. B is required to store the original
 // second control point of `spline` which gets replaced with D and E.
 // v and w are the vectors AB and CB, respectively.
-float *A, *C, *D, *E;
-float B[3], v[3], w[3];
+tsRational *A, *C, *D, *E;
+tsRational B[3], v[3], w[3];
 
 /********************************************************
 *                                                       *
@@ -60,7 +60,7 @@ void setup()
     for (i = 0; i < 3; i++)
         B[i] = spline.ctrlp[i+3];
 
-    float mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
+    tsRational mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
     size_t k; // not required here
     ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
 

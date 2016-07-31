@@ -27,7 +27,7 @@ GLUnurbsObj *theNurb;
 ********************************************************/
 void setup()
 {
-    float points[15];
+    tsRational points[15];
     points[0] = 1;
     points[1] = -1;
     points[2] = 0;

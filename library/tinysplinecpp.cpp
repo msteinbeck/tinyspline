@@ -57,7 +57,7 @@ void ts::DeBoorNet::swap(ts::DeBoorNet& other)
     }
 }
 
-tsRational ts::DeBoorNet::u() const
+ts::rational ts::DeBoorNet::u() const
 {
     return deBoorNet.u;
 }
@@ -87,18 +87,18 @@ size_t ts::DeBoorNet::nPoints() const
     return deBoorNet.n_points;
 }
 
-std::vector<tsRational> ts::DeBoorNet::points() const
+std::vector<ts::rational> ts::DeBoorNet::points() const
 {
-    const tsRational* begin = deBoorNet.points;
-    const tsRational* end = begin + deBoorNet.n_points*deBoorNet.dim;
-    return std::vector<tsRational>(begin, end);
+    const ts::rational* begin = deBoorNet.points;
+    const ts::rational* end = begin + deBoorNet.n_points*deBoorNet.dim;
+    return std::vector<ts::rational>(begin, end);
 }
 
-std::vector<tsRational> ts::DeBoorNet::result() const
+std::vector<ts::rational> ts::DeBoorNet::result() const
 {
-    const tsRational* begin = deBoorNet.result;
-    const tsRational* end = begin + deBoorNet.dim;
-    return std::vector<tsRational>(begin, end);
+    const ts::rational* begin = deBoorNet.result;
+    const ts::rational* end = begin + deBoorNet.dim;
+    return std::vector<ts::rational>(begin, end);
 }
 
 tsDeBoorNet* ts::DeBoorNet::data()
@@ -135,7 +135,7 @@ ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
         throw std::runtime_error(ts_enum_str(err));
 }
 
-ts::BSpline::BSpline(const std::vector<tsRational> points, const size_t dim)
+ts::BSpline::BSpline(const std::vector<ts::rational> points, const size_t dim)
 {
     if (dim == 0)
         throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
@@ -171,7 +171,7 @@ ts::BSpline& ts::BSpline::operator=(ts::BSpline&& other)
     return *this;
 }
 
-ts::DeBoorNet ts::BSpline::operator()(const tsRational u) const
+ts::DeBoorNet ts::BSpline::operator()(const ts::rational u) const
 {
     return evaluate(u);
 }
@@ -214,18 +214,18 @@ size_t ts::BSpline::nKnots() const
     return bspline.n_knots;
 }
 
-std::vector<tsRational> ts::BSpline::ctrlp() const
+std::vector<ts::rational> ts::BSpline::ctrlp() const
 {
-    const tsRational* begin  = bspline.ctrlp;
-    const tsRational* end = begin + bspline.n_ctrlp*bspline.dim;
-    return std::vector<tsRational>(begin, end);
+    const ts::rational* begin  = bspline.ctrlp;
+    const ts::rational* end = begin + bspline.n_ctrlp*bspline.dim;
+    return std::vector<ts::rational>(begin, end);
 }
 
-std::vector<tsRational> ts::BSpline::knots() const
+std::vector<ts::rational> ts::BSpline::knots() const
 {
-    const tsRational* begin = bspline.knots;
-    const tsRational* end = begin + bspline.n_knots;
-    return std::vector<tsRational>(begin, end);
+    const ts::rational* begin = bspline.knots;
+    const ts::rational* end = begin + bspline.n_knots;
+    return std::vector<ts::rational>(begin, end);
 }
 
 tsBSpline* ts::BSpline::data()
@@ -233,7 +233,7 @@ tsBSpline* ts::BSpline::data()
     return &bspline;
 }
 
-ts::DeBoorNet ts::BSpline::evaluate(const tsRational u) const
+ts::DeBoorNet ts::BSpline::evaluate(const ts::rational u) const
 {
     DeBoorNet deBoorNet;
     const tsError err = ts_bspline_evaluate(&bspline, u, deBoorNet.data());
@@ -242,7 +242,7 @@ ts::DeBoorNet ts::BSpline::evaluate(const tsRational u) const
     return deBoorNet;
 }
 
-void ts::BSpline::setCtrlp(const std::vector<tsRational> ctrlp)
+void ts::BSpline::setCtrlp(const std::vector<ts::rational> ctrlp)
 {
     if (ctrlp.size() != nCtrlp() * dim()) {
         throw std::runtime_error("The number of values must be equals to the"
@@ -254,7 +254,7 @@ void ts::BSpline::setCtrlp(const std::vector<tsRational> ctrlp)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void ts::BSpline::setKnots(const std::vector<tsRational> knots)
+void ts::BSpline::setKnots(const std::vector<ts::rational> knots)
 {
     if (knots.size() != nKnots()) {
         throw std::runtime_error("The number of values must be equals to the"
@@ -266,7 +266,7 @@ void ts::BSpline::setKnots(const std::vector<tsRational> knots)
 }
 
 ts::BSpline ts::BSpline::setupKnots(const tsBSplineType type,
-                             const tsRational min, const tsRational max) const
+        const ts::rational min, const ts::rational max) const
 {
     ts::BSpline bs;
     const tsError err = ts_bspline_setup_knots(
@@ -276,7 +276,7 @@ ts::BSpline ts::BSpline::setupKnots(const tsBSplineType type,
     return bs;
 }
 
-ts::BSpline ts::BSpline::insertKnot(const tsRational u, const size_t n) const
+ts::BSpline ts::BSpline::insertKnot(const ts::rational u, const size_t n) const
 {
     ts::BSpline bs;
     size_t k;
@@ -295,7 +295,7 @@ ts::BSpline ts::BSpline::resize(const int n, const int back) const
     return bs;
 }
 
-ts::BSpline ts::BSpline::split(const tsRational u) const
+ts::BSpline ts::BSpline::split(const ts::rational u) const
 {
     ts::BSpline bs;
     size_t k;
@@ -305,7 +305,7 @@ ts::BSpline ts::BSpline::split(const tsRational u) const
     return bs;
 }
 
-ts::BSpline ts::BSpline::buckle(const tsRational b) const
+ts::BSpline ts::BSpline::buckle(const ts::rational b) const
 {
     ts::BSpline bs;
     const tsError err = ts_bspline_buckle(&bspline, b, &bs.bspline);
@@ -335,7 +335,7 @@ ts::BSpline ts::BSpline::derive() const
 
 
 
-bool ts::Utils::fequals(const tsRational x, const tsRational y)
+bool ts::Utils::fequals(const ts::rational x, const ts::rational y)
 {
     return ts_fequals(x, y) == 1;
 }

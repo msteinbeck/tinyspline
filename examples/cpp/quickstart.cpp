@@ -6,13 +6,13 @@ int main( int argc, char** argv )
     try
     {
         // t variable
-        float t = 0.0f;
+        ts::rational t = 0.0f;
 
         // Create a clamped spline of degree 3 in 2D consisting of 7 control points.
         ts::BSpline spline(3, 2, 7, TS_CLAMPED);
 
         // Setup the control points.
-        std::vector<float> ctrlp = spline.ctrlp();
+        std::vector<ts::rational> ctrlp = spline.ctrlp();
         ctrlp[0] = -1.75f; // x0
         ctrlp[1] = -1.0f;  // y0
         ctrlp[2] = -1.5f;  // x1
@@ -31,7 +31,7 @@ int main( int argc, char** argv )
 
         // Evaluate `spline` at t = 0.4
         t = 0.4f;
-        std::vector<float> result = spline.evaluate(t).result();
+        std::vector<ts::rational> result = spline.evaluate(t).result();
         std::cout << "evaluate spline at t=" << t << ": (" << result[0] << ", " << result[1] << ")" << std::endl;
 
         // Derive `spline` and subdivide it into a sequence of Bezier curves.

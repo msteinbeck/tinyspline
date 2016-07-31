@@ -13,7 +13,7 @@ extern "C" {
 * System dependent configuration                        *
 *                                                       *
 ********************************************************/
-typedef float tsRational;
+typedef float tsRational; /* float or double */
 
 
 /********************************************************

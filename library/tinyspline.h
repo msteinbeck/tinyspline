@@ -13,7 +13,11 @@ extern "C" {
 * System dependent configuration                        *
 *                                                       *
 ********************************************************/
-typedef float tsRational; /* float or double */
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+typedef double tsRational;
+#else
+typedef float tsRational;
+#endif
 
 
 /********************************************************

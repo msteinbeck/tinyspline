@@ -70,9 +70,9 @@
                 <!-- delete original jar -->
                 <delete file="${project.build.directory}/${project.artifactId}-${project.version}.jar" />
                 <!-- create new jar that contains the shared library -->
-                <unzip src="${project.build.directory}/tinyspline.jar" dest="${project.build.directory}/tmp-java-dir" />
+                <unzip src="${project.build.directory}/lib/tinyspline.jar" dest="${project.build.directory}/tmp-java-dir" />
                 <copy todir="${project.build.directory}/tmp-java-dir">
-                  <fileset dir="${project.build.directory}">
+                  <fileset dir="${project.build.directory}/lib">
                     <include name="*.so" />
                     <include name="*.dll" />
                     <include name="*.dylib" />

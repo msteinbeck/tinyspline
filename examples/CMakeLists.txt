@@ -10,6 +10,8 @@ if(DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
   set(TINYSPLINE_DOUBLE_PRECISION $ENV{TINYSPLINE_DOUBLE_PRECISION})
 endif()
 
+
+
 ###############################################################################
 ### Set output directory to 'TINYSPLINE_BINARY_OUTPUT_DIRECTORY'.
 #
@@ -24,6 +26,8 @@ foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY})
 endforeach()
+
+
 
 ###############################################################################
 ### Setup compiler suite.

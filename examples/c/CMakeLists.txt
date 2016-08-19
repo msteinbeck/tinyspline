@@ -12,6 +12,8 @@ if(GLUT_FOUND)
   add_definitions(${GLUT_DEFINITIONS})
 endif()
 
+
+
 ###############################################################################
 ### Setup OpenGL.
 ###############################################################################
@@ -22,6 +24,8 @@ if(OPENGL_FOUND)
   add_definitions(${OPENGL_DEFINITIONS})
 endif()
 
+
+
 ###############################################################################
 ### Add required compiler/platform specific C flags.
 ###############################################################################
@@ -31,6 +35,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm -Qunused-arguments")
 endif()
+
+
 
 ###############################################################################
 ### Create examples. Exclude GLUT related examples in double precision mode.

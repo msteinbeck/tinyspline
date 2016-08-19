@@ -7,12 +7,12 @@
 //********************************************************
 %ignore ts::BSpline::operator=;
 
-// NOTE: Unfortunately, I was unable to create setter functions for 'ctrlp' and
-// 'knots' with SWIG. Thus, 'CMakeLists.txt' creates the file 'tinyspline.rb'
-// providing the module 'tinyspline' which 1) requires the module generated
-// with SWIG (tinysplineruby) and 2) subclasses BSpline to add the desired
-// setters. In order to make the remaining classes (e.g. DeBoorNet) available
-// as well, the module 'tinyspline' subclasses them without any further
+// NOTE: I was unable to create proper getter and setter functions for 'ctrlp'
+// and 'knots' with SWIG. Therefore, a handwritten interface file is provided
+// which 1) requires the module generated with SWIG (tinysplineruby), and 2)
+// subclasses BSpline and DeBoorNet to add the desired getter and setter
+// functions. In order to make the remaining classes (e.g. Utils) available as
+// well, the module 'tinyspline' subclasses them without any further
 // implementation simplifying the usage as one needs to import the module
 // 'tinyspline' only.
 

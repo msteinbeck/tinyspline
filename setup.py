@@ -45,7 +45,7 @@ class build_py(_build_py):
                 raise EnvironmentError("error building project")
 
             # copy resulting files into bin_dir
-            for bin_file in glob(path.join(build_dir, "*tinyspline*")):
+            for bin_file in glob(path.join(build_dir, "lib", "*tinyspline*")):
                 copy2(bin_file, bin_dir)
 
             # create __init__.py in bin_dir

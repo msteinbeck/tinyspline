@@ -16,9 +16,11 @@
 #   custom environment.
 ###############################################################################
 # TINYSPLINE_DOUBLE_PRECISION
-if(DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
-  message(STATUS "Using environment variable 'TINYSPLINE_DOUBLE_PRECISION'")
-  set(TINYSPLINE_DOUBLE_PRECISION $ENV{TINYSPLINE_DOUBLE_PRECISION})
+option( TINYSPLINE_DOUBLE_PRECISION "Build the library using double in place of flat"  OFF )
+if(TINYSPLINE_DOUBLE_PRECISION)
+  message(STATUS "Double-based build")
+else()
+  message(STATUS "Float-based build")
 endif()
 
 # CMAKE_TOOLCHAIN_FILE

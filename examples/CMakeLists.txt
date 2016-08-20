@@ -33,7 +33,7 @@ endforeach()
 ### Setup compiler suite.
 ###############################################################################
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  if(NOT TINYSPLINE_DOUBLE_PRECISION)
+  if(TINYSPLINE_DOUBLE_PRECISION)
     add_definitions("/DTINYSPLINE_DOUBLE_PRECISION")
   endif()
 else()

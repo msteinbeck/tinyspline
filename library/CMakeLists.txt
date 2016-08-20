@@ -348,12 +348,19 @@ if(TINYSPLINE_CPP_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     # C# DLL
     find_program(TINYSPLINE_CSHARP_COMPILER
       NAMES csc mcs dmcs gmcs
-      PATHS "C:/Windows/Microsoft.NET/Framework/v3.5/bin"
+      PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"
     )
     if(TINYSPLINE_CSHARP_COMPILER)
-      add_custom_command(TARGET tinysplinecsharp POST_BUILD
-        COMMAND ${TINYSPLINE_CSHARP_COMPILER} /t:library /sdk:2 /recurse:"${TINYSPLINE_CSHARP_DIR}/*.cs" /out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}"
-      )
+      if(TINYSPLINE_CSHARP_COMPILER STREQUAL "csc")
+        # csc (Windows) neither supports the 'sdk' flag nor '/' in 'recursive'
+        add_custom_command(TARGET tinysplinecsharp POST_BUILD
+          COMMAND ${TINYSPLINE_CSHARP_COMPILER} /target:library /out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}" /recurse:"${TINYSPLINE_CSHARP_DIR}\\*.cs"
+        )
+      else()
+        add_custom_command(TARGET tinysplinecsharp POST_BUILD
+          COMMAND ${TINYSPLINE_CSHARP_COMPILER} -sdk:2 -target:library -out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}" -recurse:"${TINYSPLINE_CSHARP_DIR}/*.cs"
+        )
+      endif()
     endif()
     
     # Go (not fully supported yet)

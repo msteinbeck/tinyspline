@@ -1,18 +1,4 @@
 ###############################################################################
-### Map supported environment variables to CMake variables. The following
-### variables will be processed.
-#
-# TINYSPLINE_DOUBLE_PRECISION
-#   Use double instead of single (float) precision.
-###############################################################################
-if(DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
-  message(STATUS "Using environment variable 'TINYSPLINE_DOUBLE_PRECISION'")
-  set(TINYSPLINE_DOUBLE_PRECISION $ENV{TINYSPLINE_DOUBLE_PRECISION})
-endif()
-
-
-
-###############################################################################
 ### Set output directory to 'TINYSPLINE_BINARY_OUTPUT_DIRECTORY'.
 #
 # TINYSPLINE_BINARY_OUTPUT_DIRECTORY

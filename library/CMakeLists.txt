@@ -16,7 +16,8 @@
 #   custom environment.
 ###############################################################################
 # TINYSPLINE_DOUBLE_PRECISION
-if(DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
+option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision" OFF)
+if(NOT TINYSPLINE_DOUBLE_PRECISION AND DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
   message(STATUS "Using environment variable 'TINYSPLINE_DOUBLE_PRECISION'")
   set(TINYSPLINE_DOUBLE_PRECISION $ENV{TINYSPLINE_DOUBLE_PRECISION})
 endif()

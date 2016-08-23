@@ -14,6 +14,7 @@ option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision" OFF)
 option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 features" OFF)
 
 
+
 ###############################################################################
 ### Map supported environment variables to CMake variables. The following
 ### variables will be processed and may overwrite previously defined options
@@ -49,7 +50,7 @@ endif()
 
 # CMAKE_TOOLCHAIN_FILE
 if(DEFINED ENV{CMAKE_TOOLCHAIN_FILE})
-  message(STATUS "Using environment variable 'SWIG_EXECUTABLE'")
+  message(STATUS "Using environment variable 'CMAKE_TOOLCHAIN_FILE'")
   set(CMAKE_TOOLCHAIN_FILE $ENV{CMAKE_TOOLCHAIN_FILE})
 endif()
 
@@ -418,3 +419,43 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     # swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
   endif(SWIG_FOUND)
 endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
+
+
+
+###############################################################################
+### Print summary
+###############################################################################
+message(STATUS
+"
+******************* TinySpline Configuration Summary *******************
+General Interface Configuration:
+  With double precision  (default: OFF):	${TINYSPLINE_DOUBLE_PRECISION}
+  Without C++11 features (default: OFF):	${TINYSPLINE_DISABLE_CXX11_FEATURES}
+
+Cross Compilation:
+  Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
+
+Available Interfaces:
+  C++:		${TINYSPLINE_CXX_AVAILABLE}
+
+  C\#:		TRUE
+    Compiler: ${TINYSPLINE_CSHARP_COMPILER}
+
+  Java:		${JNI_FOUND}
+    Version:  ${Java_VERSION_STRING}
+    Compiler: ${Java_JAVAC_EXECUTABLE}
+    Archive:  ${Java_JAR_EXECUTABLE}
+
+  Python:	${PYTHONLIBS_FOUND}
+    Version:  ${PYTHONLIBS_VERSION_STRING}
+    Include:  ${PYTHON_INCLUDE_DIR}
+    Library:  ${PYTHON_LIBRARY}
+
+  Ruby:		${RUBY_FOUND}
+    Version:  ${RUBY_VERSION}
+    Include:  ${RUBY_INCLUDE_DIRS}
+    Library:  ${RUBY_LIBRARY}
+
+Installation:
+  Prefix:	${CMAKE_INSTALL_PREFIX}
+")

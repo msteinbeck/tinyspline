@@ -10,17 +10,15 @@ typedef tsRational rational;
 
 class DeBoorNet {
 public:
+    /* Constructors & Destructors */
     DeBoorNet();
     DeBoorNet(const DeBoorNet& other);
-    DeBoorNet(DeBoorNet&& other);
     ~DeBoorNet();
 
+    /* Operators */
     DeBoorNet& operator=(const DeBoorNet& other);
-    DeBoorNet& operator=(DeBoorNet&& other);
 
-    void swap(DeBoorNet& other);
-    friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
-
+    /* Getter */
     rational u() const;
     size_t k() const;
     size_t s() const;
@@ -31,16 +29,23 @@ public:
     std::vector<rational> result() const;
     tsDeBoorNet* data();
 
+    /* C++11 features */
+#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
+    DeBoorNet(DeBoorNet&& other);
+    DeBoorNet& operator=(DeBoorNet&& other);
+    void swap(DeBoorNet& other);
+    friend void swap(DeBoorNet &left, DeBoorNet &right) { left.swap(right); }
+#endif
+
 private:
     tsDeBoorNet deBoorNet;
 };
 
 class BSpline {
 public:
-    /* Constructors */
+    /* Constructors & Destructors */
     BSpline();
     BSpline(const BSpline& other);
-    BSpline(BSpline&& other);
     BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
             const tsBSplineType type);
     BSpline(const std::vector<rational> points, const size_t dim);
@@ -48,12 +53,7 @@ public:
 
     /* Operators */
     BSpline& operator=(const BSpline& other);
-    BSpline& operator=(BSpline&& other);
     DeBoorNet operator()(const rational u) const;
-
-    /* Used by move semantics */
-    void swap(BSpline& other);
-    friend void swap(BSpline &left, BSpline &right) { left.swap(right); }
 
     /* Getter */
     size_t deg() const;
@@ -80,17 +80,26 @@ public:
     BSpline toBeziers() const;
     BSpline derive() const;
 
+    /* C++11 features */
+#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
+    BSpline(BSpline&& other);
+    BSpline& operator=(BSpline&& other);
+    void swap(BSpline& other);
+    friend void swap(BSpline &left, BSpline &right) { left.swap(right); }
+#endif
+
 private:
     tsBSpline bspline;
 };
 
 class Utils {
 public:
-    Utils() = delete;
-
     static bool fequals(const rational x, const rational y);
     static std::string enum_str(const tsError err);
     static tsError str_enum(const std::string str);
+
+private:
+    Utils() {}
 };
 
 }

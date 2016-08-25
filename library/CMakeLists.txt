@@ -100,6 +100,9 @@ endforeach()
 # TARGET_SUPPORTS_SHARED_LIBS
 #   Does the target support shared libraries?
 #
+# TINYSPLINE_DEBUG_POSTFIX
+#   Postfix of debug builds.
+#
 # TINYSPLINE_CXX_AVAILABLE
 #   Is an appropriate C++ compiler available?
 ###############################################################################
@@ -111,7 +114,13 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
   set(TARGET_SUPPORTS_SHARED_LIBS FALSE)
 endif()
 
+# TINYSPLINE_DEBUG_POSTFIX
+set(TINYSPLINE_DEBUG_POSTFIX "")
+
+# [TINYSPLINE_DEBUG_POSTFIX] (only for specific platforms/compiler suites)
+# CMAKE_C_FLAGS
 # TINYSPLINE_CXX_AVAILABLE
+# [CMAKE_CXX_FLAGS] (only if an appropriate C++ compiler is available)
 set(TINYSPLINE_CXX_AVAILABLE FALSE)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   if(TINYSPLINE_DOUBLE_PRECISION)
@@ -171,8 +180,11 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   if(TINYSPLINE_DOUBLE_PRECISION)
     add_definitions("/DTINYSPLINE_DOUBLE_PRECISION")
   endif()
-  # used to automatically create a .def file with all the global symbols for a shared library
+  # used to automatically create a .def file with all the global symbols for a
+  # shared library
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+  # it is common practice for MSVC to add a debug postfix.
+  set(TINYSPLINE_DEBUG_POSTFIX "d")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711")
 
   if(TINYSPLINE_DISABLE_CXX11_FEATURES OR
@@ -210,14 +222,14 @@ endif()
 # C library
 if(TARGET_SUPPORTS_SHARED_LIBS)
   add_library(tinyspline_shared SHARED tinyspline.c)
-  set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline")
+  set_target_properties(tinyspline_shared PROPERTIES OUTPUT_NAME "tinyspline" DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}")
   install(TARGETS tinyspline_shared
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
 endif()
 add_library(tinyspline_static STATIC tinyspline.c)
-set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline" PREFIX "lib")
+set_target_properties(tinyspline_static PROPERTIES OUTPUT_NAME "tinyspline" DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}" PREFIX "lib")
 install(TARGETS tinyspline_static
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -231,14 +243,14 @@ target_include_directories(tinyspline_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 if(TINYSPLINE_CXX_AVAILABLE)
   if(TARGET_SUPPORTS_SHARED_LIBS)
     add_library(tinysplinecpp_shared SHARED tinyspline.c tinysplinecpp.cpp)
-    set_target_properties(tinysplinecpp_shared PROPERTIES OUTPUT_NAME "tinysplinecpp")
+    set_target_properties(tinysplinecpp_shared PROPERTIES OUTPUT_NAME "tinysplinecpp" DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}")
     install(TARGETS tinysplinecpp_shared
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib
     )
   endif()
   add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
-  set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp" PREFIX "lib")
+  set_target_properties(tinysplinecpp_static PROPERTIES OUTPUT_NAME "tinysplinecpp" DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}" PREFIX "lib")
   install(TARGETS tinysplinecpp_static
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

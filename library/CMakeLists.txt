@@ -183,7 +183,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # used to automatically create a .def file with all the global symbols for a
   # shared library
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-  # it is common practice for MSVC to add a debug postfix.
+  # it is common practice for MSVC builds to add a debug postfix
   set(TINYSPLINE_DEBUG_POSTFIX "d")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Wall /WX /wd4820 /wd4711")
 

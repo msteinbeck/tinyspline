@@ -321,6 +321,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     set(TINYSPLINE_JAVA_INTERFACE_FILE_NAME "tinyspline.jar")
     set(TINYSPLINE_RUBY_INTERFACE_FILE_NAME "tinyspline.rb")
     set(TINYSPLINE_CSHARP_INTERFACE_FILE_NAME "TinySpline.dll")
+    set(TINYSPLINE_GO_INTERFACE_FILE_NAME "tinyspline.go")
     # Add additional clean targets
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
       "${TINYSPLINE_PYTHON_DIR};${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PYTHON_INTERFACE_FILE_NAME};${CMAKE_CURRENT_BINARY_DIR}/so;${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_JAVA_INTERFACE_FILE_NAME};${TINYSPLINE_RUBY_DIR};${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_RUBY_INTERFACE_FILE_NAME};${TINYSPLINE_CSHARP_DIR};${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME};${TINYSPLINE_GO_DIR}"
@@ -427,10 +428,14 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     endif()
     
     # Go (not fully supported yet)
-    # set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
-    # set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
-    # set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
-    # swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
+    set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
+    set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
+    set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
+    swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
+    add_custom_command(TARGET tinysplinego POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
+      "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE_NAME}"
+    )
   endif(SWIG_FOUND)
 endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 

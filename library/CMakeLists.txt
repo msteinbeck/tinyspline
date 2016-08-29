@@ -442,11 +442,12 @@ endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 message(STATUS
 "
 ******************* TinySpline Configuration Summary *******************
-General Interface Configuration:
-  With double precision  (default: OFF):	${TINYSPLINE_DOUBLE_PRECISION}
-  Without C++11 features (default: OFF):	${TINYSPLINE_DISABLE_CXX11_FEATURES}
+Interface Configuration:
+  With double precision  (default: OFF): ${TINYSPLINE_DOUBLE_PRECISION}
+  Without C++11 features (default: OFF): ${TINYSPLINE_DISABLE_CXX11_FEATURES}
 
-Cross Compilation:
+Compiler Configuration:
+  Compiler:       ${CMAKE_CXX_COMPILER}
   Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:
@@ -471,5 +472,5 @@ Available Interfaces:
     Library:  ${RUBY_LIBRARY}
 
 Installation:
-  Prefix:	${CMAKE_INSTALL_PREFIX}
+  Prefix: ${CMAKE_INSTALL_PREFIX}
 ")

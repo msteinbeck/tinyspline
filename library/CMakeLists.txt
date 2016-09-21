@@ -431,11 +431,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
     set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
     set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
-    swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
-    add_custom_command(TARGET tinysplinego POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
-      "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE_NAME}"
-    )
+    #swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
+    #add_custom_command(TARGET tinysplinego POST_BUILD
+    #  COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
+    #  "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE_NAME}"
+    #)
   endif(SWIG_FOUND)
 endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 

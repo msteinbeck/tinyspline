@@ -138,7 +138,7 @@ cmake ..
 cmake --build .
 ```
 
-You will find the resulting libraries, jars, etc. in `tinyspline/build/library`.
+You will find the resulting libraries, jars, etc. in `tinyspline/build/lib`.
 
 ####Cross Compiling
 In order to cross compile the C and C++ library, use one of the provided toolchain files.

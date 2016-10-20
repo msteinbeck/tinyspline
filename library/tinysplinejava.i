@@ -16,7 +16,7 @@
 // redirect input parameters to jni
 %typemap(javain) std::vector<ts::rational> "$javainput"
 
-// std:vector<float> to List<Float>
+// std::vector<float> to List<Float>
 %typemap(out) std::vector<float> {
   const jclass listClass = jenv->FindClass("java/util/ArrayList");
   const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
@@ -36,7 +36,7 @@
   *(jobject*)&$result = list;
 }
 
-// std:vector<double> to List<Double>
+// std::vector<double> to List<Double>
 %typemap(out) std::vector<double> {
   const jclass listClass = jenv->FindClass("java/util/ArrayList");
   const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");

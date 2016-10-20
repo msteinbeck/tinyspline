@@ -9,16 +9,12 @@
 # for php-config documentation.
 #
 # This code sets the following variables:
-#  PHP_CONFIG_DIR             = directory containing PHP configuration files
 #  PHP_CONFIG_EXECUTABLE      = full path to the php-config binary
 #  PHP_EXECUTABLE             = full path to the php binary
 #  PHP_EXTENSIONS_DIR         = directory containing PHP extensions
 #  PHP_EXTENSIONS_INCLUDE_DIR = directory containing PHP extension headers
 #  PHP_INCLUDE_DIRS           = include directives for PHP development
 #  PHP_VERSION_NUMBER         = PHP version number in PHP's "vernum" format eg 50303
-#  PHP_VERSION_MAJOR          = PHP major version number eg 5
-#  PHP_VERSION_MINOR          = PHP minor version number eg 3
-#  PHP_VERSION_PATCH          = PHP patch version number eg 3
 #  PHP_VERSION_STRING         = PHP version string eg 5.3.3-1ubuntu9.3
 #  PHP_FOUND                  = set to TRUE if all of the above has been found.
 #
@@ -39,14 +35,6 @@
 FIND_PROGRAM(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
 
 if (PHP_CONFIG_EXECUTABLE)
-  execute_process(
-    COMMAND
-      ${PHP_CONFIG_EXECUTABLE} --configure-options
-    COMMAND sed -ne "s/^.*--with-config-file-scan-dir=\\([^ ]*\\).*/\\1/p"
-      OUTPUT_VARIABLE PHP_CONFIG_DIR
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-
   execute_process(
     COMMAND
       ${PHP_CONFIG_EXECUTABLE} --php-binary
@@ -84,31 +72,6 @@ if (PHP_CONFIG_EXECUTABLE)
 
   execute_process(
     COMMAND
-      ${PHP_CONFIG_EXECUTABLE} --vernum
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND sed -ne "s/....$//p"
-      OUTPUT_VARIABLE PHP_VERSION_MAJOR
-  )
-
-  execute_process(
-    COMMAND
-      ${PHP_CONFIG_EXECUTABLE} --vernum
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND sed -ne "s/..$//p"
-    COMMAND sed -ne "s/^.0\\?//p"
-      OUTPUT_VARIABLE PHP_VERSION_MINOR
-  )
-
-  execute_process(
-    COMMAND
-      ${PHP_CONFIG_EXECUTABLE} --vernum
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND sed -ne "s/^...0\\?//p"
-      OUTPUT_VARIABLE PHP_VERSION_PATCH
-  )
-
-  execute_process(
-    COMMAND
       ${PHP_CONFIG_EXECUTABLE} --version
       OUTPUT_VARIABLE PHP_VERSION_STRING
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -116,15 +79,11 @@ if (PHP_CONFIG_EXECUTABLE)
 endif (PHP_CONFIG_EXECUTABLE)
 
 MARK_AS_ADVANCED(
-  PHP_CONFIG_DIR
   PHP_CONFIG_EXECUTABLE
   PHP_EXECUTABLE
   PHP_EXTENSIONS_DIR
   PHP_EXTENSIONS_INCLUDE_DIR
   PHP_INCLUDE_DIRS
-  PHP_VERSION_MAJOR
-  PHP_VERSION_MINOR
-  PHP_VERSION_PATCH
   PHP_VERSION_STRING
 )
 
@@ -133,29 +92,21 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
   php
   DEFAULT_MSG
   PHP_VERSION_STRING
-  PHP_CONFIG_DIR
   PHP_CONFIG_EXECUTABLE
   PHP_EXECUTABLE
   PHP_EXTENSIONS_DIR
   PHP_EXTENSIONS_INCLUDE_DIR
   PHP_INCLUDE_DIRS
   PHP_VERSION_NUMBER
-  PHP_VERSION_MAJOR
-  PHP_VERSION_MINOR
-  PHP_VERSION_PATCH
   PHP_VERSION_STRING
 )
 
 # Some handy dev output. Is there a way to enable these in some debug mode?
-#MESSAGE("PHP_CONFIG_DIR             = ${PHP_CONFIG_DIR}")
 #MESSAGE("PHP_CONFIG_EXECUTABLE      = ${PHP_CONFIG_EXECUTABLE}")
 #MESSAGE("PHP_EXECUTABLE             = ${PHP_EXECUTABLE}")
 #MESSAGE("PHP_EXTENSIONS_DIR         = ${PHP_EXTENSIONS_DIR}")
 #MESSAGE("PHP_EXTENSIONS_INCLUDE_DIR = ${PHP_EXTENSIONS_INCLUDE_DIR}")
 #MESSAGE("PHP_INCLUDE_DIRS           = ${PHP_INCLUDE_DIRS}")
 #MESSAGE("PHP_VERSION_NUMBER         = ${PHP_VERSION_NUMBER}")
-#MESSAGE("PHP_VERSION_MAJOR          = ${PHP_VERSION_MAJOR}")
-#MESSAGE("PHP_VERSION_MINOR          = ${PHP_VERSION_MINOR}")
-#MESSAGE("PHP_VERSION_PATCH          = ${PHP_VERSION_PATCH}")
 #MESSAGE("PHP_VERSION_STRING         = ${PHP_VERSION_STRING}")
 #MESSAGE("PHP_FOUND                  = ${PHP_FOUND}")

@@ -11,7 +11,7 @@ public class QuickStart {
         final BSpline spline = new BSpline(3, 2, 7, tsBSplineType.TS_CLAMPED);
 
         // Setup the control points.
-        final List<Float> ctrlp = spline.ctrlp();
+        final List<Float> ctrlp = spline.getCtrlp();
         ctrlp.set(0, -1.75f); // x0
         ctrlp.set(1, -1.0f);  // y0
         ctrlp.set(2, -1.5f);  // x1
@@ -29,14 +29,14 @@ public class QuickStart {
         spline.setCtrlp(ctrlp);
 
         // Evaluate `spline` at u = 0.4
-        List<Float> result = spline.evaluate(0.4f).result();
+        List<Float> result = spline.evaluate(0.4f).getResult();
         System.out.println(String.format("x = %f, y = %f", result.get(0), result.get(1)));
 
         // Derive `spline` and subdivide it into a sequence of Bezier curves.
         final BSpline beziers = spline.derive().toBeziers();
 
         // Evaluate `beziers` at u = 0.3
-        result = beziers.evaluate(0.3f).result(); // Java does not support the operator '()'
+        result = beziers.evaluate(0.3f).getResult(); // Java does not support the operator '()'
         System.out.println(String.format("x = %f, y = %f", result.get(0), result.get(1)));
     }
 }

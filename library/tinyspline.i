@@ -25,12 +25,16 @@
 %attribute(ts::BSpline, size_t, dim, dim);
 %attribute(ts::BSpline, size_t, nCtrlp, nCtrlp);
 %attribute(ts::BSpline, size_t, nKnots, nKnots);
+%attributeval(ts::BSpline, std::vector<ts::rational>, ctrlp, ctrlp, setCtrlp);
+%attributeval(ts::BSpline, std::vector<ts::rational>, knots, knots, setKnots);
 %attribute(ts::DeBoorNet, ts::rational, u, u);
 %attribute(ts::DeBoorNet, size_t, k, k);
 %attribute(ts::DeBoorNet, size_t, s, s);
 %attribute(ts::DeBoorNet, size_t, h, h);
 %attribute(ts::DeBoorNet, size_t, dim, dim);
 %attribute(ts::DeBoorNet, size_t, nPoints, nPoints);
+%attributeval(ts::DeBoorNet, std::vector<ts::rational>, points, points);
+%attributeval(ts::DeBoorNet, std::vector<ts::rational>, result, result);
 
 // make strings directly accessible
 %include "std_string.i"
@@ -57,6 +61,3 @@
 
 // make std::vector<ts::rational> available
 %include "std_vector.i"
-namespace std {
-    %template(RationalVector) vector<ts::rational>;
-};

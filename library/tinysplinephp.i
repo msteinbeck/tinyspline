@@ -1,19 +1,15 @@
 %module tinysplinephp
 
-// std::vector<ts::rational> to PHP native array
+// std::vector<ts::rational> to php native array
 %typemap(out) std::vector<ts::rational> * {
-  array_init($result);
-  for (std::vector<ts::rational>::iterator it = $1->begin();
-      it != $1->end(); it++) {
-    zval *data;
-    MAKE_STD_ZVAL(data);
-    ZVAL_DOUBLE(data, *it);
-    zend_hash_next_index_insert(HASH_OF($result), &data,
-        sizeof(zval *), NULL);
+  const int size = $1->size();
+  array_init_size($result, size);
+  for (int i = 0; i < size; i++) {
+    add_index_double($result, i, (*$1)[i]);
   }
 }
 
-// PHP native array to std::vector<ts::rational>
+// php native array to std::vector<ts::rational>
 %typemap(in) std::vector<ts::rational> * %{
   $1 = new std::vector<ts::rational>();
   for (int idx = 0;; idx++) {

@@ -25,7 +25,7 @@
   }
 %}
 
-// cleanup memory allocated by typemap
+// cleanup memory allocated by typemaps
 %typemap(freearg) std::vector<ts::rational> * {
   delete $1;
 }

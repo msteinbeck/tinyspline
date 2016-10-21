@@ -110,7 +110,7 @@
   }
 }
 
-// cleanup memory allocated while applying a typemap
+// cleanup memory allocated by typemap
 %typemap(freearg) std::vector<float> * {
   delete $1;
 }

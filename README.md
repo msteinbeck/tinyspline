@@ -3,7 +3,7 @@ TinySpline
 
 TinySpline is library for NURBS, B-Splines, and Bézier curves giving you access to several
 operations on splines. The library has been implemented in C (C89) and provides a wrapper
-for C++ (C++11) along with bindings for C#, Java, PHP, Python, and Ruby. The focus of
+for C++ (C++11) along with bindings for C#, Java, Lua, PHP, Python, and Ruby. The focus of
 TinySpline is to be very small by design with a minimum set of dependencies. Nonetheless,
 the interface has been developed to be convenient for non-experts without lacking enhanced
 features.
@@ -20,7 +20,8 @@ MIT License - see the LICENSE file in the source distribution.
 - Insert knots and split splines without modifying the shape.
 - Derive splines of any degree.
 - Subdivide splines into Bézier curves.
-- A wrapper for C++ (C++11) and bindings for C#, Java, PHP, Python, and Ruby.
+- A wrapper for C++ (C++11) and bindings for C#, Java, Lua, PHP, Python, and
+  Ruby.
 - Easy to use with OpenGL.
 
 Feel free to ask for special features or to contribute to TinySpline :).
@@ -101,6 +102,7 @@ Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
 C#       | -                               | csharp
 Java     | JNI headers                     | so/tinyspline
+Lua      | Lua headers                     | lua
 PHP      | Zend headers                    | php
 Python   | Python headers                  | python
 Ruby     | Ruby headers                    | ruby

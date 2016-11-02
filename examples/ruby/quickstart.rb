@@ -1,7 +1,7 @@
-require 'tinyspline'
+require 'tinysplineruby'
 
 # Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-spline = TinySpline::BSpline.new(3, 2, 7, TinySpline::TS_CLAMPED)
+spline = Tinysplineruby::BSpline.new(3, 2, 7, Tinysplineruby::TS_CLAMPED)
 
 # Setup the control points.
 ctrlp = spline.ctrlp

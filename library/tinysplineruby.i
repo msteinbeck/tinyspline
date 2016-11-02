@@ -1,20 +1,35 @@
 %module tinysplineruby
 
+// std::vector<ts::rational> to ruby array
+%typemap(out) std::vector<ts::rational> * {
+  const size_t size = $1->size();
+  $result = rb_ary_new2(size);
+  for (int i = 0; i < size; i++) {
+    rb_ary_store($result, i, DBL2NUM((*$1)[i]));
+  }
+}
+
+// ruby array to std::vector<ts::rational>
+%typemap(in) std::vector<ts::rational> * (size_t size) %{
+  size = RARRAY_LEN($input);
+  $1 = new std::vector<ts::rational>();
+  $1->reserve(size);
+  for (size_t i = 0; i < size; i++) {
+    $1->push_back(NUM2DBL(rb_ary_entry($input, i)));
+  }
+%}
+
+// cleanup memory allocated by typemaps
+%typemap(freearg) std::vector<ts::rational> * {
+  delete $1;
+}
+
 //********************************************************
 //*                                                      *
 //* BSpline (Ruby)                                       *
 //*                                                      *
 //********************************************************
 %ignore ts::BSpline::operator=;
-
-// NOTE: I was unable to create proper getter and setter functions for 'ctrlp'
-// and 'knots' with SWIG. Therefore, a handwritten interface file is provided
-// which 1) requires the module generated with SWIG (tinysplineruby), and 2)
-// subclasses BSpline and DeBoorNet to add the desired getter and setter
-// functions. In order to make the remaining classes (e.g. Utils) available as
-// well, the module 'tinyspline' subclasses them without any further
-// implementation simplifying the usage as one needs to import the module
-// 'tinyspline' only.
 
 //********************************************************
 //*                                                      *

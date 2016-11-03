@@ -321,6 +321,12 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
   # avr is missing some required headers
   set(TINYSPLINE_CXX_AVAILABLE FALSE)
 endif()
+# Remove leading and trailing spaces from variables holding C/C++ flags
+string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
+string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
+string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
 
 
 
@@ -613,13 +619,11 @@ Interface Configuration:
   Without C++11 features (default: OFF): ${TINYSPLINE_DISABLE_CXX11_FEATURES}
 
 Compiler Configuration:
-  Compiler:          ${CMAKE_CXX_COMPILER}
-  C flags:           ${CMAKE_C_FLAGS}
-  CXX flags:         ${CMAKE_CXX_FLAGS}
-  C library flags:   ${TINYSPLINE_LIBRARY_C_FLAGS}
-  C++ library flags: ${TINYSPLINE_LIBRARY_CXX_FLAGS}
-  C++ binding flags: ${TINYSPLINE_BINDING_CXX_FLAGS}
-  Toolchain file:    ${CMAKE_TOOLCHAIN_FILE}
+  Compiler:       ${CMAKE_CXX_COMPILER}
+  C flags:        ${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}
+  C++ flags:      ${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}
+  Binding flags:  ${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}
+  Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:
   C++:		${TINYSPLINE_CXX_AVAILABLE}

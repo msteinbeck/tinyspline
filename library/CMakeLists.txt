@@ -111,6 +111,9 @@ endforeach()
 # TINYSPLINE_DEBUG_POSTFIX
 #   Postfix of debug builds.
 #
+# TINYSPLINE_DEFINITIONS
+#   Preprocessor definitions.
+#
 # CMAKE_C_FLAGS
 #   C flags used by the C library and bindings
 #
@@ -137,10 +140,30 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
   set(TARGET_SUPPORTS_SHARED_LIBS FALSE)
 endif()
 
-# TINYSPLINE_DEBUG_POSTFIX (the default postfix is empty)
-set(TINYSPLINE_DEBUG_POSTFIX "")
-
 # TINYSPLINE_DEBUG_POSTFIX
+# TINYSPLINE_DEFINITIONS
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  # it is common practice for MSVC builds to add a debug postfix
+  set(TINYSPLINE_DEBUG_POSTFIX "d")
+  if(TINYSPLINE_DOUBLE_PRECISION)
+    set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_DOUBLE_PRECISION")
+  endif()
+  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
+    set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_DISABLE_CXX11_FEATURES")
+  endif()
+else()
+  set(TINYSPLINE_DEBUG_POSTFIX "")
+  if(TINYSPLINE_DOUBLE_PRECISION)
+    set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_DOUBLE_PRECISION")
+  endif()
+  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
+    set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_DISABLE_CXX11_FEATURES")
+  endif()
+endif()
+# Remove leading and trailing spaces from TINYSPLINE_DEFINITIONS
+string(STRIP "${TINYSPLINE_DEFINITIONS}" TINYSPLINE_DEFINITIONS)
+add_definitions("${TINYSPLINE_DEFINITIONS}")
+
 # CMAKE_C_FLAGS
 # CMAKE_CXX_FLAGS
 # TINYSPLINE_LIBRARY_C_FLAGS
@@ -149,14 +172,6 @@ set(TINYSPLINE_DEBUG_POSTFIX "")
 # TINYSPLINE_CXX_AVAILABLE
 set(TINYSPLINE_CXX_AVAILABLE FALSE)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  # definitions
-  if(TINYSPLINE_DOUBLE_PRECISION)
-    add_definitions("-DTINYSPLINE_DOUBLE_PRECISION")
-  endif()
-  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
-    add_definitions("-DTINYSPLINE_DISABLE_CXX11_FEATURES")
-  endif()
-
   # CMAKE_C_FLAGS
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
     # avr uses the 'inline' keyword in some header files which is not
@@ -207,14 +222,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(TINYSPLINE_CXX_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # definitions
-  if(TINYSPLINE_DOUBLE_PRECISION)
-    add_definitions("-DTINYSPLINE_DOUBLE_PRECISION")
-  endif()
-  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
-    add_definitions("-DTINYSPLINE_DISABLE_CXX11_FEATURES")
-  endif()
-
   # CMAKE_C_FLAGS
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
 
@@ -258,14 +265,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(TINYSPLINE_CXX_AVAILABLE TRUE)
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  # definitions
-  if(TINYSPLINE_DOUBLE_PRECISION)
-    add_definitions("/DTINYSPLINE_DOUBLE_PRECISION")
-  endif()
-  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
-    add_definitions("/DTINYSPLINE_DISABLE_CXX11_FEATURES")
-  endif()
-
   # TINYSPLINE_LIBRARY_C_FLAGS
   set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} /Wall")
   set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} /WX")
@@ -297,19 +296,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # used to automatically create a .def file with all the global symbols for a
   # shared library
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-
-  # it is common practice for MSVC builds to add a debug postfix
-  set(TINYSPLINE_DEBUG_POSTFIX "d")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   # TODO: Find appropriate settings for intel
-
-  # definitions
-  if(TINYSPLINE_DOUBLE_PRECISION)
-    add_definitions("-DTINYSPLINE_DOUBLE_PRECISION")
-  endif()
-  if(TINYSPLINE_DISABLE_CXX11_FEATURES)
-    add_definitions("-DTINYSPLINE_DISABLE_CXX11_FEATURES")
-  endif()
 
   # TINYSPLINE_CXX_AVAILABLE
   if(TINYSPLINE_DISABLE_CXX11_FEATURES OR
@@ -611,6 +599,10 @@ endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 ###############################################################################
 ### Print summary
 ###############################################################################
+string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_SUMMARY_C_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_SUMMARY_CXX_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUMMARY_BINDING_FLAGS)
+
 message(STATUS
 "
 ******************* TinySpline Configuration Summary *******************
@@ -620,9 +612,10 @@ Interface Configuration:
 
 Compiler Configuration:
   Compiler:       ${CMAKE_CXX_COMPILER}
-  C flags:        ${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}
-  C++ flags:      ${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}
-  Binding flags:  ${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}
+  C flags:        ${TINYSPLINE_SUMMARY_C_FLAGS}
+  C++ flags:      ${TINYSPLINE_SUMMARY_CXX_FLAGS}
+  Binding flags:  ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
+  Definitions:    ${TINYSPLINE_DEFINITIONS}
   Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:

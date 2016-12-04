@@ -29,8 +29,8 @@ tsRational u = 0.f;
 ********************************************************/
 void setup()
 {
-    ts_bspline_new(2, 4, 9, TS_CLAMPED ,&spline);
     const tsRational w = (tsRational)(sqrt(2.f) / 2.f);
+    ts_bspline_new(2, 4, 9, TS_CLAMPED ,&spline);
     
     spline.ctrlp[0] = 1.f;
     spline.ctrlp[1] = 0.f;
@@ -98,6 +98,8 @@ void tear_down()
 
 void display(void)
 {
+    tsDeBoorNet net;
+    size_t i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     /* draw spline */
@@ -118,7 +120,6 @@ void display(void)
     /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
@@ -127,7 +128,6 @@ void display(void)
     /* draw evaluation */
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    tsDeBoorNet net;
     ts_bspline_evaluate(&spline, u, &net);
     glBegin(GL_POINTS);
         glVertex4fv(net.result);

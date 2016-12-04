@@ -71,6 +71,8 @@ void tear_down()
 
 void display(void)
 {
+    tsDeBoorNet net1, net2, net3;
+    size_t i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     /* draw spline */
@@ -91,7 +93,6 @@ void display(void)
     /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
@@ -100,7 +101,6 @@ void display(void)
     /* draw derivative */
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    tsDeBoorNet net1, net2, net3;
     ts_bspline_evaluate(&spline, u, &net1);
     ts_bspline_evaluate(&derivative, u, &net2);
     ts_bspline_evaluate(&derivative, u, &net3);

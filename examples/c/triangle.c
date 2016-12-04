@@ -38,6 +38,9 @@ tsRational B[3], v[3], w[3];
 ********************************************************/
 void setup()
 {
+    tsRational mid;
+    size_t k; /* not required here */
+
     ts_bspline_new(
         2,      /* degree of spline */
         3,      /* dimension of each point */
@@ -60,8 +63,7 @@ void setup()
     for (i = 0; i < 3; i++)
         B[i] = spline.ctrlp[i+3];
 
-    tsRational mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
-    size_t k; /* not required here */
+    mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
     ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
 
     A = spline.ctrlp;
@@ -92,6 +94,7 @@ void displayText(float x, float y, float r, float g, float b, const char *string
 
 void display(void)
 {
+    char buffer[256];
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* keep in mind that `D` and `E` are simply pointers to the
@@ -131,7 +134,6 @@ void display(void)
     glEnd();
 
     /* display t */
-    char buffer[256];
     sprintf(buffer, "t: %.2f", t);
     displayText(-.2f, 1.2f, 0.0, 1.0, 0.0, buffer);
     

@@ -68,11 +68,12 @@ void tear_down()
 
 void display(void)
 {
+    tsBSpline split;
+    tsDeBoorNet net;
+    size_t i, k;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     /* draw split */
-    tsBSpline split;
-    size_t k;
     ts_bspline_split(&spline, u, &split, &k);
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
@@ -92,7 +93,6 @@ void display(void)
     /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
@@ -101,7 +101,6 @@ void display(void)
     /* draw split point */
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
-    tsDeBoorNet net;
     ts_bspline_evaluate(&spline, u, &net);
     glBegin(GL_POINTS);
         glVertex3fv(net.result);

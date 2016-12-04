@@ -56,9 +56,10 @@ void tear_down()
 
 void display(void)
 {
+    tsBSpline buckled;
+    size_t i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    tsBSpline buckled;
     ts_bspline_buckle(&spline, b, &buckled);
     
     /* draw spline */
@@ -79,7 +80,6 @@ void display(void)
     /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
-    size_t i;
     glBegin(GL_POINTS);
       for (i = 0; i < spline.n_ctrlp; i++) 
          glVertex3fv(&spline.ctrlp[i * spline.dim]);

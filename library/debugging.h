@@ -8,7 +8,8 @@ void ts_bspline_print(const tsBSpline* bspline)
 {
     size_t i, j;
     
-    printf("########### control points (%zu) ###########\n", bspline->n_ctrlp);
+    printf("########### control points (%lu) ###########\n",
+           (unsigned long) bspline->n_ctrlp);
     for (i = 0; i < bspline->n_ctrlp; i++) {
         for (j = 0; j < bspline->dim; j++) {
             printf("%f\t", bspline->ctrlp[i * bspline->dim + j]);
@@ -17,7 +18,8 @@ void ts_bspline_print(const tsBSpline* bspline)
     }
     printf("\n");
     
-    printf("########### knots(%zu) ###########\n", bspline->n_knots);
+    printf("########### knots(%lu) ###########\n",
+           (unsigned long) bspline->n_knots);
     for (i = 0; i < bspline->n_knots; i++) {
         printf("%f  ", bspline->knots[i]);
     }
@@ -28,7 +30,8 @@ void ts_deboornet_print(const tsDeBoorNet* net)
 {
     size_t i, j;
     
-    printf("########### points (%zu) ###########\n", net->n_points);
+    printf("########### points (%lu) ###########\n",
+           (unsigned long) net->n_points);
     for (i = 0; i < net->n_points; i++) {
         for (j = 0; j < net->dim; j++) {
             printf("%f\t", net->points[i * net->dim + j]);

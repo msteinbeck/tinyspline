@@ -75,6 +75,7 @@ void displayText( float x, float y, float r, float g, float b, const char *strin
 
 void display(void)
 {
+    char buffer[256];
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* weight the first three components with `w` and store `w`
@@ -110,7 +111,6 @@ void display(void)
     glEnd();
 
     /* display w */
-    char buffer[256];
     sprintf( buffer, "w: %.2f", w );
     displayText( -.2f, 1.2f, 0.0, 1.0, 0.0, buffer );
     

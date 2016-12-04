@@ -22,12 +22,12 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-size_t i; // loop counter
+size_t i; /* loop counter */
 tsRational t = 0.f;
-// A, C, D, and E are convenience variables and simple wrap the access
-// to the control points of `spline`. B is required to store the original
-// second control point of `spline` which gets replaced with D and E.
-// v and w are the vectors AB and CB, respectively.
+/* A, C, D, and E are convenience variables and simply wrap the access
+to the control points of `spline`. B is required to store the original
+second control point of `spline` which gets replaced with D and E.
+v and w are the vectors AB and CB, respectively. */
 tsRational *A, *C, *D, *E;
 tsRational B[3], v[3], w[3];
 
@@ -39,14 +39,14 @@ tsRational B[3], v[3], w[3];
 void setup()
 {
     ts_bspline_new(
-        2,      // degree of spline
-        3,      // dimension of each point
-        3,      // number of control points
-        TS_CLAMPED,// used to hit first and last control point
-        &spline // the spline to setup
+        2,      /* degree of spline */
+        3,      /* dimension of each point */
+        3,      /* number of control points */
+        TS_CLAMPED, /* used to hit first and last control point */
+        &spline /* the spline to setup */
     );
     
-    // Setup control points.
+    /* Setup control points. */
     spline.ctrlp[0] = -1.0f;
     spline.ctrlp[1] = 1.0f;
     spline.ctrlp[2] = 0.0f;
@@ -61,7 +61,7 @@ void setup()
         B[i] = spline.ctrlp[i+3];
 
     tsRational mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
-    size_t k; // not required here
+    size_t k; /* not required here */
     ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
 
     A = spline.ctrlp;
@@ -94,14 +94,14 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // keep in mind that `D` and `E` are simply pointers to the
-    // corresponding control points of `spline`.
+    /* keep in mind that `D` and `E` are simply pointers to the
+    corresponding control points of `spline`. */
     for (i = 0; i < 3; i++) {
         D[i] = A[i] + t*v[i];
         E[i] = C[i] + t*w[i];
     }
     
-    // draw spline
+    /* draw spline */
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
@@ -116,7 +116,7 @@ void display(void)
         );
     gluEndCurve(theNurb);
 
-    // draw control points
+    /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
     glBegin(GL_POINTS);
@@ -124,13 +124,13 @@ void display(void)
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
     glEnd();
 
-    // draw B
+    /* draw B */
     glColor3f(0.0, 0.0, 1.0);
     glBegin(GL_POINTS);
         glVertex3fv(B);
     glEnd();
 
-    // display t
+    /* display t */
     char buffer[256];
     sprintf(buffer, "t: %.2f", t);
     displayText(-.2f, 1.2f, 0.0, 1.0, 0.0, buffer);

@@ -22,9 +22,9 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-size_t i; // loop counter
-// the original second point of `spline` that is
-// weight with `w` in every call of ::display
+size_t i; /* loop counter */
+/* the original second point of `spline` that is
+weight with `w` in every call of ::display */
 tsRational B[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 tsRational w = 0.001f;
 
@@ -36,21 +36,21 @@ tsRational w = 0.001f;
 void setup()
 {
     ts_bspline_new(
-        2,      // degree of spline
-        4,      // dimension of each point
-        3,      // number of control points
-        TS_CLAMPED,// used to hit first and last control point
-        &spline // the spline to setup
+        2,      /* degree of spline */
+        4,      /* dimension of each point */
+        3,      /* number of control points */
+        TS_CLAMPED, /* used to hit first and last control point */
+        &spline /* the spline to setup */
     );
     
-    // Setup control points.
+    /* Setup control points. */
     spline.ctrlp[0] = -1.0f;
     spline.ctrlp[1] = 1.0f;
     spline.ctrlp[2] = 0.0f;
     spline.ctrlp[3] = 1.0f;
 
-    // ignore second control point here since it is
-    // updated in ::display anyway
+    /* ignore second control point here since it is
+    updated in ::display anyway */
 
     spline.ctrlp[8] = 1.0f;
     spline.ctrlp[9] = -1.0f;
@@ -77,15 +77,15 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // weight the first three components with `w` and store `w`
-    // in the forth component of the control point---that's how
-    // homogeneous coordinates work
+    /* weight the first three components with `w` and store `w`
+    in the forth component of the control point---that's how
+    homogeneous coordinates work */
     spline.ctrlp[4] = B[0] * w;
     spline.ctrlp[5] = B[1] * w;
     spline.ctrlp[6] = B[2] * w;
     spline.ctrlp[7] = w;
     
-    // draw spline
+    /* draw spline */
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
@@ -100,7 +100,7 @@ void display(void)
         );
     gluEndCurve(theNurb);
 
-    // draw control points
+    /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
     glBegin(GL_POINTS);
@@ -109,7 +109,7 @@ void display(void)
          glVertex3fv(spline.ctrlp + 8);
     glEnd();
 
-    // display w
+    /* display w */
     char buffer[256];
     sprintf( buffer, "w: %.2f", w );
     displayText( -.2f, 1.2f, 0.0, 1.0, 0.0, buffer );
@@ -117,7 +117,7 @@ void display(void)
     glutSwapBuffers();
     glutPostRedisplay();
 
-    w *= 1.05f; // non-linear update of `w`
+    w *= 1.05f; /* non-linear update of `w` */
     if (w > 100.f) {
         w = 0.001f;
     }

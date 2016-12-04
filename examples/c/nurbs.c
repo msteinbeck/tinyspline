@@ -100,7 +100,7 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // draw spline
+    /* draw spline */
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
@@ -115,7 +115,7 @@ void display(void)
         );
     gluEndCurve(theNurb);
 
-    // draw control points
+    /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
     size_t i;
@@ -124,7 +124,7 @@ void display(void)
          glVertex3fv(&spline.ctrlp[i * spline.dim]);
     glEnd();
     
-    // draw evaluation
+    /* draw evaluation */
     glColor3f(0.0, 0.0, 1.0);
     glPointSize(5.0);
     tsDeBoorNet net;

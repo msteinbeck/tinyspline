@@ -30,14 +30,14 @@ tsRational b = 1.f;
 void setup()
 {
     ts_bspline_new(
-        2,      // degree of spline
-        3,      // dimension of each point
-        3,      // number of control points
-        TS_CLAMPED,// used to hit first and last control point
-        &spline // the spline to setup
+        2,      /* degree of spline */
+        3,      /* dimension of each point */
+        3,      /* number of control points */
+        TS_CLAMPED, /* used to hit first and last control point */
+        &spline /* the spline to setup */
     );
     
-    // Setup control points.
+    /* Setup control points. */
     spline.ctrlp[0] = -1.0f;
     spline.ctrlp[1] = 1.0f;
     spline.ctrlp[2] = 0.0f;
@@ -61,7 +61,7 @@ void display(void)
     tsBSpline buckled;
     ts_bspline_buckle(&spline, b, &buckled);
     
-    // draw spline
+    /* draw spline */
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(3);
     gluBeginCurve(theNurb);
@@ -76,7 +76,7 @@ void display(void)
         );
     gluEndCurve(theNurb);
 
-    // draw control points
+    /* draw control points */
     glColor3f(1.0, 0.0, 0.0);
     glPointSize(5.0);
     size_t i;

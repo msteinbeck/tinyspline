@@ -9,8 +9,8 @@ void default_test_bspline(CuTest* tc)
     b.dim = 2;
     b.n_ctrlp = 10;
     b.n_knots = 14;
-    b.ctrlp = (float*) &b.deg;
-    b.knots = (float*) &b.dim;
+    b.ctrlp = (tsRational*) &b.deg;
+    b.knots = (tsRational*) &b.dim;
 
     CuAssertPtrNotNull(tc, b.ctrlp);
     CuAssertPtrNotNull(tc, b.knots);
@@ -34,7 +34,7 @@ void default_test_deboornet(CuTest* tc)
     net.h = 5;
     net.dim = 15;
     net.n_points = 156;
-    net.points = (float*) &net.h;
+    net.points = (tsRational*) &net.h;
     net.result = &net.u;
 
     CuAssertPtrNotNull(tc, net.result);

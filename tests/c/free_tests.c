@@ -10,7 +10,7 @@ void free_test_bspline(CuTest* tc)
     b.dim = 2;
     b.n_ctrlp = 10;
     b.n_knots = 14;
-    b.ctrlp = (float*) malloc(10*2*4);
+    b.ctrlp = (tsRational*) malloc(10*2*4);
     b.knots = b.ctrlp + 5;
 
     CuAssertPtrNotNull(tc, b.ctrlp);
@@ -35,7 +35,7 @@ void free_test_deboornet(CuTest* tc)
     net.h = 5;
     net.dim = 15;
     net.n_points = 156;
-    net.points = (float*) malloc(156*15*4);
+    net.points = (tsRational*) malloc(156*15*4);
     net.result = net.points + 50;
 
     CuAssertPtrNotNull(tc, net.result);

@@ -456,6 +456,16 @@ tsError ts_str_enum(const char* str);
  */
 void ts_ffill(tsRational* arr, const size_t num, const tsRational val);
 
+/**
+ * Returns the euclidean distance of \x and \y consisting of \dim components,
+ * respectively.
+ *
+ * @return  the euclidean of \x and \y.
+ */
+tsRational ts_ctrlp_dist2(
+    const tsRational *x, const tsRational *y, const size_t dim
+);
+
 
 #ifdef	__cplusplus
 }

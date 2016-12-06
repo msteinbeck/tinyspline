@@ -1,7 +1,7 @@
 #include "tinyspline.h"
 
 #include <stdlib.h> /* malloc, free */
-#include <math.h> /* fabs */
+#include <math.h> /* fabs, sqrt */
 #include <string.h> /* memcpy, memmove, strcmp */
 #include <setjmp.h> /* setjmp, longjmp */
 
@@ -1162,4 +1162,15 @@ void ts_ffill(tsRational* arr, const size_t num, const tsRational val)
     size_t i;
     for (i = 0; i < num; i++)
         arr[i] = val;
+}
+
+tsRational ts_ctrlp_dist2(
+    const tsRational *x, const tsRational *y, const size_t dim
+)
+{
+    tsRational sum = 0;
+    size_t i;
+    for (i = 0; i < dim; i++)
+        sum += (x[i] - y[i]) * (x[i] - y[i]);
+    return (tsRational) sqrt(sum);
 }

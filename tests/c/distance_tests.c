@@ -4,7 +4,7 @@
 
 const double delta = 0.000001;
 
-void dist2_test_non_negativity(CuTest* tc)
+void distance_test_dist2_non_negativity(CuTest *tc)
 {
     tsRational x, y, dist;
     tsRational xs[3], ys[3];
@@ -96,7 +96,7 @@ void dist2_test_non_negativity(CuTest* tc)
     CuAssertTrue(tc, dist >= 0);
 }
 
-void dist2_test_identity(CuTest* tc)
+void distance_test_dist2_identity(CuTest *tc)
 {
     tsRational x, y, dist;
     tsRational xs[3], ys[3];
@@ -139,7 +139,7 @@ void dist2_test_identity(CuTest* tc)
     CuAssertDblEquals(tc, 0, dist, delta);
 }
 
-void dist2_test_symmetry(CuTest* tc)
+void distance_test_dist2_symmetry(CuTest *tc)
 {
     tsRational x, y;
     tsRational xs[3], ys[3];
@@ -173,7 +173,7 @@ void dist2_test_symmetry(CuTest* tc)
         ts_ctrlp_dist2(ys, xs, 3), delta);
 }
 
-void dist2_test_subadditivity(CuTest* tc)
+void distance_test_dist2_subadditivity(CuTest *tc)
 {
     tsRational x, y, z;
     tsRational xs[2], ys[2], zs[2];
@@ -196,7 +196,7 @@ void dist2_test_subadditivity(CuTest* tc)
     );
 }
 
-void dist2_test_standard_cases(CuTest* tc)
+void distance_test_dist2_standard_cases(CuTest *tc)
 {
     size_t i;
     tsRational x, y;
@@ -243,7 +243,7 @@ void dist2_test_standard_cases(CuTest* tc)
     CuAssertDblEquals(tc, sqrt(25.0), ts_ctrlp_dist2(xsss, ysss, 25), delta);
 }
 
-void dist2_test_zero_dim(CuTest* tc)
+void distance_test_dist2_zero_dim(CuTest *tc)
 {
     tsRational x = (tsRational) 0.0;
     tsRational y = (tsRational) 1.0;
@@ -254,12 +254,12 @@ CuSuite* get_distance_suite()
 {
     CuSuite* suite = CuSuiteNew();
 
-    SUITE_ADD_TEST(suite, dist2_test_non_negativity);
-    SUITE_ADD_TEST(suite, dist2_test_identity);
-    SUITE_ADD_TEST(suite, dist2_test_symmetry);
-    SUITE_ADD_TEST(suite, dist2_test_subadditivity);
-    SUITE_ADD_TEST(suite, dist2_test_standard_cases);
-    SUITE_ADD_TEST(suite, dist2_test_zero_dim);
+    SUITE_ADD_TEST(suite, distance_test_dist2_non_negativity);
+    SUITE_ADD_TEST(suite, distance_test_dist2_identity);
+    SUITE_ADD_TEST(suite, distance_test_dist2_symmetry);
+    SUITE_ADD_TEST(suite, distance_test_dist2_subadditivity);
+    SUITE_ADD_TEST(suite, distance_test_dist2_standard_cases);
+    SUITE_ADD_TEST(suite, distance_test_dist2_zero_dim);
 
     return suite;
 }

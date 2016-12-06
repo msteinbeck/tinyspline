@@ -2,7 +2,7 @@
 #include "CuTest.h"
 #include <math.h>
 
-const double delta = 0.000001;
+const double distance_tests_delta = 0.000001;
 
 void distance_test_dist2_non_negativity(CuTest *tc)
 {
@@ -105,38 +105,38 @@ void distance_test_dist2_identity(CuTest *tc)
     x = (tsRational) 0.0;
     y = (tsRational) 0.0;
     dist = ts_ctrlp_dist2(&x, &y, 1);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 
     /* small positive */
     x = (tsRational) 1.5432;
     y = (tsRational) 1.5432;
     dist = ts_ctrlp_dist2(&x, &y, 1);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 
     /* large positive */
     x = (tsRational) 74978587.348;
     y = (tsRational) 74978587.348;
     dist = ts_ctrlp_dist2(&x, &y, 1);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 
     /* small negative */
     x = (tsRational) -1.85034;
     y = (tsRational) -1.85034;
     dist = ts_ctrlp_dist2(&x, &y, 1);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 
     /* large negative */
     x = (tsRational) -237492332.23648;
     y = (tsRational) -237492332.23648;
     dist = ts_ctrlp_dist2(&x, &y, 1);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 
     /* multi dim */
     xs[0] = ys[0] = (tsRational) 3743.128;
     xs[1] = ys[1] = (tsRational) 2739.325;
     xs[2] = ys[2] = (tsRational) 68098.21347;
     dist = ts_ctrlp_dist2(xs, ys, 3);
-    CuAssertDblEquals(tc, 0, dist, delta);
+    CuAssertDblEquals(tc, 0, dist, distance_tests_delta);
 }
 
 void distance_test_dist2_symmetry(CuTest *tc)
@@ -148,19 +148,19 @@ void distance_test_dist2_symmetry(CuTest *tc)
     x = (tsRational) 73945.123478;
     y = (tsRational) 5789346.1234;
     CuAssertDblEquals(tc, ts_ctrlp_dist2(&x, &y, 1),
-        ts_ctrlp_dist2(&y, &x, 1), delta);
+        ts_ctrlp_dist2(&y, &x, 1), distance_tests_delta);
 
     /* x and y negative */
     x = (tsRational) -3759.23423;
     y = (tsRational) -9824357.2342;
     CuAssertDblEquals(tc, ts_ctrlp_dist2(&x, &y, 1),
-        ts_ctrlp_dist2(&y, &x, 1), delta);
+        ts_ctrlp_dist2(&y, &x, 1), distance_tests_delta);
 
     /* positive and negative */
     x = (tsRational) 385802.2346;
     y = (tsRational) -78424.8742;
     CuAssertDblEquals(tc, ts_ctrlp_dist2(&x, &y, 1),
-        ts_ctrlp_dist2(&y, &x, 1), delta);
+        ts_ctrlp_dist2(&y, &x, 1), distance_tests_delta);
 
     /* multi dim */
     xs[0] = (tsRational) 856904.2342;
@@ -170,7 +170,7 @@ void distance_test_dist2_symmetry(CuTest *tc)
     ys[1] = (tsRational) 6834.2342;
     ys[2] = (tsRational) 48604342.4234;
     CuAssertDblEquals(tc, ts_ctrlp_dist2(xs, ys, 3),
-        ts_ctrlp_dist2(ys, xs, 3), delta);
+        ts_ctrlp_dist2(ys, xs, 3), distance_tests_delta);
 }
 
 void distance_test_dist2_subadditivity(CuTest *tc)
@@ -206,21 +206,29 @@ void distance_test_dist2_standard_cases(CuTest *tc)
 
     x = (tsRational) 0.0;
     y = (tsRational) 1.0;
-    CuAssertDblEquals(tc, 1.0, ts_ctrlp_dist2(&x, &y, 1), delta);
+    CuAssertDblEquals(tc,
+        1.0, ts_ctrlp_dist2(&x, &y, 1),
+        distance_tests_delta);
 
     x = (tsRational) 10.0;
     y = (tsRational) -5.0;
-    CuAssertDblEquals(tc, 15.0, ts_ctrlp_dist2(&x, &y, 1), delta);
+    CuAssertDblEquals(tc,
+        15.0, ts_ctrlp_dist2(&x, &y, 1),
+        distance_tests_delta);
 
     x = (tsRational) 3.14;
     y = (tsRational) -3.14;
-    CuAssertDblEquals(tc, 6.28, ts_ctrlp_dist2(&x, &y, 1), delta);
+    CuAssertDblEquals(tc,
+        6.28, ts_ctrlp_dist2(&x, &y, 1),
+        distance_tests_delta);
 
     xs[0] = (tsRational) 0.0;
     xs[1] = (tsRational) 0.0;
     ys[0] = (tsRational) 1.0;
     ys[1] = (tsRational) 1.0;
-    CuAssertDblEquals(tc, sqrt(2.0), ts_ctrlp_dist2(xs, ys, 2), delta);
+    CuAssertDblEquals(tc,
+        sqrt(2.0), ts_ctrlp_dist2(xs, ys, 2),
+        distance_tests_delta);
 
     xss[0] = (tsRational) 0.0;
     xss[1] = (tsRational) 0.0;
@@ -228,26 +236,34 @@ void distance_test_dist2_standard_cases(CuTest *tc)
     yss[0] = (tsRational) 1.0;
     yss[1] = (tsRational) 1.0;
     yss[2] = (tsRational) 1.0;
-    CuAssertDblEquals(tc, sqrt(3.0), ts_ctrlp_dist2(xss, yss, 3), delta);
+    CuAssertDblEquals(tc,
+        sqrt(3.0), ts_ctrlp_dist2(xss, yss, 3),
+        distance_tests_delta);
 
     for (i = 0; i < 25; i++) {
         xsss[i] = (tsRational) 0.0;
         ysss[i] = (tsRational) 1.0;
     }
-    CuAssertDblEquals(tc, sqrt(25.0), ts_ctrlp_dist2(xsss, ysss, 25), delta);
+    CuAssertDblEquals(tc,
+        sqrt(25.0), ts_ctrlp_dist2(xsss, ysss, 25),
+        distance_tests_delta);
 
     for (i = 0; i < 25; i++) {
         xsss[i] = (tsRational) 0.0;
         ysss[i] = (tsRational) -1.0;
     }
-    CuAssertDblEquals(tc, sqrt(25.0), ts_ctrlp_dist2(xsss, ysss, 25), delta);
+    CuAssertDblEquals(tc,
+        sqrt(25.0), ts_ctrlp_dist2(xsss, ysss, 25),
+        distance_tests_delta);
 }
 
 void distance_test_dist2_zero_dim(CuTest *tc)
 {
     tsRational x = (tsRational) 0.0;
     tsRational y = (tsRational) 1.0;
-    CuAssertDblEquals(tc, 0, ts_ctrlp_dist2(&x, &y, 0), delta);
+    CuAssertDblEquals(tc,
+        0, ts_ctrlp_dist2(&x, &y, 0),
+        distance_tests_delta);
 }
 
 CuSuite* get_distance_suite()

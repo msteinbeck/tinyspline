@@ -99,8 +99,9 @@ endforeach()
 
 
 ###############################################################################
-### Setup compiler suite. The following variables may be useful in the
-### remainder of this script.
+### Setup compiler suite. The following CMake variables may be useful in the
+### remainder of this file. CMake variables labeled with (exported) will be set
+### in parent scope and should be used accordingly after including this file.
 #
 # CMAKE_SYSTEM_PROCESSOR
 #   The name of the target system.
@@ -111,23 +112,27 @@ endforeach()
 # TINYSPLINE_DEBUG_POSTFIX
 #   Postfix of debug builds.
 #
-# TINYSPLINE_DEFINITIONS
-#   Preprocessor definitions.
+# TINYSPLINE_DEFINITIONS (exported)
+#   Preprocessor definitions that should be added to parent file with
+#   'add_definitions("${TINYSPLINE_DEFINITIONS}")'.
 #
-# CMAKE_C_FLAGS
-#   C flags used by the C library and bindings
+# CMAKE_C_FLAGS (exported)
+#   Common C flags.
 #
-# CMAKE_CXX_FLAGS
-#   C++ flags used by the C++ library and bindings
+# CMAKE_CXX_FLAGS (exported)
+#   Common C++ flags.
+#
+# TINYSPLINE_LIBRARIES (exported)
+#   Additional libraries to link against.
 #
 # TINYSPLINE_LIBRARY_C_FLAGS
-#   C library specific flags
+#   C library specific flags.
 #
 # TINYSPLINE_LIBRARY_CXX_FLAGS
-#   C++ library specific flags
+#   C++ library specific flags.
 #
 # TINYSPLINE_BINDING_CXX_FLAGS
-#   C++ binding specific flags
+#   C++ binding specific flags.
 #
 # TINYSPLINE_CXX_AVAILABLE
 #   Is an appropriate C++ compiler available?
@@ -182,12 +187,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
   endif()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
 
   # CMAKE_CXX_FLAGS
   if(NOT TINYSPLINE_DISABLE_CXX11_FEATURES)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   endif()
+  
+  # TINYSPLINE_LIBRARIES
+  set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES} -lm")
 
   # TINYSPLINE_LIBRARY_C_FLAGS
   set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
@@ -227,12 +234,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # CMAKE_C_FLAGS
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm")
 
   # CMAKE_CXX_FLAGS
   if(NOT TINYSPLINE_DISABLE_CXX11_FEATURES)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   endif()
+  
+  # TINYSPLINE_LIBRARIES
+  set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES} -lm")
 
   # TINYSPLINE_LIBRARY_C_FLAGS
   set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
@@ -313,15 +322,17 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
   # avr is missing some required headers
   set(TINYSPLINE_CXX_AVAILABLE FALSE)
 endif()
-# Remove leading and trailing spaces from variables holding C/C++ flags
+# Remove leading and trailing spaces
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+string(STRIP "${TINYSPLINE_LIBRARIES}" TINYSPLINE_LIBRARIES)
 string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
-# Export CMAKE_C_FLAGS and CMAKE_CXX_FLAGS to parent CMakeLists.txt file
+# Export variables to parent file
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" PARENT_SCOPE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 
 
 

@@ -4,7 +4,7 @@
 CuSuite* get_default_suite();
 CuSuite* get_free_suite();
 CuSuite* get_distance_suite();
-CuSuite* get_fill_suite();
+CuSuite* get_arr_fill_suite();
 
 int main()
 {
@@ -14,7 +14,7 @@ int main()
     CuSuiteAddSuite(suite, get_default_suite());
     CuSuiteAddSuite(suite, get_free_suite());
     CuSuiteAddSuite(suite, get_distance_suite());
-    CuSuiteAddSuite(suite, get_fill_suite());
+    CuSuiteAddSuite(suite, get_arr_fill_suite());
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);

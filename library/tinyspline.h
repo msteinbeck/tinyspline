@@ -454,7 +454,7 @@ tsError ts_str_enum(const char* str);
 /**
  * Fills the given array \arr with \val from \arr+0 to \arr+\num (exclusive).
  */
-void ts_ffill(tsRational* arr, const size_t num, const tsRational val);
+void ts_arr_fill(tsRational *arr, const size_t num, const tsRational val);
 
 /**
  * Returns the euclidean distance of \x and \y consisting of \dim components,

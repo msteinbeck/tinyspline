@@ -153,18 +153,18 @@ void ts_internal_bspline_setup_knots(
         /* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
         fac = (max-min) / (n_knots - 2*deg - 1);
 
-        ts_ffill(result->knots, order, min);
+        ts_arr_fill(result->knots, order, min);
         for (i = order ;i < n_knots-order; i++)
             result->knots[i] = min + (i-deg)*fac;
-        ts_ffill(result->knots + i, order, max);
+        ts_arr_fill(result->knots + i, order, max);
     } else if (type == TS_BEZIERS) {
         /* n_knots >= 2*order implies n_knots/order >= 2 */
         fac = (max-min) / (n_knots/order - 1);
 
-        ts_ffill(result->knots, order, min);
+        ts_arr_fill(result->knots, order, min);
         for (i = order; i < n_knots-order; i += order)
-            ts_ffill(result->knots + i, order, min + (i/order)*fac);
-        ts_ffill(result->knots + i, order, max);
+            ts_arr_fill(result->knots + i, order, min + (i/order)*fac);
+        ts_arr_fill(result->knots + i, order, max);
     }
 }
 
@@ -538,7 +538,7 @@ void ts_internal_bspline_thomas_algorithm(
         m[i] = 1.f/(4 - m[i-1]);
 
     /* forward sweep */
-    ts_ffill(output, n*dim, 0.f);
+    ts_arr_fill(output, n*dim, 0.f);
     memcpy(output, points, sof_c);
     memcpy(output+lst, points+lst, sof_c);
     for (d = 0; d < dim; d++) {
@@ -559,7 +559,7 @@ void ts_internal_bspline_thomas_algorithm(
 
     /* back substitution */
     if (n > 3)
-        ts_ffill(output+lst, dim , 0.f);
+        ts_arr_fill(output+lst, dim, 0.f);
     for (i = n-2; i >= 1; i--) {
         for (d = 0; d < dim; d++) {
             k = i*dim+d;
@@ -1157,7 +1157,7 @@ tsError ts_str_enum(const char* str)
     return TS_SUCCESS;
 }
 
-void ts_ffill(tsRational* arr, const size_t num, const tsRational val)
+void ts_arr_fill(tsRational *arr, const size_t num, const tsRational val)
 {
     size_t i;
     for (i = 0; i < num; i++)

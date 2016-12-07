@@ -33,6 +33,12 @@ void arr_fill_test_subset(CuTest *tc)
         CuAssertDblEquals(tc, -15.0, arr[i], fill_tests_delta);
     for (i = 5; i < 10; i++)
         CuAssertDblEquals(tc, i, arr[i], fill_tests_delta);
+    ts_arr_fill(arr, 1, (tsRational) -20);
+    CuAssertDblEquals(tc, -20, arr[0], fill_tests_delta);
+    for (i = 1; i < 5; i++)
+        CuAssertDblEquals(tc, -15.0, arr[i], fill_tests_delta);
+    for (i = 5; i < 10; i++)
+        CuAssertDblEquals(tc, i, arr[i], fill_tests_delta);
 }
 
 CuSuite* get_arr_fill_suite()

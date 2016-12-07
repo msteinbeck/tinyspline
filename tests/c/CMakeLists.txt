@@ -6,7 +6,7 @@ target_link_libraries(ctests
   ${TINYSPLINE_LIBRARIES}
 )
 
-add_custom_target(run-tests
+add_custom_target(run_tests
   COMMAND ctests
   DEPENDS ctests
 )

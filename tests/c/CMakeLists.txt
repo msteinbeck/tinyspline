@@ -5,13 +5,8 @@ endif()
 
 file(GLOB SRC "*.c")
 
-add_executable(ctests ${SRC})
-target_link_libraries(ctests
+add_executable(tinyspline_tests ${SRC})
+target_link_libraries(tinyspline_tests
   LINK_PUBLIC tinyspline_static
   ${TINYSPLINE_LIBRARIES}
-)
-
-add_custom_target(run_tests
-  COMMAND ctests
-  DEPENDS ctests
 )

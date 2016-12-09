@@ -347,7 +347,7 @@ set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 ### should be used accordingly after including this file.
 #
 # TINYSPLINE_INCLUDE_DIRS (exported)
-#   Include directories for the C/C++ library.
+#   Include directories of the C/C++ library.
 #
 # TINYSPLINE_C_SOURCE_FILES (exported)
 #   List of source files that are required to build the C library. Does not
@@ -505,7 +505,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       endif()
       set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINE} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PYTHON_DIR})
-      swig_add_module(tinysplinepython python tinysplinepython.i tinyspline.c tinysplinecpp.cpp)
+      swig_add_module(tinysplinepython python tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
       swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
       # for some reason the generated make target for python is '_tinysplinepython'
       add_custom_command(TARGET _tinysplinepython POST_BUILD
@@ -525,7 +525,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       set_source_files_properties(tinysplinejava.i PROPERTIES CPLUSPLUS ON)
       set(CMAKE_SWIG_FLAGS -package "so.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_JAVA_DIR})
-      swig_add_module(tinysplinejava java tinysplinejava.i tinyspline.c tinysplinecpp.cpp)
+      swig_add_module(tinysplinejava java tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
       swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
       
       # Jar archive
@@ -560,7 +560,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       set_source_files_properties(tinysplineruby.i PROPERTIES CPLUSPLUS ON)
       set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_RUBY_DIR})
-      swig_add_module(tinysplineruby ruby tinysplineruby.i tinyspline.c tinysplinecpp.cpp)
+      swig_add_module(tinysplineruby ruby tinysplineruby.i ${TINYSPLINE_CXX_SOURCE_FILES})
       swig_link_libraries(tinysplineruby ${RUBY_LIBRARY})
       set_target_properties(tinysplineruby PROPERTIES
         FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
@@ -572,7 +572,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
     set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
     set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_DIR})
-    swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i tinyspline.c tinysplinecpp.cpp)
+    swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i ${TINYSPLINE_CXX_SOURCE_FILES})
     set_target_properties(tinysplinecsharp PROPERTIES
       FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
       COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
@@ -600,7 +600,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
     set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
     set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
-    #swig_add_module(tinysplinego go tinysplinego.i tinyspline.c tinysplinecpp.cpp)
+    #swig_add_module(tinysplinego go tinysplinego.i ${TINYSPLINE_CXX_SOURCE_FILES})
     #add_custom_command(TARGET tinysplinego POST_BUILD
     #  COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
     #  "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE_NAME}"
@@ -613,7 +613,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       set_source_files_properties(tinysplinephp.i PROPERTIES CPLUSPLUS ON)
       set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_DIR})
-      swig_add_module(tinysplinephp php tinysplinephp.i tinyspline.c tinysplinecpp.cpp)
+      swig_add_module(tinysplinephp php tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
       add_custom_command(TARGET tinysplinephp POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_PHP_DIR}/tinysplinephp.php"
         "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PHP_INTERFACE_FILE_NAME}"
@@ -631,7 +631,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       set_source_files_properties(tinysplinelua.i PROPERTIES CPLUSPLUS ON)
       set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_LUA_DIR})
-      swig_add_module(tinysplinelua lua tinysplinelua.i tinyspline.c tinysplinecpp.cpp)
+      swig_add_module(tinysplinelua lua tinysplinelua.i ${TINYSPLINE_CXX_SOURCE_FILES})
       swig_link_libraries(tinysplinelua ${LUA_LIBRARIES})
       set_target_properties(tinysplinelua PROPERTIES
         FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}

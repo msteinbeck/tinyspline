@@ -342,10 +342,36 @@ set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 ###############################################################################
 ### Create C/C++ libraries. We explicitly set the prefix of the static
 ### libraries to 'lib' to prevent naming collisions when compiling with MSVC.
+### The following CMake variables may be useful in the remainder of this file.
+### CMake variables labeled with (exported) will be set in parent scope and
+### should be used accordingly after including this file.
+#
+# TINYSPLINE_INCLUDE_DIRS (exported)
+#   Include directories for the C/C++ library.
+#
+# TINYSPLINE_C_SOURCE_FILES (exported)
+#   List of source files that are required to build the C library. Does not
+#   include header files.
+#
+# TINYSPLINE_CXX_SOURCE_FILES (exported)
+#   List of source files that are required to build the C++ library. Does not
+#   include header files but all files listed in TINYSPLINE_C_SOURCE_FILES.
 ###############################################################################
+# TINYSPLINE_INCLUDE_DIRS
+set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+
+# TINYSPLINE_C_SOURCE_FILES
+list(APPEND TINYSPLINE_C_SOURCE_FILES tinyspline.c)
+set(TINYSPLINE_C_SOURCE_FILES TINYSPLINE_C_SOURCE_FILES PARENT_SCOPE)
+
+# TINYSPLINE_CXX_SOURCE_FILES
+list(APPEND TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
+list(APPEND TINYSPLINE_CXX_SOURCE_FILES tinysplinecpp.cpp)
+set(TINYSPLINE_CXX_SOURCE_FILES TINYSPLINE_CXX_SOURCE_FILES PARENT_SCOPE)
+
 # C library
 if(TARGET_SUPPORTS_SHARED_LIBS)
-  add_library(tinyspline_shared SHARED tinyspline.c)
+  add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
   set_target_properties(tinyspline_shared PROPERTIES
     OUTPUT_NAME "tinyspline"
     DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
@@ -356,7 +382,7 @@ if(TARGET_SUPPORTS_SHARED_LIBS)
     ARCHIVE DESTINATION lib
   )
 endif()
-add_library(tinyspline_static STATIC tinyspline.c)
+add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_static PROPERTIES
   OUTPUT_NAME "tinyspline"
   DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
@@ -377,7 +403,7 @@ target_include_directories(tinyspline_static
 # C++ library
 if(TINYSPLINE_CXX_AVAILABLE)
   if(TARGET_SUPPORTS_SHARED_LIBS)
-    add_library(tinysplinecpp_shared SHARED tinyspline.c tinysplinecpp.cpp)
+    add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
     set_target_properties(tinysplinecpp_shared PROPERTIES
       OUTPUT_NAME "tinysplinecpp"
       DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
@@ -388,7 +414,7 @@ if(TINYSPLINE_CXX_AVAILABLE)
       ARCHIVE DESTINATION lib
     )
   endif()
-  add_library(tinysplinecpp_static STATIC tinyspline.c tinysplinecpp.cpp)
+  add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
   set_target_properties(tinysplinecpp_static PROPERTIES
     OUTPUT_NAME "tinysplinecpp"
     DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"

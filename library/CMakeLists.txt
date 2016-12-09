@@ -347,27 +347,33 @@ set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 ### should be used accordingly after including this file.
 #
 # TINYSPLINE_INCLUDE_DIRS (exported)
-#   Include directories of the C/C++ library.
+#   Include directories of the C/C++ library. The listed directories contain
+#   all header files as well as all source files (.c/.cpp files).
 #
 # TINYSPLINE_C_SOURCE_FILES (exported)
-#   List of source files that are required to build the C library. Does not
-#   include header files.
+#   List of source files (absolute paths) that are required to build the C
+#   library. Does not contain header files.
 #
 # TINYSPLINE_CXX_SOURCE_FILES (exported)
-#   List of source files that are required to build the C++ library. Does not
-#   include header files but all files listed in TINYSPLINE_C_SOURCE_FILES.
+#   List of source files (absolute paths) that are required to build the C++
+#   library. Does not contain header files but all source files listed in
+#   TINYSPLINE_C_SOURCE_FILES.
 ###############################################################################
 # TINYSPLINE_INCLUDE_DIRS
 set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
 
 # TINYSPLINE_C_SOURCE_FILES
-list(APPEND TINYSPLINE_C_SOURCE_FILES tinyspline.c)
-set(TINYSPLINE_C_SOURCE_FILES TINYSPLINE_C_SOURCE_FILES PARENT_SCOPE)
+list(APPEND TINYSPLINE_C_SOURCE_FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.c"
+)
+set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
 
 # TINYSPLINE_CXX_SOURCE_FILES
 list(APPEND TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
-list(APPEND TINYSPLINE_CXX_SOURCE_FILES tinysplinecpp.cpp)
-set(TINYSPLINE_CXX_SOURCE_FILES TINYSPLINE_CXX_SOURCE_FILES PARENT_SCOPE)
+list(APPEND TINYSPLINE_CXX_SOURCE_FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecpp.cpp"
+)
+set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
 
 # C library
 if(TARGET_SUPPORTS_SHARED_LIBS)

@@ -1,8 +1,14 @@
+###############################################################################
+### Setup compiler suite.
+###############################################################################
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # disable sprintf warning occurring in CuTest
   add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 endif()
 
+###############################################################################
+### Create unit tests.
+###############################################################################
 file(GLOB TINYSPLINE_TESTS_SOURCE_FILES "*.c")
 add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
@@ -10,8 +16,38 @@ target_link_libraries(tinyspline_tests
   ${TINYSPLINE_LIBRARIES}
 )
 
-include_directories(${TINYSPLINE_INCLUDE_DIRS})
-list(APPEND TINYSPLINE_COVERAGE_SOURCE_FILES ${TINYSPLINE_TESTS_SOURCE_FILES})
-list(APPEND TINYSPLINE_COVERAGE_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
-add_executable(tinyspline_tests_coverage ${TINYSPLINE_COVERAGE_SOURCE_FILES})
-target_link_libraries(tinyspline_tests_coverage ${TINYSPLINE_LIBRARIES})
+###############################################################################
+### Create code coverage. Should be the last target of this file as
+### CMAKE_C_FLAGS gets completely overwritten with TINYSPLINE_COVERAGE_C_FLAGS.
+###############################################################################
+if(TINYSPLINE_COVERAGE_AVAILABLE)
+  include_directories(${TINYSPLINE_INCLUDE_DIRS})
+  set(CMAKE_C_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS})
+  add_executable(tinyspline_tests_coverage
+    EXCLUDE_FROM_ALL
+    ${TINYSPLINE_TESTS_SOURCE_FILES}
+    ${TINYSPLINE_C_SOURCE_FILES}
+  )
+  target_link_libraries(tinyspline_tests_coverage
+    ${TINYSPLINE_LIBRARIES}
+  )
+
+  foreach(TINYSPLINE_C_SOURCE_FILE ${TINYSPLINE_C_SOURCE_FILES})
+    set(TINYSPLINE_COVERAGE_FILE_PATTERN
+      "${TINYSPLINE_COVERAGE_FILE_PATTERN} '${TINYSPLINE_C_SOURCE_FILES}'"
+    )
+  endforeach()
+  string(STRIP "${TINYSPLINE_COVERAGE_FILE_PATTERN}"
+    TINYSPLINE_COVERAGE_FILE_PATTERN
+  )
+  set(TINYSPLINE_COVERAGE_INFO_FILE coverage.info)
+  add_custom_target(tinyspline_coverage
+    COMMAND ${TINYSPLINE_LCOV} --directory . --zerocounters
+    COMMAND tinyspline_tests_coverage
+    COMMAND ${TINYSPLINE_LCOV} --rc lcov_branch_coverage=1 --directory . --capture --output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
+    COMMAND ${TINYSPLINE_LCOV} --rc lcov_branch_coverage=1 --extract coverage.info ${TINYSPLINE_COVERAGE_FILE_PATTERN} --output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
+    COMMAND ${TINYSPLINE_GENHTML} -o ${TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY}/c ${TINYSPLINE_COVERAGE_INFO_FILE}
+    COMMAND ${CMAKE_COMMAND} -E remove ${TINYSPLINE_COVERAGE_INFO_FILE}
+    DEPENDS tinyspline_tests_coverage
+  )
+endif()

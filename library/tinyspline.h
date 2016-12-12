@@ -141,7 +141,7 @@ void ts_bspline_free(tsBSpline* bspline);
  * The move constructor of tsBSpline.
  *
  * Moves all values from \from to \to and calls ::ts_bspline_default on \to
- * afterwards.
+ * afterwards. Does nothing if \from == \to.
  */
 void ts_bspline_move(tsBSpline* from, tsBSpline* to);
 

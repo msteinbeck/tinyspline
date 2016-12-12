@@ -865,6 +865,8 @@ void ts_bspline_free(tsBSpline* bspline)
 
 void ts_bspline_move(tsBSpline* from, tsBSpline* to)
 {
+    if (from == to)
+        return;
     to->deg = from->deg;
     to->order = from->order;
     to->dim = from->dim;

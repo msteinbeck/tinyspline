@@ -7,6 +7,7 @@ CuSuite* get_str_enum_suite();
 CuSuite* get_default_suite();
 CuSuite* get_free_suite();
 CuSuite* get_new_suite();
+CuSuite* get_move_suite();
 
 int main()
 {
@@ -19,6 +20,7 @@ int main()
     CuSuiteAddSuite(suite, get_default_suite());
     CuSuiteAddSuite(suite, get_free_suite());
     CuSuiteAddSuite(suite, get_new_suite());
+    CuSuiteAddSuite(suite, get_move_suite());
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);

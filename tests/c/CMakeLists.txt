@@ -17,8 +17,7 @@ target_link_libraries(tinyspline_tests
 )
 
 ###############################################################################
-### Create code coverage. Should be the last target of this file as
-### CMAKE_C_FLAGS gets completely overwritten with TINYSPLINE_COVERAGE_C_FLAGS.
+### Create code coverage.
 ###############################################################################
 if(TINYSPLINE_COVERAGE_AVAILABLE)
   include_directories(${TINYSPLINE_INCLUDE_DIRS})

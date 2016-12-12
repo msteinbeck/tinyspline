@@ -22,11 +22,14 @@ target_link_libraries(tinyspline_tests
 ###############################################################################
 if(TINYSPLINE_COVERAGE_AVAILABLE)
   include_directories(${TINYSPLINE_INCLUDE_DIRS})
-  set(CMAKE_C_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS})
   add_executable(tinyspline_tests_coverage
     EXCLUDE_FROM_ALL
     ${TINYSPLINE_TESTS_SOURCE_FILES}
     ${TINYSPLINE_C_SOURCE_FILES}
+  )
+  target_compile_options(tinyspline_tests_coverage
+    PRIVATE
+    ${TINYSPLINE_COVERAGE_C_FLAGS}
   )
   target_link_libraries(tinyspline_tests_coverage
     ${TINYSPLINE_LIBRARIES}

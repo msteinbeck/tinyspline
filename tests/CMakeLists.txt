@@ -64,9 +64,12 @@ set(TINYSPLINE_COVERAGE_C_FLAGS
 add_subdirectory(c)
 
 ###############################################################################
-### Add a custom target that is supposed to execute all unit tests.
+### Add custom targets that are supposed to subsume unit tests and coverage.
 ###############################################################################
-add_custom_target(run_tests
+add_custom_target(tests
   COMMAND tinyspline_tests
   DEPENDS tinyspline_tests
+)
+add_custom_target(coverage
+  DEPENDS tinyspline_coverage
 )

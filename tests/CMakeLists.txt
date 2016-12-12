@@ -21,6 +21,9 @@
 #
 # TINYSPLINE_COVERAGE_C_FLAGS
 #   C flags for coverage executables.
+#
+# TINYSPLINE_COVERAGE_C_LIBRARIES
+#   C libraries for coverage executables.
 ###############################################################################
 # TINYSPLINE_COVERAGE_AVAILABLE
 set(TINYSPLINE_COVERAGE_AVAILABLE FALSE)
@@ -55,7 +58,12 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 
 # TINYSPLINE_COVERAGE_C_FLAGS
 set(TINYSPLINE_COVERAGE_C_FLAGS
-  "-g -O0 --coverage -fprofile-arcs -ftest-coverage"
+  "-g -O0 -fprofile-arcs -ftest-coverage"
+)
+
+# TINYSPLINE_COVERAGE_C_LIBRARIES
+set(TINYSPLINE_COVERAGE_C_LIBRARIES
+  "-lgcov"
 )
 
 ###############################################################################

@@ -26,12 +26,12 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
     ${TINYSPLINE_TESTS_SOURCE_FILES}
     ${TINYSPLINE_C_SOURCE_FILES}
   )
-  target_compile_options(tinyspline_tests_coverage
-    PRIVATE
-    ${TINYSPLINE_COVERAGE_C_FLAGS}
+  set_target_properties(tinyspline_tests_coverage PROPERTIES
+    COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS}
   )
   target_link_libraries(tinyspline_tests_coverage
     ${TINYSPLINE_LIBRARIES}
+    ${TINYSPLINE_COVERAGE_C_LIBRARIES}
   )
 
   foreach(TINYSPLINE_C_SOURCE_FILE ${TINYSPLINE_C_SOURCE_FILES})

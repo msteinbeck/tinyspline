@@ -442,7 +442,7 @@ int ts_fequals(const tsRational x, const tsRational y);
  * \err is not associated (indicating a bug) or is TS_SUCCESS (which is not an
  * actual error).
  */
-char* ts_enum_str(const tsError err);
+const char* ts_enum_str(const tsError err);
 
 /**
  * Returns the error code associated to \str or TS_SUCCESS if \str is not

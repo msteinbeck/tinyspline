@@ -1117,7 +1117,7 @@ int ts_fequals(const tsRational x, const tsRational y)
     }
 }
 
-char* ts_enum_str(const tsError err)
+const char* ts_enum_str(const tsError err)
 {
     if (err == TS_MALLOC)
         return "malloc failed";

@@ -7,7 +7,7 @@ void str_enum_test_bijection(CuTest* tc)
     char *str;
     int i, j;
     for (i = 0; i > -9; i--) {
-        str = ts_enum_str((tsError) i);
+        str = (char *)ts_enum_str((tsError) i);
         j = strcmp("unknown error", str);
         if (j == 0) /* TS_SUCCESS */
             CuAssertTrue(tc, !j); /* equal */
@@ -20,13 +20,13 @@ void str_enum_test_bijection(CuTest* tc)
 
 void str_enum_test_unknown(CuTest* tc)
 {
-    char *str = ts_enum_str((tsError) 0);
+    char *str = (char *)ts_enum_str((tsError) 0);
     CuAssertStrEquals(tc, "unknown error", str);
-    str = ts_enum_str((tsError) 1);
+    str = (char *)ts_enum_str((tsError) 1);
     CuAssertStrEquals(tc, "unknown error", str);
-    str = ts_enum_str((tsError) 2);
+    str = (char *)ts_enum_str((tsError) 2);
     CuAssertStrEquals(tc, "unknown error", str);
-    str = ts_enum_str((tsError) 100);
+    str = (char *)ts_enum_str((tsError) 100);
     CuAssertStrEquals(tc, "unknown error", str);
 }
 

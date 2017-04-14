@@ -547,6 +547,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
         add_jar(tinysplinejar
           ${TINYSPLINE_JAVA_DIR}/tinysplinejava.java
           ${TINYSPLINE_JAVA_DIR}/tinysplinejavaJNI.java
+          ${TINYSPLINE_JAVA_DIR}/Utils.java
           OUTPUT_NAME tinyspline
         )
         add_dependencies(tinysplinejar tinysplinejava)

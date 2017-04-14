@@ -139,18 +139,6 @@ ts::BSpline::BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
         throw std::runtime_error(ts_enum_str(err));
 }
 
-ts::BSpline::BSpline(const std::vector<ts::rational> points, const size_t dim)
-{
-    if (dim == 0)
-        throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
-    if (points.size() % dim != 0)
-        throw std::runtime_error("#points % dim == 0 failed");
-    const tsError err = ts_bspline_interpolate(
-            points.data(), points.size()/dim, dim, &bspline);
-    if (err < 0)
-        throw std::runtime_error(ts_enum_str(err));
-}
-
 ts::BSpline::~BSpline()
 {
     ts_bspline_free(&bspline);
@@ -350,6 +338,21 @@ void ts::BSpline::swap(ts::BSpline &other)
 * Utils                                                 *
 *                                                       *
 ********************************************************/
+ts::BSpline ts::Utils::interpolateCubic(
+        const std::vector<ts::rational> *points, const size_t dim)
+{
+    if (dim == 0)
+        throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
+    if (points->size() % dim != 0)
+        throw std::runtime_error("#points % dim == 0 failed");
+    ts::BSpline bspline;
+    const tsError err = ts_bspline_interpolate(
+            points->data(), points->size()/dim, dim, bspline.data());
+    if (err < 0)
+        throw std::runtime_error(ts_enum_str(err));
+    return bspline;
+}
+
 bool ts::Utils::fequals(const ts::rational x, const ts::rational y)
 {
     return ts_fequals(x, y) == 1;

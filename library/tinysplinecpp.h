@@ -48,7 +48,6 @@ public:
     BSpline(const BSpline& other);
     BSpline(const size_t deg, const size_t dim, const size_t nCtrlp,
             const tsBSplineType type);
-    BSpline(const std::vector<rational> points, const size_t dim);
     ~BSpline();
 
     /* Operators */
@@ -94,6 +93,8 @@ private:
 
 class Utils {
 public:
+    static BSpline interpolateCubic(const std::vector<rational> *points,
+                                    const size_t dim);
     static bool fequals(const rational x, const rational y);
     static std::string enum_str(const tsError err);
     static tsError str_enum(const std::string str);

@@ -212,7 +212,7 @@ ts::DeBoorNet ts::BSpline::evaluate(const ts::rational u) const
     return deBoorNet;
 }
 
-void ts::BSpline::setCtrlp(const std::vector<ts::rational> ctrlp)
+void ts::BSpline::setCtrlp(const std::vector<ts::rational>& ctrlp)
 {
     if (ctrlp.size() != nCtrlp() * dim()) {
         throw std::runtime_error("The number of values must be equals to the"
@@ -224,7 +224,7 @@ void ts::BSpline::setCtrlp(const std::vector<ts::rational> ctrlp)
         throw std::runtime_error(ts_enum_str(err));
 }
 
-void ts::BSpline::setKnots(const std::vector<ts::rational> knots)
+void ts::BSpline::setKnots(const std::vector<ts::rational>& knots)
 {
     if (knots.size() != nKnots()) {
         throw std::runtime_error("The number of values must be equals to the"

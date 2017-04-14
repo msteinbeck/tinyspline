@@ -66,8 +66,8 @@ public:
     DeBoorNet evaluate(const rational u) const;
 
     /* Modifications */
-    void setCtrlp(const std::vector<rational> ctrlp);
-    void setKnots(const std::vector<rational> knots);
+    void setCtrlp(const std::vector<rational>& ctrlp);
+    void setKnots(const std::vector<rational>& knots);
 
     /* Transformations */
     BSpline setupKnots(const tsBSplineType type,

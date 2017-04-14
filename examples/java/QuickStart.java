@@ -1,5 +1,5 @@
-import so.tinyspline.BSpline;
-import so.tinyspline.tsBSplineType;
+import org.tinyspline.BSpline;
+import org.tinyspline.tsBSplineType;
 
 import java.util.List;
 

@@ -19,6 +19,7 @@
 }
 
 // generate getter/setter
+#ifndef SWIGD
 %include <attribute.i>
 %attribute(ts::BSpline, size_t, deg, deg);
 %attribute(ts::BSpline, size_t, order, order);
@@ -35,6 +36,7 @@
 %attribute(ts::DeBoorNet, size_t, nPoints, nPoints);
 %attributeval(ts::DeBoorNet, std::vector<ts::rational>, points, points);
 %attributeval(ts::DeBoorNet, std::vector<ts::rational>, result, result);
+#endif
 
 // make strings directly accessible
 %include "std_string.i"

@@ -20,3 +20,7 @@
 //*                                                      *
 //********************************************************
 %include "tinyspline.i"
+
+namespace std {
+    %template(Vector) vector<ts::rational>;
+};

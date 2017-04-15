@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -19,7 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-public class Swing extends JPanel implements MouseMotionListener {
+public class Swing extends JPanel implements
+        MouseMotionListener, MouseListener {
 
     private final List<Point2D> points = new ArrayList<>();
     private Point2D dragged = null;
@@ -28,6 +30,7 @@ public class Swing extends JPanel implements MouseMotionListener {
         super(true);
         setPreferredSize(new Dimension(800, 600));
         addMouseMotionListener(this);
+        addMouseListener(this);
 
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,6 +120,26 @@ public class Swing extends JPanel implements MouseMotionListener {
         }
         repaint();
     }
+
+    @Override
+    public void mouseClicked(final MouseEvent mouseEvent) {}
+
+    @Override
+    public void mousePressed(final MouseEvent mouseEvent) {}
+
+    @Override
+    public void mouseReleased(final MouseEvent mouseEvent) {
+        if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+            points.add(mouseEvent.getPoint());
+            repaint();
+        }
+    }
+
+    @Override
+    public void mouseEntered(final MouseEvent mouseEvent) {}
+
+    @Override
+    public void mouseExited(final MouseEvent mouseEvent) {}
 
     public static void main(final String[] args) {
         System.loadLibrary("tinysplinejava");

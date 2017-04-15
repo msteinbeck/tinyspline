@@ -1,29 +1,29 @@
 %module tinysplinepython
 
-// std::vector<ts::rational> to python list
-%typemap(out) std::vector<ts::rational> * (int size, PyObject * data) {
-  size = $1->size();
-  $result = PyList_New(size);
-  for (int i = 0; i < size; i++) {
-    data = PyFloat_FromDouble((*$1)[i]);
-    PyList_SetItem($result, i, data);
-  }
+// Map std::vector<tinyspline::rational> to Python list.
+%typemap(out) std::vector<tinyspline::rational> * (int size, PyObject *data) {
+	size = $1->size();
+	$result = PyList_New(size);
+	for (int i = 0; i < size; i++) {
+		data = PyFloat_FromDouble((*$1)[i]);
+		PyList_SetItem($result, i, data);
+	}
 }
 
-// python list to std::vector<ts::rational>
-%typemap(in) std::vector<ts::rational> * (int size, PyObject * data) %{
-  size = PyList_Size($input);
-  $1 = new std::vector<ts::rational>();
-  $1->reserve(size);
-  for (int i = 0; i < size; i++) {
-    data = PyList_GetItem($input, i);
-    $1->push_back(PyFloat_AsDouble(data));
-  }
+// Map Python list to std::vector<tinyspline::rational>.
+%typemap(in) std::vector<tinyspline::rational> * (int size, PyObject *data) %{
+	size = PyList_Size($input);
+	$1 = new std::vector<tinyspline::rational>();
+	$1->reserve(size);
+	for (int i = 0; i < size; i++) {
+		data = PyList_GetItem($input, i);
+		$1->push_back(PyFloat_AsDouble(data));
+	}
 %}
 
-// cleanup memory allocated by typemaps
-%typemap(freearg) std::vector<ts::rational> * {
-  delete $1;
+// Cleanup memory allocated by typemaps.
+%typemap(freearg) std::vector<tinyspline::rational> * {
+	delete $1;
 }
 
 //********************************************************
@@ -31,9 +31,9 @@
 //* BSpline (Python)                                     *
 //*                                                      *
 //********************************************************
-%ignore ts::BSpline::operator=;
+%ignore tinyspline::BSpline::operator=;
 
-%feature("pythonprepend") ts::BSpline::BSpline %{
+%feature("pythonprepend") tinyspline::BSpline::BSpline %{
 """
 __init__(self) -> BSpline
 __init__(self, other) -> BSpline
@@ -47,7 +47,7 @@ __init__(self, points, dim) -> BSpline
 //* DeBoorNet (Python)                                   *
 //*                                                      *
 //********************************************************
-%ignore ts::DeBoorNet::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
 
 //********************************************************
 //*                                                      *

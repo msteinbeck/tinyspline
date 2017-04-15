@@ -5,14 +5,14 @@
 //* BSpline (D)                                          *
 //*                                                      *
 //********************************************************
-%ignore ts::BSpline::operator=;
+%ignore tinyspline::BSpline::operator=;
 
 //********************************************************
 //*                                                      *
 //* DeBoorNet (D)                                        *
 //*                                                      *
 //********************************************************
-%ignore ts::DeBoorNet::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
 
 //********************************************************
 //*                                                      *
@@ -22,5 +22,5 @@
 %include "tinyspline.i"
 
 namespace std {
-    %template(Vector) vector<ts::rational>;
+	%template(Vector) vector<tinyspline::rational>;
 };

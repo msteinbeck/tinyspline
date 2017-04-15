@@ -1,39 +1,40 @@
 %module tinysplinecsharp
 
-// create a typemap that generalizes the types float and double to a single
-// type accessable with: $typemap(cstype, ts::rational)
+// Create a typemap that generalizes the types float and double to a single type accessible with
+// $typemap(cstype, tinyspline::rational).
 #ifdef TINYSPLINE_DOUBLE_PRECISION
-  %typemap(cstype) ts::rational "double"
+	%typemap(cstype) tinyspline::rational "double"
 #else
-  %typemap(cstype) ts::rational "float"
+	%typemap(cstype) tinyspline::rational "float"
 #endif
 
-// change the signature of the c# interface files from
-// std::vector<ts::rational> to IList<float/double>
-%typemap(cstype) std::vector<ts::rational> *
-  "System.Collections.Generic.IList<$typemap(cstype, ts::rational)>"
+// Change the signature of the C# interface files from std::vector<tinyspline::rational> to
+// IList<float/double>.
+%typemap(cstype) std::vector<tinyspline::rational> *
+	"System.Collections.Generic.IList<$typemap(cstype, tinyspline::rational)>"
 
-// let c# interface files redirect the input argument to the converter
-// function
-%typemap(csin) std::vector<ts::rational> *
-  "RationalVector.getCPtr(Utils.ListToVector($csinput))"
+// Let C# interface files redirect the input argument to the converter function.
+%typemap(csin) std::vector<tinyspline::rational> *
+	"RationalVector.getCPtr(Utils.ListToVector($csinput))"
 
 //********************************************************
 //*                                                      *
 //* Utils (C#)                                           *
 //*                                                      *
 //********************************************************
-%typemap(cscode) ts::Utils
+%typemap(cscode) tinyspline::Utils
 %{
-  internal static RationalVector ListToVector(
-      System.Collections.Generic.IList<$typemap(cstype, ts::rational)> list) {
-    if (list == null)
-      throw new System.ArgumentNullException("List must not be null.");
+	internal static RationalVector ListToVector(
+		System.Collections.Generic.IList<$typemap(cstype, tinyspline::rational)> list)
+	{
+		if (list == null)
+			throw new System.ArgumentNullException("List must not be null.");
 
-    RationalVector vec = new RationalVector(list.Count);
-    foreach ($typemap(cstype, ts::rational) val in list) vec.Add(val);
-    return vec;
-  }
+		RationalVector vec = new RationalVector(list.Count);
+		foreach ($typemap(cstype, tinyspline::rational) val in list)
+			vec.Add(val);
+		return vec;
+	}
 %}
 
 //********************************************************
@@ -41,15 +42,15 @@
 //* BSpline (C#)                                         *
 //*                                                      *
 //********************************************************
-%ignore ts::BSpline::operator();
-%ignore ts::BSpline::operator=;
+%ignore tinyspline::BSpline::operator();
+%ignore tinyspline::BSpline::operator=;
 
 //********************************************************
 //*                                                      *
 //* DeBoorNet (C#)                                       *
 //*                                                      *
 //********************************************************
-%ignore ts::DeBoorNet::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
 
 //********************************************************
 //*                                                      *
@@ -59,5 +60,5 @@
 %include "tinyspline.i"
 
 namespace std {
-    %template(RationalVector) vector<ts::rational>;
+	%template(RationalVector) vector<tinyspline::rational>;
 };

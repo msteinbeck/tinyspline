@@ -54,6 +54,13 @@
 %ignore tinyspline::BSpline::BSpline(BSpline &&);
 %ignore tinyspline::swap(BSpline &, BSpline &);
 
+// Rename exported enums and enum values.
+%rename(BSplineType) tsBSplineType;
+%rename(OPENED) TS_OPENED;
+%rename(CLAMPED) TS_CLAMPED;
+%rename(BEZIERS) TS_BEZIERS;
+%rename(NONE) TS_NONE;
+
 %{
 	#include "tinyspline.h"
 	#include "tinysplinecpp.h"

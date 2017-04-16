@@ -7,7 +7,7 @@ class QuickStart
     public static void Main (string[] args)
     {
         // Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-        BSpline spline = new BSpline(3, 2, 7, tsBSplineType.TS_CLAMPED);
+        BSpline spline = new BSpline(3, 2, 7, BSplineType.CLAMPED);
 
         // Setup the control points.
         IList<float> ctrlp = spline.ctrlp;

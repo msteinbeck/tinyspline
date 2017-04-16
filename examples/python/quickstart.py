@@ -1,7 +1,7 @@
 from tinyspline import *
 
 # Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-spline = BSpline(3, 2, 7, TS_CLAMPED)
+spline = BSpline(3, 2, 7, CLAMPED)
 
 # Setup the control points.
 ctrlp = spline.ctrlp

@@ -1,7 +1,7 @@
 local ts = require("tinysplinelua")
 
 -- Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-spline = ts.BSpline(3, 2, 7, ts.TS_CLAMPED)
+spline = ts.BSpline(3, 2, 7, ts.CLAMPED)
 
 -- Setup the control points.
 ctrlp = spline.ctrlp

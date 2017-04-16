@@ -1,5 +1,5 @@
 import org.tinyspline.BSpline;
-import org.tinyspline.tsBSplineType;
+import org.tinyspline.BSplineType;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ public class QuickStart {
         System.loadLibrary("tinysplinejava");
         
         // Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-        final BSpline spline = new BSpline(3, 2, 7, tsBSplineType.TS_CLAMPED);
+        final BSpline spline = new BSpline(3, 2, 7, BSplineType.CLAMPED);
 
         // Setup the control points.
         final List<Float> ctrlp = spline.getCtrlp();

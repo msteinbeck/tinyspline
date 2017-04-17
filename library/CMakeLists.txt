@@ -622,18 +622,30 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     # PHP
     find_package(PHP)
     if(PHP_FOUND)
-      set_source_files_properties(tinysplinephp.i PROPERTIES CPLUSPLUS ON)
-      set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-      set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_DIR})
-      swig_add_module(tinysplinephp php tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
-      add_custom_command(TARGET tinysplinephp POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_PHP_DIR}/tinysplinephp.php"
-        "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PHP_INTERFACE_FILE_NAME}"
-      )
-      set_target_properties(tinysplinephp PROPERTIES
-        FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-        COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
-      )
+      set(TINYSPLINE_PHP_VERSION "php5")
+      if(${PHP_VERSION_NUMBER} MATCHES "^7")
+        set(TINYSPLINE_PHP_VERSION "php7")
+      endif()
+      if(${TINYSPLINE_PHP_VERSION} STREQUAL "php7" AND ${SWIG_VERSION} VERSION_LESS 3.0.11)
+        message(STATUS "PHP 7 requires Swig 3.0.11 or later")
+        # Clear PHP related variables used in summary.
+        set(PHP_FOUND FALSE)
+        unset(PHP_VERSION_STRING)
+        unset(PHP_INCLUDE_DIRS)
+      else()
+        set_source_files_properties(tinysplinephp.i PROPERTIES CPLUSPLUS ON)
+        set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+        set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_DIR})
+        swig_add_module(tinysplinephp ${TINYSPLINE_PHP_VERSION} tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
+        add_custom_command(TARGET tinysplinephp POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_PHP_DIR}/tinysplinephp.php"
+          "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PHP_INTERFACE_FILE_NAME}"
+        )
+        set_target_properties(tinysplinephp PROPERTIES
+          FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+          COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
+        )
+      endif()
     endif(PHP_FOUND)
 
     # Lua

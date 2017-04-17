@@ -1,6 +1,6 @@
 %module tinysplinephp
 
-// Map std::vector<tinyspline::rational> to PHP native array.
+// Map std::vector<tinyspline::rational> to PHP array.
 %typemap(out) std::vector<tinyspline::rational> * {
 	const int size = $1->size();
 	array_init_size($result, size);
@@ -9,14 +9,22 @@
 	}
 }
 
-// Map PHP native array to std::vector<tinyspline::rational>.
+// Map PHP array to std::vector<tinyspline::rational>.
 %typemap(in) std::vector<tinyspline::rational> * %{
 	$1 = new std::vector<tinyspline::rational>();
 	for (int idx = 0;; idx++) {
+#ifdef SWIGPHP5
 		zval **value;
 		if (zend_hash_index_find(Z_ARRVAL_P(*$input), idx, (void**)&value) == SUCCESS) {
 			convert_to_double_ex(value);
 			$1->push_back(Z_DVAL_PP(value));
+#else
+		zval *value;
+		value = zend_hash_index_find(Z_ARRVAL_P(&$input), idx);
+		if (value) {
+			convert_to_double_ex(value);
+			$1->push_back(Z_DVAL_P(value));
+#endif
 		} else {
 			// no more indices in array
 			break;

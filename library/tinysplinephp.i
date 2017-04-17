@@ -10,7 +10,7 @@
 }
 
 // Map PHP array to std::vector<tinyspline::rational>.
-%typemap(in) std::vector<tinyspline::rational> * %{
+%typemap(in) std::vector<tinyspline::rational> * {
 	$1 = new std::vector<tinyspline::rational>();
 	for (int idx = 0;; idx++) {
 #ifdef SWIGPHP5
@@ -30,7 +30,7 @@
 			break;
 		}
 	}
-%}
+}
 
 // Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::rational> * {

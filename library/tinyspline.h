@@ -60,11 +60,11 @@ typedef enum
  */
 typedef enum
 {
-/* setup knots as... */
+/* fill knots... */
     TS_OPENED = 0,  /* [uniformly spaced] */
     TS_CLAMPED = 1, /* [u_1 = u_2 = ..., uniformly spaced, ... = u_n-1 = u_n] */
     TS_BEZIERS = 2, /* uniformly spaced with s(u) = order for all u in knots */
-    TS_NONE = 3     /* do not setup the knots; they may have any values */
+    TS_NONE = 3     /* do not fill the knots; they may have any values */
 } tsBSplineType;
 
 typedef struct
@@ -323,7 +323,7 @@ tsError ts_bspline_set_knots(
  * @return TS_KNOTS_DECR        if \min >= \max.
  * (The function uses ::ts_fequals in order to determine if \min == \max)
  */
-tsError ts_bspline_setup_knots(
+tsError ts_bspline_fill_knots(
     const tsBSpline* original, const tsBSplineType type,
     const tsRational min, const tsRational max,
     tsBSpline* result

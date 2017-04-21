@@ -115,7 +115,7 @@ void ts_internal_bspline_copy(
     copy->knots = copy->ctrlp + n_ctrlp*dim;
 }
 
-void ts_internal_bspline_setup_knots(
+void ts_internal_bspline_fill_knots(
         const tsBSpline* original, const tsBSplineType type,
         const tsRational min, const tsRational max,
         tsBSpline* result, jmp_buf buf
@@ -197,7 +197,7 @@ void ts_internal_bspline_new(
     bspline->knots = bspline->ctrlp + n_ctrlp*dim;
 
     TRY(b, e)
-        ts_internal_bspline_setup_knots(bspline, type, 0.f, 1.f, bspline, b);
+        ts_internal_bspline_fill_knots(bspline, type, 0.f, 1.f, bspline, b);
     CATCH
         free(bspline->ctrlp);
         longjmp(buf, e);
@@ -988,7 +988,7 @@ tsError ts_bspline_set_knots(
     return err;
 }
 
-tsError ts_bspline_setup_knots(
+tsError ts_bspline_fill_knots(
     const tsBSpline* original, const tsBSplineType type,
     const tsRational min, const tsRational max,
     tsBSpline* result
@@ -997,7 +997,7 @@ tsError ts_bspline_setup_knots(
     tsError err;
     jmp_buf buf;
     TRY(buf, err)
-        ts_internal_bspline_setup_knots(original, type, min, max, result, buf);
+        ts_internal_bspline_fill_knots(original, type, min, max, result, buf);
     CATCH
         if (original != result)
             ts_bspline_default(result);

@@ -73,7 +73,7 @@ public:
 	void setKnots(const std::vector<rational> &knots);
 
 	/* Transformations */
-	BSpline setupKnots(const tsBSplineType type, const rational min,
+	BSpline fillKnots(const tsBSplineType type, const rational min,
 		const rational max) const;
 	BSpline insertKnot(const rational u, const size_t n) const;
 	BSpline resize(const int n, const int back) const;

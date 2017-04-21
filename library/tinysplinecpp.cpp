@@ -247,12 +247,12 @@ void tinyspline::BSpline::setKnots(
 		throw std::runtime_error(ts_enum_str(err));
 }
 
-tinyspline::BSpline tinyspline::BSpline::setupKnots(
+tinyspline::BSpline tinyspline::BSpline::fillKnots(
 	const tsBSplineType type, const tinyspline::rational min,
 	const tinyspline::rational max) const
 {
 	tinyspline::BSpline bs;
-	const tsError err = ts_bspline_setup_knots(
+	const tsError err = ts_bspline_fill_knots(
 		&bspline, type, min, max, &bs.bspline);
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));

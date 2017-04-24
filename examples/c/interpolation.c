@@ -44,7 +44,7 @@ void setup()
     points[13] = 5;
     points[14] = 0;
 
-    ts_bspline_interpolate(points, 5, 3, &spline);
+    ts_bspline_interpolate_cubic(points, 5, 3, &spline);
     ts_bspline_print(&spline);
 }
 

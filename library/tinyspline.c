@@ -648,7 +648,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     free(s);
 }
 
-void ts_internal_bspline_interpolate(
+void ts_internal_bspline_interpolate_cubic(
     const tsReal* points, const size_t n, const size_t dim,
     tsBSpline* bspline, jmp_buf buf
 )
@@ -893,7 +893,7 @@ tsError ts_bspline_new(
     return err;
 }
 
-tsError ts_bspline_interpolate(
+tsError ts_bspline_interpolate_cubic(
     const tsReal* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 )
@@ -901,7 +901,7 @@ tsError ts_bspline_interpolate(
     tsError err;
     jmp_buf buf;
     TRY(buf, err)
-        ts_internal_bspline_interpolate(points, n, dim, bspline, buf);
+        ts_internal_bspline_interpolate_cubic(points, n, dim, bspline, buf);
     CATCH
         ts_bspline_default(bspline);
     ETRY

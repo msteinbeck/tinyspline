@@ -189,7 +189,7 @@ tsError ts_bspline_new(
  * @return TS_DEG_GE_NCTRLP     if \n < 2.
  * @return TS_MALLOC            if allocating memory failed.
  */
-tsError ts_bspline_interpolate(
+tsError ts_bspline_interpolate_cubic(
     const tsReal* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 );

@@ -364,7 +364,7 @@ tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 	if (points->size() % dim != 0)
 		throw std::runtime_error("#points % dim == 0 failed");
 	tinyspline::BSpline bspline;
-	const tsError err = ts_bspline_interpolate(
+	const tsError err = ts_bspline_interpolate_cubic(
 		points->data(), points->size()/dim, dim, bspline.data());
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));

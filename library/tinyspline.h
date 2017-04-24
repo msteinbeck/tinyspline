@@ -19,6 +19,9 @@ typedef double tsReal;
 typedef float tsReal;
 #endif
 
+#define FLT_MAX_ABS_ERROR 1e-5
+#define FLT_MAX_REL_ERROR 1e-8
+
 
 /********************************************************
 *                                                       *
@@ -29,7 +32,7 @@ typedef float tsReal;
  * This enum contains all error codes used by TinySpline.
  *
  * The following snippet shows how to handle errors:
- *      TsError err = ...       // any function call here
+ *      tsError err = ...       // any function call here
  *      if (err < 0) {          // or use err != TS_SUCCESS
  *          printf("we got an error!");
  *
@@ -104,7 +107,7 @@ typedef struct
 
 /********************************************************
 *                                                       *
-* Methods                                               *
+* Main functions                                        *
 *                                                       *
 ********************************************************/
 /**
@@ -425,7 +428,7 @@ tsError ts_bspline_to_beziers(
 
 /********************************************************
 *                                                       *
-* Utility                                               *
+* Utility functions                                     *
 *                                                       *
 ********************************************************/
 /**

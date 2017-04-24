@@ -22,5 +22,5 @@
 %include "tinyspline.i"
 
 namespace std {
-	%template(Vector) vector<tinyspline::rational>;
+	%template(Vector) vector<tinyspline::real>;
 };

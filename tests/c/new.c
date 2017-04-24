@@ -89,19 +89,19 @@ void new_test_bspline_malloc_failed(CuTest* tc)
     ctests_init_non_default_bspline(&bspline);
     /*
      * The size to allocate is calculated as follows:
-     *      (n_ctrlp*dim + n_ctrlp+deg+1) * sizeof(tsRational)
+     *      (n_ctrlp*dim + n_ctrlp+deg+1) * sizeof(tsReal)
      * With dim = 1 and deg = 0 we get:
-     *      (n_ctrlp*1 + n_ctrlp+0+1) * sizeof(tsRational)
+     *      (n_ctrlp*1 + n_ctrlp+0+1) * sizeof(tsReal)
      * Simplified:
-     *      (2*n_ctrlp + 1) * sizeof(tsRational)
+     *      (2*n_ctrlp + 1) * sizeof(tsReal)
      * Thus, lets pass
-     *      n_ctrlp = (SIZE_MAX/2 - 1) / sizeof(tsRational)
+     *      n_ctrlp = (SIZE_MAX/2 - 1) / sizeof(tsReal)
      * for maximum heap allocation without size_t overflow.
      * We can assume that this value exceeds the available
      * memory regarding SIZE_MAX. If not, disable this test.
      */
     err = ts_bspline_new(0, 1,
-        (SIZE_MAX/2 - 1) / sizeof(tsRational),
+        (SIZE_MAX/2 - 1) / sizeof(tsReal),
         TS_NONE, &bspline);
     CuAssertIntEquals(tc, TS_MALLOC, err);
     ctests_assert_default_bspline(tc, &bspline);

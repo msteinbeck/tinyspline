@@ -1,7 +1,7 @@
 %module tinysplinepython
 
-// Map std::vector<tinyspline::rational> to Python list.
-%typemap(out) std::vector<tinyspline::rational> * (int size, PyObject *data) {
+// Map std::vector<tinyspline::real> to Python list.
+%typemap(out) std::vector<tinyspline::real> * (int size, PyObject *data) {
 	size = $1->size();
 	$result = PyList_New(size);
 	for (int i = 0; i < size; i++) {
@@ -10,10 +10,10 @@
 	}
 }
 
-// Map Python list to std::vector<tinyspline::rational>.
-%typemap(in) std::vector<tinyspline::rational> * (int size, PyObject *data) %{
+// Map Python list to std::vector<tinyspline::real>.
+%typemap(in) std::vector<tinyspline::real> * (int size, PyObject *data) %{
 	size = PyList_Size($input);
-	$1 = new std::vector<tinyspline::rational>();
+	$1 = new std::vector<tinyspline::real>();
 	$1->reserve(size);
 	for (int i = 0; i < size; i++) {
 		data = PyList_GetItem($input, i);
@@ -22,7 +22,7 @@
 %}
 
 // Cleanup memory allocated by typemaps.
-%typemap(freearg) std::vector<tinyspline::rational> * {
+%typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }
 

@@ -14,9 +14,9 @@ extern "C" {
 *                                                       *
 ********************************************************/
 #ifdef TINYSPLINE_DOUBLE_PRECISION
-typedef double tsRational;
+typedef double tsReal;
 #else
-typedef float tsRational;
+typedef float tsReal;
 #endif
 
 
@@ -69,14 +69,14 @@ typedef enum
 
 typedef struct
 {
-    tsRational u;       /* the knot u */
-    size_t k;           /* the index [u_k, u_k+1) */
-    size_t s;           /* the multiplicity of u_k */
-    size_t h;           /* how many times u must be inserted */
-    size_t dim;         /* dimension of a control point */
-    size_t n_points;    /* number of control points */
-    tsRational* points; /* the control points of the de Boor net */
-    tsRational* result; /* the result of the evaluation
+    tsReal u;        /* the knot u */
+    size_t k;        /* the index [u_k, u_k+1) */
+    size_t s;        /* the multiplicity of u_k */
+    size_t h;        /* how many times u must be inserted */
+    size_t dim;      /* dimension of a control point */
+    size_t n_points; /* number of control points */
+    tsReal* points;  /* the control points of the de Boor net */
+    tsReal* result;  /* the result of the evaluation
  * Technically it is a pointer to the last point in points. Any changes made
  * here will modify points and vice versa. In case of a discontinuous B-Spline
  * at u, points can be used to get access to the first point and result to get
@@ -85,15 +85,15 @@ typedef struct
 
 typedef struct
 {
-    size_t deg;        /* degree of b-spline basis function */
-    size_t order;      /* degree + 1
+    size_t deg;     /* degree of b-spline basis function */
+    size_t order;   /* degree + 1
  * This field is provided for convenience, because some libraries (e.g. OpenGL)
  * implicitly describing a polynomial of degree n with n + 1. */
-    size_t dim;        /* dimension of a control point */
-    size_t n_ctrlp;    /* number of control points */
-    size_t n_knots;    /* number of knots (n_ctrlp + deg + 1) */
-    tsRational* ctrlp; /* the control points of the spline */
-    tsRational* knots; /* the knot vector of the spline (ascending)
+    size_t dim;     /* dimension of a control point */
+    size_t n_ctrlp; /* number of control points */
+    size_t n_knots; /* number of knots (n_ctrlp + deg + 1) */
+    tsReal* ctrlp;  /* the control points of the spline */
+    tsReal* knots;  /* the knot vector of the spline (ascending)
  * Technically ctrlp and knots share the same array. The first elements of
  * this array are the control points and the last elements are the knots. Keep
  * in mind that you should never assign two different arrays to ctrlp and knots
@@ -190,7 +190,7 @@ tsError ts_bspline_new(
  * @return TS_MALLOC            if allocating memory failed.
  */
 tsError ts_bspline_interpolate(
-    const tsRational* points, const size_t n, const size_t dim,
+    const tsReal* points, const size_t n, const size_t dim,
     tsBSpline* bspline
 );
 
@@ -280,7 +280,7 @@ tsError ts_bspline_copy(
  *                              memory failed.
  */
 tsError ts_bspline_set_ctrlp(
-    const tsBSpline* bspline, const tsRational* ctrlp,
+    const tsBSpline* bspline, const tsReal* ctrlp,
     tsBSpline* result
 );
 
@@ -297,7 +297,7 @@ tsError ts_bspline_set_ctrlp(
  *                              memory failed.
  */
 tsError ts_bspline_set_knots(
-    const tsBSpline* bspline, const tsRational* knots,
+    const tsBSpline* bspline, const tsReal* knots,
     tsBSpline* result
 );
 
@@ -325,7 +325,7 @@ tsError ts_bspline_set_knots(
  */
 tsError ts_bspline_fill_knots(
     const tsBSpline* original, const tsBSplineType type,
-    const tsRational min, const tsRational max,
+    const tsReal min, const tsReal max,
     tsBSpline* result
 );
 
@@ -344,12 +344,12 @@ tsError ts_bspline_fill_knots(
  * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
  */
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const tsRational u,
+    const tsBSpline* bspline, const tsReal u,
     tsDeBoorNet* deBoorNet
 );
 
 tsError ts_bspline_insert_knot(
-    const tsBSpline* bspline, const tsRational u, const size_t n,
+    const tsBSpline* bspline, const tsReal u, const size_t n,
     tsBSpline* result, size_t* k
 );
 
@@ -385,7 +385,7 @@ tsError ts_bspline_resize(
 );
 
 tsError ts_bspline_split(
-    const tsBSpline* bspline, const tsRational u,
+    const tsBSpline* bspline, const tsReal u,
     tsBSpline* split, size_t* k
 );
 
@@ -413,7 +413,7 @@ tsError ts_bspline_split(
  *                              memory failed.
  */
 tsError ts_bspline_buckle(
-    const tsBSpline* original, const tsRational b,
+    const tsBSpline* original, const tsReal b,
     tsBSpline* buckled
 );
 
@@ -429,13 +429,13 @@ tsError ts_bspline_to_beziers(
 *                                                       *
 ********************************************************/
 /**
- * Compares the tsRational values \x and \y by using absolute and relative
+ * Compares the tsReal values \x and \y by using absolute and relative
  * epsilon.
  *
  * @return 1    if \x is equals to \y.
  * @return 0    otherwise.
  */
-int ts_fequals(const tsRational x, const tsRational y);
+int ts_fequals(const tsReal x, const tsReal y);
 
 /**
  * Returns the error message associated to \err. Returns "unknown error" if
@@ -454,7 +454,7 @@ tsError ts_str_enum(const char* str);
 /**
  * Fills the given array \arr with \val from \arr+0 to \arr+\num (exclusive).
  */
-void ts_arr_fill(tsRational *arr, const size_t num, const tsRational val);
+void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val);
 
 /**
  * Returns the euclidean distance of \x and \y consisting of \dim components,
@@ -462,8 +462,8 @@ void ts_arr_fill(tsRational *arr, const size_t num, const tsRational val);
  *
  * @return  the euclidean of \x and \y.
  */
-tsRational ts_ctrlp_dist2(
-    const tsRational *x, const tsRational *y, const size_t dim
+tsReal ts_ctrlp_dist2(
+    const tsReal *x, const tsReal *y, const size_t dim
 );
 
 

@@ -1,20 +1,20 @@
 %module tinysplinecsharp
 
 // Create a typemap that generalizes the types float and double to a single type accessible with
-// $typemap(cstype, tinyspline::rational).
+// $typemap(cstype, tinyspline::real).
 #ifdef TINYSPLINE_DOUBLE_PRECISION
-	%typemap(cstype) tinyspline::rational "double"
+	%typemap(cstype) tinyspline::real "double"
 #else
-	%typemap(cstype) tinyspline::rational "float"
+	%typemap(cstype) tinyspline::real "float"
 #endif
 
-// Change the signature of the C# interface files from std::vector<tinyspline::rational> to
+// Change the signature of the C# interface files from std::vector<tinyspline::real> to
 // IList<float/double>.
-%typemap(cstype) std::vector<tinyspline::rational> *
-	"System.Collections.Generic.IList<$typemap(cstype, tinyspline::rational)>"
+%typemap(cstype) std::vector<tinyspline::real> *
+	"System.Collections.Generic.IList<$typemap(cstype, tinyspline::real)>"
 
 // Let C# interface files redirect the input argument to the converter function.
-%typemap(csin) std::vector<tinyspline::rational> *
+%typemap(csin) std::vector<tinyspline::real> *
 	"RationalVector.getCPtr(Utils.ListToVector($csinput))"
 
 //********************************************************
@@ -25,13 +25,13 @@
 %typemap(cscode) tinyspline::Utils
 %{
 	internal static RationalVector ListToVector(
-		System.Collections.Generic.IList<$typemap(cstype, tinyspline::rational)> list)
+		System.Collections.Generic.IList<$typemap(cstype, tinyspline::real)> list)
 	{
 		if (list == null)
 			throw new System.ArgumentNullException("List must not be null.");
 
 		RationalVector vec = new RationalVector(list.Count);
-		foreach ($typemap(cstype, tinyspline::rational) val in list)
+		foreach ($typemap(cstype, tinyspline::real) val in list)
 			vec.Add(val);
 		return vec;
 	}
@@ -60,5 +60,5 @@
 %include "tinyspline.i"
 
 namespace std {
-	%template(RationalVector) vector<tinyspline::rational>;
+	%template(RationalVector) vector<tinyspline::real>;
 };

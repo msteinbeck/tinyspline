@@ -1,7 +1,7 @@
 %module tinysplinephp
 
-// Map std::vector<tinyspline::rational> to PHP array.
-%typemap(out) std::vector<tinyspline::rational> * {
+// Map std::vector<tinyspline::real> to PHP array.
+%typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();
 	array_init_size($result, size);
 	for (int i = 0; i < size; i++) {
@@ -9,9 +9,9 @@
 	}
 }
 
-// Map PHP array to std::vector<tinyspline::rational>.
-%typemap(in) std::vector<tinyspline::rational> * {
-	$1 = new std::vector<tinyspline::rational>();
+// Map PHP array to std::vector<tinyspline::real>.
+%typemap(in) std::vector<tinyspline::real> * {
+	$1 = new std::vector<tinyspline::real>();
 	for (int idx = 0;; idx++) {
 #ifdef SWIGPHP5
 		zval **value;
@@ -33,7 +33,7 @@
 }
 
 // Cleanup memory allocated by typemaps.
-%typemap(freearg) std::vector<tinyspline::rational> * {
+%typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }
 

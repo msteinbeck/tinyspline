@@ -20,7 +20,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-tsRational u = 0.f;
+tsReal u = 0.f;
 
 /********************************************************
 *                                                       *
@@ -29,7 +29,7 @@ tsRational u = 0.f;
 ********************************************************/
 void setup()
 {
-    const tsRational w = (tsRational)(sqrt(2.f) / 2.f);
+    const tsReal w = (tsReal)(sqrt(2.f) / 2.f);
     ts_bspline_new(2, 4, 9, TS_CLAMPED ,&spline);
     
     spline.ctrlp[0] = 1.f;

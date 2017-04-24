@@ -23,13 +23,13 @@
 tsBSpline spline;
 GLUnurbsObj *theNurb;
 size_t i; /* loop counter */
-tsRational t = 0.f;
+tsReal t = 0.f;
 /* A, C, D, and E are convenience variables and simply wrap the access
 to the control points of `spline`. B is required to store the original
 second control point of `spline` which gets replaced with D and E.
 v and w are the vectors AB and CB, respectively. */
-tsRational *A, *C, *D, *E;
-tsRational B[3], v[3], w[3];
+tsReal *A, *C, *D, *E;
+tsReal B[3], v[3], w[3];
 
 /********************************************************
 *                                                       *
@@ -38,7 +38,7 @@ tsRational B[3], v[3], w[3];
 ********************************************************/
 void setup()
 {
-    tsRational mid;
+    tsReal mid;
     size_t k; /* not required here */
 
     ts_bspline_new(

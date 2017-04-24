@@ -6,7 +6,7 @@
 
 namespace tinyspline {
 
-typedef tsRational rational;
+typedef tsReal real;
 
 class DeBoorNet {
 public:
@@ -19,14 +19,14 @@ public:
 	DeBoorNet& operator=(const DeBoorNet &other);
 
 	/* Getter */
-	rational u() const;
+	real u() const;
 	size_t k() const;
 	size_t s() const;
 	size_t h() const;
 	size_t dim() const;
 	size_t nPoints() const;
-	std::vector<rational> points() const;
-	std::vector<rational> result() const;
+	std::vector<real> points() const;
+	std::vector<real> result() const;
 	tsDeBoorNet * data();
 
 	/* C++11 features */
@@ -55,7 +55,7 @@ public:
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
-	DeBoorNet operator()(const rational u) const;
+	DeBoorNet operator()(const real u) const;
 
 	/* Getter */
 	size_t deg() const;
@@ -63,22 +63,22 @@ public:
 	size_t dim() const;
 	size_t nCtrlp() const;
 	size_t nKnots() const;
-	std::vector<rational> ctrlp() const;
-	std::vector<rational> knots() const;
+	std::vector<real> ctrlp() const;
+	std::vector<real> knots() const;
 	tsBSpline * data();
-	DeBoorNet evaluate(const rational u) const;
+	DeBoorNet evaluate(const real u) const;
 
 	/* Modifications */
-	void setCtrlp(const std::vector<rational> &ctrlp);
-	void setKnots(const std::vector<rational> &knots);
+	void setCtrlp(const std::vector<real> &ctrlp);
+	void setKnots(const std::vector<real> &knots);
 
 	/* Transformations */
-	BSpline fillKnots(const tsBSplineType type, const rational min,
-		const rational max) const;
-	BSpline insertKnot(const rational u, const size_t n) const;
+	BSpline fillKnots(const tsBSplineType type, const real min,
+		const real max) const;
+	BSpline insertKnot(const real u, const size_t n) const;
 	BSpline resize(const int n, const int back) const;
-	BSpline split(const rational u) const;
-	BSpline buckle(const rational b) const;
+	BSpline split(const real u) const;
+	BSpline buckle(const real b) const;
 	BSpline toBeziers() const;
 	BSpline derive() const;
 
@@ -99,9 +99,9 @@ private:
 
 class Utils {
 public:
-	static BSpline interpolateCubic(const std::vector<rational> *points,
+	static BSpline interpolateCubic(const std::vector<real> *points,
 		const size_t dim);
-	static bool fequals(const rational x, const rational y);
+	static bool fequals(const real x, const real y);
 	static std::string enum_str(const tsError err);
 	static tsError str_enum(const std::string str);
 

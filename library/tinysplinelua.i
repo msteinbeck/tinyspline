@@ -1,7 +1,7 @@
 %module tinysplinelua
 
-// Map std::vector<tinyspline::rational> to Lua table.
-%typemap(out) std::vector<tinyspline::rational> * {
+// Map std::vector<tinyspline::real> to Lua table.
+%typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();
 	lua_createtable(L, size, 0);
 	for (int i = 0; i < size; i++) {
@@ -11,9 +11,9 @@
 	return 1;
 }
 
-// Map Lua table to std::vector<tinyspline::rational>.
-%typemap(in) std::vector<tinyspline::rational> * (int idx) %{
-	$1 = new std::vector<tinyspline::rational>();
+// Map Lua table to std::vector<tinyspline::real>.
+%typemap(in) std::vector<tinyspline::real> * (int idx) %{
+	$1 = new std::vector<tinyspline::real>();
 	idx = lua_gettop(L);
 	lua_pushnil(L);
 	while (lua_next(L, idx)) {
@@ -23,7 +23,7 @@
 %}
 
 // Cleanup memory allocated by typemaps.
-%typemap(freearg) std::vector<tinyspline::rational> * {
+%typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }
 

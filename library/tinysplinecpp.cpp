@@ -35,7 +35,7 @@ tinyspline::DeBoorNet & tinyspline::DeBoorNet::operator=(
 	return *this;
 }
 
-tinyspline::rational tinyspline::DeBoorNet::u() const
+tinyspline::real tinyspline::DeBoorNet::u() const
 {
 	return deBoorNet.u;
 }
@@ -65,19 +65,18 @@ size_t tinyspline::DeBoorNet::nPoints() const
 	return deBoorNet.n_points;
 }
 
-std::vector<tinyspline::rational> tinyspline::DeBoorNet::points() const
+std::vector<tinyspline::real> tinyspline::DeBoorNet::points() const
 {
-	const tinyspline::rational *begin = deBoorNet.points;
-	const tinyspline::rational *end =
-		begin + deBoorNet.n_points*deBoorNet.dim;
-	return std::vector<tinyspline::rational>(begin, end);
+	const tinyspline::real *begin = deBoorNet.points;
+	const tinyspline::real *end = begin + deBoorNet.n_points*deBoorNet.dim;
+	return std::vector<tinyspline::real>(begin, end);
 }
 
-std::vector<tinyspline::rational> tinyspline::DeBoorNet::result() const
+std::vector<tinyspline::real> tinyspline::DeBoorNet::result() const
 {
-	const tinyspline::rational *begin = deBoorNet.result;
-	const tinyspline::rational *end = begin + deBoorNet.dim;
-	return std::vector<tinyspline::rational>(begin, end);
+	const tinyspline::real *begin = deBoorNet.result;
+	const tinyspline::real *end = begin + deBoorNet.dim;
+	return std::vector<tinyspline::real>(begin, end);
 }
 
 tsDeBoorNet * tinyspline::DeBoorNet::data()
@@ -161,7 +160,7 @@ tinyspline::BSpline & tinyspline::BSpline::operator=(
 }
 
 tinyspline::DeBoorNet tinyspline::BSpline::operator()(
-	const tinyspline::rational u) const
+	const tinyspline::real u) const
 {
 	return evaluate(u);
 }
@@ -191,18 +190,18 @@ size_t tinyspline::BSpline::nKnots() const
 	return bspline.n_knots;
 }
 
-std::vector<tinyspline::rational> tinyspline::BSpline::ctrlp() const
+std::vector<tinyspline::real> tinyspline::BSpline::ctrlp() const
 {
-	const tinyspline::rational *begin  = bspline.ctrlp;
-	const tinyspline::rational *end = begin + bspline.n_ctrlp*bspline.dim;
-	return std::vector<tinyspline::rational>(begin, end);
+	const tinyspline::real *begin  = bspline.ctrlp;
+	const tinyspline::real *end = begin + bspline.n_ctrlp*bspline.dim;
+	return std::vector<tinyspline::real>(begin, end);
 }
 
-std::vector<tinyspline::rational> tinyspline::BSpline::knots() const
+std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 {
-	const tinyspline::rational *begin = bspline.knots;
-	const tinyspline::rational *end = begin + bspline.n_knots;
-	return std::vector<tinyspline::rational>(begin, end);
+	const tinyspline::real *begin = bspline.knots;
+	const tinyspline::real *end = begin + bspline.n_knots;
+	return std::vector<tinyspline::real>(begin, end);
 }
 
 tsBSpline * tinyspline::BSpline::data()
@@ -211,7 +210,7 @@ tsBSpline * tinyspline::BSpline::data()
 }
 
 tinyspline::DeBoorNet tinyspline::BSpline::evaluate(
-	const tinyspline::rational u) const
+	const tinyspline::real u) const
 {
 	tinyspline::DeBoorNet deBoorNet;
 	const tsError err = ts_bspline_evaluate(&bspline, u, deBoorNet.data());
@@ -221,7 +220,7 @@ tinyspline::DeBoorNet tinyspline::BSpline::evaluate(
 }
 
 void tinyspline::BSpline::setCtrlp(
-	const std::vector<tinyspline::rational> &ctrlp)
+	const std::vector<tinyspline::real> &ctrlp)
 {
 	if (ctrlp.size() != nCtrlp() * dim()) {
 		throw std::runtime_error("The number of values must be equals"
@@ -235,7 +234,7 @@ void tinyspline::BSpline::setCtrlp(
 }
 
 void tinyspline::BSpline::setKnots(
-	const std::vector<tinyspline::rational> &knots)
+	const std::vector<tinyspline::real> &knots)
 {
 	if (knots.size() != nKnots()) {
 		throw std::runtime_error("The number of values must be equals"
@@ -248,8 +247,8 @@ void tinyspline::BSpline::setKnots(
 }
 
 tinyspline::BSpline tinyspline::BSpline::fillKnots(
-	const tsBSplineType type, const tinyspline::rational min,
-	const tinyspline::rational max) const
+	const tsBSplineType type, const tinyspline::real min,
+	const tinyspline::real max) const
 {
 	tinyspline::BSpline bs;
 	const tsError err = ts_bspline_fill_knots(
@@ -260,7 +259,7 @@ tinyspline::BSpline tinyspline::BSpline::fillKnots(
 }
 
 tinyspline::BSpline tinyspline::BSpline::insertKnot(
-	const tinyspline::rational u, const size_t n) const
+	const tinyspline::real u, const size_t n) const
 {
 	tinyspline::BSpline bs;
 	size_t k;
@@ -282,7 +281,7 @@ tinyspline::BSpline tinyspline::BSpline::resize(
 }
 
 tinyspline::BSpline tinyspline::BSpline::split(
-	const tinyspline::rational u) const
+	const tinyspline::real u) const
 {
 	tinyspline::BSpline bs;
 	size_t k;
@@ -293,7 +292,7 @@ tinyspline::BSpline tinyspline::BSpline::split(
 }
 
 tinyspline::BSpline tinyspline::BSpline::buckle(
-	const tinyspline::rational b) const
+	const tinyspline::real b) const
 {
 	tinyspline::BSpline bs;
 	const tsError err = ts_bspline_buckle(&bspline, b, &bs.bspline);
@@ -358,7 +357,7 @@ void tinyspline::BSpline::swap(tinyspline::BSpline &other)
 *                                                       *
 ********************************************************/
 tinyspline::BSpline tinyspline::Utils::interpolateCubic(
-	const std::vector<tinyspline::rational> *points, const size_t dim)
+	const std::vector<tinyspline::real> *points, const size_t dim)
 {
 	if (dim == 0)
 		throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
@@ -373,7 +372,7 @@ tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 }
 
 bool tinyspline::Utils::fequals(
-	const tinyspline::rational x, const tinyspline::rational y)
+	const tinyspline::real x, const tinyspline::real y)
 {
 	return ts_fequals(x, y) == 1;
 }

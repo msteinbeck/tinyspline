@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 	);
 
 	// Setup control points.
-	std::vector<tinyspline::rational> ctrlp = spline.ctrlp();
+	std::vector<tinyspline::real> ctrlp = spline.ctrlp();
 	ctrlp[0]  = -1.75f; // x0
 	ctrlp[1]  = -1.0f;  // y0
 	ctrlp[2]  = -1.5f;  // x1
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	spline.setCtrlp(ctrlp);
 
 	// Stores our evaluation results.
-	std::vector<tinyspline::rational> result;
+	std::vector<tinyspline::real> result;
 
 	// Evaluate `spline` at u = 0.4 using 'evaluate'.
 	result = spline.evaluate(0.4f).result();

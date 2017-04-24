@@ -27,16 +27,16 @@
 %attribute(tinyspline::BSpline, size_t, dim, dim);
 %attribute(tinyspline::BSpline, size_t, nCtrlp, nCtrlp);
 %attribute(tinyspline::BSpline, size_t, nKnots, nKnots);
-%attributeval(tinyspline::BSpline, std::vector<tinyspline::rational>, ctrlp, ctrlp, setCtrlp);
-%attributeval(tinyspline::BSpline, std::vector<tinyspline::rational>, knots, knots, setKnots);
-%attribute(tinyspline::DeBoorNet, tinyspline::rational, u, u);
+%attributeval(tinyspline::BSpline, std::vector<tinyspline::real>, ctrlp, ctrlp, setCtrlp);
+%attributeval(tinyspline::BSpline, std::vector<tinyspline::real>, knots, knots, setKnots);
+%attribute(tinyspline::DeBoorNet, tinyspline::real, u, u);
 %attribute(tinyspline::DeBoorNet, size_t, k, k);
 %attribute(tinyspline::DeBoorNet, size_t, s, s);
 %attribute(tinyspline::DeBoorNet, size_t, h, h);
 %attribute(tinyspline::DeBoorNet, size_t, dim, dim);
 %attribute(tinyspline::DeBoorNet, size_t, nPoints, nPoints);
-%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::rational>, points, points);
-%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::rational>, result, result);
+%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::real>, points, points);
+%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::real>, result, result);
 #endif
 
 // Make strings directly accessible in target language.
@@ -69,6 +69,6 @@
 %include "tinyspline.h"
 %include "tinysplinecpp.h"
 
-// Make std::vector<tinyspline::rational> available in target language. Is also required by
+// Make std::vector<tinyspline::real> available in target language. Is also required by
 // '%attributeval' (see above).
 %include "std_vector.i"

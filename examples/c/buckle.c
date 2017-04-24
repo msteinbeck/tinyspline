@@ -20,7 +20,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-tsRational b = 1.f;
+tsReal b = 1.f;
 
 /********************************************************
 *                                                       *

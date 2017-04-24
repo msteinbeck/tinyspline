@@ -1,22 +1,22 @@
 %module tinysplinejava
 
-// Change the signature of the JNI file from std::vector<tinyspline::rational> to
+// Change the signature of the JNI file from std::vector<tinyspline::real> to
 // List<Float/Double>.
 %typemap(jtype) std::vector<float> * "java.util.List<Float>"
 %typemap(jtype) std::vector<double> * "java.util.List<Double>"
 
-// Change the signature of the Java interface files from std::vector<tinyspline:rational> to
+// Change the signature of the Java interface files from std::vector<tinyspline:real> to
 // List<Float/Double>.
 %typemap(jstype) std::vector<float> * "java.util.List<Float>"
 %typemap(jstype) std::vector<double> * "java.util.List<Double>"
 
 // Let Java interface files directly return JNI result.
-%typemap(javaout) std::vector<tinyspline::rational> * {
+%typemap(javaout) std::vector<tinyspline::real> * {
 	return $jnicall;
 }
 
 // Let Java interface files redirect the input argument to JNI.
-%typemap(javain) std::vector<tinyspline::rational> * "$javainput"
+%typemap(javain) std::vector<tinyspline::real> * "$javainput"
 
 // Map std::vector<float> to List<Float>.
 %typemap(out) std::vector<float> * {

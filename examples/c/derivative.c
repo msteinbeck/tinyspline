@@ -20,7 +20,7 @@
 
 tsBSpline spline, derivative;
 GLUnurbsObj *theNurb;
-tsRational u = 0.f;
+tsReal u = 0.f;
 
 /********************************************************
 *                                                       *

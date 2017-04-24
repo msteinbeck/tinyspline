@@ -9,8 +9,8 @@ void ctests_init_non_default_bspline(tsBSpline *bspline)
     bspline->dim = 3;
     bspline->n_ctrlp = 4;
     bspline->n_knots = 5;
-    bspline->ctrlp = (tsRational*) &bspline->deg;
-    bspline->knots = (tsRational*) &bspline->dim;
+    bspline->ctrlp = (tsReal*) &bspline->deg;
+    bspline->knots = (tsReal*) &bspline->dim;
 }
 
 /* See default tests */

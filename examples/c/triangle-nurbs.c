@@ -25,8 +25,8 @@ GLUnurbsObj *theNurb;
 size_t i; /* loop counter */
 /* the original second point of `spline` that is
 weight with `w` in every call of ::display */
-tsRational B[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-tsRational w = 0.001f;
+tsReal B[4] = {1.0f, 1.0f, 0.0f, 1.0f};
+tsReal w = 0.001f;
 
 /********************************************************
 *                                                       *

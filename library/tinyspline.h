@@ -308,7 +308,7 @@ tsError ts_bspline_copy(
 /**
  * The move constructor of tsBSpline.
  *
- * Moves all values from \from to \to and calls ::ts_bspline_default on \to
+ * Moves all values from \from to \to and calls ::ts_bspline_default on \from
  * afterwards. Does nothing if \from == \to.
  */
 void ts_bspline_move(tsBSpline *from, tsBSpline *to);
@@ -395,6 +395,14 @@ tsError ts_deboornet_copy(
 	const tsDeBoorNet *original,
 	tsDeBoorNet *copy
 );
+
+/**
+ * The move constructor of tsDeBoorNet.
+ *
+ * Moves all values from \from to \to and calls ::ts_deboornet_default on
+ * \from afterwards. Does nothing if \from == \to.
+ */
+void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to);
 
 /**
  * Evaluates \bspline at knot value \u and stores result in \deBoorNet.

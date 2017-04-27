@@ -829,6 +829,21 @@ void ts_deboornet_default(tsDeBoorNet* deBoorNet)
     deBoorNet->result   = NULL;
 }
 
+void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to)
+{
+    if (from == to)
+        return;
+    to->u = from->u;
+    to->k = from->k;
+    to->s = from->s;
+    to->h = from->h;
+    to->dim = from->dim;
+    to->n_points = from->n_points;
+    to->points = from->points;
+    to->result = from->result;
+    ts_deboornet_default(from);
+}
+
 void ts_deboornet_free(tsDeBoorNet* deBoorNet)
 {
     if (deBoorNet->points != NULL)

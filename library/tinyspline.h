@@ -3,7 +3,6 @@
 
 #include <stddef.h>
 
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -27,18 +26,17 @@ typedef float tsReal;
 #define FLT_MAX_REL_ERROR 1e-8
 
 
+
 /******************************************************************************
 *                                                                             *
 * Data Types                                                                  *
 *                                                                             *
-* The following section defines all data types available in TinySpline. Each  *
-* data type is prefixed with 'ts' and named using camelCase, for instance,    *
-* 'tsError'.                                                                  *
+* The following section defines all data types available in TinySpline.       *
 *                                                                             *
 ******************************************************************************/
 /**
- * Contains all error codes used by TinySpline. The following snippet shows
- * how to handle errors:
+ * Contains all error codes used by TinySpline. The following code snippet
+ * shows how to handle errors:
  *
  *      tsError err = ...       // any function call here
  *      if (err < 0) {          // or use err != TS_SUCCESS
@@ -100,13 +98,72 @@ typedef enum
 } tsBSplineType;
 
 /**
- * Represents the output of De Boor's algorithm which is used to evaluate a
- * spline at given knot value u:
+ * Represents a B-Spline which may also be used for NURBS, Bezier curves,
+ * lines, and points. NURBS are represented using homogeneous coordinates where
+ * the last component of a control point is its weight. Bezier curves are
+ * B-Splines with 'n_ctrlp == order' and clamped knot vector making the curve
+ * passing through the first and last control point. If a Bezier curve consists
+ * of two control points only, we call them a line. Points, ultimately, are
+ * just very short lines having only a single control point. Consequently, the
+ * degree of a point is zero.
+ *
+ * Two dimensional control points are organized as follows:
+ *
+ *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
+ *
+ * Tree dimensional control points are organized as follows:
+ *
+ *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
+ *
+ * ... and so on. NURBS are represented using homogeneous coordinates. For
+ * instance, let's say we have a NURBS in 2D consisting of 11 control points
+ * where 'w_i' is the weight of the i'th control point. Then the corresponding
+ * control points are organized as follows:
+ *
+ *     [x_0, y_0, w_0, x_1, y_1, w_1, ..., x_10, y_10, w_10]
+ *
+ * Note: The fields 'ctrlp' and 'knots' share the same array (similar to the
+ *       approach used in 'tsDeBoorNet'). That is, the first elements of this
+ *       array contain the control points of a spline whereas the last elements
+ *       contain its knots. Accordingly, you should never free 'knots'
+ *       explicitly. Using 'ts_bspline_free()' to free dynamically allocated
+ *       memory is to be preferred anyway. If 'ctrlp' and 'knots' do not share
+ *       the same array, or at least a consistent block of data, functions
+ *       provided by TinySpline my fail because values are copied block wise.
+ */
+typedef struct
+{
+	/* Degree of B-Spline basis function. */
+	size_t deg;
+
+	/* A convenience field for deg+1. */
+	size_t order;
+
+	/* Dimension of a control points. */
+	size_t dim;
+
+	/* Number of control points. */
+	size_t n_ctrlp;
+
+	/* Number of knots (n_ctrlp + deg + 1). */
+	size_t n_knots;
+
+	/* Control points of a spline. */
+	tsReal *ctrlp;
+
+	/* Knot vector of a spline (ascending order). */
+	tsReal *knots;
+} tsBSpline;
+
+/**
+ * Represents the output of De Boor's algorithm. De Boor's algorithm is used to
+ * evaluate a spline at given knot value 'u' by iteratively computing a net of
+ * intermediate values until the result is available:
  *
  *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
  *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
  *
- * All points of a net are stored in 'points'. The resulting point of an
+ * All points of the net are stored in 'points'. The resulting point of an
  * evaluation is the last point in 'points' and, for the sake of convenience,
  * may be accessed using 'result':
  *
@@ -211,150 +268,17 @@ typedef struct
 	tsReal *result;
 } tsDeBoorNet;
 
-/**
- * Represents a B-Spline which may also be used for NURBS, Bezier curves,
- * lines, and points. NURBS are represented using homogeneous coordinates where
- * the last component of a control point is its weight. Bezier curves are
- * B-Splines with 'n_ctrlp == order' and clamped knot vector making the curve
- * passing through the first and last control point. If a Bezier curve consists
- * of two control points only, we call them a line. Points, ultimately, are
- * just very short lines having only a single control point. Consequently, the
- * degree of a point is zero.
- *
- * Two dimensional control points are organized as follows:
- *
- *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
- *
- * Tree dimensional control points are organized as follows:
- *
- *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
- *
- * ... and so on. NURBS are represented using homogeneous coordinates. For
- * instance, let's say we have a NURBS in 2D consisting of 11 control points
- * where 'w_i' is the weight of the i'th control point. Then the corresponding
- * control points are organized as follows:
- *
- *     [x_0, y_0, w_0, x_1, y_1, w_1, ..., x_10, y_10, w_10]
- *
- * Note: The fields 'ctrlp' and 'knots' share the same array (similar to the
- *       approach used in 'tsDeBoorNet'). That is, the first elements of this
- *       array contain the control points of a spline whereas the last elements
- *       contain its knots. Accordingly, you should never free 'knots'
- *       explicitly. Using 'ts_bspline_free()' to free dynamically allocated
- *       memory is to be preferred anyway. If 'ctrlp' and 'knots' do not share
- *       the same array, or at least a consistent block of data, functions
- *       provided by TinySpline my fail because values are copied block wise.
- */
-typedef struct
-{
-	/* Degree of B-Spline basis function. */
-	size_t deg;
-
-	/* A convenience field for deg+1. */
-	size_t order;
-
-	/* Dimension of a control points. */
-	size_t dim;
-
-	/* Number of control points. */
-	size_t n_ctrlp;
-
-	/* Number of knots (n_ctrlp + deg + 1). */
-	size_t n_knots;
-
-	/* Control points of a spline. */
-	tsReal *ctrlp;
-
-	/* Knot vector of a spline (ascending order). */
-	tsReal *knots;
-} tsBSpline;
 
 
 /******************************************************************************
 *                                                                             *
-* Main functions                                                              *
+* Constructors, Destructors, Copy, and Move Functions                         *
 *                                                                             *
-* The following section contains TinySpline's main API. Function names are    *
-* prefixed with 'ts_' followed by an identifier indicating the purpose of a   *
-* function. For instance, 'ts_bspline_free()' is a function dealing with      *
-* splines (represented by 'tsBSpline') while, on the other hand,              *
-* 'ts_deboornet_free()' is a function dealing with evaluation results         *
-* (represented by 'tsDeBoorNet').                                             *
-*                                                                             *
-* TinySpline is a transformation oriented library. That is, most functions    *
-* are used to create and transform splines by modifying their state, e.g.,    *
-* their number of control points, their degree, and so on. Thus,              *
-* transformation functions specify an input and output parameter (along with  *
-* other parameters required to calculate the actual transformation). By       *
-* passing a different pointer to the output parameter, the transformation     *
-* result is calculated and stored without changing the state of the input.    *
-* This is in particular useful when dealing with errors as the original state *
-* will never be modified. For instance, let's have a look at the following    *
-* code snippet:                                                               *
-*                                                                             *
-*     tsBSpline in = ...    // an arbitrary spline                            *
-*     tsBSpline out;        // result of transformation                       *
-*                                                                             *
-*     // Subdivide 'in' into sequence of bezier curves and store the result   *
-*     // in 'out'. Does not change 'in' in any way.                           *
-*     tsError err = ts_bspline_to_beziers(&in, &out);                         *
-*     if (err != TS_SUCCESS) {                                                *
-*         // fortunately, 'in' has not been changed                           *
-*     }                                                                       *
-*                                                                             *
-* Even if 'ts_bspline_to_beziers' fails, the state of 'in' has not been       *
-* changed allowing you to handle the error properly.                          *
-*                                                                             *
-* Unless stated otherwise, the order of the parameters for transformation     *
-* functions is:                                                               *
-*                                                                             *
-*     function(input, [additional_input], output, [additional_output])        *
-*                                                                             *
-* 'additional_input' are parameters required to calculate the actual          *
-* transformation. 'additional_output' are parameters to store further         *
-* results.                                                                    *
-*                                                                             *
-* Note: None of TinySpline's transformation functions frees the memory of the *
-*       output parameter. Thus, when using the same output parameter multiple *
-*       times, make sure to free memory before each call. Otherwise, you will *
-*       have a bad time with memory leaks:                                    *
-*                                                                             *
-*     tsBSpline in = ...                  // an arbitrary spline              *
-*     tsBSpline out;                      // result of transformations        *
-*                                                                             *
-*     ts_bspline_to_beziers(&in, &out);   // first transformation             *
-*     ...                                 // some code                        *
-*     ts_bspline_free(&out);              // avoid memory leak.               *
-*     ts_bspline_buckle(&in, &out);       // next transformation              *
-*                                                                             *
-* If you want to modify your input directly without having a separate output  *
-* just pass it as input and output at once:                                   *
-*                                                                             *
-*     tsBSpline s = ...                       // an arbitrary spline          *
-*     tsReal *knots = ...                     // a knot vector                *
-*                                                                             *
-*     ts_bspline_set_knots(&s, knots, &s);    // copy 'knots' into 's'        *
-*                                                                             *
-* Note: If a transformation function fails *and* input != output, all fields  *
-*       of the output parameter are set to 0/NULL. If input == output, your   *
-*       input may have an invalid state in case of errors.                    *
+* The following section contains all functions used to create and delete      *
+* instances of the data types listed above. Additionally, each data type has  *
+* a copy and move function.                                                   *
 *                                                                             *
 ******************************************************************************/
-/**
- * The default constructor of tsDeBoorNet.
- *
- * All values of \deBoorNet are set to 0/NULL.
- */
-void ts_deboornet_default(tsDeBoorNet *deBoorNet);
-
-/**
- * The destructor of tsDeBoorNet.
- *
- * Frees all dynamically allocated memory and calls ::ts_deboornet_default
- * afterwards.
- */
-void ts_deboornet_free(tsDeBoorNet *deBoorNet);
-
 /**
  * The default constructor of tsBSpline.
  *
@@ -363,12 +287,23 @@ void ts_deboornet_free(tsDeBoorNet *deBoorNet);
 void ts_bspline_default(tsBSpline *bspline);
 
 /**
- * The destructor of tsBSpline.
+ * The copy constructor of tsBSpline.
  *
- * Frees all dynamically allocated memory and calls ::ts_deboornet_free
- * afterwards.
+ * Creates a deep copy of \original and stores the result in \copy. This
+ * function does not free already allocated memory in \copy. If you want to
+ * reuse an instance of tsBSpline by using it in multiple calls of this
+ * function, make sure to call ::ts_bspline_free beforehand.
+ *
+ * On error all values of \copy are 0/NULL. The function does nothing if
+ * \original == \result
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if allocating memory failed.
  */
-void ts_bspline_free(tsBSpline *bspline);
+tsError ts_bspline_copy(
+	const tsBSpline *original,
+	tsBSpline *copy
+);
 
 /**
  * The move constructor of tsBSpline.
@@ -428,6 +363,132 @@ tsError ts_bspline_interpolate_cubic(
 );
 
 /**
+ * The destructor of tsBSpline.
+ *
+ * Frees all dynamically allocated memory and calls ::ts_deboornet_free
+ * afterwards.
+ */
+void ts_bspline_free(tsBSpline *bspline);
+
+/**
+ * The default constructor of tsDeBoorNet.
+ *
+ * All values of \deBoorNet are set to 0/NULL.
+ */
+void ts_deboornet_default(tsDeBoorNet *deBoorNet);
+
+/**
+ * The copy constructor of tsDeBoorNet.
+ *
+ * Creates a deep copy of \original and stores the result in \copy. This
+ * function does not free already allocated memory in \copy. If you want to
+ * reuse an instance of tsDeBoorNet by using it in multiple calls of this
+ * function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * On error all values of \copy are 0/NULL. The function does nothing if
+ * \original == \result
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if allocating memory failed.
+ */
+tsError ts_deboornet_copy(
+	const tsDeBoorNet *original,
+	tsDeBoorNet *copy
+);
+
+/**
+ * Evaluates \bspline at knot value \u and stores result in \deBoorNet.
+ *
+ * This function does not free already allocated memory in \deBoorNet.
+ * If you want to reuse an instance of tsDeBoorNet by using it in multiple
+ * calls of this function, make sure to call ::ts_deboornet_free beforehand.
+ *
+ * On error all values of \deBoorNet are 0/NULL.
+ *
+ * @return TS_SUCCESS           on success.
+ * @return TS_MALLOC            if allocating memory failed.
+ * @return TS_MULTIPLICITY      if multiplicity of \u > order of \bspline.
+ * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
+ */
+tsError ts_bspline_evaluate(
+	const tsBSpline *bspline, const tsReal u,
+	tsDeBoorNet *deBoorNet
+);
+
+/**
+ * The destructor of tsDeBoorNet.
+ *
+ * Frees all dynamically allocated memory and calls ::ts_deboornet_default
+ * afterwards.
+ */
+void ts_deboornet_free(tsDeBoorNet *deBoorNet);
+
+
+
+/******************************************************************************
+*                                                                             *
+* Transformation functions                                                    *
+*                                                                             *
+* TinySpline is a library focusing on transformations. That is, most          *
+* functions are used to transform splines by modifying their state, e.g.,     *
+* their number of control points, their degree, and so on. Accordingly, each  *
+* transformation functions specifies an input and output parameter (along     *
+* with the other parameters required to calculate the actual transformation). *
+* By passing a different pointer to the output parameter, the transformation  *
+* result is calculated and stored without changing the state of the input.    *
+* This is in particular useful when dealing with errors as the original state *
+* will never be modified. For instance, let's have a look at the following    *
+* code snippet:                                                               *
+*                                                                             *
+*     tsBSpline in = ...    // an arbitrary spline                            *
+*     tsBSpline out;        // result of transformation                       *
+*                                                                             *
+*     // Subdivide 'in' into sequence of bezier curves and store the result   *
+*     // in 'out'. Does not change 'in' in any way.                           *
+*     tsError err = ts_bspline_to_beziers(&in, &out);                         *
+*     if (err != TS_SUCCESS) {                                                *
+*         // fortunately, 'in' has not been changed                           *
+*     }                                                                       *
+*                                                                             *
+* Even if 'ts_bspline_to_beziers' fails, the state of 'in' has not been       *
+* changed allowing you to handle the error properly.                          *
+*                                                                             *
+* Unless stated otherwise, the order of the parameters for transformation     *
+* functions is:                                                               *
+*                                                                             *
+*     function(input, [additional_input], output, [additional_output])        *
+*                                                                             *
+* 'additional_input' are parameters required to calculate the actual          *
+* transformation. 'additional_output' are parameters to store further         *
+* results.                                                                    *
+*                                                                             *
+* Note: None of TinySpline's transformation functions frees the memory of the *
+*       output parameter. Thus, when using the same output parameter multiple *
+*       times, make sure to free memory before each call. Otherwise, you will *
+*       have a bad time with memory leaks:                                    *
+*                                                                             *
+*     tsBSpline in = ...                  // an arbitrary spline              *
+*     tsBSpline out;                      // result of transformations        *
+*                                                                             *
+*     ts_bspline_to_beziers(&in, &out);   // first transformation             *
+*     ...                                 // some code                        *
+*     ts_bspline_free(&out);              // avoid memory leak.               *
+*     ts_bspline_buckle(&in, &out);       // next transformation              *
+*                                                                             *
+* If you want to modify your input directly without having a separate output  *
+* just pass it as input and output at once:                                   *
+*                                                                             *
+*     tsBSpline s = ...                       // an arbitrary spline          *
+*     tsReal *knots = ...                     // a knot vector                *
+*                                                                             *
+*     ts_bspline_set_knots(&s, knots, &s);    // copy 'knots' into 's'        *
+*                                                                             *
+* Note: If a transformation function fails *and* input != output, all fields  *
+*       of the output parameter are set to 0/NULL. If input == output, your   *
+*       input may have an invalid state in case of errors.                    *
+*                                                                             *
+******************************************************************************/
+/**
  * Computes the derivative of \original.
  * http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
@@ -460,44 +521,6 @@ tsError ts_bspline_interpolate_cubic(
 tsError ts_bspline_derive(
 	const tsBSpline *original,
 	tsBSpline *derivative
-);
-
-/**
- * The copy constructor of tsDeBoorNet.
- *
- * Creates a deep copy of \original and stores the result in \copy. This
- * function does not free already allocated memory in \copy. If you want to
- * reuse an instance of tsDeBoorNet by using it in multiple calls of this
- * function, make sure to call ::ts_deboornet_free beforehand.
- *
- * On error all values of \copy are 0/NULL. The function does nothing if
- * \original == \result
- *
- * @return TS_SUCCESS           on success.
- * @return TS_MALLOC            if allocating memory failed.
- */
-tsError ts_deboornet_copy(
-	const tsDeBoorNet *original,
-	tsDeBoorNet *copy
-);
-
-/**
- * The copy constructor of tsBSpline.
- *
- * Creates a deep copy of \original and stores the result in \copy. This
- * function does not free already allocated memory in \copy. If you want to
- * reuse an instance of tsBSpline by using it in multiple calls of this
- * function, make sure to call ::ts_bspline_free beforehand.
- *
- * On error all values of \copy are 0/NULL. The function does nothing if
- * \original == \result
- *
- * @return TS_SUCCESS           on success.
- * @return TS_MALLOC            if allocating memory failed.
- */
-tsError ts_bspline_copy(
-	const tsBSpline *original,
-	tsBSpline *copy
 );
 
 /**
@@ -560,25 +583,6 @@ tsError ts_bspline_fill_knots(
 	const tsBSpline *original, const tsBSplineType type, const tsReal min,
 	const tsReal max,
 	tsBSpline *result
-);
-
-/**
- * Evaluates \bspline at knot value \u and stores result in \deBoorNet.
- *
- * This function does not free already allocated memory in \deBoorNet.
- * If you want to reuse an instance of tsDeBoorNet by using it in multiple
- * calls of this function, make sure to call ::ts_deboornet_free beforehand.
- *
- * On error all values of \deBoorNet are 0/NULL.
- *
- * @return TS_SUCCESS           on success.
- * @return TS_MALLOC            if allocating memory failed.
- * @return TS_MULTIPLICITY      if multiplicity of \u > order of \bspline.
- * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
- */
-tsError ts_bspline_evaluate(
-	const tsBSpline *bspline, const tsReal u,
-	tsDeBoorNet *deBoorNet
 );
 
 tsError ts_bspline_insert_knot(
@@ -656,9 +660,10 @@ tsError ts_bspline_to_beziers(
 );
 
 
+
 /******************************************************************************
 *                                                                             *
-* Utility functions                                                           *
+* Utility Functions                                                           *
 *                                                                             *
 * The following section contains utility functions used by TinySpline which   *
 * also may be helpful when working with this library.                         *
@@ -701,7 +706,6 @@ void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val);
 tsReal ts_ctrlp_dist2(
     const tsReal *x, const tsReal *y, const size_t dim
 );
-
 
 #ifdef	__cplusplus
 }

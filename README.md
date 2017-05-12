@@ -8,10 +8,10 @@ TinySpline is to be very small by design with a minimum set of dependencies. Non
 the interface has been developed to be convenient for non-experts without lacking enhanced
 features.
 
-###License
+### License
 MIT License - see the LICENSE file in the source distribution.
 
-###Some Features of This Library
+### Some Features of This Library
 - Use a single struct for NURBS, B-Splines, Bézier curves, lines, and points.
 - Support for opened and clamped splines.
 - Create splines of any degree and dimension.
@@ -26,7 +26,7 @@ MIT License - see the LICENSE file in the source distribution.
 
 Feel free to ask for special features or to contribute to TinySpline :).
 
-###Project Structure
+### Project Structure
 The source distribution of TinySpline consists of two sub projects. The first one is the
 library itself that is located in the `library` directory. It contains all files that
 are required to build TinySpline. The second sub project provides some basic examples and
@@ -47,7 +47,7 @@ properties for Python). Using CMake to create the bindings is recommended.
 
 Note: Use the file `debugging.h` to add some debugging features to the C interface.
 
-###Getting Started
+### Getting Started
 The following listing uses the C++ wrapper to give a short example of TinySpline:
 
 ```c
@@ -84,9 +84,9 @@ result = beziers(0.3f).result(); // you can use '()' instead of 'evaluate'
 std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
 ```
 
-###Installation
+### Installation
 
-####Compiling From Source
+#### Compiling From Source
 TinySpline uses the CMake build system to compile and package the interfaces. The C
 library has been implemented in C89 and, thus, should be compilable with nearly every
 compiler. All other features of TinySpline are optional and will be disabled if CMake does
@@ -143,7 +143,7 @@ cmake --build .
 
 You will find the resulting libraries, jars, etc. in `tinyspline/build/lib`.
 
-####Cross Compiling
+#### Cross Compiling
 In order to cross compile the C and C++ library, use one of the provided toolchain files.
 Currently, toolchain files for MinGW, ARM, and AVR are available at the root directory of
 the source distribution (e.g. `Toolchain-arm.cmake`). Use the following command within
@@ -153,30 +153,25 @@ your build directory to cross compile TinySpline to the desired platform:
 cmake -DCMAKE_TOOLCHAIN_FILE=<path to root dir of tinypsline>/Toolchain-*.cmake ..
 ```
 
-####Python 2 vs. Python 3
+#### Python 2 vs. Python 3
 Swig needs to distinguish between Python 2 and Python 3 in order to generate source code
 that is compatible with the used environment. That is, Swig requires the parameter `-py`
 to generate Python 2 compatible code and `-py3` to generate Python 3 compatible code.
 Thus, the CMake file used to compile and package the libraries, configures Swig according
 to the version of the Python instance that was found during initialization. On systems
 with multiple versions of Python installed, CMake aims to use the most recent one. If you,
-on the other hand, want to use a specific version of Python, the environment variables
-`PYTHON_LIBRARY`  and `PYTHON_INCLUDE_DIR` need to be defined. Use `PYTHON_LIBRARY` to set
-the location of the shared library of the desired Python version and `PYTHON_INCLUDE_DIR`
-to set the location of the appropriate header files. CMake requires both environment
-variables to be defined to properly detect the right Python instance. Thus, the default
-behaviour is used if one of them is undefined.
+on the other hand, want to use a specific version of Python, set the environment variable
+'TINYSPLINE_PYTHON_VERSION' to '2' or '3'.
 
 The following example shows how to force CMake to use Python 2 rather than Python 3 on
 Ubuntu:
 
 ```bash
-export PYTHON_LIBRARY=/usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so
-export PYTHON_INCLUDE_DIR=/usr/include/python2.7
+export TINYSPLINE_PYTHON_VERSION=2
 cmake ..
 ```
 
-####Install the C and C++ Libraries
+#### Install the C and C++ Libraries
 The following command installs TinySpline:
 
 ```
@@ -189,10 +184,10 @@ Python, for instance, uses Distutils/Setuptools to copy the resulting files to P
 specific installation directories CMake is not aware of. Thus, TinySpline ships further,
 language related distribution tools that will be explained in the following sections.
 
-####Install the Python Binding
-The root directory of TinySpline contains the Python script `setup.py` which uses
-Setuptools to wrap the CMake build process. Additionally, it copies the resulting files to
-the appropriate Python installation directory. Use the following command to build and
+#### Install the Python Binding
+The root directory of TinySpline contains the Python script `setup.py` using Setuptools
+to wrap the CMake build process. Additionally, it copies the resulting files to the
+appropriate Python installation directory. Use the following command to build and
 install the Python binding of TinySpline:
 
 ```bash
@@ -202,21 +197,7 @@ python setup.py install
 Note that you may need root privileges to copy the files to the desired installation
 directory.
 
-Unfortunately, the script is not able to determine the location of the Python library and
-header files of the Python instance that was used to run the script. Thus, you may have to
-use the approach explained above in case your system provides Python 2 and Python 3
-simultaneously. Otherwise, CMake may generate a binding for Python 3 which gets installed
-to a Python 2 directory. The following examples shows how to define the environment
-variables `PYTHON_LIBRARY` and `PYTHON_INCLUDE_DIR` to make sure CMake generates a Python
-2 binding on Ubuntu:
-
-```bash
-export PYTHON_LIBRARY=/usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so
-export PYTHON_INCLUDE_DIR=/usr/include/python2.7
-python setup.py install
-```
-
-####Install the Java Binding
+#### Install the Java Binding
 There are several tools to manage the build process of software implemented in Java.
 TinySpline uses Maven to create and install the Java binding as Maven is used in many
 other projects and is well supported by various integrated development environments. You
@@ -253,12 +234,12 @@ TinySpline with your new generator configuration:
 maven clean install
 ```
 
-####Install the C# and Ruby Bindings
+#### Install the C# and Ruby Bindings
 Currently, TinySpline does not provide tools to install the bindings for C# and Ruby.
 However, adding such tools is planned for the future. If you have experience with, for
 instance, Ruby gems and Rake, feel free to create a pull request :).
 
-###Theoretical Backgrounds
+### Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html)
 &nbsp;&nbsp; is a very good starting point for B-Splines.  
 [[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html)

@@ -5,13 +5,19 @@
 #   Use double instead of single (float) precision.
 #
 # TINYSPLINE_DISABLE_CXX11_FEATURES - default: OFF
-#   Disable C++11 specific features in C++ interface.
+#   Disable C++11 specific features in the C++ interface.
+#
+# TINYSPLINE_PYTHON_VERSION - default: ANY
+#   Force Python version.
 ###############################################################################
 # TINYSPLINE_DOUBLE_PRECISION
-option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision" OFF)
+option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision." OFF)
 
 # TINYSPLINE_DISABLE_CXX11_FEATURES
-option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 features" OFF)
+option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 features." OFF)
+
+# TINYSPLINE_PYTHON_VERSION
+set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
 
 
@@ -26,15 +32,14 @@ option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 feature
 # TINYSPLINE_DISABLE_CXX11_FEATURES
 #   See corresponding option above.
 #
+# TINYSPLINE_PYTHON_VERSION
+#   See corresponding option above.
+#
 # CMAKE_TOOLCHAIN_FILE
 #   The CMake tool chain file for cross-compiling.
 #
 # SWIG_EXECUTABLE
 #   The SWIG executable.
-#
-# PYTHON_LIBRARY and PYTHON_INCLUDE_DIR
-#   The Python environment. Both variables must be available in order to set a
-#   custom environment.
 ###############################################################################
 # TINYSPLINE_DOUBLE_PRECISION
 if(NOT TINYSPLINE_DOUBLE_PRECISION AND DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
@@ -48,6 +53,12 @@ if(NOT TINYSPLINE_DISABLE_CXX11_FEATURES AND DEFINED ENV{TINYSPLINE_DISABLE_CXX1
   set(TINYSPLINE_DISABLE_CXX11_FEATURES $ENV{TINYSPLINE_DISABLE_CXX11_FEATURES})
 endif()
 
+# TINYSPLINE_PYTHON_VERSION
+if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY" AND DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
+  message(STATUS "Using environment variable 'TINYSPLINE_PYTHON_VERSION'")
+  set(TINYSPLINE_PYTHON_VERSION $ENV{TINYSPLINE_PYTHON_VERSION})
+endif()
+
 # CMAKE_TOOLCHAIN_FILE
 if(DEFINED ENV{CMAKE_TOOLCHAIN_FILE})
   message(STATUS "Using environment variable 'CMAKE_TOOLCHAIN_FILE'")
@@ -58,13 +69,6 @@ endif()
 if(DEFINED ENV{SWIG_EXECUTABLE})
   message(STATUS "Using environment variable 'SWIG_EXECUTABLE'")
   set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE})
-endif()
-
-# PYTHON_LIBRARY and PYTHON_INCLUDE_DIR
-if(DEFINED ENV{PYTHON_LIBRARY} AND DEFINED ENV{PYTHON_INCLUDE_DIR})
-  message(STATUS "Using environment variables 'PYTHON_LIBRARY' and 'PYTHON_INCLUDE_DIR'")
-  set(PYTHON_LIBRARY $ENV{PYTHON_LIBRARY})
-  set(PYTHON_INCLUDE_DIR $ENV{PYTHON_INCLUDE_DIR})
 endif()
 
 
@@ -508,14 +512,23 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
     endif()
 
     # Python
+    if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
+      set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+    elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
+      set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+    endif()
     find_package(PythonLibs)
+    if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^2."
+        OR ${TINYSPLINE_PYTHON_VERSION} STREQUAL "3" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+      message(FATAL_ERROR "Unable to find requested Python version")
+    endif()
     if(PYTHONLIBS_FOUND)
       include_directories(${PYTHON_INCLUDE_DIRS})
       set_source_files_properties(tinysplinepython.i PROPERTIES CPLUSPLUS ON)
-      if (${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
-        set(TINYSPLINE_PYTHON_DEFINE "-py3")
+      if(${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+        set(TINYSPLINE_PYTHON_DEFINES "-py3")
       endif()
-      set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINE} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+      set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINES} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
       set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PYTHON_DIR})
       swig_add_module(tinysplinepython python tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
       swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
@@ -728,8 +741,8 @@ Available Interfaces:
 
   Python:	${PYTHONLIBS_FOUND}
     Version:  ${PYTHONLIBS_VERSION_STRING}
-    Include:  ${PYTHON_INCLUDE_DIR}
-    Library:  ${PYTHON_LIBRARY}
+    Include:  ${PYTHON_INCLUDE_DIRS}
+    Library:  ${PYTHON_LIBRARIES}
 
   Ruby:		${RUBY_FOUND}
     Version:  ${RUBY_VERSION}

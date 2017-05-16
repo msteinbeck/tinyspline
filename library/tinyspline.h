@@ -711,9 +711,9 @@ void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val);
  *
  * @return  the euclidean of \x and \y.
  */
-tsReal ts_ctrlp_dist2(
-    const tsReal *x, const tsReal *y, const size_t dim
-);
+tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, const size_t dim);
+
+
 
 #ifdef	__cplusplus
 }

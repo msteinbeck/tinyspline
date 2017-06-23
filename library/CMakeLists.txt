@@ -610,8 +610,8 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
       PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"
     )
     if(TINYSPLINE_CSHARP_COMPILER)
-      if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc.exe$")
-        # csc (Windows) neither supports the 'sdk' flag nor '/' in 'recursive'
+      if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
+        # csc neither supports the 'sdk' flag nor '/' in 'recursive'
         add_custom_command(TARGET tinysplinecsharp POST_BUILD
           COMMAND ${TINYSPLINE_CSHARP_COMPILER} /target:library /out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}" /recurse:"${TINYSPLINE_CSHARP_DIR}\\*.cs"
         )

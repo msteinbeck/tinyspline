@@ -104,4 +104,11 @@ if(GLUT_FOUND AND OPENGL_FOUND AND NOT TINYSPLINE_DOUBLE_PRECISION)
     ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
   )
   set_target_properties(triangle-nurbs PROPERTIES FOLDER "examples/c")
+
+  add_executable(quickstart-c quickstart.c)
+  target_link_libraries(quickstart-c
+    LINK_PUBLIC tinyspline_static
+    ${TINYSPLINE_LIBRARIES}
+  )
+  set_target_properties(quickstart-c PROPERTIES FOLDER "examples/c")
 endif()

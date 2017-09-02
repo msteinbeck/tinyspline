@@ -329,8 +329,7 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *to);
  * @return TS_MALLOC           if allocating memory failed.
  */
 tsError ts_bspline_new(
-	const size_t deg, const size_t dim, const size_t n_ctrlp,
-	const tsBSplineType type,
+	size_t deg, size_t dim, size_t n_ctrlp, tsBSplineType type,
 	tsBSpline *bspline
 );
 
@@ -358,7 +357,7 @@ tsError ts_bspline_new(
  * @return TS_MALLOC            if allocating memory failed.
  */
 tsError ts_bspline_interpolate_cubic(
-	const tsReal *points, const size_t n, const size_t dim,
+	const tsReal *points, size_t n, size_t dim,
 	tsBSpline *bspline
 );
 
@@ -419,7 +418,7 @@ void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to);
  * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
  */
 tsError ts_bspline_evaluate(
-	const tsBSpline *bspline, const tsReal u,
+	const tsBSpline *bspline, tsReal u,
 	tsDeBoorNet *deBoorNet
 );
 
@@ -588,13 +587,12 @@ tsError ts_bspline_set_knots(
  * (The function uses ::ts_fequals in order to determine if \min == \max)
  */
 tsError ts_bspline_fill_knots(
-	const tsBSpline *original, const tsBSplineType type, const tsReal min,
-	const tsReal max,
+	const tsBSpline *original, tsBSplineType type, tsReal min, tsReal max,
 	tsBSpline *result
 );
 
 tsError ts_bspline_insert_knot(
-	const tsBSpline *bspline, const tsReal u, const size_t n,
+	const tsBSpline *bspline, tsReal u, size_t n,
 	tsBSpline *result, size_t *k
 );
 
@@ -625,12 +623,12 @@ tsError ts_bspline_insert_knot(
  *      @return TS_MALLOC           if allocating memory failed.
  */
 tsError ts_bspline_resize(
-	const tsBSpline *bspline, const int n, const int back,
+	const tsBSpline *bspline, int n, int back,
 	tsBSpline *resized
 );
 
 tsError ts_bspline_split(
-	const tsBSpline *bspline, const tsReal u,
+	const tsBSpline *bspline, tsReal u,
 	tsBSpline *split, size_t *k
 );
 
@@ -658,7 +656,7 @@ tsError ts_bspline_split(
  *                              memory failed.
  */
 tsError ts_bspline_buckle(
-	const tsBSpline *original, const tsReal b,
+	const tsBSpline *original, tsReal b,
 	tsBSpline *buckled
 );
 
@@ -684,14 +682,14 @@ tsError ts_bspline_to_beziers(
  * @return 1    if \x is equals to \y.
  * @return 0    otherwise.
  */
-int ts_fequals(const tsReal x, const tsReal y);
+int ts_fequals(tsReal x, tsReal y);
 
 /**
  * Returns the error message associated to \err. Returns "unknown error" if
  * \err is not associated (indicating a bug) or is TS_SUCCESS (which is not an
  * actual error).
  */
-const char* ts_enum_str(const tsError err);
+const char* ts_enum_str(tsError err);
 
 /**
  * Returns the error code associated to \str or TS_SUCCESS if \str is not
@@ -703,7 +701,7 @@ tsError ts_str_enum(const char *str);
 /**
  * Fills the given array \arr with \val from \arr+0 to \arr+\num (exclusive).
  */
-void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val);
+void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
 
 /**
  * Returns the euclidean distance of \x and \y consisting of \dim components,
@@ -711,7 +709,7 @@ void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val);
  *
  * @return  the euclidean of \x and \y.
  */
-tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, const size_t dim);
+tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, size_t dim);
 
 
 

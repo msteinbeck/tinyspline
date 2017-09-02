@@ -23,7 +23,7 @@ ctrlp[12] =  0.5  # x6
 ctrlp[13] =  0.0  # y6
 spline.ctrlp = ctrlp
 
-# Evaluate `spline` at u = 0.4.
+# Evaluate `spline` at u = 0.4 using 'evaluate'.
 result = spline.evaluate(0.4).result
 print("x = ", result[0], ", y = ", result[1])
 

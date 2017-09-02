@@ -85,14 +85,14 @@ tsDeBoorNet * tinyspline::DeBoorNet::data()
 }
 
 #ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-tinyspline::DeBoorNet::DeBoorNet(tinyspline::DeBoorNet &&other)
+tinyspline::DeBoorNet::DeBoorNet(tinyspline::DeBoorNet &&other) noexcept
 {
 	ts_deboornet_default(&deBoorNet);
 	swap(other);
 }
 
 tinyspline::DeBoorNet & tinyspline::DeBoorNet::operator=(
-	tinyspline::DeBoorNet &&other)
+	tinyspline::DeBoorNet &&other) noexcept
 {
 	if (&other != this) {
 		ts_deboornet_free(&deBoorNet);
@@ -320,14 +320,14 @@ tinyspline::BSpline tinyspline::BSpline::derive() const
 }
 
 #ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-tinyspline::BSpline::BSpline(tinyspline::BSpline &&other)
+tinyspline::BSpline::BSpline(tinyspline::BSpline &&other) noexcept
 {
 	ts_bspline_default(&bspline);
 	swap(other);
 }
 
 tinyspline::BSpline & tinyspline::BSpline::operator=(
-	tinyspline::BSpline &&other)
+	tinyspline::BSpline &&other) noexcept
 {
 	if (&other != this) {
 		ts_bspline_free(&bspline);

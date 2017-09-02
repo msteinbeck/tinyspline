@@ -6,9 +6,9 @@ int main(int argc, char **argv)
 	/* Create a spline... */
 	tsBSpline spline;
 	ts_bspline_new(
-		3, /* ... of degree 3... */
-		2, /* ... in 2D... */
 		7, /* ... consisting of 7 control points... */
+		2, /* ... in 2D... */
+		3, /* ... of degree 3... */
 		TS_CLAMPED, /* ... using a clamped knot vector. */
 		&spline
 	);

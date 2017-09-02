@@ -29,9 +29,9 @@ GLUnurbsObj *theNurb;
 void setup()
 {
     ts_bspline_new(
-        3,      /* degree of spline */
-        3,      /* dimension of each point */
         7,      /* number of control points */
+        3,      /* dimension of each point */
+        3,      /* degree of spline */
         TS_CLAMPED, /* used to hit first and last control point */
         &spline /* the spline to setup */
     );

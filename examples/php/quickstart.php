@@ -1,10 +1,12 @@
 <?php
 include("tinyspline.php");
 
-// Create a clamped spline of degree 3 in 2D consisting of 7 control points.
-$spline = new BSpline(3, 2, 7, CLAMPED);
+// Create a cubic spline with 7 control points in 2D using
+// a clamped knot vector. This call is equivalent to:
+// $spline = new BSpline(7, 2, 3, CLAMPED);
+$spline = new BSpline(7);
 
-// Setup the control points.
+// Setup control points.
 $ctrlp = $spline->ctrlp;
 $ctrlp[0]  = -1.75; // x0
 $ctrlp[1]  = -1.0;  // y0
@@ -22,14 +24,14 @@ $ctrlp[12] =  0.5;  // x6
 $ctrlp[13] =  0.0;  // y6
 $spline->ctrlp = $ctrlp;
 
-// Evaluate `spline` at u = 0.4
+// Evaluate `spline` at u = 0.4.
 $result = $spline->evaluate(0.4)->result;
 echo "x = $result[0], y = $result[1]\n";
 
 // Derive `spline` and subdivide it into a sequence of Bezier curves.
 $beziers = $spline->derive()->toBeziers();
 
-// Evaluate `beziers` at u = 0.3
-$result = $beziers->evaluate(0.3)->result; // PHP does not support the operator '()'
+// Evaluate `beziers` at u = 0.3.
+$result = $beziers->evaluate(0.3)->result;
 echo "x = $result[0], y = $result[1]\n";
 ?>

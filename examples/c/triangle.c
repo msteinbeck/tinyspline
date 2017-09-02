@@ -42,9 +42,9 @@ void setup()
     size_t k; /* not required here */
 
     ts_bspline_new(
-        2,      /* degree of spline */
-        3,      /* dimension of each point */
         3,      /* number of control points */
+        3,      /* dimension of each point */
+        2,      /* degree of spline */
         TS_CLAMPED, /* used to hit first and last control point */
         &spline /* the spline to setup */
     );

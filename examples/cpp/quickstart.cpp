@@ -3,13 +3,10 @@
 
 int main(int argc, char **argv)
 {
-	// Create a spline...
-	tinyspline::BSpline spline(
-		3, // ... of degree 3...
-		2, // ... in 2D...
-		7, // ... consisting of 7 control points...
-		TS_CLAMPED // ... using a clamped knot vector.
-	);
+	// Create a cubic spline with 7 control points in 2D using
+	// a clamped knot vector. This call is equivalent to:
+	// tinyspline::BSpline spline(7, 2, 3, TS_CLAMPED);
+	tinyspline::BSpline spline(7);
 
 	// Setup control points.
 	std::vector<tinyspline::real> ctrlp = spline.ctrlp();

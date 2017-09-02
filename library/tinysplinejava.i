@@ -1,14 +1,14 @@
 %module tinysplinejava
 
-// Change the signature of the JNI file from std::vector<tinyspline::real> to
-// List<Float/Double>.
-%typemap(jtype) std::vector<float> * "java.util.List<Float>"
-%typemap(jtype) std::vector<double> * "java.util.List<Double>"
-
-// Change the signature of the Java interface files from std::vector<tinyspline:real> to
-// List<Float/Double>.
-%typemap(jstype) std::vector<float> * "java.util.List<Float>"
-%typemap(jstype) std::vector<double> * "java.util.List<Double>"
+// Change the signature of the JNI file and signature of the Java interface files from
+// std::vector<tinyspline::real> to List<Float/Double>.
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+	%typemap(jtype) std::vector<tinyspline::real> * "java.util.List<Double>"
+	%typemap(jstype) std::vector<tinyspline::real> * "java.util.List<Double>"
+#else
+	%typemap(jtype) std::vector<tinyspline::real> * "java.util.List<Float>"
+	%typemap(jstype) std::vector<tinyspline::real> * "java.util.List<Float>"
+#endif
 
 // Let Java interface files directly return JNI result.
 %typemap(javaout) std::vector<tinyspline::real> * {
@@ -18,95 +18,61 @@
 // Let Java interface files redirect the input argument to JNI.
 %typemap(javain) std::vector<tinyspline::real> * "$javainput"
 
-// Map std::vector<float> to List<Float>.
-%typemap(out) std::vector<float> * {
+// Map std::vector<tinyspline::real> to List<Float/Double>.
+%typemap(out) std::vector<tinyspline::real> * {
 	const jclass listClass = jenv->FindClass("java/util/ArrayList");
 	const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
 	const jmethodID listAdd = jenv->GetMethodID(listClass, "add", "(Ljava/lang/Object;)Z");
 	const jobject list = jenv->NewObject(listClass, listCtor);
-
-	const jclass floatClass = jenv->FindClass("java/lang/Float");
-	const jmethodID floatCtor = jenv->GetMethodID(floatClass, "<init>", "(F)V");
-
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+	const jclass realClass = jenv->FindClass("java/lang/Double");
+	const jmethodID realCtor = jenv->GetMethodID(realClass, "<init>", "(D)V");
+#else
+	const jclass realClass = jenv->FindClass("java/lang/Float");
+	const jmethodID realCtor = jenv->GetMethodID(realClass, "<init>", "(F)V");
+#endif
 	jobject value;
-	for (std::vector<float>::iterator it = $1->begin(); it != $1->end(); it++) {
-		value = jenv->NewObject(floatClass, floatCtor, *it);
+	for (std::vector<tinyspline::real>::iterator it = $1->begin(); it != $1->end(); it++) {
+		value = jenv->NewObject(realClass, realCtor, *it);
 		jenv->CallVoidMethod(list, listAdd, value);
 		jenv->DeleteLocalRef(value);
 	}
 	*(jobject*)&$result = list;
 }
 
-// Map std::vector<double> to List<Double>.
-%typemap(out) std::vector<double> * {
-	const jclass listClass = jenv->FindClass("java/util/ArrayList");
-	const jmethodID listCtor = jenv->GetMethodID(listClass, "<init>", "()V");
-	const jmethodID listAdd = jenv->GetMethodID(listClass, "add", "(Ljava/lang/Object;)Z");
-	const jobject list = jenv->NewObject(listClass, listCtor);
-
-	const jclass doubleClass = jenv->FindClass("java/lang/Double");
-	const jmethodID doubleCtor = jenv->GetMethodID(doubleClass, "<init>", "(D)V");
-
-	jobject value;
-	for (std::vector<double>::iterator it = $1->begin(); it != $1->end(); it++) {
-		value = jenv->NewObject(doubleClass, doubleCtor, *it);
-		jenv->CallVoidMethod(list, listAdd, value);
-		jenv->DeleteLocalRef(value);
-	}
-	*(jobject*)&$result = list;
-}
-
-// Map List<Float> to std::vector<float>.
-%typemap(in) std::vector<float> * {
-	$1 = new std::vector<float>();
+// Map List<Float/Double> to std::vector<tinyspline::real>.
+%typemap(in) std::vector<tinyspline::real> * {
+	$1 = new std::vector<tinyspline::real>();
 	const jobject list = *(jobject*)&$input;
   
 	const jclass listClass = jenv->FindClass("java/util/ArrayList");
 	const jmethodID listSize = jenv->GetMethodID(listClass, "size", "()I");
 	const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
-  
-	const jclass floatClass = jenv->FindClass("java/lang/Float");
-	const jmethodID floatFloatValue = jenv->GetMethodID(floatClass, "floatValue", "()F");
-  
-	const jint size = jenv->CallIntMethod(list, listSize);
-	jobject tmp;
-	jfloat value;
-	for (jint i = 0; i < size; i++) {
-		tmp = jenv->CallObjectMethod(list, listGet, i);
-		value = jenv->CallFloatMethod(tmp, floatFloatValue);
-		jenv->DeleteLocalRef(tmp);
-		$1->push_back(value);
-	}
-}
-
-// Map List<Double> to std::vector<double>.
-%typemap(in) std::vector<double> * {
-	$1 = new std::vector<double>();
-	const jobject list = *(jobject*)&$input;
-
-	const jclass listClass = jenv->FindClass("java/util/ArrayList");
-	const jmethodID listSize = jenv->GetMethodID(listClass, "size", "()I");
-	const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
-
-	const jclass doubleClass = jenv->FindClass("java/lang/Double");
-	const jmethodID doubleDoubleValue = jenv->GetMethodID(doubleClass, "doubleValue", "()D");
-
-	const jint size = jenv->CallIntMethod(list, listSize);
-	jobject tmp;
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+	const jclass realClass = jenv->FindClass("java/lang/Double");
+	const jmethodID realValue = jenv->GetMethodID(realClass, "doubleValue", "()D");
 	jdouble value;
+#else
+	const jclass realClass = jenv->FindClass("java/lang/Float");
+	const jmethodID realValue = jenv->GetMethodID(realClass, "floatValue", "()F");
+	jfloat value;
+#endif
+	const jint size = jenv->CallIntMethod(list, listSize);
+	jobject tmp;
 	for (jint i = 0; i < size; i++) {
 		tmp = jenv->CallObjectMethod(list, listGet, i);
-		value = jenv->CallDoubleMethod(tmp, doubleDoubleValue);
+#ifdef TINYSPLINE_DOUBLE_PRECISION
+		value = jenv->CallDoubleMethod(tmp, realValue);
+#else
+		value = jenv->CallFloatMethod(tmp, realValue);
+#endif
 		jenv->DeleteLocalRef(tmp);
 		$1->push_back(value);
 	}
 }
 
 // Cleanup memory allocated by typemaps.
-%typemap(freearg) std::vector<float> * {
-	delete $1;
-}
-%typemap(freearg) std::vector<double> * {
+%typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }
 

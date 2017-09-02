@@ -160,9 +160,8 @@ void ts_internal_bspline_fill_knots(
 }
 
 void ts_internal_bspline_new(
-    const size_t deg, const size_t dim, const size_t n_ctrlp,
-    const tsBSplineType type,
-    tsBSpline* bspline, jmp_buf buf
+    const size_t n_ctrlp, const size_t dim, const size_t deg,
+    const tsBSplineType type, tsBSpline *bspline, jmp_buf buf
 )
 {
     const size_t order = deg + 1;
@@ -227,7 +226,7 @@ void ts_internal_bspline_resize(
     }
 
     if (bspline != resized) {
-        ts_internal_bspline_new(deg, dim, nn_ctrlp, TS_NONE, resized, buf);
+        ts_internal_bspline_new(nn_ctrlp, dim, deg, TS_NONE, resized, buf);
         to_ctrlp = resized->ctrlp;
         to_knots = resized->knots;
     } else {
@@ -596,7 +595,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(
     sof_c = dim * sizeof(tsReal); /* dim > 0 implies sof_c > 0 */
 
     /* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
-    ts_internal_bspline_new(order-1, dim, (n-1)*4, TS_BEZIERS, bspline, buf);
+    ts_internal_bspline_new((n-1)*4, dim, order-1, TS_BEZIERS, bspline, buf);
 
     TRY(b_, e_)
         s = (tsReal*) malloc(n * sof_c);
@@ -680,7 +679,7 @@ void ts_internal_bspline_derive(
         longjmp(buf, TS_UNDERIVABLE);
 
     if (original != derivative) {
-        ts_internal_bspline_new(deg-1, dim, nc-1, TS_NONE, derivative, buf);
+        ts_internal_bspline_new(nc-1, dim, deg-1, TS_NONE, derivative, buf);
         to_ctrlp = derivative->ctrlp;
         to_knots = derivative->knots;
     } else {
@@ -884,15 +883,14 @@ void ts_bspline_move(tsBSpline* from, tsBSpline* to)
 }
 
 tsError ts_bspline_new(
-    const size_t deg, const size_t dim,
-    const size_t n_ctrlp, const tsBSplineType type,
-    tsBSpline* bspline
+    const size_t n_ctrlp, const size_t dim, const size_t deg,
+    const tsBSplineType type, tsBSpline *bspline
 )
 {
     tsError err;
     jmp_buf buf;
     TRY(buf, err)
-        ts_internal_bspline_new(deg, dim, n_ctrlp, type, bspline, buf);
+        ts_internal_bspline_new(n_ctrlp, dim, deg, type, bspline, buf);
     CATCH
         ts_bspline_default(bspline);
     ETRY

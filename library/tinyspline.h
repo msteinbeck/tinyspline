@@ -329,7 +329,7 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *to);
  * @return TS_MALLOC           if allocating memory failed.
  */
 tsError ts_bspline_new(
-	size_t deg, size_t dim, size_t n_ctrlp, tsBSplineType type,
+	size_t n_ctrlp, size_t dim, size_t deg, tsBSplineType type,
 	tsBSpline *bspline
 );
 

@@ -46,10 +46,13 @@ private:
 
 class BSpline {
 public:
+    typedef tsBSplineType type;
+
 	/* Constructors & Destructors */
 	BSpline();
 	BSpline(const BSpline &other);
-	BSpline(size_t deg, size_t dim, size_t nCtrlp, tsBSplineType type);
+	explicit BSpline(size_t nCtrlp, size_t dim = 2, size_t deg = 3,
+        tinyspline::BSpline::type type = TS_CLAMPED);
 	~BSpline();
 
 	/* Operators */

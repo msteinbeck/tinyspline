@@ -37,8 +37,7 @@
 """
 __init__(self) -> BSpline
 __init__(self, other) -> BSpline
-__init__(self, deg, dim, nCtrlp, type) -> BSpline
-__init__(self, points, dim) -> BSpline
+__init__(self, nCtrlp, dim, deg, type) -> BSpline
 """
 %}
 

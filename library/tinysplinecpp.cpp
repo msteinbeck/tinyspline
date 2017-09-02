@@ -134,11 +134,10 @@ tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
 		throw std::runtime_error(ts_enum_str(err));
 }
 
-tinyspline::BSpline::BSpline(
-	const size_t deg, const size_t dim, const size_t nCtrlp,
-	const tsBSplineType type)
+tinyspline::BSpline::BSpline(const size_t nCtrlp, const size_t dim,
+    const size_t deg, const tinyspline::BSpline::type type)
 {
-	const tsError err = ts_bspline_new(deg, dim, nCtrlp, type, &bspline);
+	const tsError err = ts_bspline_new(nCtrlp, dim, deg, type, &bspline);
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));
 }

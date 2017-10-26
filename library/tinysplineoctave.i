@@ -5,7 +5,7 @@
 	const size_t size = $1->size();
 	Matrix m(1, size);
 	for (int i = 0; i < size; i++) {
-        m(0, i) = (*$1)[i];
+		m(0, i) = (*$1)[i];
 	}
 	$result = m;
 }

@@ -5,10 +5,9 @@
 # This module defines: 
 #  OCTAVE_EXECUTABLE           - octave interpreter
 #  OCTAVE_INCLUDE_DIRS         - include path for mex.h, mexproto.h
-#  OCTAVE_LIBRARIES            - required libraries: octinterp, octave, cruft
+#  OCTAVE_LIBRARIES            - required libraries: octinterp, octave
 #  OCTAVE_OCTINTERP_LIBRARY    - path to the library octinterp
 #  OCTAVE_OCTAVE_LIBRARY       - path to the library octave
-#  OCTAVE_CRUFT_LIBRARY        - path to the library cruft
 #  OCTAVE_VERSION_STRING       - octave version string
 #  OCTAVE_MAJOR_VERSION        - major version
 #  OCTAVE_MINOR_VERSION        - minor version
@@ -112,7 +111,7 @@ find_program( OCTAVE_MKOCTFILE
               HINTS ${OCTAVE_BIN_PATHS}
               NAMES mkoctfile
             )
-	
+
 find_library( OCTAVE_OCTINTERP_LIBRARY
               NAMES octinterp liboctinterp
               HINTS ${OCTAVE_LIBRARIES_PATHS}
@@ -121,54 +120,18 @@ find_library( OCTAVE_OCTAVE_LIBRARY
               NAMES octave liboctave
               HINTS ${OCTAVE_LIBRARIES_PATHS}
             )
-find_library( OCTAVE_CRUFT_LIBRARY
-              NAMES cruft libcruft
-              HINTS ${OCTAVE_LIBRARIES_PATHS}
-            )
     
 set ( OCTAVE_LIBRARIES ${OCTAVE_OCTINTERP_LIBRARY} )
-list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_OCTAVE_LIBRARY} ) 
-list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_CRUFT_LIBRARY} ) 
+list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_OCTAVE_LIBRARY} )
     
 find_path ( OCTAVE_INCLUDE_DIR 
-            NAMES mex.h
+            NAMES octave.h
             HINTS ${OCTAVE_INCLUDE_PATHS}
             "${OCTAVE_INCLUDE_PATHS}/octave"
           )
+get_filename_component( OCTAVE_INCLUDE_DIR2 ${OCTAVE_INCLUDE_DIR} DIRECTORY )
     
-set ( OCTAVE_INCLUDE_DIRS ${OCTAVE_INCLUDE_DIR} )
-
-
-macro ( octave_add_oct FUNCTIONNAME )
-  set ( _CMD SOURCES )
-  set ( _SOURCES )
-  set ( _LINK_LIBRARIES )
-  set ( _EXTENSION )
-  set ( _OCT_EXTENSION oct )
-  foreach ( _ARG ${ARGN})
-    if ( ${_ARG} MATCHES SOURCES )
-      set ( _CMD SOURCES )
-    elseif ( ${_ARG} MATCHES LINK_LIBRARIES  )
-      set ( _CMD LINK_LIBRARIES  )
-    elseif ( ${_ARG} MATCHES EXTENSION )
-      set ( _CMD EXTENSION )
-    else ()
-      if ( ${_CMD} MATCHES SOURCES )
-        list ( APPEND _SOURCES "${_ARG}" )
-      elseif ( ${_CMD} MATCHES LINK_LIBRARIES  )
-        list ( APPEND _LINK_LIBRARIES "${_ARG}" )
-      elseif ( ${_CMD} MATCHES EXTENSION )
-        set ( _OCT_EXTENSION ${_ARG} )
-      endif ()
-    endif ()
-  endforeach ()
-  add_library ( ${FUNCTIONNAME} SHARED ${_SOURCES} )
-  target_link_libraries ( ${FUNCTIONNAME} ${OCTAVE_LIBRARIES} ${_LINK_LIBRARIES} )
-  set_target_properties ( ${FUNCTIONNAME} PROPERTIES
-    PREFIX ""
-    SUFFIX  ".${_OCT_EXTENSION}"
-  )
-endmacro ()
+set ( OCTAVE_INCLUDE_DIRS ${OCTAVE_INCLUDE_DIR} ${OCTAVE_INCLUDE_DIR2} )
 
 
 # handle REQUIRED and QUIET options
@@ -185,7 +148,6 @@ mark_as_advanced (
   OCTAVE_OCT_LIB_DIR
   OCTAVE_OCTINTERP_LIBRARY
   OCTAVE_OCTAVE_LIBRARY
-  OCTAVE_CRUFT_LIBRARY
   OCTAVE_LIBRARIES
   OCTAVE_INCLUDE_DIR
   OCTAVE_INCLUDE_DIRS

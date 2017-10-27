@@ -883,8 +883,8 @@ void ts_bspline_move(tsBSpline* from, tsBSpline* to)
 }
 
 tsError ts_bspline_new(
-    const size_t n_ctrlp, const size_t dim, const size_t deg,
-    const tsBSplineType type, tsBSpline *bspline
+    size_t n_ctrlp, size_t dim, size_t deg, tsBSplineType type,
+    tsBSpline *bspline
 )
 {
     tsError err;
@@ -898,7 +898,7 @@ tsError ts_bspline_new(
 }
 
 tsError ts_bspline_interpolate_cubic(
-    const tsReal* points, const size_t n, const size_t dim,
+    const tsReal* points, size_t n, size_t dim,
     tsBSpline* bspline
 )
 {
@@ -993,8 +993,7 @@ tsError ts_bspline_set_knots(
 }
 
 tsError ts_bspline_fill_knots(
-    const tsBSpline* original, const tsBSplineType type,
-    const tsReal min, const tsReal max,
+    const tsBSpline* original, tsBSplineType type, tsReal min, tsReal max,
     tsBSpline* result
 )
 {
@@ -1010,7 +1009,7 @@ tsError ts_bspline_fill_knots(
 }
 
 tsError ts_bspline_evaluate(
-    const tsBSpline* bspline, const tsReal u,
+    const tsBSpline* bspline, tsReal u,
     tsDeBoorNet* deBoorNet
 )
 {
@@ -1025,7 +1024,7 @@ tsError ts_bspline_evaluate(
 }
 
 tsError ts_bspline_insert_knot(
-    const tsBSpline* bspline, const tsReal u, const size_t n,
+    const tsBSpline* bspline, tsReal u, size_t n,
     tsBSpline* result, size_t* k
 )
 {
@@ -1047,7 +1046,7 @@ tsError ts_bspline_insert_knot(
 }
 
 tsError ts_bspline_resize(
-    const tsBSpline* bspline, const int n, const int back,
+    const tsBSpline* bspline, int n, int back,
     tsBSpline* resized
 )
 {
@@ -1063,7 +1062,7 @@ tsError ts_bspline_resize(
 }
 
 tsError ts_bspline_split(
-    const tsBSpline* bspline, const tsReal u,
+    const tsBSpline* bspline, tsReal u,
     tsBSpline* split, size_t* k
 )
 {
@@ -1079,7 +1078,7 @@ tsError ts_bspline_split(
 }
 
 tsError ts_bspline_buckle(
-    const tsBSpline* bspline, const tsReal b,
+    const tsBSpline* bspline, tsReal b,
     tsBSpline* buckled
 )
 {
@@ -1110,7 +1109,7 @@ tsError ts_bspline_to_beziers(
     return err;
 }
 
-int ts_fequals(const tsReal x, const tsReal y)
+int ts_fequals(tsReal x, tsReal y)
 {
     if (fabs(x-y) <= FLT_MAX_ABS_ERROR) {
         return 1;
@@ -1121,7 +1120,7 @@ int ts_fequals(const tsReal x, const tsReal y)
     }
 }
 
-const char* ts_enum_str(const tsError err)
+const char* ts_enum_str(tsError err)
 {
     if (err == TS_MALLOC)
         return "malloc failed";
@@ -1163,7 +1162,7 @@ tsError ts_str_enum(const char* str)
     return TS_SUCCESS;
 }
 
-void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val)
+void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 {
     size_t i;
     for (i = 0; i < num; i++)
@@ -1171,7 +1170,7 @@ void ts_arr_fill(tsReal *arr, const size_t num, const tsReal val)
 }
 
 tsReal ts_ctrlp_dist2(
-    const tsReal *x, const tsReal *y, const size_t dim
+    const tsReal *x, const tsReal *y, size_t dim
 )
 {
     tsReal sum = 0;

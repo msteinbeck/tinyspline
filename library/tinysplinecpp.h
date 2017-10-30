@@ -46,13 +46,13 @@ private:
 
 class BSpline {
 public:
-    typedef tsBSplineType type;
+	typedef tsBSplineType type;
 
 	/* Constructors & Destructors */
 	BSpline();
 	BSpline(const BSpline &other);
 	explicit BSpline(size_t nCtrlp, size_t dim = 2, size_t deg = 3,
-        tinyspline::BSpline::type type = TS_CLAMPED);
+		tinyspline::BSpline::type type = TS_CLAMPED);
 	~BSpline();
 
 	/* Operators */
@@ -101,7 +101,7 @@ private:
 class Utils {
 public:
 	static BSpline interpolateCubic(
-			const std::vector<real> *points, size_t dim);
+		const std::vector<real> *points, size_t dim);
 	static bool fequals(real x, real y);
 	static std::string enum_str(tsError err);
 	static tsError str_enum(std::string str);

@@ -787,6 +787,11 @@ Available Interfaces:
     Include:  ${LUA_INCLUDE_DIR}
     Library:  ${LUA_LIBRARIES}
 
+  Octave:       ${OCTAVE_FOUND}
+    Version:  ${OCTAVE_VERSION_STRING}
+    Include:  ${OCTAVE_INCLUDE_DIRS}
+    Library:  ${OCTAVE_LIBRARIES}
+
   PHP:          ${PHP_FOUND}
     Version:  ${PHP_VERSION_STRING}
     Include:  ${PHP_INCLUDE_DIRS}

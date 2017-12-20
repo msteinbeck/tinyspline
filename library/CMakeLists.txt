@@ -9,6 +9,11 @@
 #
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
+#
+# TINYSPLINE_WITH_*** - default: ON
+#   Try to create inteface ***. Disabling one of these options may be useful
+#   in cases where individual interfaces should be disabled even if all
+#   necessary requirements are met. Accordingly, the default value is ON.
 ###############################################################################
 # TINYSPLINE_DOUBLE_PRECISION
 option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision." OFF)
@@ -19,17 +24,20 @@ option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 feature
 # TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
-option(TINYSPLINE_DISABLE_CPP "Disable compiling of C++ bindings." OFF)
-option(TINYSPLINE_DISABLE_CSHARP "Disable compiling of C# bindings." OFF)
-option(TINYSPLINE_DISABLE_D "Disable compiling of D bindings." OFF)
-option(TINYSPLINE_DISABLE_GOLANG "Disable compiling of Go bindings." OFF)
-option(TINYSPLINE_DISABLE_JAVA "Disable compiling of Java bindings." OFF)
-option(TINYSPLINE_DISABLE_LUA "Disable compiling of Lua bindings." OFF)
-option(TINYSPLINE_DISABLE_OCTAVE "Disable compiling of Octave bindings." OFF)
-option(TINYSPLINE_DISABLE_PHP "Disable compiling of PHP bindings." OFF)
-option(TINYSPLINE_DISABLE_PYTHON "Disable compiling of Python bindings." OFF)
-option(TINYSPLINE_DISABLE_R "Disable compiling of R bindings." OFF)
-option(TINYSPLINE_DISABLE_RUBY "Disable compiling of Ruby bindings." OFF)
+# TINYSPLINE_WITH_***
+option(TINYSPLINE_WITH_CXX "Try to create the C++ interface." ON)
+option(TINYSPLINE_WITH_CSHARP "Try to create the C# interface." ON)
+option(TINYSPLINE_WITH_D "Try to create the D interface." ON)
+option(TINYSPLINE_WITH_GOLANG "Try to create the Go interface." ON)
+option(TINYSPLINE_WITH_JAVA "Try to create the Java interface." ON)
+option(TINYSPLINE_WITH_LUA "Try to create the Lua interface." ON)
+option(TINYSPLINE_WITH_OCTAVE "Try to create the Octave interface." ON)
+option(TINYSPLINE_WITH_PHP "Try to create the PHP interface." ON)
+option(TINYSPLINE_WITH_PYTHON "Try to create the Python interface." ON)
+option(TINYSPLINE_WITH_R "Try to create the R interface." ON)
+option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interfacer." ON)
+
+
 
 ###############################################################################
 ### Map supported environment variables to CMake variables. The following
@@ -423,7 +431,7 @@ target_include_directories(tinyspline_static
 )
 
 # C++ library
-if(NOT TINYSPLINE_DISABLE_CPP)
+if(TINYSPLINE_WITH_CXX)
 	if(TINYSPLINE_CXX_AVAILABLE)
 		if(TARGET_SUPPORTS_SHARED_LIBS)
 			add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
@@ -455,7 +463,7 @@ if(NOT TINYSPLINE_DISABLE_CPP)
 			PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
-endif(NOT TINYSPLINE_DISABLE_CPP)
+endif()
 
 
 
@@ -527,7 +535,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# Python
-		if(NOT TINYSPLINE_DISABLE_PYTHON)
+		if(TINYSPLINE_WITH_PYTHON)
 			if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
 				set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
 			elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
@@ -561,11 +569,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
-			endif(PYTHONLIBS_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_PYTHON)
+			endif()
+		endif()
 		
 		# Java
-		if(NOT TINYSPLINE_DISABLE_JAVA)
+		if(TINYSPLINE_WITH_JAVA)
 			find_package(JNI)
 			if(JNI_FOUND)
 				include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
@@ -597,17 +605,17 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					set_target_properties(tinysplinejar PROPERTIES
 						FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					)
-				endif(Java_Development_FOUND)
+				endif()
 
 				set_target_properties(tinysplinejava PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
-			endif(JNI_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_JAVA)
+			endif()
+		endif()
 		
 		# Ruby
-		if(NOT TINYSPLINE_DISABLE_RUBY)
+		if(TINYSPLINE_WITH_RUBY)
 			find_package(Ruby)
 			if(RUBY_FOUND)
 				include_directories(${RUBY_INCLUDE_DIRS})
@@ -624,11 +632,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
-			endif(RUBY_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_RUBY)
+			endif()
+		endif()
 		
 		# C#
-		if(NOT TINYSPLINE_DISABLE_CSHARP)
+		if(TINYSPLINE_WITH_CSHARP)
 			set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_DIR})
@@ -660,10 +668,10 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					)
 				endif()
 			endif()
-		endif(NOT TINYSPLINE_DISABLE_CSHARP)
+		endif()
 		
 		# Go (not fully supported yet)
-		if(NOT TINYSPLINE_DISABLE_GOLANG)
+		if(TINYSPLINE_WITH_GOLANG)
 			set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
@@ -672,10 +680,10 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 			#  COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
 			#  "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE_NAME}"
 			#)
-		endif(NOT TINYSPLINE_DISABLE_GOLANG)
+		endif()
 
 		# PHP
-		if(NOT TINYSPLINE_DISABLE_PHP)
+		if(TINYSPLINE_WITH_PHP)
 			find_package(PHP)
 			if(PHP_FOUND)
 				set(TINYSPLINE_PHP_VERSION "php5")
@@ -706,11 +714,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 						COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
 					)
 				endif()
-			endif(PHP_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_PHP)
+			endif()
+		endif()
 
 		# Lua
-		if(NOT TINYSPLINE_DISABLE_LUA)
+		if(TINYSPLINE_WITH_LUA)
 			find_package(Lua)
 			if(LUA_FOUND)
 				include_directories(${LUA_INCLUDE_DIR})
@@ -727,11 +735,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
-			endif(LUA_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_LUA)
+			endif()
+		endif()
 
 		# D
-		if(NOT TINYSPLINE_DISABLE_D)
+		if(TINYSPLINE_WITH_D)
 			set_source_files_properties(tinysplinedlang.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary tinysplinedlang -module tinyspline)
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_DIR})
@@ -750,10 +758,10 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 			)
-		endif(NOT TINYSPLINE_DISABLE_D)
+		endif()
 
 		# Octave
-		if(NOT TINYSPLINE_DISABLE_OCTAVE)
+		if(TINYSPLINE_WITH_OCTAVE)
 			find_package(Octave)
 			if(OCTAVE_FOUND)
 				include_directories(${OCTAVE_INCLUDE_DIRS})
@@ -771,74 +779,12 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 					OUTPUT_NAME "tinyspline"
 				)
-			endif(OCTAVE_FOUND)
-		endif(NOT TINYSPLINE_DISABLE_OCTAVE)
+			endif()
+		endif()
 	endif(SWIG_FOUND)
-endif(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
-
-###############################################################################
-### Variables for if compiling each binding
-###############################################################################
-
-if(TINYSPLINE_DISABLE_CPP)
-	set(COMPILE_CPP DISABLED)
-else()
-	set(COMPILE_CPP ${TINYSPLINE_CXX_AVAILABLE})
 endif()
 
-if(TINYSPLINE_DISABLE_CSHARP)
-	set(COMPILE_CSHARP DISABLED)
-else()
-	set(COMPILE_CSHARP TRUE)
-endif()
 
-if(TINYSPLINE_DISABLE_D)
-	set(COMPILE_D DISABLED)
-else()
-	set(COMPILE_D TRUE)
-endif()
-
-if(TINYSPLINE_DISABLE_GOLANG)
-	set(COMPILE_GOLANG DISABLED)
-else()
-	set(COMPILE_GOLANG DISABLED) #TRUE)
-endif()
-
-if(TINYSPLINE_DISABLE_JAVA)
-	set(COMPILE_JAVA DISABLED)
-else()
-	set(COMPILE_JAVA ${JNI_FOUND})
-endif()
-
-if(TINYSPLINE_DISABLE_LUA)
-	set(COMPILE_LUA DISABLED)
-else()
-	set(COMPILE_LUA ${LUA_FOUND})
-endif()
-
-if(TINYSPLINE_DISABLE_OCTAVE)
-	set(COMPILE_OCTAVE DISABLED)
-else()
-	set(COMPILE_OCTAVE ${OCTAVE_FOUND})
-endif()
-
-if(TINYSPLINE_DISABLE_PHP)
-	set(COMPILE_PHP DISABLED)
-else()
-	set(COMPILE_PHP ${PHP_FOUND})
-endif()
-
-if(TINYSPLINE_DISABLE_PYTHON)
-	set(COMPILE_PYTHON DISABLED)
-else()
-	set(COMPILE_PYTHON ${PYTHONLIBS_FOUND})
-endif()
-
-if(TINYSPLINE_DISABLE_RUBY)
-	set(COMPILE_RUBY DISABLED)
-else()
-	set(COMPILE_RUBY ${RUBY_FOUND})
-endif()
 
 ###############################################################################
 ### Print summary
@@ -846,6 +792,25 @@ endif()
 string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_SUMMARY_C_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_SUMMARY_CXX_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUMMARY_BINDING_FLAGS)
+
+# Map TINYSPLINE_WITH_*** to actual configuration
+function (tinysplineSetYesNo varName varValue)
+	if(${varValue})
+		set(${varName} yes PARENT_SCOPE)
+	else()
+		set(${varName} no PARENT_SCOPE)
+	endif()
+endfunction()
+tinysplineSetYesNo(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
+tinysplineSetYesNo(TINYSPLINE_WITH_CSHARP TINYSPLINE_WITH_CSHARP)
+tinysplineSetYesNo(TINYSPLINE_WITH_D TINYSPLINE_WITH_D)
+tinysplineSetYesNo(TINYSPLINE_WITH_GOLANG FALSE)
+tinysplineSetYesNo(TINYSPLINE_WITH_JAVA JNI_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_LUA LUA_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_PHP PHP_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_RUBY RUBY_FOUND)
 
 message(STATUS
 "
@@ -863,41 +828,41 @@ Compiler Configuration:
   Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:
-  C++:          ${COMPILE_CPP}
+  C++:          ${TINYSPLINE_WITH_CXX}
 
-  C\#:          ${COMPILE_CSHARP}
+  C\#:           ${TINYSPLINE_WITH_CSHARP}
     Compiler: ${TINYSPLINE_CSHARP_COMPILER}
 
-  D:            ${COMPILE_D}
+  D:            ${TINYSPLINE_WITH_D}
 
-  Go:           ${COMPILE_GOLANG}
+  Go:           ${TINYSPLINE_WITH_GOLANG}
     (Not supported yet)
 
-  Java:         ${COMPILE_JAVA}
+  Java:         ${TINYSPLINE_WITH_JAVA}
     Version:  ${Java_VERSION_STRING}
     Compiler: ${Java_JAVAC_EXECUTABLE}
     Archive:  ${Java_JAR_EXECUTABLE}
 
-  Lua:          ${COMPILE_LUA}
+  Lua:          ${TINYSPLINE_WITH_LUA}
     Version:  ${LUA_VERSION_STRING}
     Include:  ${LUA_INCLUDE_DIR}
     Library:  ${LUA_LIBRARIES}
 
-  Octave:       ${COMPILE_OCTAVE}
+  Octave:       ${TINYSPLINE_WITH_OCTAVE}
     Version:  ${OCTAVE_VERSION_STRING}
     Include:  ${OCTAVE_INCLUDE_DIRS}
     Library:  ${OCTAVE_LIBRARIES}
 
-  PHP:          ${COMPILE_PHP}
+  PHP:          ${TINYSPLINE_WITH_PHP}
     Version:  ${PHP_VERSION_STRING}
     Include:  ${PHP_INCLUDE_DIRS}
 
-  Python:       ${COMPILE_PYTHON}
+  Python:       ${TINYSPLINE_WITH_PYTHON}
     Version:  ${PYTHONLIBS_VERSION_STRING}
     Include:  ${PYTHON_INCLUDE_DIRS}
     Library:  ${PYTHON_LIBRARIES}
 
-  Ruby:         ${COMPILE_RUBY}
+  Ruby:         ${TINYSPLINE_WITH_RUBY}
     Version:  ${RUBY_VERSION}
     Include:  ${RUBY_INCLUDE_DIRS}
     Library:  ${RUBY_LIBRARY}

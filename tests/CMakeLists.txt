@@ -28,42 +28,42 @@
 # TINYSPLINE_COVERAGE_AVAILABLE
 set(TINYSPLINE_COVERAGE_AVAILABLE FALSE)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-  message(STATUS "Code coverage is only available for \"Debug\" builds")
+	message(STATUS "Code coverage is only available for \"Debug\" builds")
 else()
-  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
-      NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    message(STATUS "Code coverage is not available for ${CMAKE_CXX_COMPILER_ID}")
-  else()
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
-        CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3)
-      message(STATUS "Code coverage requires Clang 3.0.0 or later")
-    else()
-      find_program(TINYSPLINE_GCOV gcov)
-      find_program(TINYSPLINE_LCOV lcov)
-      find_program(TINYSPLINE_GENHTML genhtml)
-      if(NOT TINYSPLINE_GCOV OR NOT TINYSPLINE_LCOV OR NOT TINYSPLINE_GENHTML)
-        message(STATUS "Code coverage requires gcov, lcov, and genhtml")
-      else()
-        set(TINYSPLINE_COVERAGE_AVAILABLE TRUE)
-      endif()
-    endif()
-  endif()
+	if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
+			NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		message(STATUS "Code coverage is not available for ${CMAKE_CXX_COMPILER_ID}")
+	else()
+		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
+				CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3)
+			message(STATUS "Code coverage requires Clang 3.0.0 or later")
+		else()
+			find_program(TINYSPLINE_GCOV gcov)
+			find_program(TINYSPLINE_LCOV lcov)
+			find_program(TINYSPLINE_GENHTML genhtml)
+			if(NOT TINYSPLINE_GCOV OR NOT TINYSPLINE_LCOV OR NOT TINYSPLINE_GENHTML)
+				message(STATUS "Code coverage requires gcov, lcov, and genhtml")
+			else()
+				set(TINYSPLINE_COVERAGE_AVAILABLE TRUE)
+			endif()
+		endif()
+	endif()
 endif()
 
 # TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY
 set(TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/coverage)
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-  "${TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY}"
+	"${TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY}"
 )
 
 # TINYSPLINE_COVERAGE_C_FLAGS
 set(TINYSPLINE_COVERAGE_C_FLAGS
-  "-g -O0 -fprofile-arcs -ftest-coverage"
+	"-g -O0 -fprofile-arcs -ftest-coverage"
 )
 
 # TINYSPLINE_COVERAGE_C_LIBRARIES
 set(TINYSPLINE_COVERAGE_C_LIBRARIES
-  "-lgcov"
+	"-lgcov"
 )
 
 ###############################################################################
@@ -75,9 +75,9 @@ add_subdirectory(c)
 ### Add custom targets that are supposed to subsume unit tests and coverage.
 ###############################################################################
 add_custom_target(tests
-  COMMAND tinyspline_tests
-  DEPENDS tinyspline_tests
+	COMMAND tinyspline_tests
+	DEPENDS tinyspline_tests
 )
 add_custom_target(coverage
-  DEPENDS tinyspline_coverage
+	DEPENDS tinyspline_coverage
 )

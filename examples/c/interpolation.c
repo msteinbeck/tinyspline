@@ -27,72 +27,72 @@ GLUnurbsObj *theNurb;
 ********************************************************/
 void setup()
 {
-    tsReal points[15];
-    points[0] = 1;
-    points[1] = -1;
-    points[2] = 0;
-    points[3] = -1;
-    points[4] = 2;
-    points[5] = 0;
-    points[6] = 1;
-    points[7] = 4;
-    points[8] = 0;
-    points[9] = 4;
-    points[10] = 3;
-    points[11] = 0;
-    points[12] = 7;
-    points[13] = 5;
-    points[14] = 0;
+	tsReal points[15];
+	points[0] = 1;
+	points[1] = -1;
+	points[2] = 0;
+	points[3] = -1;
+	points[4] = 2;
+	points[5] = 0;
+	points[6] = 1;
+	points[7] = 4;
+	points[8] = 0;
+	points[9] = 4;
+	points[10] = 3;
+	points[11] = 0;
+	points[12] = 7;
+	points[13] = 5;
+	points[14] = 0;
 
-    ts_bspline_interpolate_cubic(points, 5, 3, &spline);
-    ts_bspline_print(&spline);
+	ts_bspline_interpolate_cubic(points, 5, 3, &spline);
+	ts_bspline_print(&spline);
 }
 
 void tear_down()
 {
-    ts_bspline_free(&spline);
+	ts_bspline_free(&spline);
 }
 
 void display(void)
 {
-    tsDeBoorNet net;
-    size_t i;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    /* draw spline */
-    glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(3);
-    gluBeginCurve(theNurb);
-        gluNurbsCurve(
-            theNurb, 
-            (GLint)spline.n_knots,
-            spline.knots, 
-            (GLint)spline.dim,
-            spline.ctrlp, 
-            (GLint)spline.order,
-            GL_MAP1_VERTEX_3
-        );
-    gluEndCurve(theNurb);
+	tsDeBoorNet net;
+	size_t i;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	/* draw spline */
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(3);
+	gluBeginCurve(theNurb);
+		gluNurbsCurve(
+			theNurb, 
+			(GLint)spline.n_knots,
+			spline.knots, 
+			(GLint)spline.dim,
+			spline.ctrlp, 
+			(GLint)spline.order,
+			GL_MAP1_VERTEX_3
+		);
+	gluEndCurve(theNurb);
 
-    /* draw control points */
-    glColor3f(1.0, 0.0, 0.0);
-    glPointSize(5.0);
-    glBegin(GL_POINTS);
-      for (i = 0; i < spline.n_ctrlp; i++) 
-         glVertex3fv(&spline.ctrlp[i * spline.dim]);
-    glEnd();
-    
-    /* draw evaluation */
-    glColor3f(0.0, 0.0, 1.0);
-    glPointSize(5.0);
-    ts_bspline_evaluate(&spline, 0.5f, &net);
-    glBegin(GL_POINTS);
-        glVertex3fv(net.result);
-    glEnd();
-    ts_deboornet_free(&net);
-    
-    glutSwapBuffers();
-    glutPostRedisplay();
+	/* draw control points */
+	glColor3f(1.0, 0.0, 0.0);
+	glPointSize(5.0);
+	glBegin(GL_POINTS);
+	  for (i = 0; i < spline.n_ctrlp; i++) 
+		 glVertex3fv(&spline.ctrlp[i * spline.dim]);
+	glEnd();
+	
+	/* draw evaluation */
+	glColor3f(0.0, 0.0, 1.0);
+	glPointSize(5.0);
+	ts_bspline_evaluate(&spline, 0.5f, &net);
+	glBegin(GL_POINTS);
+		glVertex3fv(net.result);
+	glEnd();
+	ts_deboornet_free(&net);
+	
+	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 
@@ -114,13 +114,13 @@ void nurbsError(GLenum errorCode)
    
 void init(void)
 {
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    theNurb = gluNewNurbsRenderer();
-    gluNurbsProperty (theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) nurbsError);
-    setup();
+	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	theNurb = gluNewNurbsRenderer();
+	gluNurbsProperty (theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
+	gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) nurbsError);
+	setup();
 }
 
 void reshape(int w, int h)
@@ -136,15 +136,15 @@ void reshape(int w, int h)
 
 int main(int argc, char** argv)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize (500, 500);
-    glutInitWindowPosition (100, 100);
-    glutCreateWindow(argv[0]);
-    init();
-    glutReshapeFunc(reshape);
-    glutDisplayFunc(display);
-    glutMainLoop();
-    tear_down();
-    return 0; 
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize (500, 500);
+	glutInitWindowPosition (100, 100);
+	glutCreateWindow(argv[0]);
+	init();
+	glutReshapeFunc(reshape);
+	glutDisplayFunc(display);
+	glutMainLoop();
+	tear_down();
+	return 0; 
 }

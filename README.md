@@ -114,7 +114,9 @@ The following table gives an overview:
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
 C#       | -                               | csharp
-Java     | JNI headers                     | so/tinyspline
+D        | -                               | dlang
+Golang   | -                               | go
+Java     | JNI headers                     | org/tinyspline
 Lua      | Lua headers                     | lua
 PHP      | Zend headers                    | php
 Python   | Python headers                  | python
@@ -184,10 +186,19 @@ export TINYSPLINE_PYTHON_VERSION=2
 cmake ..
 ```
 
+#### Disabling Bindings
+For one reason or another, you may have the required packages to build a binding, but you
+don't want to compile it.  You can pass an additional argument into CMake to prevent the
+specified language bindings from compiling:
+
+```bash
+cmake -DTINYSPLINE_DISABLE_CSHARP=true ..
+```
+
 #### Install the C and C++ Libraries
 The following command installs TinySpline:
 
-```
+```bash
 cmake --build . --target install
 ```
 

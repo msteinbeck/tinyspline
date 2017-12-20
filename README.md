@@ -136,7 +136,7 @@ Now let's start building TinySpline. First of all, check out the repository and 
 into the root directory:
 
 ```bash
-git clone git@github.com:retuxx/tinyspline.git tinyspline
+git clone git@github.com:msteinbeck/tinyspline.git tinyspline
 cd tinyspline
 ```
 

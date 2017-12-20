@@ -38,112 +38,112 @@ tsReal B[3], v[3], w[3];
 ********************************************************/
 void setup()
 {
-    tsReal mid;
-    size_t k; /* not required here */
+	tsReal mid;
+	size_t k; /* not required here */
 
-    ts_bspline_new(
-        3,      /* number of control points */
-        3,      /* dimension of each point */
-        2,      /* degree of spline */
-        TS_CLAMPED, /* used to hit first and last control point */
-        &spline /* the spline to setup */
-    );
-    
-    /* Setup control points. */
-    spline.ctrlp[0] = -1.0f;
-    spline.ctrlp[1] = 1.0f;
-    spline.ctrlp[2] = 0.0f;
-    spline.ctrlp[3] = 1.0f;
-    spline.ctrlp[4] = 1.0f;
-    spline.ctrlp[5] = 0.0f;
-    spline.ctrlp[6] = 1.0f;
-    spline.ctrlp[7] = -1.0f;
-    spline.ctrlp[8] = 0.0f;
+	ts_bspline_new(
+		3,      /* number of control points */
+		3,      /* dimension of each point */
+		2,      /* degree of spline */
+		TS_CLAMPED, /* used to hit first and last control point */
+		&spline /* the spline to setup */
+	);
+	
+	/* Setup control points. */
+	spline.ctrlp[0] = -1.0f;
+	spline.ctrlp[1] = 1.0f;
+	spline.ctrlp[2] = 0.0f;
+	spline.ctrlp[3] = 1.0f;
+	spline.ctrlp[4] = 1.0f;
+	spline.ctrlp[5] = 0.0f;
+	spline.ctrlp[6] = 1.0f;
+	spline.ctrlp[7] = -1.0f;
+	spline.ctrlp[8] = 0.0f;
 
-    for (i = 0; i < 3; i++)
-        B[i] = spline.ctrlp[i+3];
+	for (i = 0; i < 3; i++)
+		B[i] = spline.ctrlp[i+3];
 
-    mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
-    ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
+	mid = (spline.knots[spline.n_knots - 1] - spline.knots[0]) /2;
+	ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
 
-    A = spline.ctrlp;
-    D = spline.ctrlp + 3;
-    E = spline.ctrlp + 6;
-    C = spline.ctrlp + 9;
+	A = spline.ctrlp;
+	D = spline.ctrlp + 3;
+	E = spline.ctrlp + 6;
+	C = spline.ctrlp + 9;
 
-    for (i = 0; i < 3; i++) {
-        v[i] = B[i] - A[i];
-        w[i] = B[i] - C[i];
-    }
+	for (i = 0; i < 3; i++) {
+		v[i] = B[i] - A[i];
+		w[i] = B[i] - C[i];
+	}
 }
 
 void tear_down()
 {
-    ts_bspline_free(&spline);
+	ts_bspline_free(&spline);
 }
 
 void displayText(float x, float y, float r, float g, float b, const char *string)
 {
-    size_t str_sz = strlen(string);
-    glColor3f(r, g, b);
-    glRasterPos2f(x, y);
-    for(i = 0; i < str_sz; i++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
-    }
+	size_t str_sz = strlen(string);
+	glColor3f(r, g, b);
+	glRasterPos2f(x, y);
+	for(i = 0; i < str_sz; i++) {
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
+	}
 }
 
 void display(void)
 {
-    char buffer[256];
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	char buffer[256];
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    /* keep in mind that `D` and `E` are simply pointers to the
-    corresponding control points of `spline`. */
-    for (i = 0; i < 3; i++) {
-        D[i] = A[i] + t*v[i];
-        E[i] = C[i] + t*w[i];
-    }
-    
-    /* draw spline */
-    glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(3);
-    gluBeginCurve(theNurb);
-        gluNurbsCurve(
-            theNurb, 
-            (GLint)spline.n_knots,
-            spline.knots,
-            (GLint)spline.dim,
-            spline.ctrlp,
-            (GLint)spline.order,
-            GL_MAP1_VERTEX_3
-        );
-    gluEndCurve(theNurb);
+	/* keep in mind that `D` and `E` are simply pointers to the
+	corresponding control points of `spline`. */
+	for (i = 0; i < 3; i++) {
+		D[i] = A[i] + t*v[i];
+		E[i] = C[i] + t*w[i];
+	}
+	
+	/* draw spline */
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(3);
+	gluBeginCurve(theNurb);
+		gluNurbsCurve(
+			theNurb, 
+			(GLint)spline.n_knots,
+			spline.knots,
+			(GLint)spline.dim,
+			spline.ctrlp,
+			(GLint)spline.order,
+			GL_MAP1_VERTEX_3
+		);
+	gluEndCurve(theNurb);
 
-    /* draw control points */
-    glColor3f(1.0, 0.0, 0.0);
-    glPointSize(5.0);
-    glBegin(GL_POINTS);
-      for (i = 0; i < spline.n_ctrlp; i++) 
-         glVertex3fv(&spline.ctrlp[i * spline.dim]);
-    glEnd();
+	/* draw control points */
+	glColor3f(1.0, 0.0, 0.0);
+	glPointSize(5.0);
+	glBegin(GL_POINTS);
+	  for (i = 0; i < spline.n_ctrlp; i++) 
+		 glVertex3fv(&spline.ctrlp[i * spline.dim]);
+	glEnd();
 
-    /* draw B */
-    glColor3f(0.0, 0.0, 1.0);
-    glBegin(GL_POINTS);
-        glVertex3fv(B);
-    glEnd();
+	/* draw B */
+	glColor3f(0.0, 0.0, 1.0);
+	glBegin(GL_POINTS);
+		glVertex3fv(B);
+	glEnd();
 
-    /* display t */
-    sprintf(buffer, "t: %.2f", t);
-    displayText(-.2f, 1.2f, 0.0, 1.0, 0.0, buffer);
-    
-    glutSwapBuffers();
-    glutPostRedisplay();
+	/* display t */
+	sprintf(buffer, "t: %.2f", t);
+	displayText(-.2f, 1.2f, 0.0, 1.0, 0.0, buffer);
+	
+	glutSwapBuffers();
+	glutPostRedisplay();
 
-    t += 0.001f;
-    if (t > 1.f) {
-        t = 0.f;
-    }
+	t += 0.001f;
+	if (t > 1.f) {
+		t = 0.f;
+	}
 }
 
 
@@ -165,13 +165,13 @@ void nurbsError(GLenum errorCode)
    
 void init(void)
 {
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    theNurb = gluNewNurbsRenderer();
-    gluNurbsProperty (theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) nurbsError);
-    setup();
+	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	theNurb = gluNewNurbsRenderer();
+	gluNurbsProperty (theNurb, GLU_SAMPLING_TOLERANCE, 10.0);
+	gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) nurbsError);
+	setup();
 }
 
 void reshape(int w, int h)
@@ -187,15 +187,15 @@ void reshape(int w, int h)
 
 int main(int argc, char** argv)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize (500, 500);
-    glutInitWindowPosition (100, 100);
-    glutCreateWindow(argv[0]);
-    init();
-    glutReshapeFunc(reshape);
-    glutDisplayFunc(display);
-    glutMainLoop();
-    tear_down();
-    return 0; 
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize (500, 500);
+	glutInitWindowPosition (100, 100);
+	glutCreateWindow(argv[0]);
+	init();
+	glutReshapeFunc(reshape);
+	glutDisplayFunc(display);
+	glutMainLoop();
+	tear_down();
+	return 0; 
 }

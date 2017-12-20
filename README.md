@@ -114,7 +114,9 @@ The following table gives an overview:
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
 C#       | -                               | csharp
-Java     | JNI headers                     | so/tinyspline
+D        | -                               | dlang
+Golang   | -                               | go
+Java     | JNI headers                     | org/tinyspline
 Lua      | Lua headers                     | lua
 PHP      | Zend headers                    | php
 Python   | Python headers                  | python

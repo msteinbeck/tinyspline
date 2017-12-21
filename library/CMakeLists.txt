@@ -35,7 +35,7 @@ option(TINYSPLINE_WITH_OCTAVE "Try to create the Octave interface." ON)
 option(TINYSPLINE_WITH_PHP "Try to create the PHP interface." ON)
 option(TINYSPLINE_WITH_PYTHON "Try to create the Python interface." ON)
 option(TINYSPLINE_WITH_R "Try to create the R interface." ON)
-option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interfacer." ON)
+option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interface." ON)
 
 
 

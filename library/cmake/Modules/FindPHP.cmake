@@ -42,7 +42,7 @@ set(PHP_DEVELOPMENT_COMPONENT_FOUND FALSE)
 if(PHP_FIND_COMPONENTS)
 	foreach(component ${PHP_FIND_COMPONENTS})
 		string(TOUPPER ${component} _COMPONENT)
-		set(PHP_USE_${_COMPONENT} 1)
+		set(PHP_USE_${_COMPONENT} TRUE)
 	endforeach()
 endif()
 

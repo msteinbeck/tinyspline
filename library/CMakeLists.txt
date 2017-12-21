@@ -28,7 +28,7 @@ set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supporte
 option(TINYSPLINE_WITH_CXX "Try to create the C++ interface." ON)
 option(TINYSPLINE_WITH_CSHARP "Try to create the C# interface." ON)
 option(TINYSPLINE_WITH_D "Try to create the D interface." ON)
-option(TINYSPLINE_WITH_GOLANG "Try to create the Go interface." ON)
+option(TINYSPLINE_WITH_GOLANG "Try to create the Go interface. (Not supported)" ON)
 option(TINYSPLINE_WITH_JAVA "Try to create the Java interface." ON)
 option(TINYSPLINE_WITH_LUA "Try to create the Lua interface." ON)
 option(TINYSPLINE_WITH_OCTAVE "Try to create the Octave interface." ON)

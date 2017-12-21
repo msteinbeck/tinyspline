@@ -20,7 +20,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DTINYSPLINE_WITH_RUBY=FALSE
+  - cmake .. -DTINYSPLINE_WITH_RUBY=FALSE -DTINYSPLINE_WITH_PHP=FALSE
 
 script:
   - make

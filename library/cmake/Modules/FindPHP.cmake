@@ -36,16 +36,6 @@
 # and find Zend headers.  © Nightwave Studios, 2017.
 #
 
-set(PHP_FOUND FALSE)
-set(PHP_DEVELOPMENT_COMPONENT_FOUND FALSE)
-
-if(PHP_FIND_COMPONENTS)
-	foreach(component ${PHP_FIND_COMPONENTS})
-		string(TOUPPER ${component} _COMPONENT)
-		set(PHP_USE_${_COMPONENT} TRUE)
-	endforeach()
-endif()
-
 FIND_PROGRAM(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
 
 if(PHP_CONFIG_EXECUTABLE)
@@ -101,6 +91,14 @@ MARK_AS_ADVANCED(
 	PHP_VERSION_STRING
 )
 
+if(PHP_FIND_COMPONENTS)
+	foreach(component ${PHP_FIND_COMPONENTS})
+		string(TOUPPER ${component} _COMPONENT)
+		set(PHP_USE_${_COMPONENT} TRUE)
+	endforeach()
+endif()
+
+set(PHP_DEVELOPMENT_COMPONENT_FOUND FALSE)
 set(PHP_DEVELOPMENT_COMPONENT_ACCPETED TRUE)
 if(PHP_USE_DEVELOPMENT_COMPONENT)
 	FIND_PATH(zend_path
@@ -116,7 +114,7 @@ endif()
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(
-	php
+	PHP
 	DEFAULT_MSG
 	PHP_EXECUTABLE
 	PHP_CONFIG_EXECUTABLE

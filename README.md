@@ -192,7 +192,7 @@ don't want to compile it.  You can pass an additional argument into CMake to pre
 specified language bindings from compiling:
 
 ```bash
-cmake -DTINYSPLINE_DISABLE_CSHARP=true ..
+cmake -DTINYSPLINE_WITH_CSHARP=NO ..
 ```
 
 #### Install the C and C++ Libraries

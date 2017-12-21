@@ -9,8 +9,8 @@
 # for php-config documentation.
 #
 # This code sets the following variables:
-#  PHP_CONFIG_EXECUTABLE      = full path to the php-config binary
 #  PHP_EXECUTABLE             = full path to the php binary
+#  PHP_CONFIG_EXECUTABLE      = full path to the php-config binary
 #  PHP_EXTENSIONS_DIR         = directory containing PHP extensions
 #  PHP_EXTENSIONS_INCLUDE_DIR = directory containing PHP extension headers
 #  PHP_INCLUDE_DIRS           = include directives for PHP development
@@ -31,10 +31,14 @@
 #=============================================================================
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
+#
+# This file has been modified to include the option to specify a "Zend" component
+# and find Zend headers.  © Nightwave Studios, 2017.
+#
 
 FIND_PROGRAM(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
 
-if (PHP_CONFIG_EXECUTABLE)
+if(PHP_CONFIG_EXECUTABLE)
 	execute_process(
 		COMMAND
 			${PHP_CONFIG_EXECUTABLE} --php-binary
@@ -76,7 +80,7 @@ if (PHP_CONFIG_EXECUTABLE)
 			OUTPUT_VARIABLE PHP_VERSION_STRING
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
-endif (PHP_CONFIG_EXECUTABLE)
+endif()
 
 MARK_AS_ADVANCED(
 	PHP_CONFIG_EXECUTABLE
@@ -87,26 +91,39 @@ MARK_AS_ADVANCED(
 	PHP_VERSION_STRING
 )
 
+if(PHP_FIND_COMPONENTS)
+	foreach(component ${PHP_FIND_COMPONENTS})
+		string(TOUPPER ${component} _COMPONENT)
+		set(PHP_USE_${_COMPONENT} TRUE)
+	endforeach()
+endif()
+
+set(PHP_ZEND_COMPONENT_FOUND FALSE)
+set(PHP_ZEND_COMPONENT_ACCPETED TRUE)
+if(PHP_USE_ZEND_COMPONENT)
+	FIND_PATH(PHP_ZEND_DIR
+		NAMES "zend.h"
+		PATHS ${PHP_INCLUDE_DIRS}
+	)
+	if(PHP_ZEND_DIR)
+		set(PHP_ZEND_COMPONENT_FOUND TRUE)
+	else()
+		set(PHP_ZEND_COMPONENT_ACCPETED FALSE)
+	endif()
+endif()
+
+MARK_AS_ADVANCED(PHP_ZEND_COMPONENT_ACCPETED)
+
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(
-	php
+	PHP
 	DEFAULT_MSG
-	PHP_VERSION_STRING
-	PHP_CONFIG_EXECUTABLE
 	PHP_EXECUTABLE
+	PHP_CONFIG_EXECUTABLE
 	PHP_EXTENSIONS_DIR
 	PHP_EXTENSIONS_INCLUDE_DIR
 	PHP_INCLUDE_DIRS
 	PHP_VERSION_NUMBER
 	PHP_VERSION_STRING
+	PHP_ZEND_COMPONENT_ACCPETED
 )
-
-# Some handy dev output. Is there a way to enable these in some debug mode?
-#MESSAGE("PHP_CONFIG_EXECUTABLE      = ${PHP_CONFIG_EXECUTABLE}")
-#MESSAGE("PHP_EXECUTABLE             = ${PHP_EXECUTABLE}")
-#MESSAGE("PHP_EXTENSIONS_DIR         = ${PHP_EXTENSIONS_DIR}")
-#MESSAGE("PHP_EXTENSIONS_INCLUDE_DIR = ${PHP_EXTENSIONS_INCLUDE_DIR}")
-#MESSAGE("PHP_INCLUDE_DIRS           = ${PHP_INCLUDE_DIRS}")
-#MESSAGE("PHP_VERSION_NUMBER         = ${PHP_VERSION_NUMBER}")
-#MESSAGE("PHP_VERSION_STRING         = ${PHP_VERSION_STRING}")
-#MESSAGE("PHP_FOUND                  = ${PHP_FOUND}")

@@ -32,7 +32,7 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 #
-# This file has been modified to include the option to specify a "Development" component
+# This file has been modified to include the option to specify a "Zend" component
 # and find Zend headers.  © Nightwave Studios, 2017.
 #
 
@@ -98,19 +98,21 @@ if(PHP_FIND_COMPONENTS)
 	endforeach()
 endif()
 
-set(PHP_DEVELOPMENT_COMPONENT_FOUND FALSE)
-set(PHP_DEVELOPMENT_COMPONENT_ACCPETED TRUE)
-if(PHP_USE_DEVELOPMENT_COMPONENT)
+set(PHP_ZEND_COMPONENT_FOUND FALSE)
+set(PHP_ZEND_COMPONENT_ACCPETED TRUE)
+if(PHP_USE_ZEND_COMPONENT)
 	FIND_PATH(zend_path
 		NAMES "zend.h"
 		PATHS ${PHP_INCLUDE_DIRS}
 	)
 	if(zend_path)
-		set(PHP_DEVELOPMENT_COMPONENT_FOUND TRUE)
+		set(PHP_ZEND_COMPONENT_FOUND TRUE)
 	else()
-		set(PHP_DEVELOPMENT_COMPONENT_ACCPETED FALSE)
+		set(PHP_ZEND_COMPONENT_ACCPETED FALSE)
 	endif()
 endif()
+
+MARK_AS_ADVANCED(PHP_ZEND_COMPONENT_ACCPETED)
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(
@@ -123,5 +125,5 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
 	PHP_INCLUDE_DIRS
 	PHP_VERSION_NUMBER
 	PHP_VERSION_STRING
-	PHP_DEVELOPMENT_COMPONENT_ACCPETED
+	PHP_ZEND_COMPONENT_ACCPETED
 )

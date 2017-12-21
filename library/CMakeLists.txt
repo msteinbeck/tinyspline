@@ -684,7 +684,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 
 		# PHP
 		if(TINYSPLINE_WITH_PHP)
-			find_package(PHP COMPONENTS devel)
+			find_package(PHP COMPONENTS Development)
 			if(PHP_FOUND)
 				else()
 					set(TINYSPLINE_PHP_VERSION "php5")

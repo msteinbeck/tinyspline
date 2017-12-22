@@ -10,7 +10,7 @@ compiler:
 
 osx_image: xcode9.2
 
-dist: xenial # May not work
+dist: xenial
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:timsc/swig-3.0.12 -y; sudo apt-get -qq update; fi

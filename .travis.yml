@@ -1,7 +1,7 @@
 language: cpp
 
 os:
-  # - linux
+  - linux
   - osx
 
 compiler:
@@ -10,17 +10,21 @@ compiler:
 
 osx_image: xcode9.2
 
+dist: xenial
+
 before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:timsc/swig-3.0.12 -y; sudo apt-get -qq update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/php; brew update; fi
 
 install:
-  # Install packages from Homebrew/Aptitude
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install swig3.0 cmake python-dev ruby-dev php-dev liblua5.3-dev octave-pkg-dev openjdk-8-jdk -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig php71 lua; fi
 
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DTINYSPLINE_WITH_RUBY=FALSE -DTINYSPLINE_WITH_PHP=FALSE
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]];then cmake ..; fi;
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake .. -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE; fi;
 
 script:
-  - make
+  - cmake --build .

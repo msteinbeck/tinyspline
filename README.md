@@ -120,7 +120,7 @@ D        | -                               | dlang
 Golang   | -                               | go
 Java     | Java Development Kit            | org/tinyspline
 Lua      | Lua headers                     | lua
-PHP      | PHP (Zend) headers*             | php
+PHP      | PHP (Zend) headers *            | php
 Python   | Python headers                  | python
 Ruby     | Ruby headers                    | ruby
 
@@ -134,10 +134,8 @@ required if you want to package the corresponding binding:
 
 Language | Required Tool(s)                 | Output File
 -------- | -------------------------------- | ----------------
-C#       | Any of: csc, mcs, dmcs, gmcs*    | TinySpline.dll
+C#       | Any of: csc, mcs, dmcs, gmcs     | TinySpline.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
-
-* Mono support is yet to be implemented.  Sorry, macOS and Linux users!
 
 The remaining bindings do not need to be packaged (usually the interpreted languages).
 
@@ -202,7 +200,7 @@ cmake -DTINYSPLINE_WITH_CSHARP=NO ..
 ```
 
 #### Install the C and C++ Libraries
-The following command installs TinySpline to your sstems:
+The following command installs TinySpline to your system:
 
 ```bash
 cmake --build . --target install

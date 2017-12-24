@@ -617,7 +617,6 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 			)
 			
 			# C# DLL
-			# XXX Should also allow for Mono-based compilation
 			find_program(TINYSPLINE_CSHARP_COMPILER
 				NAMES csc mcs dmcs gmcs
 				PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"

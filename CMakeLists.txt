@@ -11,3 +11,10 @@ add_definitions("${TINYSPLINE_DEFINITIONS}")
 
 add_subdirectory(examples)
 add_subdirectory(tests)
+
+find_package(Doxygen)
+IF(DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf @ONLY)
+	add_custom_target(docs ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doxygen/)
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen/ COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/library ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in VERBATIM) # COMMENT "Generating API documentation with Doxygen"
+ENDIF(DOXYGEN_FOUND)

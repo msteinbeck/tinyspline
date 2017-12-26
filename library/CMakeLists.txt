@@ -767,24 +767,26 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		# R
 		if(TINYSPLINE_WITH_R)
 			find_package(R COMPONENTS Rcpp)
-			include_directories(${R_INCLUDE_DIRS})
-			set_source_files_properties(tinyspliner.i PROPERTIES CPLUSPLUS ON)
-			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_R_DIR})
-			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-				swig_add_module(tinyspliner r tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
-			else()
-				swig_add_library(tinyspliner LANGUAGE r SOURCES tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
+			if(R_FOUND)
+				include_directories(${R_INCLUDE_DIRS})
+				set_source_files_properties(tinyspliner.i PROPERTIES CPLUSPLUS ON)
+				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_R_DIR})
+				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+					swig_add_module(tinyspliner r tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				else()
+					swig_add_library(tinyspliner LANGUAGE r SOURCES tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				endif()
+				swig_link_libraries(tinyspliner ${R_LIBRARIES})
+				add_custom_command(TARGET tinyspliner POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_R_DIR}/tinyspliner.R"
+					"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_R_INTERFACE_FILE_NAME}"
+				)
+				set_target_properties(tinyspliner PROPERTIES
+					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+				)
 			endif()
-			swig_link_libraries(tinyspliner ${R_LIBRARIES})
-			add_custom_command(TARGET tinyspliner POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_R_DIR}/tinyspliner.R"
-				"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_R_INTERFACE_FILE_NAME}"
-			)
-			set_target_properties(tinyspliner PROPERTIES
-				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-			)
 		endif()
 	endif(SWIG_FOUND)
 endif()

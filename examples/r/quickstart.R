@@ -2,7 +2,7 @@ library(methods)
 library(Rcpp)
 
 dyn.load(paste("tinyspliner", .Platform$dynlib.ext, sep=""))
-source("tinyspliner.R")
+source("tinyspline.R")
 cacheMetaData(1)
 
 spline <- BSpline(7)

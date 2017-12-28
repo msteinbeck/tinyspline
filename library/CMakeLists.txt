@@ -801,24 +801,24 @@ string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_SUM
 string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUMMARY_BINDING_FLAGS)
 
 # Map TINYSPLINE_WITH_*** to actual configuration
-function (tinysplineSetYesNo varName varValue)
+function (tinyspline_set_yes_no varName varValue)
 	if(${varValue})
 		set(${varName} yes PARENT_SCOPE)
 	else()
 		set(${varName} no PARENT_SCOPE)
 	endif()
 endfunction()
-tinysplineSetYesNo(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
-tinysplineSetYesNo(TINYSPLINE_WITH_CSHARP TINYSPLINE_WITH_CSHARP)
-tinysplineSetYesNo(TINYSPLINE_WITH_D TINYSPLINE_WITH_D)
-tinysplineSetYesNo(TINYSPLINE_WITH_GOLANG FALSE)
-tinysplineSetYesNo(TINYSPLINE_WITH_JAVA JNI_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_LUA LUA_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_PHP PHP_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_RUBY RUBY_FOUND)
-tinysplineSetYesNo(TINYSPLINE_WITH_R R_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
+tinyspline_set_yes_no(TINYSPLINE_WITH_CSHARP TINYSPLINE_WITH_CSHARP)
+tinyspline_set_yes_no(TINYSPLINE_WITH_D TINYSPLINE_WITH_D)
+tinyspline_set_yes_no(TINYSPLINE_WITH_GOLANG FALSE)
+tinyspline_set_yes_no(TINYSPLINE_WITH_JAVA JNI_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_LUA LUA_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_PHP PHP_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_RUBY RUBY_FOUND)
+tinyspline_set_yes_no(TINYSPLINE_WITH_R R_FOUND)
 
 message(STATUS
 "
@@ -849,7 +849,7 @@ Available Interfaces:
   Java:         ${TINYSPLINE_WITH_JAVA}
     Version:  ${Java_VERSION_STRING}
     Compiler: ${Java_JAVAC_EXECUTABLE}
-    Archive:  ${Java_JAR_EXECUTABLE}
+    Archiver: ${Java_JAR_EXECUTABLE}
 
   Lua:          ${TINYSPLINE_WITH_LUA}
     Version:  ${LUA_VERSION_STRING}

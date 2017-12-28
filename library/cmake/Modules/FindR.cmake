@@ -51,7 +51,7 @@ if(R_RSCRIPT_EXECUTABLE)
 			R
 		PATHS
 			${R_LIBRARY_DIR}
-			${R_HOME_DIR}
+			"${R_HOME_DIR}/*"
 	)
 	unset(R_LIBRARY_DIR)
 

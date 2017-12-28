@@ -818,6 +818,7 @@ tinysplineSetYesNo(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
 tinysplineSetYesNo(TINYSPLINE_WITH_PHP PHP_FOUND)
 tinysplineSetYesNo(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
 tinysplineSetYesNo(TINYSPLINE_WITH_RUBY RUBY_FOUND)
+tinysplineSetYesNo(TINYSPLINE_WITH_R R_FOUND)
 
 message(STATUS
 "
@@ -868,6 +869,11 @@ Available Interfaces:
     Version:  ${PYTHONLIBS_VERSION_STRING}
     Include:  ${PYTHON_INCLUDE_DIRS}
     Library:  ${PYTHON_LIBRARIES}
+
+  R:            ${TINYSPLINE_WITH_R}
+    Version:  ${R_VERSION}
+    Include:  ${R_INCLUDE_DIRS}
+    Library:  ${R_LIBRARIES}
 
   Ruby:         ${TINYSPLINE_WITH_RUBY}
     Version:  ${RUBY_VERSION}

@@ -5,14 +5,15 @@
 # 	https://www.nightwave.co
 #
 # The following variables are set:
-#   R_FOUND        - System has R
-#   R_HOME_DIR     - Home directory of R
-#   R_INCLUDE_DIRS - Include directory for R
-#   R_VERSION      - Version of R
-#   R_LIBRARIES    - Libraries you need to link to
+#   R_RSCRIPT_EXECUTABLE - full path to the Rscript binary
+#   R_HOME_DIR           - home directory of R
+#   R_INCLUDE_DIRS       - include directories of R
+#   R_VERSION            - version of R
+#   R_LIBRARIES          - libraries you need to link to
+#   R_FOUND              - set to TRUE if all of the above has been found.
 #
 # The following components are supported:
-#   Rcpp           - Seamless R and C++ Integration
+#   Rcpp                 - seamless R and C++ Integration
 #
 
 FIND_PROGRAM(R_RSCRIPT_EXECUTABLE NAMES Rscript)
@@ -40,10 +41,19 @@ if(R_RSCRIPT_EXECUTABLE)
 	)
 	string(REGEX REPLACE "[a-zA-Z]|[(].*|[ ]" "" R_VERSION ${R_VERSION})
 
+	set(R_LIBRARY_DIR "${R_HOME_DIR}/bin/x64")
+	if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+		set(R_LIBRARY_DIR "${R_HOME_DIR}/bin/i386")
+	endif()
 	find_library(R_LIBRARIES
-		NAMES libR R
-		PATHS "${R_HOME_DIR}/*"
+		NAMES
+			libR
+			R
+		PATHS
+			${R_LIBRARY_DIR}
+			${R_HOME_DIR}
 	)
+	unset(R_LIBRARY_DIR)
 
 	if(R_FIND_COMPONENTS)
 		foreach(component ${R_FIND_COMPONENTS})
@@ -71,6 +81,7 @@ if(R_RSCRIPT_EXECUTABLE)
 endif()
 
 MARK_AS_ADVANCED(
+	R_RSCRIPT_EXECUTABLE
 	R_HOME
 	R_INCLUDE_DIRS
 	R_VERSION

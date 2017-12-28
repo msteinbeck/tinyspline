@@ -544,7 +544,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		if(TINYSPLINE_WITH_JAVA)
 			find_package(JNI)
 			if(JNI_FOUND)
-				include_directories(${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
+				include_directories(${JNI_INCLUDE_DIRS})
 				set_source_files_properties(tinysplinejava.i PROPERTIES CPLUSPLUS ON)
 				set(CMAKE_SWIG_FLAGS -package "org.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_JAVA_DIR})
@@ -553,7 +553,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				else()
 					swig_add_library(tinysplinejava LANGUAGE java SOURCES tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinysplinejava ${JAVA_LIBRARIES})
+				swig_link_libraries(tinysplinejava ${JNI_LIBRARIES})
 				
 				# Jar archive
 				find_package(Java COMPONENTS Development)
@@ -848,6 +848,8 @@ Available Interfaces:
 
   Java:         ${TINYSPLINE_WITH_JAVA}
     Version:  ${Java_VERSION_STRING}
+    Include:  ${JNI_INCLUDE_DIRS}
+    Library:  ${JNI_LIBRARIES}
     Compiler: ${Java_JAVAC_EXECUTABLE}
     Archiver: ${Java_JAR_EXECUTABLE}
 

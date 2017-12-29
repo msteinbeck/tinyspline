@@ -268,11 +268,11 @@ However, adding such tools is planned for the future. If you have experience wit
 instance, Ruby gems and Rake, feel free to create a pull request. :)
 
 ### Theoretical Backgrounds
-[[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html)
-&nbsp;&nbsp; is a very good starting point for B-Splines.  
-[[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html)
-&nbsp;&nbsp; explains De Boor's Algorithm and gives some pseudo code.  
-[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy)
-&nbsp;&nbsp; provides a good overview of NURBS with some mathematical background.  
-[[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html)
-&nbsp;&nbsp; is useful if you want to use NURBS in TinySpline.
+[[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html) is a very good starting point for B-Splines.
+
+[[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html) explains De Boor's Algorithm and gives some pseudo code.
+
+[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy) provides a good overview of NURBS with some mathematical background.
+
+[[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html) is useful if you want to use NURBS in TinySpline.
+

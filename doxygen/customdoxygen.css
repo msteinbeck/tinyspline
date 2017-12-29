@@ -191,7 +191,7 @@ div.fragment {
 	border: 0;
 	border-left: 4px solid #EEE;
 	border-radius: 0;
-	background: linear-gradient(to right, rgba(238,238,238,0.15) 65%, rgba(0,0,0,0) 100%);
+	background: linear-gradient(to right, rgba(238,238,238,0.35) 65%, rgba(0,0,0,0) 100%);
 }
 
 div.line {
@@ -802,8 +802,8 @@ table.doxtable td, table.doxtable th {
 }
 
 table.doxtable th {
-	background-color: #374F7F;
-	color: #FFFFFF;
+	background-color: #cdd7ea;
+	color: black;
 	font-size: 110%;
 	padding-bottom: 4px;
 	padding-top: 5px;
@@ -1066,7 +1066,9 @@ dl.section dd {
 }
 
 #projectnumber {
-	font-size: 50%;
+	font-family: "Avenir Next", Arial, sans-serif;
+	font-weight: 400;
+	font-size: 100%;
 	margin: 0px;
 	padding: 0px;
 }

@@ -8,12 +8,12 @@
 }
 
 body, table, div, p, dl {
-	font: 13px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+	font-family: "Avenir Next", Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 400;
 }
 
 body {
-	background: #0E1114;
-	color: white;
 	margin: 0;
 }
 
@@ -24,7 +24,7 @@ h1.groupheader {
 }
 
 .title {
-	font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+	font-family: "Avenir Next", Arial, sans-serif;
 	font-size: 24px;
 	font-weight: normal;
 	margin: 10px 2px;
@@ -119,18 +119,27 @@ div.navtab {
 /* @group Link Styling */
 
 a, .contents a, span.lineno a, a.code, a.codeRef, .SRSymbol {
-	color: #AAF;
+	color: #006295;
 	font-weight: normal;
 	text-decoration: none;
 }
 
 a:visited, .contents a:visited, span.lineno a:visited, a.code:visited, a.codeRef:visited, .SRSymbol:visited {
-	color: #AAF;
+	color: #006295;
 }
 
-a:hover, .contents a:hover, span.lineno a:hover, a.code:hover, a.codeRef:hover, .SRSymbol:hover {
+a:hover, .contents a:hover, span.lineno a:hover, a.code:hover, a.codeRef:hover, .SRSymbol:hover, a.SelectItem:hover {
 	text-decoration: underline;
-	color: #CCF;
+	color: rgba(0,98,149,0.5);
+}
+
+a.SelectItem {
+	transition: background-color 0.2s;
+}
+
+a.SelectItem:hover {
+	background-color: #0092e0;
+	text-decoration: none;
 }
 
 a.qindex {
@@ -163,9 +172,9 @@ dl.el {
 
 pre.fragment {
 	border: 0;
-	border-left: 4px solid #FFFFFF;
+	border-left: 4px solid #EEE;
 	border-radius: 0;
-	background: linear-gradient(to right, rgba(255,255,255,0.15) 65%, rgba(0,0,0,0) 100%);
+	background: linear-gradient(to right, rgba(238,238,238,0.35) 65%, rgba(0,0,0,0) 100%);
 	padding: 6px 10px;
 	margin: 15px 0px;
 	overflow: auto;
@@ -180,9 +189,9 @@ div.fragment {
 	padding: 6px 10px;
 	margin: 15px 0px;
 	border: 0;
-	border-left: 4px solid #FFFFFF;
+	border-left: 4px solid #EEE;
 	border-radius: 0;
-	background: linear-gradient(to right, rgba(255,255,255,0.15) 65%, rgba(0,0,0,0) 100%);
+	background: linear-gradient(to right, rgba(238,238,238,0.15) 65%, rgba(0,0,0,0) 100%);
 }
 
 div.line {
@@ -218,8 +227,8 @@ span.lineno {
 	padding: 1px 4px;
 	padding-left: 0;
 	text-align: right;
-	border-right: 2px solid white;
-	background: linear-gradient(to left, rgba(255,255,255,0.15) 65%, rgba(0,0,0,0) 100%);
+	border-right: 2px solid #EEE;
+	background: linear-gradient(to left, rgba(238,238,238,0.15) 65%, rgba(0,0,0,0) 100%);
 	white-space: pre;
 }
 
@@ -309,6 +318,10 @@ div.center img {
 address.footer {
 	text-align: right;
 	padding-right: 12px;
+	background: #f1f2f2;
+	margin-top: -8px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 
 img.footer {
@@ -327,7 +340,7 @@ span.keyword {
 }
 
 span.keywordtype {
-	color: #00e072;
+	color: #00ad5a;
 }
 
 span.keywordflow {
@@ -530,7 +543,8 @@ table.memberdecls {
 
 .memtitle {
 	border: 0;
-	background: linear-gradient(to top, rgba(86,22,144,0.25) 65%, rgba(0,0,0,0) 100%);
+	color: black;
+	background: linear-gradient(to top, rgba(20,126,184,0.25) 65%, rgba(0,0,0,0) 100%);
 	padding-top: 20px;
 	margin-bottom: -20px;
 }
@@ -589,15 +603,14 @@ table.memberdecls {
 }
 
 .memproto, dl.reflist dt {
-	margin-top: 1.5em;
+	margin-top: 1.25em;
 	border: none;
 	border-bottom: 1px solid rgb(172, 172, 172);
 	padding: 0px;
-	color: white;
 	font-weight: bold;
 	text-shadow: none;
 	background-image: none;
-	background-color: rgba(86,22,144,0.25);
+	background-color: rgba(20,126,184,0.25);
 	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
 	border-top-right-radius: 0px;
 	border-top-left-radius: 0px;
@@ -606,10 +619,9 @@ table.memberdecls {
 .memdoc, dl.reflist dd {
 	border: none;
 	padding: 6px;
-	background-color: #FBFCFD;
+	background-color: #eef2f6;
 	border-top-width: 0;
 	background-image: none;
-	background-color: black;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 	box-shadow: none;
@@ -633,7 +645,7 @@ dl.reflist dd {
 }
 
 .paramname {
-	color: rgb(170, 186, 218);
+	color: rgb(99, 128, 187);
 	white-space: nowrap;
 }
 
@@ -744,7 +756,6 @@ div.directory {
 
 .directory tr.even {
 	padding-left: 6px;
-	background-color: black;
 }
 
 .directory img {
@@ -777,7 +788,6 @@ div.dynheader {
 
 address {
 	font-style: normal;
-	color: #ccaddc;
 }
 
 table.doxtable {
@@ -948,8 +958,8 @@ div.ingroups a {
 div.header {
 	background-image: none;
 	border: none;
-	border-left: 8px solid #561690;
-	background: linear-gradient(to right, rgba(86,22,144,0.25) 65%, rgba(0,0,0,0) 100%);
+	border-left: 8px solid #147eb8;
+	background: linear-gradient(to right, rgba(20,126,184,0.25) 65%, rgba(0,0,0,0) 100%);
 	margin: 0px;
 }
 
@@ -1040,18 +1050,16 @@ dl.section dd {
 
 #projectlogo img {
 	border: 0px none;
-	width: 80px !important;
-	height: auto !important;
 	padding: 0 20px;
 }
 
 #projectname {
-	font-size: 300%;
-	margin: 0px;
-	padding: 2px 0px;
+	display: none;
 }
 
 #projectbrief {
+	font-family: "Avenir Next", Arial, sans-serif;
+	font-weight: 500;
 	font-size: 120%;
 	margin: 0px;
 	padding: 0px;
@@ -1064,15 +1072,11 @@ dl.section dd {
 }
 
 #titlearea {
-	font: Tahoma, Arial, sans-serif;
+	font-family: "Avenir Next", Arial, sans-serif;
 	padding: 8px 0;
 	margin: 0px;
 	width: 100%;
 	border: none !important;
-}
-
-#projectname {
-	font-family: 'Inconsolata', monospace !important;
 }
 
 .image {
@@ -1226,7 +1230,7 @@ tr.heading h2 {
 
 #main-menu {
 	background-image: none;
-	background-color: #3e2353;
+	background-color: #006295;
 	color: white;
 }
 
@@ -1255,7 +1259,7 @@ tr.heading h2 {
 
 #main-menu ul {
 	background: none;
-	background-color: #251431;
+	background-color: #0081c7;
 	border: none;
 	border-radius: 0;
 	box-shadow: 0 5px 9px rgba(0,0,0,1);
@@ -1265,19 +1269,23 @@ tr.heading h2 {
 }
 
 #main-menu ul a:focus, #main-menu ul a:hover, #main-menu ul a:active {
-	background-color: #3e2353;
+	background-color: #0092e0;
 }
 
 #main-menu > li > ul:before, #main-menu > li > ul:after {
-	border-color: transparent transparent #251431 transparent;
+	border-color: transparent transparent #0081c7 transparent;
 }
 
 #MSearchSelectWindow {
 	background: none;
-	background-color: #251431;
+	background-color: #0081c7;
 	border: none;
 	border-radius: 0;
 	box-shadow: 0 5px 9px rgba(0,0,0,1);
+}
+
+.sm-dox span.scroll-up, .sm-dox span.scroll-down {
+	background-color: #0092e0;
 }
 
 #MSearchSelectWindow a {

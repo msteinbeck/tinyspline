@@ -29,8 +29,8 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]];then cmake .. $CMAKE_FLAGS; fi;
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake .. $CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE; fi;
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_FLAGS=$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE; fi;
+  - cmake .. $CMAKE_FLAGS
 
 script:
   - cmake --build .

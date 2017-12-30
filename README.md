@@ -169,7 +169,7 @@ the source distribution (e.g. `Toolchain-arm.cmake`). Use the following command 
 your build directory to cross compile TinySpline to the desired platform:
 
 ```bash
-cmake -DCMAKE_TOOLCHAIN_FILE=<path to root dir of tinyspline>/Toolchain-*.cmake ..
+cmake -DCMAKE_TOOLCHAIN_FILE=<path to tinyspline>/toolchain/Toolchain-*.cmake ..
 ```
 
 #### Python 2 vs. Python 3

@@ -8,9 +8,17 @@ compiler:
   - gcc
   - clang
 
+env:
+  - CMAKE_FLAGS=
+  - CMAKE_FLAGS=-DTINYSPLINE_DOUBLE_PRECISION=YES
+  - CMAKE_FLAGS=-DTINYSPLINE_DISABLE_CXX11_FEATURES=YES
+  - CMAKE_FLAGS=-DTINYSPLINE_DOUBLE_PRECISION=YES -DTINYSPLINE_DISABLE_CXX11_FEATURES=YES
+
 osx_image: xcode9.2
 
 dist: xenial
+
+sudo: true
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:timsc/swig-3.0.12 -y; sudo apt-get -qq update; fi
@@ -23,8 +31,8 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]];then cmake ..; fi;
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake .. -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE; fi;
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_FLAGS=$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE; fi;
+  - cmake .. $CMAKE_FLAGS
 
 script:
   - cmake --build .

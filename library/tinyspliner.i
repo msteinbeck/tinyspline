@@ -9,7 +9,7 @@
 // Map R vector to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * {
 	const std::vector<tinyspline::real> vec =
-		Rcpp::as<std::vector<tinyspline::real>>($input);
+		Rcpp::as<std::vector<tinyspline::real> >($input);
 	$1 = new std::vector<tinyspline::real>(vec);
 }
 

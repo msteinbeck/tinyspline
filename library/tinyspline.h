@@ -398,7 +398,7 @@ tsError ts_bspline_get_ctrlp(tsBSpline spline, tsReal **ctrlp);
  * @param ctrlp
  * 	The values to deep copy.
  */
-void ts_bspline_set_ctrlp(tsBSpline spline, tsReal *ctrlp);
+void ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp);
 
 /**
  * Returns the number of knots of \p spline.
@@ -433,9 +433,9 @@ tsError ts_bspline_get_knots(tsBSpline spline, tsReal **knots);
  * @param knots
  * 	The values to deep copy.
  */
-void ts_bspline_set_knots(tsBSpline spline, tsReal *knots);
+void ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
 
-///////////////////////////////////////////////////////////////////////////////
+/* ------------------------------------------------------------------------- */
 /**
  * Returns the knot value (sometimes also called 'u' or 't') that has been
  * evaluated and stored in \p net.
@@ -897,55 +897,6 @@ tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
  * 	If allocating memory failed.
  */
 tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
-
-/**
- * Creates a deep copy of \p spline (only if \p spline != \p \_result\_) and
- * copies the first \p spline->n_ctrlp * \p spline->dim values from \p ctrlp
- * to \p \_result\_->ctrlp using memmove. The behaviour of this function is
- * undefined, if the length of \p ctrlp is less than \p spline->n_ctrlp *
- * \p spline->dim.
- *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
- * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose
- * 	control points are replaced with \p ctrlp.
- * @param ctrlp
- * 	The control points to copy to \p \_result\_->ctrlp.
- * @param \_result\_
- * 	The output parameter storing the result of this function.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
- */
-tsError ts_bspline_set_ctrlp(const tsBSpline *spline, const tsReal *ctrlp,
-	tsBSpline *_result_);
-
-/**
- * Creates a deep copy of \p spline (only if \p spline != \p \_result\_) and
- * copies the the first \p spline->n_knots from \p knots to \p \_result\_
- * using memmove. The behaviour of this function is undefined, if the length
- * of \p knots is less than \p spline->n_knots.
- *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
- * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose
- * 	knots are replaced with \p knots.
- * @param knots
- * 	The knots to copy to \p \_result\_->knots.
- * @param \_result\_
- * 	The output parameter storing the result of this function.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
- */
-tsError ts_bspline_set_knots(const tsBSpline *spline, const tsReal *knots,
-	tsBSpline *_result_);
 
 /**
  * Fills the knot vector of \p spline according to \p type with minimum knot

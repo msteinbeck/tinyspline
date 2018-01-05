@@ -11,7 +11,7 @@ extern "C" {
 
 /******************************************************************************
 *                                                                             *
-* System Dependent Configuration                                              *
+* :: System Dependent Configuration                                           *
 *                                                                             *
 * The following configuration values must be adjusted to your system. Some of *
 * them may be configured using preprocessor definitions. The default values   *
@@ -31,7 +31,7 @@ typedef float tsReal;
 
 /******************************************************************************
 *                                                                             *
-* Data Types                                                                  *
+* :: Data Types                                                               *
 *                                                                             *
 * The following section defines all data types available in TinySpline.       *
 *                                                                             *
@@ -274,7 +274,170 @@ typedef struct
 
 /******************************************************************************
 *                                                                             *
-* Constructors, Destructors, Copy, and Move Functions                         *
+* :: Field Access Functions                                                   *
+*                                                                             *
+* The following section contains getter and setter functions for the internal *
+* state of the structs listed above.                                          *
+*                                                                             *
+******************************************************************************/
+/**
+ * Returns the degree of \p spline.
+ *
+ * @param spline
+ * 	The spline whose degree is requested.
+ * @return
+ * 	The degree of \p spline.
+ */
+size_t ts_bspline_get_degree(tsBSpline spline);
+
+/**
+ * Sets the degree of \p spline.
+ *
+ * @param spline
+ * 	The spline whose degree should be set.
+ * @param degree
+ * 	The degree to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p degree >= ts_bspline_get_ctrlp(spline, [...]).
+ */
+tsError ts_bspline_set_degree(tsBSpline spline, size_t degree);
+
+/**
+ * Returns the order (degree + 1) of \p spline.
+ *
+ * @param spline
+ * 	The spline whose order is requested.
+ * @return
+ * 	The order of \p spline.
+ */
+size_t ts_bspline_get_order(tsBSpline spline);
+
+/**
+ * Sets the order (degree + 1) of \p spline.
+ *
+ * @param spline
+ * 	The spline whose order should be set.
+ * @param order
+ * 	The order to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p order > ts_bspline_get_ctrlp(spline, [...]) or \p order == 0 (due
+ * 	to the underflow resulting from order - 1).
+ */
+tsError ts_bspline_set_order(tsBSpline spline, size_t order);
+
+/**
+ * Returns the dimension of \p spline. That is, the number of components for
+ * each point in ts_bspline_get_ctrlp(spline, [...]).
+ *
+ * @param
+ * 	The spline whose dimension is requested.
+ * @return
+ * 	The dimension of \p spline.
+ */
+size_t ts_bspline_get_dimension(tsBSpline spline);
+
+/**
+ * Sets the dimension of \p spline. That is, the number of components for each
+ * point int ts_bspline_get_ctrlp(spline, [...]).
+ *
+ * @param spline
+ * 	The spline whose dimension should be set.
+ * @param dimension
+ * 	The dimension to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension == 0.
+ */
+tsError ts_bspline_set_dimension(tsBSpline spline, size_t dimension);
+
+/**
+ * Returns the length of the control point array of \p spline.
+ *
+ * @param spline
+ * 	The spline whose control point array length is requested.
+ * @return
+ * 	The length of the control point array of \p spline.
+ */
+size_t ts_bspline_len_ctrlp(tsBSpline spline);
+
+/**
+ * Returns the number of control points of \p spline.
+ *
+ * @param spline
+ * 	The spline whose number of control points is requested.
+ * @return
+ * 	The number of control points of \p spline.
+ */
+size_t ts_bspline_num_ctrlp(tsBSpline spline);
+
+/**
+ * Deep copies the control points of \p spline to \p ctrlp.
+ *
+ * @param spline
+ * 	The spline whose control points should be copied to \p ctrlp.
+ * @param ctrlp
+ * 	The output argument to copy the control points to.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p ctrlp failed.
+ */
+tsError ts_bspline_get_ctrlp(tsBSpline spline, tsReal **ctrlp);
+
+/**
+ * Deep copies \p ctrlp to the control points of \p spline.
+ *
+ * @param spline
+ * 	The spline to copy \p ctrlp to.
+ * @param ctrlp
+ * 	The values to deep copy.
+ */
+void ts_bspline_set_ctrlp(tsBSpline spline, tsReal *ctrlp);
+
+/**
+ * Returns the number of knots of \p spline.
+ *
+ * @param spline
+ * 	The spline whose number of knots is requested.
+ * @return
+ * 	The number of knots of \p spline.
+ */
+size_t ts_bspline_num_knots(tsBSpline spline);
+
+/**
+ * Deep copies the knots of \p spline to \p knots.
+ *
+ * @param spline
+ * 	The spline whose knots should be copied to \p knots.
+ * @param knots
+ * 	The output argument to copy the knots to.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p knots failed.
+ */
+tsError ts_bspline_get_knots(tsBSpline spline, tsReal **knots);
+
+/**
+ * Deep copies \p knots to the knots of \p spline.
+ *
+ * @param spline
+ * 	The spline to copy \p knots to.
+ * @param knots
+ * 	The values to deep copy.
+ */
+void ts_bspline_set_knots(tsBSpline spline, tsReal *knots);
+
+
+
+/******************************************************************************
+*                                                                             *
+* :: Constructors, Destructors, Copy, and Move Functions                      *
 *                                                                             *
 * The following section contains functions to create and delete instances of  *
 * the data types listed above. Additionally, each data type has a copy and    *
@@ -420,7 +583,7 @@ void ts_deboornet_free(tsDeBoorNet *_deBoorNet_);
 
 /******************************************************************************
 *                                                                             *
-* Interpolation and Approximation Functions                                   *
+* :: Interpolation and Approximation Functions                                *
 *                                                                             *
 * The following section contains functions to interpolate and approximate     *
 * arbitrary splines.                                                          *
@@ -470,7 +633,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 
 /******************************************************************************
 *                                                                             *
-* Query Functions                                                             *
+* :: Query Functions                                                          *
 *                                                                             *
 * The following section contains functions to query splines.                  *
 *                                                                             *
@@ -503,7 +666,7 @@ tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
 
 /******************************************************************************
 *                                                                             *
-* Transformation functions                                                    *
+* :: Transformation functions                                                 *
 *                                                                             *
 * TinySpline is a library focusing on transformations. That is, most          *
 * functions are used to transform splines by modifying their state, e.g.,     *
@@ -832,10 +995,10 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 
 /******************************************************************************
 *                                                                             *
-* Utility Functions                                                           *
+* :: Utility Functions                                                        *
 *                                                                             *
 * The following section contains utility functions used by TinySpline which   *
-* also may be helpful when working with this library.                         *
+* also may be helpful when using this library.                                *
 *                                                                             *
 ******************************************************************************/
 /**

@@ -376,7 +376,8 @@ size_t ts_bspline_len_ctrlp(tsBSpline spline);
 size_t ts_bspline_num_ctrlp(tsBSpline spline);
 
 /**
- * Deep copies the control points of \p spline to \p ctrlp.
+ * Deep copies the control points of \p spline to \p ctrlp. Allocates the
+ * necessary memory for \p ctrlp using malloc.
  *
  * @param spline
  * 	The spline whose control points should be copied to \p ctrlp.
@@ -410,7 +411,8 @@ void ts_bspline_set_ctrlp(tsBSpline spline, tsReal *ctrlp);
 size_t ts_bspline_num_knots(tsBSpline spline);
 
 /**
- * Deep copies the knots of \p spline to \p knots.
+ * Deep copies the knots of \p spline to \p knots. Allocates the necessary
+ * memory for \p knots using malloc.
  *
  * @param spline
  * 	The spline whose knots should be copied to \p knots.
@@ -432,6 +434,132 @@ tsError ts_bspline_get_knots(tsBSpline spline, tsReal **knots);
  * 	The values to deep copy.
  */
 void ts_bspline_set_knots(tsBSpline spline, tsReal *knots);
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ * Returns the knot value (sometimes also called 'u' or 't') that has been
+ * evaluated and stored in \p net.
+ *
+ * @param net
+ * 	The net whose knot value is requested.
+ * @return
+ * 	The knot value that has been evaluated.
+ */
+tsReal ts_deboornet_knot(tsDeBoorNet net);
+
+/**
+ * Returns the index [u_k, u_k+1) with u being knot of \p net.
+ *
+ * @param net
+ * 	The net whose index is requested.
+ * @return
+ * 	The index [u_k, u_k+1) with u being the knot of \p net.
+ */
+size_t ts_deboornet_index(tsDeBoorNet net);
+
+/**
+ * Returns the multiplicity of the knot of \p net.
+ *
+ * @param net
+ * 	The net whose multiplicity is requested.
+ * @return
+ * 	The multiplicity of the knot of \p net.
+ */
+size_t ts_deboornet_multiplicity(tsDeBoorNet net);
+
+/**
+ * Returns the number of insertion that were necessary to evaluate the knot of
+ * \p net.
+ *
+ * @param net
+ * 	The net whose number of insertions is requested.
+ * @return
+ * 	The number of insertions that were necessary to evaluate the knot of \p
+ * 	net.
+ */
+size_t ts_deboornet_num_insertions(tsDeBoorNet net);
+
+/**
+ * Returns the dimension of \p net. That is, the number of components for each
+ * point in ts_deboornet_points(net, [...]).
+ *
+ * @param net
+ * 	The net whose dimension is requested.
+ * @return
+ * 	The dimension of \p net.
+ */
+size_t ts_deboornet_dimension(tsDeBoorNet net);
+
+/**
+ * Returns the length of the point array of \p net.
+ *
+ * @param net
+ * 	The net whose point array length is requested.
+ * @return
+ * 	The length of the point array of \p net.
+ */
+size_t ts_deboornet_len_points(tsDeBoorNet net);
+
+/**
+ * Returns the number of points of \p net.
+ *
+ * @param net
+ * 	The net whose number of points is requested.
+ * @return
+ * 	The number of points of \p net.
+ */
+size_t ts_deboornet_num_points(tsDeBoorNet net);
+
+/**
+ * Deep copies the points of \p net to \p points. Allocates the necessary
+ * memory for \p points using malloc.
+ *
+ * @param net
+ * 	The net whose points should be copied to \p points.
+ * @param points
+ * 	The output argument to copy the points to.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p points failed.
+ */
+tsError ts_deboornet_points(tsDeBoorNet net, tsReal **points);
+
+/**
+ * Returns the length of the result array of \p net.
+ *
+ * @param net
+ * 	The net whose result array length is requested.
+ * @return
+ * 	The length of the result array of \p net.
+ */
+size_t ts_deboornet_len_result(tsDeBoorNet net);
+
+/**
+ * Returns the number of points in the result array of \p net
+ * (1 <= num_result <= 2).
+ *
+ * @param net
+ * 	The net whose number of points in the result array is requested.
+ * @return
+ * 	The number of points in the result array of \p net.
+ */
+size_t ts_deboornet_num_result(tsDeBoorNet net);
+
+/**
+ * Deep copies the result of \p net to \p result. Allocates the necessary
+ * memory for \p result using malloc.
+ *
+ * @param net
+ * 	The net whose result should be copied to \p result.
+ * @param result
+ * 	The output argument to copy the result to.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p result failed.
+ */
+tsError ts_deboornet_result(tsDeBoorNet net, tsReal **result);
 
 
 

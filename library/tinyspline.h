@@ -398,7 +398,7 @@ tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
  * \_len\_ is NULL.
  *
  * @param spline
- * 	The spline with its control points whose length will be read.
+ * 	The spline with its control point array whose length will be read.
  * @param \_len\_
  * 	Stores the length of the control point array of \p spline. May be NULL.
  * @return TS_SUCCESS
@@ -507,129 +507,177 @@ tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
 
 /* ------------------------------------------------------------------------- */
 /**
- * Returns the knot value (sometimes also called 'u' or 't') that has been
- * evaluated and stored in \p net.
+ * Reads the knot (sometimes also called 'u' or 't') of \p net. Does nothing if
+ * \p \_knot\_ is NULL.
  *
  * @param net
- * 	The net whose knot value is requested.
- * @return
- * 	The knot value that has been evaluated.
- */
-tsReal ts_deboornet_knot(tsDeBoorNet net);
-
-/**
- * Returns the index [u_k, u_k+1) with u being knot of \p net.
- *
- * @param net
- * 	The net whose index is requested.
- * @return
- * 	The index [u_k, u_k+1) with u being the knot of \p net.
- */
-size_t ts_deboornet_index(tsDeBoorNet net);
-
-/**
- * Returns the multiplicity of the knot of \p net.
- *
- * @param net
- * 	The net whose multiplicity is requested.
- * @return
- * 	The multiplicity of the knot of \p net.
- */
-size_t ts_deboornet_multiplicity(tsDeBoorNet net);
-
-/**
- * Returns the number of insertion that were necessary to evaluate the knot of
- * \p net.
- *
- * @param net
- * 	The net whose number of insertions is requested.
- * @return
- * 	The number of insertions that were necessary to evaluate the knot of \p
- * 	net.
- */
-size_t ts_deboornet_num_insertions(tsDeBoorNet net);
-
-/**
- * Returns the dimension of \p net. That is, the number of components for each
- * point in ts_deboornet_points(net, [...]).
- *
- * @param net
- * 	The net whose dimension is requested.
- * @return
- * 	The dimension of \p net.
- */
-size_t ts_deboornet_dimension(tsDeBoorNet net);
-
-/**
- * Returns the length of the point array of \p net.
- *
- * @param net
- * 	The net whose point array length is requested.
- * @return
- * 	The length of the point array of \p net.
- */
-size_t ts_deboornet_len_points(tsDeBoorNet net);
-
-/**
- * Returns the number of points of \p net.
- *
- * @param net
- * 	The net whose number of points is requested.
- * @return
- * 	The number of points of \p net.
- */
-size_t ts_deboornet_num_points(tsDeBoorNet net);
-
-/**
- * Deep copies the points of \p net to \p points. Allocates the necessary
- * memory for \p points using malloc.
- *
- * @param net
- * 	The net whose points should be copied to \p points.
- * @param points
- * 	The output argument to copy the points to.
+ * 	The net whose knot will be read.
+ * @param \_knot\_
+ * 	Stores the knot of \p net. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_MALLOC
- * 	If allocating memory for \p points failed.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
  */
-tsError ts_deboornet_points(tsDeBoorNet net, tsReal **points);
+tsError ts_deboornet_knot(tsDeBoorNet net, tsReal *_knot_);
 
 /**
- * Returns the length of the result array of \p net.
+ * Reads the index [u_k, u_k+1) with u being knot of \p net. Does nothing if
+ * \_idx\_ is NULL
  *
  * @param net
- * 	The net whose result array length is requested.
- * @return
- * 	The length of the result array of \p net.
- */
-size_t ts_deboornet_len_result(tsDeBoorNet net);
-
-/**
- * Returns the number of points in the result array of \p net
- * (1 <= num_result <= 2).
- *
- * @param net
- * 	The net whose number of points in the result array is requested.
- * @return
- * 	The number of points in the result array of \p net.
- */
-size_t ts_deboornet_num_result(tsDeBoorNet net);
-
-/**
- * Deep copies the result of \p net to \p result. Allocates the necessary
- * memory for \p result using malloc.
- *
- * @param net
- * 	The net whose result should be copied to \p result.
- * @param result
- * 	The output argument to copy the result to.
+ * 	The net whose index will be read.
+ * @param \_idx\_
+ * 	Stores the index [u_k, u_k+1) of \p net. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_MALLOC
- * 	If allocating memory for \p result failed.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
  */
-tsError ts_deboornet_result(tsDeBoorNet net, tsReal **result);
+tsError ts_deboornet_index(tsDeBoorNet net, size_t *_idx_);
+
+/**
+ * Reads the multiplicity of the knot of \p net. Does nothing if \p \_mult\_ is
+ * NULL.
+ *
+ * @param net
+ * 	The net whose multiplicity will be read.
+ * @param \_mult\_
+ * 	Stores the multiplicity of the knot of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_multiplicity(tsDeBoorNet net, size_t *_mult_);
+
+/**
+ * Reads the number of insertion that were necessary to evaluate the knot of
+ * \p net. Does nothing, if \p \_num\_ is NULL.
+ *
+ * @param net
+ * 	The net with its knot whose number of insertions will be read.
+ * @param \_num\_
+ * 	Stores the number of insertions that were necessary to evaluate the
+ * 	knot of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_num_insertions(tsDeBoorNet net, size_t *_num_);
+
+/**
+ * Reads the dimension of \p net. Does nothing if \p \_dim\_ is NULL. The
+ * dimension of a net describes the number of components for each point in
+ * ts_bspline_get_points(spline, [...]). One-dimensional net are possible,
+ * albeit their benefit might be questionable.
+ *
+ * @param net
+ * 	The net whose dimension will be read.
+ * @param \_dim\_
+ * 	Stores the dimension of \p spline. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_dimension(tsDeBoorNet net, size_t *_dim_);
+
+/**
+ * Reads the length of the point array of \p net. Does nothing if \p \_len\_ is
+ * NULL.
+ *
+ * @param net
+ * 	The net with its point array whose length will be read.
+ * @param \_len\_
+ * 	Stores the length of the point array of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_len_points(tsDeBoorNet net, size_t *_len_);
+
+/**
+ * Reads the number of points of \p net. Does nothing if \p \_num\_ is NULL.
+ *
+ * @param net
+ * 	The net whose number of points will be read.
+ * @param \_num\_
+ * 	Stores the number of points of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_num_points(tsDeBoorNet net, size_t *_num_);
+
+/**
+ * Reads the points of \p net and deep copies them to \_points\_. Does nothing
+ * if \_points\_ is NULL. Allocates the necessary memory for \p \_points\_
+ * using malloc.
+ *
+ * @param net
+ * 	The net whose points will be read.
+ * @param \_points\_
+ * 	Stores the points of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p \_points\_ failed.
+ */
+tsError ts_deboornet_points(tsDeBoorNet net, tsReal **_points_);
+
+/**
+ * Reads the length of the result array of \p net. Does nothing if \p \_len\_
+ * is NULL.
+ *
+ * @param net
+ * 	The net with its result array whose length will be read.
+ * @param \_len\_
+ * 	Stores the length of result array of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_len_result(tsDeBoorNet net, size_t *_len_);
+
+/**
+ * Reads the number of points in the result array of \p net
+ * (1 <= num_result <= 2). Does nothing if \_num\_ is NULL.
+ *
+ * @param net
+ * 	The net with its result array whose number of points will be read.
+ * @param \_num\_
+ * 	Stores the number of points in the result array of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_num_result(tsDeBoorNet net, size_t *_num_);
+
+/**
+ * Reads the result of \p net and deep copies it to \_result\_. Does nothing if
+ * \_result\_ is NULL. Allocates the necessary memory for \p \_result\_ using
+ * malloc.
+ *
+ * @param net
+ * 	The net whose result will be read.
+ * @param \_result\_
+ * 	Stores the result of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ * @return TS_MALLOC
+ * 	If allocating memory for \p \_result\_ failed.
+ */
+tsError ts_deboornet_result(tsDeBoorNet net, tsReal **_result_);
 
 
 

@@ -287,26 +287,26 @@ typedef struct
 *                                                                             *
 ******************************************************************************/
 /**
- * Reads the degree of \p spline. Does nothing if \p degree is NULL.
+ * Reads the degree of \p spline. Does nothing if \p \_deg\_ is NULL.
  *
  * @param spline
  * 	The spline whose degree will be read.
- * @param degree
- * 	The output parameter storing the degree of \p spline. May be NULL.
+ * @param \_deg\_
+ * 	Stores the degree of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  *
  */
-tsError ts_bspline_get_degree(tsBSpline spline, size_t *degree);
+tsError ts_bspline_get_degree(tsBSpline spline, size_t *_deg_);
 
 /**
  * Sets the degree of \p spline.
  *
  * @param spline
  * 	The spline whose degree will be set.
- * @param degree
+ * @param deg
  * 	The degree to be set.
  * @return TS_SUCCESS
  * 	On success.
@@ -315,21 +315,22 @@ tsError ts_bspline_get_degree(tsBSpline spline, size_t *degree);
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= ts_bspline_get_ctrlp(spline, [...]).
  */
-tsError ts_bspline_set_degree(tsBSpline spline, size_t degree);
+tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
 
 /**
- * Reads the order (degree + 1) of \p spline. Does nothing if \p order is NULL.
+ * Reads the order (degree + 1) of \p spline. Does nothing if \p \_order\_ is
+ * NULL.
  *
  * @param spline
  * 	The spline whose order will be read.
- * @param order
- * 	The output parameter storing the order of \p spline. May be NULL.
+ * @param \_order\_
+ * 	Stores the order of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_get_order(tsBSpline spline, size_t *order);
+tsError ts_bspline_get_order(tsBSpline spline, size_t *_order_);
 
 /**
  * Sets the order (degree + 1) of \p spline.
@@ -350,27 +351,27 @@ tsError ts_bspline_get_order(tsBSpline spline, size_t *order);
 tsError ts_bspline_set_order(tsBSpline spline, size_t order);
 
 /**
- * Reads the dimension of \p spline. Does nothing if \p dimension is NULL. The
+ * Reads the dimension of \p spline. Does nothing if \p \_dim\_ is NULL. The
  * dimension of a spline describes the number of components for each point in
  * ts_bspline_get_ctrlp(spline, [...]). One-dimensional splines are possible,
  * albeit their benefit might be questionable.
  *
  * @param spline
  * 	The spline whose dimension will be read.
- * @param dimension
- * 	The output parameter storing the dimension of \p spline. May be NULL.
+ * @param \_dim\_
+ * 	Stores the dimension of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_get_dimension(tsBSpline spline, size_t *dimension);
+tsError ts_bspline_get_dimension(tsBSpline spline, size_t *_dim_);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
  *
- * 	(1) dimension >= 1
- * 	(2) len_ctrlp % dimension == 0
+ * 	(1) dim >= 1
+ * 	(2) len_ctrlp % dim == 0
  *
  * with _len_ctrlp_ being the length of the control point array of \p spline.
  * The dimension of a spline describes the number of components for each point
@@ -379,7 +380,7 @@ tsError ts_bspline_get_dimension(tsBSpline spline, size_t *dimension);
  *
  * @param spline
  * 	The spline whose dimension will be set.
- * @param dimension
+ * @param dim
  * 	The dimension to be set.
  * @return TS_SUCCESS
  * 	On success.
@@ -390,116 +391,113 @@ tsError ts_bspline_get_dimension(tsBSpline spline, size_t *dimension);
  * @return TS_LCTRLP_DIM_MISMATCH
  * 	If len_ctrlp % \p dimension != 0
  */
-tsError ts_bspline_set_dimension(tsBSpline spline, size_t dimension);
+tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
 
 /**
  * Reads the length of the control point array of \p spline. Does nothing if \p
- * len is NULL.
+ * \_len\_ is NULL.
  *
  * @param spline
- * 	The spline whose length of its control points will be read.
- * @param len
- * 	The output parameter storing the length of the control point array of
- * 	\p spline. May be NULL.
+ * 	The spline with its control points whose length will be read.
+ * @param \_len\_
+ * 	Stores the length of the control point array of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_len_ctrlp(tsBSpline spline, size_t *len);
+tsError ts_bspline_len_ctrlp(tsBSpline spline, size_t *_len_);
 
 /**
- * Reads the number of control points of \p spline. Does nothing if \p num is
- * NULL.
+ * Reads the number of control points of \p spline. Does nothing if \p \_num\_
+ * is NULL.
  *
  * @param spline
  * 	The spline whose number of control points will be read.
- * @param num
- * 	The output parameter storing the number of control points of \p spline.
- * 	May be NULL.
+ * @param \_num\_
+ * 	Stores the number of control points of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *num);
+tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *_num_);
 
 /**
- * Deep copies the control points of \p spline to \p ctrlp. Does nothing if \p
- * ctrlp is NULL. Allocates the necessary memory for \p ctrlp using malloc.
+ * Reads the control points of \p spline and deep copies them to \p \_ctrlp\_.
+ * Does nothing if \p \_ctrlp\_ is NULL. Allocates the necessary memory for \p
+ * \_ctrlp\_ using malloc.
  *
  * @param spline
- * 	The spline whose control points will be copied to \p ctrlp.
- * @param ctrlp
- * 	The output parameter storing the copied control points. May be NULL.
+ * 	The spline whose control points will be read.
+ * @param \_ctrlp\_
+ * 	Stores the control points of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  * @return TS_MALLOC
- * 	If allocating memory for \p ctrlp failed.
+ * 	If allocating memory for \p \_ctrlp\_ failed.
  */
-tsError ts_bspline_get_ctrlp(tsBSpline spline, tsReal **ctrlp);
+tsError ts_bspline_get_ctrlp(tsBSpline spline, tsReal **_ctrlp_);
 
 /**
- * Deep copies \p ctrlp to the control points of \p spline. Does nothing if \p
- * ctrlp is NULL.
+ * Deep copies \p ctrlp to the control points of \p spline.
  *
  * @param spline
  * 	The spline whose control points will be set by deep copying \p ctrlp.
  * @param ctrlp
- * 	The values to deep copy. May be NULL.
+ * 	The values to deep copy.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * 	If \p spline points to NULL or if \p ctrlp is NULL.
  */
 tsError ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp);
 
 /**
- * Reads the number of knots of \p spline. Does nothing if \p num is NULL.
+ * Reads the number of knots of \p spline. Does nothing if \p \_num\_ is NULL.
  *
  * @param spline
  * 	The spline whose number of knots will be read.
- * @param num
- * 	The output parameter storing the number of knots of \p spline. May be
- * 	NULL.
+ * @param \_num\_
+ * 	Stores the number of knots of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_num_knots(tsBSpline spline, size_t *num);
+tsError ts_bspline_num_knots(tsBSpline spline, size_t *_num_);
 
 /**
- * Deep copies the knots of \p spline to \p knots. Does nothing if \p knots is
- * NULL. Allocates the necessary memory for \p knots using malloc.
+ * Reads the knots of \p spline and deep copies them to \p \_knots\_. Does
+ * nothing if \p \_knots\_ is NULL. Allocates the necessary memory for \p
+ * \_knots\_ using malloc.
  *
  * @param spline
- * 	The spline whose knots will be copied to \p knots.
- * @param knots
- * 	The output parameter storing the copied knots. May be NULL.
+ * 	The spline whose knots will be read.
+ * @param \_knots\_
+ * 	Stores the knots of \p spline. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  * @return TS_MALLOC
- * 	If allocating memory for \p ctrlp failed.
+ * 	If allocating memory for \p \_knots\_ failed.
  */
-tsError ts_bspline_get_knots(tsBSpline spline, tsReal **knots);
+tsError ts_bspline_get_knots(tsBSpline spline, tsReal **_knots_);
 
 /**
- * Deep copies \p knots to the knots of \p spline. Does nothing if \p knots is
- * NULL.
+ * Deep copies \p knots to the knots of \p spline.
  *
  * @param spline
  * 	The spline whose knots will be set by deep copying \p knots.
  * @param knots
- * 	The values to deep copy. May be NULL.
+ * 	The values to deep copy.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * 	If \p spline points to NULL or if \p knots is NULL.
  * @return TS_KNOTS_DECR
  * 	If the knot vector is decreasing.
  * @return TS_MULTIPLICITY

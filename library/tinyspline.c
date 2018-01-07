@@ -48,6 +48,181 @@ struct tsDeBoorNetImpl
 	tsReal *result; /**< Points to the result in 'points'. */
 };
 
+/******************************************************************************
+*                                                                             *
+* :: Field Access Functions                                                   *
+*                                                                             *
+******************************************************************************/
+tsError ts_bspline_degree(tsBSpline spline, size_t *_deg_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_deg_)
+		*_deg_ = spline.pImpl->deg;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_set_degree(tsBSpline spline, size_t deg)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (deg >= spline.pImpl->n_ctrlp)
+		return TS_DEG_GE_NCTRLP;
+	spline.pImpl->deg = deg;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_order(tsBSpline spline, size_t *_order_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_order_)
+		*_order_ = spline.pImpl->deg + 1;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_set_order(tsBSpline spline, size_t order)
+{
+	return ts_bspline_set_degree(spline, order - 1);
+}
+
+tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_dim_)
+		*_dim_ = spline.pImpl->dim;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (dim == 0)
+		return TS_DIM_ZERO;
+	spline.pImpl->dim = dim;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_len_ctrlp(tsBSpline spline, size_t *_len_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_len_)
+		*_len_ = spline.pImpl->n_ctrlp *
+			spline.pImpl->dim;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *_num_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_num_)
+		*_num_ = spline.pImpl->n_ctrlp;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_sof_ctrlp(tsBSpline spline, size_t *_sof_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_sof_)
+		*_sof_ = spline.pImpl->n_ctrlp *
+			spline.pImpl->dim *
+			sizeof(tsReal);
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_ctrlp(tsBSpline spline, tsReal **_ctrlp_)
+{
+	size_t size;
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_ctrlp_)
+	{
+		ts_bspline_sof_ctrlp(spline, &size);
+		*_ctrlp_ = malloc(size);
+		if (!*_ctrlp_)
+			return TS_MALLOC;
+		memcpy(*_ctrlp_, spline.pImpl->ctrlp, size);
+	}
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp)
+{
+	size_t size;
+	if (spline.pImpl == NULL || ctrlp == NULL)
+		return TS_NULL_PTR;
+	ts_bspline_sof_ctrlp(spline, &size);
+	memcpy(spline.pImpl->ctrlp, ctrlp, size);
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_num_knots(tsBSpline spline, size_t *_num_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_num_)
+		*_num_ = spline.pImpl->n_knots;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_sof_knots(tsBSpline spline, size_t *_sof_)
+{
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_sof_)
+		*_sof_ = spline.pImpl->n_knots *
+			sizeof(tsReal);
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_knots(tsBSpline spline, tsReal **_knots_)
+{
+	size_t size;
+	if (spline.pImpl == NULL)
+		return TS_NULL_PTR;
+	if (_knots_)
+	{
+		ts_bspline_sof_knots(spline, &size);
+		*_knots_ = malloc(size);
+		if (!*_knots_)
+			return TS_MALLOC;
+		memcpy(*_knots_, spline.pImpl->ctrlp, size);
+	}
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots)
+{
+	size_t order, size, idx, mult;
+	tsReal lst_knot, knot;
+	if (spline.pImpl == NULL || knots == NULL)
+		return TS_NULL_PTR;
+	ts_bspline_order(spline, &order);
+	lst_knot = spline.pImpl->knots[0];
+	mult = 1;
+	for (idx = 1; idx < spline.pImpl->n_knots; idx++)
+	{
+		knot = knots[idx];
+		if (ts_fequals(lst_knot, knot))
+			mult++;
+		else if (lst_knot > knot)
+			return TS_KNOTS_DECR;
+		else
+			mult = 0;
+		if (mult > order)
+			return TS_MULTIPLICITY;
+		lst_knot = knot;
+	}
+	ts_bspline_sof_knots(spline, &size);
+	memcpy(spline.pImpl->knots, knots, size);
+	return TS_SUCCESS;
+}
+
 /********************************************************
 *                                                       *
 * Internal functions                                    *

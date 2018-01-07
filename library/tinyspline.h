@@ -141,26 +141,7 @@ typedef enum
  */
 typedef struct
 {
-	/* Degree of B-Spline basis function. */
-	size_t deg;
-
-	/* A convenience field for deg+1. */
-	size_t order;
-
-	/* Dimension of a control points. */
-	size_t dim;
-
-	/* Number of control points. */
-	size_t n_ctrlp;
-
-	/* Number of knots (n_ctrlp + deg + 1). */
-	size_t n_knots;
-
-	/* Control points of a spline. */
-	tsReal *ctrlp;
-
-	/* Knot vector of a spline (ascending order). */
-	tsReal *knots;
+	struct tsBSplineImpl *pImpl; /**< The actual implementation. */
 } tsBSpline;
 
 /**
@@ -251,29 +232,7 @@ typedef struct
  */
 typedef struct
 {
-	/* The evaluated knot value. */
-	tsReal u;
-
-	/* The index [u_k, u_k+1) */
-	size_t k;
-
-	/* Multiplicity of u_k. */
-	size_t s;
-
-	/* How many times u must be inserted to get the resulting point. */
-	size_t h;
-
-	/* Dimension of a control point. */
-	size_t dim;
-
-	/* Number of points in 'points'. */
-	size_t n_points;
-
-	/* Points of the net used to evaluate u_k. */
-	tsReal *points;
-
-	/* A convenient pointer to the result in 'points'. */
-	tsReal *result;
+	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
 } tsDeBoorNet;
 
 

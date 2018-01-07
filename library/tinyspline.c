@@ -15,6 +15,38 @@
 #define CATCH } else {
 #define ETRY }
 
+/******************************************************************************
+*                                                                             *
+* :: Data Types                                                               *
+*                                                                             *
+******************************************************************************/
+/**
+ * Stores the private data of a ::tsBSpline.
+ */
+struct tsBSplineImpl
+{
+	size_t deg; /**< Degree of B-Spline basis function. */
+	size_t dim; /**< Dimension of control points (2D => x, y) */
+	size_t n_ctrlp; /**< Number of control points. */
+	size_t n_knots; /**< Number of knots (n_ctrlp + deg + 1). */
+	tsReal *ctrlp; /**< The control points of a spline. */
+	tsReal *knots; /**< The Knot vector of a spline. */
+};
+
+/**
+ * Stores the private data of a ::tsDeBoorNet.
+ */
+struct tsDeBoorNetImpl
+{
+	tsReal u; /**< The evaluated knot value. */
+	size_t k; /**< The index [u_k, u_k+1) */
+	size_t s; /**< Multiplicity of u_k. */
+	size_t h; /**< Number of insertions required to obtain result. */
+	size_t dim; /**< Dimension of points. (2D => x, y) */
+	size_t n_points; /** Number of points in 'points'. */
+	tsReal *points; /**< The calculated points of a net. */
+	tsReal *result; /**< Points to the result in 'points'. */
+};
 
 /********************************************************
 *                                                       *

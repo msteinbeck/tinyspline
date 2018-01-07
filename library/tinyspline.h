@@ -258,7 +258,7 @@ typedef struct
  * 	If \p spline points to NULL.
  *
  */
-tsError ts_bspline_get_degree(tsBSpline spline, size_t *_deg_);
+tsError ts_bspline_degree(tsBSpline spline, size_t *_deg_);
 
 /**
  * Sets the degree of \p spline.
@@ -289,7 +289,7 @@ tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_get_order(tsBSpline spline, size_t *_order_);
+tsError ts_bspline_order(tsBSpline spline, size_t *_order_);
 
 /**
  * Sets the order (degree + 1) of \p spline.
@@ -324,7 +324,7 @@ tsError ts_bspline_set_order(tsBSpline spline, size_t order);
  * @return TS_NULL_PTR
  * 	If \p spline points to NULL.
  */
-tsError ts_bspline_get_dimension(tsBSpline spline, size_t *_dim_);
+tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
@@ -398,7 +398,7 @@ tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *_num_);
  * @return TS_MALLOC
  * 	If allocating memory for \p \_ctrlp\_ failed.
  */
-tsError ts_bspline_get_ctrlp(tsBSpline spline, tsReal **_ctrlp_);
+tsError ts_bspline_ctrlp(tsBSpline spline, tsReal **_ctrlp_);
 
 /**
  * Deep copies \p ctrlp to the control points of \p spline.
@@ -444,7 +444,7 @@ tsError ts_bspline_num_knots(tsBSpline spline, size_t *_num_);
  * @return TS_MALLOC
  * 	If allocating memory for \p \_knots\_ failed.
  */
-tsError ts_bspline_get_knots(tsBSpline spline, tsReal **_knots_);
+tsError ts_bspline_knots(tsBSpline spline, tsReal **_knots_);
 
 /**
  * Deep copies \p knots to the knots of \p spline.
@@ -465,6 +465,7 @@ tsError ts_bspline_get_knots(tsBSpline spline, tsReal **_knots_);
 tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
 
 /* ------------------------------------------------------------------------- */
+
 /**
  * Reads the knot (sometimes also called 'u' or 't') of \p net. Does nothing if
  * \p \_knot\_ is NULL.
@@ -730,6 +731,8 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
  * 	The spline to free.
  */
 void ts_bspline_free(tsBSpline *_spline_);
+
+/* ------------------------------------------------------------------------- */
 
 /**
  * The default constructor of tsDeBoorNet.

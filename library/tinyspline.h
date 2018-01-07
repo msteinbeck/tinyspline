@@ -383,6 +383,22 @@ tsError ts_bspline_len_ctrlp(tsBSpline spline, size_t *_len_);
 tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *_num_);
 
 /**
+ * Reads the size of the control point array of \p spline. Does nothing if \p
+ * \_sof\_ is NULL. This function may be useful when copying control points
+ * using memcpy or memmove.
+ *
+ * @param spline
+ * 	The spline with its control point array whose size will be read.
+ * @param _sof_
+ * 	Stores the size of the control point array of \p spline. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p spline points to NULL.
+ */
+tsError ts_bspline_sof_ctrlp(tsBSpline spline, size_t *_sof_);
+
+/**
  * Reads the control points of \p spline and deep copies them to \p \_ctrlp\_.
  * Does nothing if \p \_ctrlp\_ is NULL. Allocates the necessary memory for \p
  * \_ctrlp\_ using malloc.
@@ -427,6 +443,22 @@ tsError ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp);
  * 	If \p spline points to NULL.
  */
 tsError ts_bspline_num_knots(tsBSpline spline, size_t *_num_);
+
+/**
+ * Reads the size of the knot array of \p spline. Does nothing if \p \_sof\_ is
+ * NULL. This function may be useful when copying knots using memcpy or
+ * memmove.
+ *
+ * @param spline
+ * 	The spline with its knot array whose size will be read.
+ * @param _sof_
+ * 	Stores the size of the knot array of \p spline. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p spline points to NULL.
+ */
+tsError ts_bspline_sof_knots(tsBSpline spline, size_t *_sof_);
 
 /**
  * Reads the knots of \p spline and deep copies them to \p \_knots\_. Does
@@ -574,6 +606,22 @@ tsError ts_deboornet_len_points(tsDeBoorNet net, size_t *_len_);
 tsError ts_deboornet_num_points(tsDeBoorNet net, size_t *_num_);
 
 /**
+ * Reads the size of the point array of \p net. Does nothing if \p \_sof\_ is
+ * NULL. This function may be useful when copying points using memcpy or
+ * memmove.
+ *
+ * @param net
+ * 	The net with its point array whose size will be read.
+ * @param _sof_
+ * 	Stores the size of the point array of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_sof_points(tsDeBoorNet net, size_t *_sof_);
+
+/**
  * Reads the points of \p net and deep copies them to \_points\_. Does nothing
  * if \_points\_ is NULL. Allocates the necessary memory for \p \_points\_
  * using malloc.
@@ -620,6 +668,22 @@ tsError ts_deboornet_len_result(tsDeBoorNet net, size_t *_len_);
  * 	If \p net points to NULL.
  */
 tsError ts_deboornet_num_result(tsDeBoorNet net, size_t *_num_);
+
+/**
+ * Reads the size of the result array of \p net. Does nothing if \p \_sof\_ is
+ * NULL. This function may be useful when copying results using memcpy or
+ * memmove.
+ *
+ * @param net
+ * 	The net with its result array whose size will be read.
+ * @param _sof_
+ * 	Stores the size of the result array of \p net. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NULL_PTR
+ * 	If \p net points to NULL.
+ */
+tsError ts_deboornet_sof_result(tsDeBoorNet net, size_t *_sof_);
 
 /**
  * Reads the result of \p net and deep copies it to \_result\_. Does nothing if

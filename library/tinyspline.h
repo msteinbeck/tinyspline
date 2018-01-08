@@ -246,19 +246,14 @@ typedef struct
 *                                                                             *
 ******************************************************************************/
 /**
- * Reads the degree of \p spline. Does nothing if \p \_deg\_ is NULL.
+ * Returns the degree of \p spline.
  *
  * @param spline
  * 	The spline whose degree will be read.
- * @param \_deg\_
- * 	Stores the degree of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
- *
+ * @return
+ * 	The degree of \p spline.
  */
-tsError ts_bspline_degree(tsBSpline spline, size_t *_deg_);
+size_t ts_bspline_degree(tsBSpline spline);
 
 /**
  * Sets the degree of \p spline.
@@ -269,27 +264,20 @@ tsError ts_bspline_degree(tsBSpline spline, size_t *_deg_);
  * 	The degree to be set.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p degree >= ts_bspline_get_ctrlp(spline, [...]).
+ * 	If \p degree >= ts_bspline_get_ctrlp(spline).
  */
 tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
 
 /**
- * Reads the order (degree + 1) of \p spline. Does nothing if \p \_order\_ is
- * NULL.
+ * Returns the order (degree + 1) of \p spline.
  *
  * @param spline
  * 	The spline whose order will be read.
- * @param \_order\_
- * 	Stores the order of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The order of \p spline.
  */
-tsError ts_bspline_order(tsBSpline spline, size_t *_order_);
+size_t ts_bspline_order(tsBSpline spline);
 
 /**
  * Sets the order (degree + 1) of \p spline.
@@ -300,31 +288,25 @@ tsError ts_bspline_order(tsBSpline spline, size_t *_order_);
  * 	The order to be set.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p order > ts_bspline_get_ctrlp(spline, [...]) or if \p order == 0
+ * 	If \p order > ts_bspline_get_ctrlp(spline) or if \p order == 0
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
- * 	which will always be >= ts_bspline_get_ctrlp(spline, [...]) ).
+ * 	which will always be >= ts_bspline_get_ctrlp(spline) ).
  */
 tsError ts_bspline_set_order(tsBSpline spline, size_t order);
 
 /**
- * Reads the dimension of \p spline. Does nothing if \p \_dim\_ is NULL. The
- * dimension of a spline describes the number of components for each point in
- * ts_bspline_get_ctrlp(spline, [...]). One-dimensional splines are possible,
- * albeit their benefit might be questionable.
+ * Returns the dimension of \p spline. The dimension of a spline describes the
+ * number of components for each point in ts_bspline_get_ctrlp(spline).
+ * One-dimensional splines are possible, albeit their benefit might be
+ * questionable.
  *
  * @param spline
  * 	The spline whose dimension will be read.
- * @param \_dim\_
- * 	Stores the dimension of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The dimension of \p spline.
  */
-tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_);
+size_t ts_bspline_dimension(tsBSpline spline);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
@@ -334,8 +316,8 @@ tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_);
  *
  * with _len_ctrlp_ being the length of the control point array of \p spline.
  * The dimension of a spline describes the number of components for each point
- * in ts_bspline_get_ctrlp(spline, [...]). One-dimensional splines are
- * possible, albeit their benefit might be questionable.
+ * in ts_bspline_get_ctrlp(spline). One-dimensional splines are possible,
+ * albeit their benefit might be questionable.
  *
  * @param spline
  * 	The spline whose dimension will be set.
@@ -343,8 +325,6 @@ tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_);
  * 	The dimension to be set.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
  * @return TS_DIM_ZERO
  * 	If \p dimension == 0.
  * @return TS_LCTRLP_DIM_MISMATCH
@@ -353,142 +333,148 @@ tsError ts_bspline_dimension(tsBSpline spline, size_t *_dim_);
 tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
 
 /**
- * Reads the length of the control point array of \p spline. Does nothing if \p
- * \_len\_ is NULL.
+ * Returns the length of the control point array of \p spline.
  *
  * @param spline
  * 	The spline with its control point array whose length will be read.
- * @param \_len\_
- * 	Stores the length of the control point array of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The length of the control point array of \p spline.
  */
-tsError ts_bspline_len_ctrlp(tsBSpline spline, size_t *_len_);
+size_t ts_bspline_len_ctrlp(tsBSpline spline);
 
 /**
- * Reads the number of control points of \p spline. Does nothing if \p \_num\_
- * is NULL.
+ * Returns the number of control points of \p spline.
  *
  * @param spline
  * 	The spline whose number of control points will be read.
- * @param \_num\_
- * 	Stores the number of control points of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The number of control points of \p spline.
  */
-tsError ts_bspline_num_ctrlp(tsBSpline spline, size_t *_num_);
+size_t ts_bspline_num_ctrlp(tsBSpline spline);
 
 /**
- * Reads the size of the control point array of \p spline. Does nothing if \p
- * \_sof\_ is NULL. This function may be useful when copying control points
- * using memcpy or memmove.
+ * Returns the size of the control point array of \p spline. This function may
+ * be useful when copying control points using memcpy or memmove.
  *
  * @param spline
  * 	The spline with its control point array whose size will be read.
- * @param _sof_
- * 	Stores the size of the control point array of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The size of the control point array of \p spline.
  */
-tsError ts_bspline_sof_ctrlp(tsBSpline spline, size_t *_sof_);
+size_t ts_bspline_sof_ctrlp(tsBSpline spline);
 
 /**
- * Reads the control points of \p spline and deep copies them to \p \_ctrlp\_.
- * Does nothing if \p \_ctrlp\_ is NULL. Allocates the necessary memory for \p
- * \_ctrlp\_ using malloc.
+ * Returns a deep copy of the control points of \p spline.
+ *
+ * 	Why does this function return NULL instead of TS_MALLOC in case of
+ * 	allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter which, for
+ * 	instance, allows one to directly assign the returned value to a const
+ * 	variable---simplifying the usage of this interface. Secondly, getter
+ * 	functions should return a deep copy of a value to make this library
+ * 	robust against inadvertent changes which may break the internal state a
+ * 	particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	return NULL instead of TS_MALLOC.
  *
  * @param spline
  * 	The spline whose control points will be read.
- * @param \_ctrlp\_
- * 	Stores the control points of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
- * @return TS_MALLOC
- * 	If allocating memory for \p \_ctrlp\_ failed.
+ * @return
+ * 	A deep copy of the control points of \p spline or NULL.
  */
-tsError ts_bspline_ctrlp(tsBSpline spline, tsReal **_ctrlp_);
+tsReal * ts_bspline_ctrlp(tsBSpline spline);
 
 /**
- * Deep copies \p ctrlp to the control points of \p spline.
+ * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
  *
  * @param spline
- * 	The spline whose control points will be set by deep copying \p ctrlp.
+ * 	The spline whose control points will be set.
  * @param ctrlp
  * 	The values to deep copy.
  * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL or if \p ctrlp is NULL.
+ * 	This function never fails.
  */
 tsError ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp);
 
 /**
- * Reads the number of knots of \p spline. Does nothing if \p \_num\_ is NULL.
+ * Returns the number of knots of \p spline.
  *
  * @param spline
  * 	The spline whose number of knots will be read.
- * @param \_num\_
- * 	Stores the number of knots of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * @return
+ * 	The number of knots of \p spline.
  */
-tsError ts_bspline_num_knots(tsBSpline spline, size_t *_num_);
+size_t ts_bspline_num_knots(tsBSpline spline);
 
 /**
- * Reads the size of the knot array of \p spline. Does nothing if \p \_sof\_ is
- * NULL. This function may be useful when copying knots using memcpy or
- * memmove.
+ * Returns the size of the knot array of \p spline. This function may be useful
+ * when copying knots using memcpy or memmove.
  *
  * @param spline
  * 	The spline with its knot array whose size will be read.
- * @param _sof_
- * 	Stores the size of the knot array of \p spline. May be NULL.
  * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
+ * 	The size of the knot array of \p spline.
  */
-tsError ts_bspline_sof_knots(tsBSpline spline, size_t *_sof_);
+size_t ts_bspline_sof_knots(tsBSpline spline);
 
 /**
- * Reads the knots of \p spline and deep copies them to \p \_knots\_. Does
- * nothing if \p \_knots\_ is NULL. Allocates the necessary memory for \p
- * \_knots\_ using malloc.
+ * Returns a deep copy of the knots of \p spline.
+ *
+ * 	Why does this function return NULL instead of TS_MALLOC in case of
+ * 	allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter which, for
+ * 	instance, allows one to directly assign the returned value to a const
+ * 	variable---simplifying the usage of this interface. Secondly, getter
+ * 	functions should return a deep copy of a value to make this library
+ * 	robust against inadvertent changes which may break the internal state a
+ * 	particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	return NULL instead of TS_MALLOC.
  *
  * @param spline
  * 	The spline whose knots will be read.
- * @param \_knots\_
- * 	Stores the knots of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL.
- * @return TS_MALLOC
- * 	If allocating memory for \p \_knots\_ failed.
+ * @return
+ * 	A deep copy of the knots of \p spline or NULL.
  */
-tsError ts_bspline_knots(tsBSpline spline, tsReal **_knots_);
+tsReal * ts_bspline_knots(tsBSpline spline);
 
 /**
- * Deep copies \p knots to the knots of \p spline.
+ * Sets the knot of \p spline. Creates a deep copy of \p knots.
  *
  * @param spline
- * 	The spline whose knots will be set by deep copying \p knots.
+ * 	The spline whose knots will be set.
  * @param knots
  * 	The values to deep copy.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_NULL_PTR
- * 	If \p spline points to NULL or if \p knots is NULL.
  * @return TS_KNOTS_DECR
  * 	If the knot vector is decreasing.
  * @return TS_MULTIPLICITY
@@ -499,209 +485,192 @@ tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
 /* ------------------------------------------------------------------------- */
 
 /**
- * Reads the knot (sometimes also called 'u' or 't') of \p net. Does nothing if
- * \p \_knot\_ is NULL.
+ * Returns the knot (sometimes also called 'u' or 't') of \p net.
  *
  * @param net
  * 	The net whose knot will be read.
- * @param \_knot\_
- * 	Stores the knot of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The knot of \p net.
  */
-tsError ts_deboornet_knot(tsDeBoorNet net, tsReal *_knot_);
+tsReal ts_deboornet_knot(tsDeBoorNet net);
 
 /**
- * Reads the index [u_k, u_k+1) with u being knot of \p net. Does nothing if
- * \_idx\_ is NULL
+ * Returns the index [u_k, u_k+1) with u being the knot of \p net.
  *
  * @param net
  * 	The net whose index will be read.
- * @param \_idx\_
- * 	Stores the index [u_k, u_k+1) of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The index [u_k, u_k+1) with u being the knot of \p net.
  */
-tsError ts_deboornet_index(tsDeBoorNet net, size_t *_idx_);
+size_t ts_deboornet_index(tsDeBoorNet net);
 
 /**
- * Reads the multiplicity of the knot of \p net. Does nothing if \p \_mult\_ is
- * NULL.
+ * Returns the multiplicity of the knot of \p net.
  *
  * @param net
  * 	The net whose multiplicity will be read.
- * @param \_mult\_
- * 	Stores the multiplicity of the knot of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The multiplicity of the knot of \p net.
  */
-tsError ts_deboornet_multiplicity(tsDeBoorNet net, size_t *_mult_);
+size_t ts_deboornet_multiplicity(tsDeBoorNet net);
 
 /**
- * Reads the number of insertion that were necessary to evaluate the knot of
- * \p net. Does nothing, if \p \_num\_ is NULL.
+ * Returns the number of insertion that were necessary to evaluate the knot of
+ * \p net.
  *
  * @param net
  * 	The net with its knot whose number of insertions will be read.
- * @param \_num\_
- * 	Stores the number of insertions that were necessary to evaluate the
- * 	knot of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The number of insertions that were necessary to evaluate the knot of \p
+ * 	net.
  */
-tsError ts_deboornet_num_insertions(tsDeBoorNet net, size_t *_num_);
+size_t ts_deboornet_num_insertions(tsDeBoorNet net);
 
 /**
- * Reads the dimension of \p net. Does nothing if \p \_dim\_ is NULL. The
- * dimension of a net describes the number of components for each point in
- * ts_bspline_get_points(spline, [...]). One-dimensional net are possible,
- * albeit their benefit might be questionable.
+ * Returns the dimension of \p net. The dimension of a net describes the number
+ * of components for each point in ts_bspline_get_points(spline).
+ * One-dimensional nets are possible, albeit their benefit might be
+ * questionable.
  *
  * @param net
  * 	The net whose dimension will be read.
- * @param \_dim\_
- * 	Stores the dimension of \p spline. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The dimension of \p net.
  */
-tsError ts_deboornet_dimension(tsDeBoorNet net, size_t *_dim_);
+size_t ts_deboornet_dimension(tsDeBoorNet net);
 
 /**
- * Reads the length of the point array of \p net. Does nothing if \p \_len\_ is
- * NULL.
+ * Returns the length of the point array of \p net.
  *
  * @param net
  * 	The net with its point array whose length will be read.
- * @param \_len\_
- * 	Stores the length of the point array of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The length of the point array of \p net.
  */
-tsError ts_deboornet_len_points(tsDeBoorNet net, size_t *_len_);
+size_t ts_deboornet_len_points(tsDeBoorNet net);
 
 /**
- * Reads the number of points of \p net. Does nothing if \p \_num\_ is NULL.
+ * Returns the number of points of \p net.
  *
  * @param net
  * 	The net whose number of points will be read.
- * @param \_num\_
- * 	Stores the number of points of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The number of points of \p net.
  */
-tsError ts_deboornet_num_points(tsDeBoorNet net, size_t *_num_);
+size_t ts_deboornet_num_points(tsDeBoorNet net);
 
 /**
- * Reads the size of the point array of \p net. Does nothing if \p \_sof\_ is
- * NULL. This function may be useful when copying points using memcpy or
- * memmove.
+ * Returns the size of the point array of \p net. This function may be useful
+ * when copying points using memcpy or memmove.
  *
  * @param net
  * 	The net with its point array whose size will be read.
- * @param _sof_
- * 	Stores the size of the point array of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The size of the point array of \p net.
  */
-tsError ts_deboornet_sof_points(tsDeBoorNet net, size_t *_sof_);
+size_t ts_deboornet_sof_points(tsDeBoorNet net);
 
 /**
- * Reads the points of \p net and deep copies them to \_points\_. Does nothing
- * if \_points\_ is NULL. Allocates the necessary memory for \p \_points\_
- * using malloc.
+ * Returns a deep copy of the points of \p net.
+ *
+ * 	Why does this function return NULL instead of TS_MALLOC in case of
+ * 	allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter which, for
+ * 	instance, allows one to directly assign the returned value to a const
+ * 	variable---simplifying the usage of this interface. Secondly, getter
+ * 	functions should return a deep copy of a value to make this library
+ * 	robust against inadvertent changes which may break the internal state a
+ * 	particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	return NULL instead of TS_MALLOC.
  *
  * @param net
  * 	The net whose points will be read.
- * @param \_points\_
- * 	Stores the points of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
- * @return TS_MALLOC
- * 	If allocating memory for \p \_points\_ failed.
+ * @return
+ * 	A deep copy of the points of \p net or NULL.
  */
-tsError ts_deboornet_points(tsDeBoorNet net, tsReal **_points_);
+tsReal * ts_deboornet_points(tsDeBoorNet net);
 
 /**
- * Reads the length of the result array of \p net. Does nothing if \p \_len\_
- * is NULL.
+ * Returns the length of the result array of \p net.
  *
  * @param net
  * 	The net with its result array whose length will be read.
- * @param \_len\_
- * 	Stores the length of result array of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The length of the result array of \p net.
  */
-tsError ts_deboornet_len_result(tsDeBoorNet net, size_t *_len_);
+size_t ts_deboornet_len_result(tsDeBoorNet net);
 
 /**
- * Reads the number of points in the result array of \p net
- * (1 <= num_result <= 2). Does nothing if \_num\_ is NULL.
+ * Returns the number of points in the result array of \p net
+ * (1 <= num_result <= 2).
  *
  * @param net
  * 	The net with its result array whose number of points will be read.
- * @param \_num\_
- * 	Stores the number of points in the result array of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * @return
+ * 	The number of points in the result array of \p net.
  */
-tsError ts_deboornet_num_result(tsDeBoorNet net, size_t *_num_);
+size_t ts_deboornet_num_result(tsDeBoorNet net);
 
 /**
- * Reads the size of the result array of \p net. Does nothing if \p \_sof\_ is
- * NULL. This function may be useful when copying results using memcpy or
- * memmove.
+ * Returns the size of the result array of \p net. This function may be useful
+ * when copying results using memcpy or memmove.
  *
  * @param net
  * 	The net with its result array whose size will be read.
- * @param _sof_
- * 	Stores the size of the result array of \p net. May be NULL.
  * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
+ * 	The size of the result array of \p net.
  */
-tsError ts_deboornet_sof_result(tsDeBoorNet net, size_t *_sof_);
+size_t ts_deboornet_sof_result(tsDeBoorNet net);
 
 /**
- * Reads the result of \p net and deep copies it to \_result\_. Does nothing if
- * \_result\_ is NULL. Allocates the necessary memory for \p \_result\_ using
- * malloc.
+ * Returns a deep copy of the result of \p net.
+ *
+ * 	Why does this function return NULL instead of TS_MALLOC in case of
+ * 	allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter which, for
+ * 	instance, allows one to directly assign the returned value to a const
+ * 	variable---simplifying the usage of this interface. Secondly, getter
+ * 	functions should return a deep copy of a value to make this library
+ * 	robust against inadvertent changes which may break the internal state a
+ * 	particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	return NULL instead of TS_MALLOC.
  *
  * @param net
  * 	The net whose result will be read.
- * @param \_result\_
- * 	Stores the result of \p net. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NULL_PTR
- * 	If \p net points to NULL.
- * @return TS_MALLOC
- * 	If allocating memory for \p \_result\_ failed.
+ * @return
+ * 	A deep copy of the result of \p net or NULL.
  */
-tsError ts_deboornet_result(tsDeBoorNet net, tsReal **_result_);
+tsReal * ts_deboornet_result(tsDeBoorNet net);
 
 
 

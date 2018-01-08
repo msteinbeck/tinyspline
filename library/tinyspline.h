@@ -77,9 +77,6 @@ typedef enum
 	/* Spline is not derivable */
 	TS_UNDERIVABLE = -8,
 
-	/* Null argument in function call */
-	TS_NULL_PTR = -9,
-
 	/* len_ctrlp % dim != 0 */
 	TS_LCTRLP_DIM_MISMATCH = -10
 } tsError;
@@ -328,7 +325,7 @@ size_t ts_bspline_dimension(tsBSpline spline);
  * @return TS_DIM_ZERO
  * 	If \p dimension == 0.
  * @return TS_LCTRLP_DIM_MISMATCH
- * 	If len_ctrlp % \p dimension != 0
+ * 	If len_ctrlp % \p dim != 0
  */
 tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
 

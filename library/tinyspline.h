@@ -388,7 +388,7 @@ size_t ts_bspline_sof_ctrlp(tsBSpline spline);
  * 	(which, for getter functions, means to check for TS_MALLOC only) and
  * 	using NULL checks is quite similar.
  *
- * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
  * 	return NULL instead of TS_MALLOC.
  *
  * @param spline
@@ -456,7 +456,7 @@ size_t ts_bspline_sof_knots(tsBSpline spline);
  * 	(which, for getter functions, means to check for TS_MALLOC only) and
  * 	using NULL checks is quite similar.
  *
- * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
  * 	return NULL instead of TS_MALLOC.
  *
  * @param spline
@@ -595,7 +595,7 @@ size_t ts_deboornet_sof_points(tsDeBoorNet net);
  * 	(which, for getter functions, means to check for TS_MALLOC only) and
  * 	using NULL checks is quite similar.
  *
- * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
  * 	return NULL instead of TS_MALLOC.
  *
  * @param net
@@ -662,7 +662,7 @@ size_t ts_deboornet_sof_result(tsDeBoorNet net);
  * 	(which, for getter functions, means to check for TS_MALLOC only) and
  * 	using NULL checks is quite similar.
  *
- * 	Hence, for the sake of uniformity, memory allocating getter funcions
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
  * 	return NULL instead of TS_MALLOC.
  *
  * @param net

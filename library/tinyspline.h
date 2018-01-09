@@ -897,7 +897,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
+tsError ts_bspline_evaluate(tsBSpline spline, tsReal u,
 	tsDeBoorNet *_deBoorNet_);
 
 
@@ -1006,7 +1006,7 @@ tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
+tsError ts_bspline_derive(tsBSpline spline, tsBSpline *_derivative_);
 
 /**
  * Fills the knot vector of \p spline according to \p type with minimum knot
@@ -1048,8 +1048,8 @@ tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
-	tsReal min, tsReal max, tsBSpline *_result_);
+tsError ts_bspline_fill_knots(tsBSpline spline, tsBSplineType type, tsReal min,
+	tsReal max, tsBSpline *_result_);
 
 /**
  * Inserts the knot value \p u \p n times into \p spline and stores the result
@@ -1075,7 +1075,7 @@ tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
+tsError ts_bspline_insert_knot(tsBSpline spline, tsReal u, size_t n,
 	tsBSpline *_result_, size_t *_k_);
 
 /**
@@ -1100,7 +1100,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
+tsError ts_bspline_resize(tsBSpline spline, int n, int back,
 	tsBSpline *_resized_);
 
 /**
@@ -1124,8 +1124,8 @@ tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
  * @return TS_MALLOC
  * 	If \p spline != \p \_split\_ and allocating memory failed.
  */
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u,
-	tsBSpline *_split_, size_t *_k_);
+tsError ts_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
+	 size_t *_k_);
 
 /**
  * Buckles \p spline by \p b and stores the result in \p \_buckled\_. Creates
@@ -1158,8 +1158,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If \p spline != \p \_buckled\_ and allocating memory failed.
  */
-tsError ts_bspline_buckle(const tsBSpline *original, tsReal b,
-	tsBSpline *_buckled_);
+tsError ts_bspline_buckle(tsBSpline original, tsReal b, tsBSpline *_buckled_);
 
 /**
  * Subdivides \p spline into a sequence of Bezier curvs by splitting it at
@@ -1178,7 +1177,7 @@ tsError ts_bspline_buckle(const tsBSpline *original, tsReal b,
  * @return TS_MALLOC
  * 	If \p spline != \p \_beizers\_ and allocating memory failed.
  */
-tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
+tsError ts_bspline_to_beziers(tsBSpline spline, tsBSpline *_beziers_);
 
 
 

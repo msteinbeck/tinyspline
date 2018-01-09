@@ -1155,8 +1155,7 @@ tsError ts_bspline_interpolate_cubic(
 }
 
 tsError ts_bspline_derive(
-	const tsBSpline* original,
-	tsBSpline* derivative
+	tsBSpline original, tsBSpline* derivative
 )
 {
 	tsError err;
@@ -1164,7 +1163,7 @@ tsError ts_bspline_derive(
 	TRY(buf, err)
 		ts_internal_bspline_derive(original, derivative, buf);
 	CATCH
-		if (original != derivative)
+		if (original.pImpl != derivative->pImpl)
 			ts_bspline_default(derivative);
 	ETRY
 	return err;
@@ -1202,57 +1201,25 @@ tsError ts_bspline_copy(
 	return err;
 }
 
-tsError ts_bspline_set_ctrlp(
-	const tsBSpline* bspline, const tsReal* ctrlp,
-	tsBSpline* result
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_set_ctrlp(bspline, ctrlp, result, buf);
-	CATCH
-		if (bspline != result)
-			ts_bspline_default(result);
-	ETRY
-	return err;
-}
-
-tsError ts_bspline_set_knots(
-	const tsBSpline* bspline, const tsReal* knots,
-	tsBSpline* result
-)
-{
-	tsError err;
-	jmp_buf  buf;
-	TRY(buf, err)
-		ts_internal_bspline_set_knots(bspline, knots, result, buf);
-	CATCH
-		if (bspline != result)
-			ts_bspline_default(result);
-	ETRY
-	return err;
-}
-
 tsError ts_bspline_fill_knots(
-	const tsBSpline* original, tsBSplineType type, tsReal min, tsReal max,
+	tsBSpline original, tsBSplineType type, tsReal min, tsReal max,
 	tsBSpline* result
 )
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_fill_knots(original, type, min, max, result, buf);
+		ts_internal_bspline_fill_knots(
+			original, type, min, max, result, buf);
 	CATCH
-		if (original != result)
+		if (original.pImpl != result->pImpl)
 			ts_bspline_default(result);
 	ETRY
 	return err;
 }
 
 tsError ts_bspline_evaluate(
-	const tsBSpline* bspline, tsReal u,
-	tsDeBoorNet* deBoorNet
+	tsBSpline bspline, tsReal u, tsDeBoorNet* deBoorNet
 )
 {
 	tsError err;
@@ -1266,8 +1233,7 @@ tsError ts_bspline_evaluate(
 }
 
 tsError ts_bspline_insert_knot(
-	const tsBSpline* bspline, tsReal u, size_t n,
-	tsBSpline* result, size_t* k
+	tsBSpline bspline, tsReal u, size_t n, tsBSpline* result, size_t* k
 )
 {
 	tsDeBoorNet net;
@@ -1275,10 +1241,10 @@ tsError ts_bspline_insert_knot(
 	jmp_buf buf;
 	TRY(buf, err)
 		ts_internal_bspline_evaluate(bspline, u, &net, buf);
-		ts_internal_bspline_insert_knot(bspline, &net, n, result, buf);
-		*k = net.k+n;
+		ts_internal_bspline_insert_knot(bspline, net, n, result, buf);
+		*k = net.pImpl->k+n;
 	CATCH
-		if (bspline != result)
+		if (bspline.pImpl != result->pImpl)
 			ts_bspline_default(result);
 		*k = 0;
 	ETRY
@@ -1288,8 +1254,7 @@ tsError ts_bspline_insert_knot(
 }
 
 tsError ts_bspline_resize(
-	const tsBSpline* bspline, int n, int back,
-	tsBSpline* resized
+	tsBSpline bspline, int n, int back, tsBSpline* resized
 )
 {
 	tsError err;
@@ -1297,15 +1262,14 @@ tsError ts_bspline_resize(
 	TRY(buf, err)
 		ts_internal_bspline_resize(bspline, n, back, resized, buf);
 	CATCH
-		if (bspline != resized)
+		if (bspline.pImpl != resized->pImpl)
 			ts_bspline_default(resized);
 	ETRY
 	return err;
 }
 
 tsError ts_bspline_split(
-	const tsBSpline* bspline, tsReal u,
-	tsBSpline* split, size_t* k
+	tsBSpline bspline, tsReal u, tsBSpline* split, size_t* k
 )
 {
 	tsError err;
@@ -1313,15 +1277,14 @@ tsError ts_bspline_split(
 	TRY(buf, err)
 		ts_internal_bspline_split(bspline, u, split, k, buf);
 	CATCH
-		if (bspline != split)
+		if (bspline.pImpl != split->pImpl)
 			ts_bspline_default(split);
 	ETRY
 	return err;
 }
 
 tsError ts_bspline_buckle(
-	const tsBSpline* bspline, tsReal b,
-	tsBSpline* buckled
+	tsBSpline bspline, tsReal b, tsBSpline* buckled
 )
 {
 	tsError err;
@@ -1329,15 +1292,14 @@ tsError ts_bspline_buckle(
 	TRY(buf, err)
 		ts_internal_bspline_buckle(bspline, b, buckled, buf);
 	CATCH
-		if (bspline != buckled)
+		if (bspline.pImpl != buckled->pImpl)
 			ts_bspline_default(buckled);
 	ETRY
 	return err;
 }
 
 tsError ts_bspline_to_beziers(
-	const tsBSpline* bspline,
-	tsBSpline* beziers
+	tsBSpline bspline, tsBSpline* beziers
 )
 {
 	tsError err;
@@ -1345,7 +1307,7 @@ tsError ts_bspline_to_beziers(
 	TRY(buf, err)
 		ts_internal_bspline_to_beziers(bspline, beziers, buf);
 	CATCH
-		if (bspline != beziers)
+		if (bspline.pImpl != beziers->pImpl)
 			ts_bspline_default(beziers);
 	ETRY
 	return err;

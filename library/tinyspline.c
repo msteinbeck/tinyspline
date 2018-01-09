@@ -1085,11 +1085,11 @@ void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to)
 	ts_deboornet_default(from);
 }
 
-void ts_deboornet_free(tsDeBoorNet* deBoorNet)
+void ts_deboornet_free(tsDeBoorNet *deBoorNet)
 {
-	if (deBoorNet->points != NULL)
-		free(deBoorNet->points);/* automatically frees the field result */
-	ts_deboornet_default(deBoorNet);
+	if (deBoorNet->pImpl != NULL)
+		free(deBoorNet->pImpl);
+	deBoorNet->pImpl = NULL;
 }
 
 void ts_bspline_default(tsBSpline* bspline)
@@ -1103,11 +1103,11 @@ void ts_bspline_default(tsBSpline* bspline)
 	bspline->knots   = NULL;
 }
 
-void ts_bspline_free(tsBSpline* bspline)
+void ts_bspline_free(tsBSpline *bspline)
 {
-	if (bspline->ctrlp != NULL)
-		free(bspline->ctrlp);
-	ts_bspline_default(bspline);
+	if (bspline->pImpl != NULL)
+		free(bspline->pImpl);
+	bspline->pImpl = NULL;
 }
 
 void ts_bspline_move(tsBSpline* from, tsBSpline* to)

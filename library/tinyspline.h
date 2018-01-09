@@ -363,17 +363,16 @@ size_t ts_bspline_sof_ctrlp(tsBSpline spline);
 /**
  * Returns a deep copy of the control points of \p spline.
  *
- * 	Why does this function return NULL instead of TS_MALLOC in case of
- * 	allocation issues?
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
  *
  * 	At the time of developing this interface different design aspects have
  * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter which, for
- * 	instance, allows one to directly assign the returned value to a const
- * 	variable---simplifying the usage of this interface. Secondly, getter
- * 	functions should return a deep copy of a value to make this library
- * 	robust against inadvertent changes which may break the internal state a
- * 	particular object.
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
  *
  * 	With this in mind, one will notice that these are conflicting demands
  * 	as returning a deep copy of an array compels a function to allocate the
@@ -386,7 +385,7 @@ size_t ts_bspline_sof_ctrlp(tsBSpline spline);
  * 	using NULL checks is quite similar.
  *
  * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of TS_MALLOC.
+ * 	return NULL instead of using TS_MALLOC.
  *
  * @param spline
  * 	The spline whose control points will be read.
@@ -431,17 +430,16 @@ size_t ts_bspline_sof_knots(tsBSpline spline);
 /**
  * Returns a deep copy of the knots of \p spline.
  *
- * 	Why does this function return NULL instead of TS_MALLOC in case of
- * 	allocation issues?
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
  *
  * 	At the time of developing this interface different design aspects have
  * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter which, for
- * 	instance, allows one to directly assign the returned value to a const
- * 	variable---simplifying the usage of this interface. Secondly, getter
- * 	functions should return a deep copy of a value to make this library
- * 	robust against inadvertent changes which may break the internal state a
- * 	particular object.
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
  *
  * 	With this in mind, one will notice that these are conflicting demands
  * 	as returning a deep copy of an array compels a function to allocate the
@@ -454,7 +452,7 @@ size_t ts_bspline_sof_knots(tsBSpline spline);
  * 	using NULL checks is quite similar.
  *
  * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of TS_MALLOC.
+ * 	return NULL instead of using TS_MALLOC.
  *
  * @param spline
  * 	The spline whose knots will be read.
@@ -570,17 +568,16 @@ size_t ts_deboornet_sof_points(tsDeBoorNet net);
 /**
  * Returns a deep copy of the points of \p net.
  *
- * 	Why does this function return NULL instead of TS_MALLOC in case of
- * 	allocation issues?
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
  *
  * 	At the time of developing this interface different design aspects have
  * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter which, for
- * 	instance, allows one to directly assign the returned value to a const
- * 	variable---simplifying the usage of this interface. Secondly, getter
- * 	functions should return a deep copy of a value to make this library
- * 	robust against inadvertent changes which may break the internal state a
- * 	particular object.
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
  *
  * 	With this in mind, one will notice that these are conflicting demands
  * 	as returning a deep copy of an array compels a function to allocate the
@@ -593,7 +590,7 @@ size_t ts_deboornet_sof_points(tsDeBoorNet net);
  * 	using NULL checks is quite similar.
  *
  * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of TS_MALLOC.
+ * 	return NULL instead of using TS_MALLOC.
  *
  * @param net
  * 	The net whose points will be read.
@@ -637,17 +634,16 @@ size_t ts_deboornet_sof_result(tsDeBoorNet net);
 /**
  * Returns a deep copy of the result of \p net.
  *
- * 	Why does this function return NULL instead of TS_MALLOC in case of
- * 	allocation issues?
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
  *
  * 	At the time of developing this interface different design aspects have
  * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter which, for
- * 	instance, allows one to directly assign the returned value to a const
- * 	variable---simplifying the usage of this interface. Secondly, getter
- * 	functions should return a deep copy of a value to make this library
- * 	robust against inadvertent changes which may break the internal state a
- * 	particular object.
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
  *
  * 	With this in mind, one will notice that these are conflicting demands
  * 	as returning a deep copy of an array compels a function to allocate the
@@ -660,7 +656,7 @@ size_t ts_deboornet_sof_result(tsDeBoorNet net);
  * 	using NULL checks is quite similar.
  *
  * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of TS_MALLOC.
+ * 	return NULL instead of using TS_MALLOC.
  *
  * @param net
  * 	The net whose result will be read.

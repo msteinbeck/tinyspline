@@ -48,6 +48,8 @@ struct tsDeBoorNetImpl
 	tsReal *result; /**< Points to the result in 'points'. */
 };
 
+
+
 /******************************************************************************
 *                                                                             *
 * :: Field Access Functions                                                   *
@@ -173,6 +175,91 @@ tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots)
 	memcpy(spline.pImpl->knots, knots, size);
 	return TS_SUCCESS;
 }
+
+/* ------------------------------------------------------------------------- */
+
+tsReal ts_deboornet_knot(tsDeBoorNet net)
+{
+	return net.pImpl->u;
+}
+
+size_t ts_deboornet_index(tsDeBoorNet net)
+{
+	return net.pImpl->k;
+}
+
+size_t ts_deboornet_multiplicity(tsDeBoorNet net)
+{
+	return net.pImpl->s;
+}
+
+size_t ts_deboornet_num_insertions(tsDeBoorNet net)
+{
+	return net.pImpl->h;
+}
+
+size_t ts_deboornet_dimension(tsDeBoorNet net)
+{
+	return net.pImpl->dim;
+}
+
+size_t ts_deboornet_len_points(tsDeBoorNet net)
+{
+	return ts_deboornet_num_points(net) *
+		ts_deboornet_dimension(net);
+}
+
+size_t ts_deboornet_num_points(tsDeBoorNet net)
+{
+	return net.pImpl->n_points;
+}
+
+size_t ts_deboornet_sof_points(tsDeBoorNet net)
+{
+	return ts_deboornet_len_points(net) *
+		sizeof(tsReal);
+}
+
+tsReal * ts_deboornet_points(tsDeBoorNet net)
+{
+	size_t size;
+	tsReal *points;
+	size = ts_deboornet_sof_points(net);
+	points = malloc(size);
+	if (points)
+		memcpy(points, net.pImpl->points, size);
+	return points;
+}
+
+size_t ts_deboornet_len_result(tsDeBoorNet net)
+{
+	return ts_deboornet_num_result(net) *
+		ts_deboornet_dimension(net);
+}
+
+size_t ts_deboornet_num_result(tsDeBoorNet net)
+{
+	return ts_deboornet_num_points(net) == 2 ? 2 : 1;
+}
+
+size_t ts_deboornet_sof_result(tsDeBoorNet net)
+{
+	return ts_deboornet_len_result(net) *
+		sizeof(tsReal);
+}
+
+tsReal * ts_deboornet_result(tsDeBoorNet net)
+{
+	size_t size;
+	tsReal *result;
+	size = ts_deboornet_sof_result(net);
+	result = malloc(size);
+	if (result)
+		memcpy(result, net.pImpl->result, size);
+	return result;
+}
+
+
 
 /********************************************************
 *                                                       *

@@ -1,8 +1,8 @@
 ###############################################################################
 ### Add different options to this script. The following options are available.
 #
-# TINYSPLINE_DOUBLE_PRECISION - default: OFF
-#   Use double instead of single (float) precision.
+# TINYSPLINE_FLOAT_PRECISION - default: OFF
+#   Use single (float) instead of double precision.
 #
 # TINYSPLINE_DISABLE_CXX11_FEATURES - default: OFF
 #   Disable C++11 specific features in the C++ interface.
@@ -15,8 +15,8 @@
 #   in cases where individual interfaces should be disabled even if all
 #   necessary requirements are met. Accordingly, the default value is ON.
 ###############################################################################
-# TINYSPLINE_DOUBLE_PRECISION
-option(TINYSPLINE_DOUBLE_PRECISION "Build TinySpline with double precision." OFF)
+# TINYSPLINE_FLOAT_PRECISION
+option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precision." OFF)
 
 # TINYSPLINE_DISABLE_CXX11_FEATURES
 option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 features." OFF)
@@ -44,7 +44,7 @@ option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interface." ON)
 ### variables will be processed and may overwrite previously defined options
 ### (only if the option's default value has been selected).
 #
-# TINYSPLINE_DOUBLE_PRECISION
+# TINYSPLINE_FLOAT_PRECISION
 #   See corresponding option above.
 #
 # TINYSPLINE_DISABLE_CXX11_FEATURES
@@ -59,10 +59,10 @@ option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interface." ON)
 # SWIG_EXECUTABLE
 #   The SWIG executable.
 ###############################################################################
-# TINYSPLINE_DOUBLE_PRECISION
-if(NOT TINYSPLINE_DOUBLE_PRECISION AND DEFINED ENV{TINYSPLINE_DOUBLE_PRECISION})
-	message(STATUS "Using environment variable 'TINYSPLINE_DOUBLE_PRECISION'")
-	set(TINYSPLINE_DOUBLE_PRECISION $ENV{TINYSPLINE_DOUBLE_PRECISION})
+# TINYSPLINE_FLOAT_PRECISION
+if(NOT TINYSPLINE_FLOAT_PRECISION AND DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
+	message(STATUS "Using environment variable 'TINYSPLINE_FLOAT_PRECISION'")
+	set(TINYSPLINE_FLOAT_PRECISION $ENV{TINYSPLINE_FLOAT_PRECISION})
 endif()
 
 # TINYSPLINE_DISABLE_CXX11_FEATURES
@@ -172,16 +172,16 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# it is common practice for MSVC builds to add a debug postfix
 	set(TINYSPLINE_DEBUG_POSTFIX "d")
-	if(TINYSPLINE_DOUBLE_PRECISION)
-		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_DOUBLE_PRECISION")
+	if(TINYSPLINE_FLOAT_PRECISION)
+		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_FLOAT_PRECISION")
 	endif()
 	if(TINYSPLINE_DISABLE_CXX11_FEATURES)
 		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_DISABLE_CXX11_FEATURES")
 	endif()
 else()
 	set(TINYSPLINE_DEBUG_POSTFIX "")
-	if(TINYSPLINE_DOUBLE_PRECISION)
-		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_DOUBLE_PRECISION")
+	if(TINYSPLINE_FLOAT_PRECISION)
+		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_FLOAT_PRECISION")
 	endif()
 	if(TINYSPLINE_DISABLE_CXX11_FEATURES)
 		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_DISABLE_CXX11_FEATURES")
@@ -495,8 +495,8 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 
 		# Simplifies definition handling with SWIG by reducing the number of
 		# required if statements.
-		if(TINYSPLINE_DOUBLE_PRECISION)
-			list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_DOUBLE_PRECISION)
+		if(TINYSPLINE_FLOAT_PRECISION)
+			list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_FLOAT_PRECISION)
 		endif()
 		if(TINYSPLINE_DISABLE_CXX11_FEATURES)
 			list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_DISABLE_CXX11_FEATURES)
@@ -831,7 +831,7 @@ message(STATUS
 "
 ******************* TinySpline Configuration Summary *******************
 Interface Configuration:
-  With double precision  (default: OFF): ${TINYSPLINE_DOUBLE_PRECISION}
+  With single precision  (default: OFF): ${TINYSPLINE_FLOAT_PRECISION}
   Without C++11 features (default: OFF): ${TINYSPLINE_DISABLE_CXX11_FEATURES}
 
 Compiler Configuration:

@@ -64,8 +64,8 @@ public class Swing extends JPanel implements
 		// interpolate a sequence of bezier curves
 		final List<Double> toInterpolate = new ArrayList<>();
 		points.forEach(p -> {
-			toInterpolate.add((double) p.getX());
-			toInterpolate.add((double) p.getY());
+			toInterpolate.add(p.getX());
+			toInterpolate.add(p.getY());
 		});
 		final BSpline spline = Utils.interpolateCubic(
 				toInterpolate, 2).toBeziers();

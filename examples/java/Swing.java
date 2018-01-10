@@ -62,10 +62,10 @@ public class Swing extends JPanel implements
 		g2d.fillRect(0, 0, getWidth(), getHeight());
 
 		// interpolate a sequence of bezier curves
-		final List<Float> toInterpolate = new ArrayList<>();
+		final List<Double> toInterpolate = new ArrayList<>();
 		points.forEach(p -> {
-			toInterpolate.add((float) p.getX());
-			toInterpolate.add((float) p.getY());
+			toInterpolate.add(p.getX());
+			toInterpolate.add(p.getY());
 		});
 		final BSpline spline = Utils.interpolateCubic(
 				toInterpolate, 2).toBeziers();
@@ -78,7 +78,7 @@ public class Swing extends JPanel implements
 		final int order = (int) spline.getOrder();
 		final int dim = (int) spline.getDim();
 		final int nBeziers = (int) spline.getNCtrlp() / order;
-		List<Float> ctrlp = spline.getCtrlp();
+		List<Double> ctrlp = spline.getCtrlp();
 		final Path2D.Double path = new Path2D.Double();
 		for (int i = 0; i < nBeziers; i++) {
 			path.moveTo(ctrlp.get(i*dim*order), ctrlp.get(i*dim*order + 1));

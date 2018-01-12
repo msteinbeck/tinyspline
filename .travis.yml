@@ -9,10 +9,9 @@ compiler:
   - clang
 
 env:
-  - CMAKE_FLAGS=""
-  - CMAKE_FLAGS="-DTINYSPLINE_FLOAT_PRECISION=YES"
-  - CMAKE_FLAGS="-DTINYSPLINE_DISABLE_CXX11_FEATURES=YES"
-  - CMAKE_FLAGS="-DTINYSPLINE_FLOAT_PRECISION=YES -DTINYSPLINE_DISABLE_CXX11_FEATURES=YES"
+  - CMAKE_FLAGS="" DEPLOY_DOCS="yes"
+  - CMAKE_FLAGS="-DTINYSPLINE_FLOAT_PRECISION=yes"
+  - CMAKE_FLAGS="-DTINYSPLINE_DISABLE_CXX11_FEATURES=yes"
 
 osx_image: xcode9.2
 
@@ -20,19 +19,17 @@ dist: xenial
 
 sudo: true
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:timsc/swig-3.0.12 -y; sudo apt-get -qq update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/php; brew update; fi
-
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install swig3.0 cmake python-dev ruby-dev php-dev liblua5.3-dev octave-pkg-dev openjdk-8-jdk r-base r-cran-rcpp -y; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig php71 lua; fi
+  - pushd travis
+  - ./install_debs.sh
+  - popd
 
 before_script:
-  - mkdir build
-  - cd build
+  - export BUILD_DIR="build"
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE"; fi;
-  - cmake .. $CMAKE_FLAGS
 
 script:
-  - cmake --build .
+  - pushd travis
+  - ./compile.sh
+  - ./deploy_docs.sh
+  - popd

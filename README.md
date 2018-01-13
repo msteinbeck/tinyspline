@@ -2,6 +2,7 @@ TinySpline
 ========
 
 [![Build Status](https://travis-ci.org/msteinbeck/tinyspline.svg?branch=master)](https://travis-ci.org/msteinbeck/tinyspline)
+[![Build status](https://ci.appveyor.com/api/projects/status/mu9qlojuff4rvea3/branch/master?svg=true)](https://ci.appveyor.com/project/msteinbeck/tinyspline/branch/master)
 
 TinySpline is a library for NURBS, B-Splines, and Bézier curves, giving you access to several
 operations on splines. The library has been implemented in C (C89) and provides a wrapper for

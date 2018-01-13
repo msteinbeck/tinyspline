@@ -1,5 +1,5 @@
 install:
-  - ps: choco install -y -r swig --version 3.0.12
+  - ps: choco install -y -r swig --version 3.0.9
 
 before_build:
   - cmake -G "Visual Studio 14 2015 Win64" .

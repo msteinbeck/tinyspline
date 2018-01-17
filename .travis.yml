@@ -1,3 +1,8 @@
+branches:
+  except:
+    - appveyor
+    - circleci
+
 language: cpp
 
 os:
@@ -5,13 +10,10 @@ os:
   - osx
 
 compiler:
-  - gcc
   - clang
 
 env:
   - CMAKE_FLAGS="" DEPLOY_DOCS="yes"
-  - CMAKE_FLAGS="-DTINYSPLINE_FLOAT_PRECISION=yes"
-  - CMAKE_FLAGS="-DTINYSPLINE_DISABLE_CXX11_FEATURES=yes"
 
 osx_image: xcode9.2
 

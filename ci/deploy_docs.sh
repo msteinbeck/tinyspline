@@ -8,7 +8,7 @@ TARGET_BRANCH="gh-pages"
 # Check environment to prevent multiple or unwanted deployments.
 if [ "$DEPLOY_DOCS" != "yes" ]                     \
 	|| [ "$TRAVIS_OS_NAME" != "linux" ]        \
-	|| [ "$CC" != "gcc" ]                      \
+	|| [ "$CC" != "clang" ]                    \
 	|| [ "$TRAVIS_PULL_REQUEST" != "false" ]   \
 	|| [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
 	exit 0

@@ -1,7 +1,8 @@
 # Ignore branches testing third-party CI environments.
-except:
-  - circleci
-  - travisci
+branches:
+  except:
+    - circleci
+    - travisci
 
 install:
   - ps: choco install -y -r swig --version 3.0.9

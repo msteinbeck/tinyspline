@@ -1,35 +1,32 @@
+# Ignore branches testing third-party CI environments.
 branches:
   except:
     - appveyor
     - circleci
 
+# Travis CI tests only Clang. GCC is tested elsewhere.
 language: cpp
+compiler: clang
 
 os:
   - linux
   - osx
 
-compiler:
-  - clang
+# Ubuntu 16.04
+dist: xenial
+sudo: true
 
 osx_image: xcode9.2
 
-dist: xenial
-
-sudo: true
-
+before_install:
+  - cd ci
 install:
-  - pushd ci
   - ./install_deps.sh
-  - popd
-
 before_script:
   - export BUILD_DIR="build"
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE"; fi;
-
 script:
-  - pushd ci
   - ./compile.sh
+deploy:
   - ./deploy_docs.sh
-  - popd

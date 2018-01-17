@@ -21,7 +21,7 @@ sudo: true
 
 install:
   - pushd ci
-  - ./install_debs.sh
+  - ./install_deps.sh
   - popd
 
 before_script:

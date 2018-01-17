@@ -20,7 +20,7 @@ dist: xenial
 sudo: true
 
 install:
-  - pushd travis
+  - pushd ci
   - ./install_debs.sh
   - popd
 
@@ -29,7 +29,7 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE"; fi;
 
 script:
-  - pushd travis
+  - pushd ci
   - ./compile.sh
   - ./deploy_docs.sh
   - popd

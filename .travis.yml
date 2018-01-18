@@ -26,7 +26,7 @@ install:
 before_script:
   - export BUILD_DIR="build"
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE"; fi;
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE -DTINYSPLINE_DISABLE_RUBY=TRUE"; fi;
 
 script:
   - pushd ci

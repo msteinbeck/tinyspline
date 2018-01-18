@@ -1,7 +1,7 @@
 ###############################################################################
-### The following constants are used to configure build tools like Setuptools,
-### Maven etc. Accordingly, they are set wth 'CACHE INTERNAL'. The following
-### constants are available.
+### The following constants provide project-related information that may be
+### used to configure external build tools. Accordingly, they are set wth
+### 'CACHE INTERNAL'.
 #
 # TINYSPLINE_AUTHOR
 #   The author of TinySpline.
@@ -44,7 +44,7 @@ set(TINYSPLINE_VERSION "0.1.3" CACHE INTERNAL "")
 set(TINYSPLINE_SHORT_DESCRIPTION "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 
 # TINYSPLINE_LONG_DESCRIPTION
-set(TINYSPLINE_LONG_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bézier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
+set(TINYSPLINE_LONG_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bezier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
 
 
 
@@ -60,10 +60,9 @@ set(TINYSPLINE_LONG_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
 #
-# TINYSPLINE_WITH_*** - default: ON
-#   Try to create inteface ***. Disabling one of these options may be useful
-#   in cases where individual interfaces should be disabled even if all
-#   necessary requirements are met. Accordingly, the default value is ON.
+# TINYSPLINE_DISABLE_*** - default: OFF
+#   These options allow to deliberately disable certain interfaces even if all
+#   requirements are met. Accourdingly, the default value is OFF.
 ###############################################################################
 # TINYSPLINE_FLOAT_PRECISION
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precision." OFF)
@@ -74,18 +73,18 @@ option(TINYSPLINE_DISABLE_CXX11_FEATURES "Build TinySpline without C++11 feature
 # TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
-# TINYSPLINE_WITH_***
-option(TINYSPLINE_WITH_CXX "Try to create the C++ interface." ON)
-option(TINYSPLINE_WITH_CSHARP "Try to create the C# interface." ON)
-option(TINYSPLINE_WITH_D "Try to create the D interface." ON)
-option(TINYSPLINE_WITH_GOLANG "Try to create the Go interface. (Not supported)" ON)
-option(TINYSPLINE_WITH_JAVA "Try to create the Java interface." ON)
-option(TINYSPLINE_WITH_LUA "Try to create the Lua interface." ON)
-option(TINYSPLINE_WITH_OCTAVE "Try to create the Octave interface." ON)
-option(TINYSPLINE_WITH_PHP "Try to create the PHP interface." ON)
-option(TINYSPLINE_WITH_PYTHON "Try to create the Python interface." ON)
-option(TINYSPLINE_WITH_R "Try to create the R interface." ON)
-option(TINYSPLINE_WITH_RUBY "Try to create the Ruby interface." ON)
+# TINYSPLINE_DISABLE_***
+option(TINYSPLINE_DISABLE_CXX "Deliberately disable the C++ interface." OFF)
+option(TINYSPLINE_DISABLE_CSHARP "Deliberately disable the C# interface." OFF)
+option(TINYSPLINE_DISABLE_D "Deliberately disable the D interface." OFF)
+option(TINYSPLINE_DISABLE_GOLANG "Deliberately disable the Go interface. (Not supported)" OFF)
+option(TINYSPLINE_DISABLE_JAVA "Deliberately disable the Java interface." OFF)
+option(TINYSPLINE_DISABLE_LUA "Deliberately disable the Lua interface." OFF)
+option(TINYSPLINE_DISABLE_OCTAVE "Deliberately disable the Octave interface." OFF)
+option(TINYSPLINE_DISABLE_PHP "Deliberately disable the PHP interface." OFF)
+option(TINYSPLINE_DISABLE_PYTHON "Deliberately disable the Python interface." OFF)
+option(TINYSPLINE_DISABLE_R "Deliberately disable the R interface." OFF)
+option(TINYSPLINE_DISABLE_RUBY "Deliberately disable the Ruby interface." OFF)
 
 
 
@@ -447,38 +446,36 @@ target_include_directories(tinyspline_static
 )
 
 # C++ library
-if(TINYSPLINE_WITH_CXX)
-	if(TINYSPLINE_CXX_AVAILABLE)
-		if(TARGET_SUPPORTS_SHARED_LIBS)
-			add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
-			set_target_properties(tinysplinecpp_shared PROPERTIES
-				OUTPUT_NAME "tinysplinecpp"
-				DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-				COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-			)
-			install(TARGETS tinysplinecpp_shared
-				LIBRARY DESTINATION lib
-				ARCHIVE DESTINATION lib
-			)
-		endif()
-		add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
-		set_target_properties(tinysplinecpp_static PROPERTIES
+if(NOT TINYSPLINE_DISABLE_CXX AND TINYSPLINE_CXX_AVAILABLE)
+	if(TARGET_SUPPORTS_SHARED_LIBS)
+		add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
+		set_target_properties(tinysplinecpp_shared PROPERTIES
 			OUTPUT_NAME "tinysplinecpp"
 			DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-			PREFIX "lib"
 			COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
 		)
-		install(TARGETS tinysplinecpp_static
+		install(TARGETS tinysplinecpp_shared
 			LIBRARY DESTINATION lib
 			ARCHIVE DESTINATION lib
 		)
-		install(FILES tinysplinecpp.h
-			DESTINATION include
-		)
-		target_include_directories(tinysplinecpp_static
-			PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-		)
 	endif()
+	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
+	set_target_properties(tinysplinecpp_static PROPERTIES
+		OUTPUT_NAME "tinysplinecpp"
+		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
+		PREFIX "lib"
+		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
+	)
+	install(TARGETS tinysplinecpp_static
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
+	install(FILES tinysplinecpp.h
+		DESTINATION include
+	)
+	target_include_directories(tinysplinecpp_static
+		PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+	)
 endif()
 
 
@@ -553,7 +550,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# Python
-		if(TINYSPLINE_WITH_PYTHON)
+		if(NOT TINYSPLINE_DISABLE_PYTHON)
 			if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
 				set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
 			elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
@@ -591,7 +588,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 		
 		# Java
-		if(TINYSPLINE_WITH_JAVA)
+		if(NOT TINYSPLINE_DISABLE_JAVA)
 			find_package(JNI)
 			if(JNI_FOUND)
 				include_directories(${JNI_INCLUDE_DIRS})
@@ -633,7 +630,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# Ruby
-		if(TINYSPLINE_WITH_RUBY)
+		if(NOT TINYSPLINE_DISABLE_RUBY)
 			find_package(Ruby)
 			if(RUBY_FOUND)
 				include_directories(${RUBY_INCLUDE_DIRS})
@@ -654,7 +651,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 		
 		# C#
-		if(TINYSPLINE_WITH_CSHARP)
+		if(NOT TINYSPLINE_DISABLE_CSHARP)
 			set_source_files_properties(tinysplinecsharp.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_DIR})
@@ -688,7 +685,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 		
 		# Go (not fully supported yet)
-		if(TINYSPLINE_WITH_GOLANG)
+		if(NOT TINYSPLINE_DISABLE_GOLANG)
 			set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
@@ -700,7 +697,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# PHP
-		if(TINYSPLINE_WITH_PHP)
+		if(NOT TINYSPLINE_DISABLE_PHP)
 			find_package(PHP COMPONENTS Zend)
 			if(PHP_FOUND)
 				set(TINYSPLINE_PHP_VERSION "php5")
@@ -740,7 +737,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# Lua
-		if(TINYSPLINE_WITH_LUA)
+		if(NOT TINYSPLINE_DISABLE_LUA)
 			find_package(Lua)
 			if(LUA_FOUND)
 				include_directories(${LUA_INCLUDE_DIR})
@@ -761,7 +758,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# D
-		if(TINYSPLINE_WITH_D)
+		if(NOT TINYSPLINE_DISABLE_D)
 			set_source_files_properties(tinysplinedlang.i PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary tinysplinedlang -module tinyspline)
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_DIR})
@@ -783,7 +780,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# Octave
-		if(TINYSPLINE_WITH_OCTAVE)
+		if(NOT TINYSPLINE_DISABLE_OCTAVE)
 			find_package(Octave)
 			if(OCTAVE_FOUND)
 				if((${OCTAVE_VERSION_STRING} VERSION_GREATER 4.2 OR ${OCTAVE_VERSION_STRING} VERSION_EQUAL 4.2)
@@ -822,7 +819,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		endif()
 
 		# R
-		if(TINYSPLINE_WITH_R)
+		if(NOT TINYSPLINE_DISABLE_R)
 			find_package(R COMPONENTS Rcpp)
 			if(R_FOUND)
 				include_directories(${R_INCLUDE_DIRS})
@@ -851,31 +848,46 @@ endif()
 
 
 ###############################################################################
-### Print summary
+### Setup constants that may be used to determine whether a certain interface
+### is available or not. The constants will be set with 'CACHE INTERNAL'.
+#
+# TINYSPLINE_WITH_***
+#   Is 'ON' if interface *** is available, 'OFF' otherwise.
+###############################################################################
+function (tinyspline_set_on_off varName varValue)
+	if(${varValue})
+		set(${varName} ON CACHE INTERNAL "")
+	else()
+		set(${varName} OFF CACHE INTERNAL "")
+	endif()
+endfunction()
+function (tinyspline_invert_on_off varName varValue)
+	if(NOT ${varValue})
+		set(${varName} ON CACHE INTERNAL "")
+	else()
+		set(${varName} OFF CACHE INTERNAL "")
+	endif()
+endfunction()
+tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
+tinyspline_invert_on_off(TINYSPLINE_WITH_CSHARP TINYSPLINE_DISABLE_CSHARP)
+tinyspline_invert_on_off(TINYSPLINE_WITH_D TINYSPLINE_DISABLE_D)
+tinyspline_set_on_off(TINYSPLINE_WITH_GOLANG FALSE)
+tinyspline_set_on_off(TINYSPLINE_WITH_JAVA JNI_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_LUA LUA_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_PHP PHP_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_RUBY RUBY_FOUND)
+tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
+
+
+
+###############################################################################
+### Print summary.
 ###############################################################################
 string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_SUMMARY_C_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_SUMMARY_CXX_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUMMARY_BINDING_FLAGS)
-
-# Map TINYSPLINE_WITH_*** to actual configuration
-function (tinyspline_set_yes_no varName varValue)
-	if(${varValue})
-		set(${varName} yes PARENT_SCOPE)
-	else()
-		set(${varName} no PARENT_SCOPE)
-	endif()
-endfunction()
-tinyspline_set_yes_no(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
-tinyspline_set_yes_no(TINYSPLINE_WITH_CSHARP TINYSPLINE_WITH_CSHARP)
-tinyspline_set_yes_no(TINYSPLINE_WITH_D TINYSPLINE_WITH_D)
-tinyspline_set_yes_no(TINYSPLINE_WITH_GOLANG FALSE)
-tinyspline_set_yes_no(TINYSPLINE_WITH_JAVA JNI_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_LUA LUA_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_PHP PHP_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_RUBY RUBY_FOUND)
-tinyspline_set_yes_no(TINYSPLINE_WITH_R R_FOUND)
 
 message(STATUS
 "

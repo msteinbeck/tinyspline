@@ -18,3 +18,13 @@ IF(DOXYGEN_FOUND)
 	add_custom_target(docs ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doxygen/)
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen/ COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/library ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/doxygen/* VERBATIM) # COMMENT "Generating API documentation with Doxygen"
 ENDIF(DOXYGEN_FOUND)
+
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+if(${TINYSPLINE_WITH_PYTHON})
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/setup.py.in" "${CMAKE_CURRENT_BINARY_DIR}/setup.py" @ONLY)
+endif()
+
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/pom.xml")
+if(${TINYSPLINE_WITH_JAVA})
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/pom.xml.in" "${CMAKE_CURRENT_BINARY_DIR}/pom.xml" @ONLY)
+endif()

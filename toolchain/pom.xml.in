@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.tinyspline</groupId>
+	<artifactId>tinyspline</artifactId>
+	<packaging>jar</packaging>
+	<version>@TINYSPLINE_VERSION@</version>
+	<name>tinyspline</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Replace jar archive after packaging -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo>Creating jar with CMake</echo>
+								<exec executable="@CMAKE_COMMAND@">
+									<arg value="--build"/>
+									<arg value="."/>
+									<arg value="--target"/>
+									<arg value="tinysplinejar"/>
+								</exec>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo>Replacing Maven generated jar with CMake generated jar</echo>
+								<!-- delete original jar -->
+								<delete file="${project.build.directory}/${project.artifactId}-${project.version}.jar" />
+								<!-- create new jar that contains the shared library -->
+								<unzip src="${basedir}/lib/tinyspline.jar" dest="${project.build.directory}/tmp-java-dir" />
+								<copy todir="${project.build.directory}/tmp-java-dir">
+									<fileset dir="${basedir}/lib">
+										<include name="*tinysplinejava*" />
+									</fileset>
+								</copy>
+								<jar destfile="${project.build.directory}/${project.artifactId}-${project.version}.jar" basedir="${project.build.directory}/tmp-java-dir" />
+								<!-- cleanup -->
+								<delete dir="${project.build.directory}/tmp-java-dir" />
+								<delete file="${project.build.directory}/tinyspline.jar" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

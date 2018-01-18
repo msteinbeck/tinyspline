@@ -1,4 +1,54 @@
 ###############################################################################
+### The following constants are used to configure build tools like Setuptools,
+### Maven etc. Accordingly, they are set wth 'CACHE INTERNAL'. The following
+### constants are available.
+#
+# TINYSPLINE_AUTHOR
+#   The author of TinySpline.
+#
+# TINYSPLINE_MAIL
+#   The contact email address.
+#
+# TINYSPLINE_URL
+#   The URL of the repository managing TinySpline.
+#
+# TINYSPLINE_LICENSE
+#   TinySpline's license.
+#
+# TINYSPLINE_VERSION
+#   The current version of TinySpline.
+#
+# TINYSPLINE_SHORT_DESCRIPTION
+#   A short describtion.
+#
+# TINYSPLINE_LONG_DESCRIPTION
+#   The long describtion.
+#
+###############################################################################
+# TINYSPLINE_AUTHOR
+set(TINYSPLINE_AUTHOR "Marcel Steinbeck" CACHE INTERNAL "")
+
+# TINYSPLINE_MAIL
+set(TINYSPLINE_MAIL "tinyspline@retux.de" CACHE INTERNAL "")
+
+# TINYSPLINE_URL
+set(TINYSPLINE_URL "https://github.com/msteinbeck/tinyspline" CACHE INTERNAL "")
+
+# TINYSPLINE_LICENSE
+set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
+
+# TINYSPLINE_VERION
+set(TINYSPLINE_VERSION "0.1.3" CACHE INTERNAL "")
+
+# TINYSPLINE_SHORT_DESCRIPTION
+set(TINYSPLINE_SHORT_DESCRIPTION "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
+
+# TINYSPLINE_LONG_DESCRIPTION
+set(TINYSPLINE_LONG_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bézier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
+
+
+
+###############################################################################
 ### Add different options to this script. The following options are available.
 #
 # TINYSPLINE_FLOAT_PRECISION - default: OFF

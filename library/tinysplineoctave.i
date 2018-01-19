@@ -1,5 +1,8 @@
 %module tinysplineoctave
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to Octave vector.
 %typemap(out) std::vector<tinyspline::real> * {
 	const size_t size = $1->size();
@@ -25,23 +28,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (Octave)                                     *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Octave)                                   *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

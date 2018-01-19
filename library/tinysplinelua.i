@@ -1,5 +1,8 @@
 %module tinysplinelua
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to Lua table.
 %typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();
@@ -27,23 +30,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (Lua)                                        *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Lua)                                      *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

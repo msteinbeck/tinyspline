@@ -1,5 +1,9 @@
 %module tinysplinejava
 
+%ignore tinyspline::BSpline::operator();
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Change the signature of the JNI file and signature of the Java interface files from
 // std::vector<tinyspline::real> to List<Float/Double>.
 #ifdef TINYSPLINE_FLOAT_PRECISION
@@ -76,24 +80,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (Java)                                       *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator();
-%ignore tinyspline::BSpline::operator=;
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Java)                                     *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

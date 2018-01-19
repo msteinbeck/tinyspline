@@ -1,5 +1,8 @@
 %module tinysplineruby
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to Ruby array.
 %typemap(out) std::vector<tinyspline::real> * {
 	const size_t size = $1->size();
@@ -24,23 +27,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (Ruby)                                       *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Ruby)                                     *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

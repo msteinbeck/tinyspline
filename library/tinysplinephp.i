@@ -1,5 +1,9 @@
 %module tinysplinephp
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::BSpline::operator();
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to PHP array.
 %typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();
@@ -37,24 +41,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (PHP)                                        *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-%ignore tinyspline::BSpline::operator();
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (PHP)                                      *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

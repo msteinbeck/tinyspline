@@ -1,5 +1,8 @@
 %module tinyspliner
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to R vector.
 %typemap(scoerceout) std::vector<tinyspline::real> * %{ %}
 %typemap(out) std::vector<tinyspline::real> * {
@@ -21,6 +24,11 @@
 // Swig's R module does not work very well with C typedefs. Thus, we need to
 // create custom typemaps for tinyspline::real.
 
+// Add Rcpp to the generated C++ file.
+%{
+        #include "Rcpp.h"
+%}
+
 // Map tinyspline::real to R double
 %typemap(scoerceout) tinyspline::real %{ %}
 %typemap(out) tinyspline::real {
@@ -32,28 +40,4 @@
 	$1 = Rcpp::as<tinyspline::real>($input);
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (R)                                          *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (R)                                        *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"
-
-%{
-        #include "Rcpp.h"
-%}
-

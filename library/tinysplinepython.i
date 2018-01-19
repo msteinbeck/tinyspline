@@ -1,5 +1,8 @@
 %module tinysplinepython
 
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
+
 // Map std::vector<tinyspline::real> to Python list.
 %typemap(out) std::vector<tinyspline::real> * (int size, PyObject *data) {
 	size = $1->size();
@@ -26,31 +29,4 @@
 	delete $1;
 }
 
-//********************************************************
-//*                                                      *
-//* BSpline (Python)                                     *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::BSpline::operator=;
-
-%feature("pythonprepend") tinyspline::BSpline::BSpline %{
-"""
-__init__(self) -> BSpline
-__init__(self, other) -> BSpline
-__init__(self, nCtrlp, dim, deg, type) -> BSpline
-"""
-%}
-
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Python)                                   *
-//*                                                      *
-//********************************************************
-%ignore tinyspline::DeBoorNet::operator=;
-
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

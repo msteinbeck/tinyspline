@@ -16,7 +16,7 @@
 #   Rcpp                 - seamless R and C++ Integration
 #
 
-FIND_PROGRAM(R_RSCRIPT_EXECUTABLE NAMES Rscript)
+find_program(R_RSCRIPT_EXECUTABLE NAMES Rscript)
 
 if(R_RSCRIPT_EXECUTABLE)
 	execute_process(
@@ -39,19 +39,21 @@ if(R_RSCRIPT_EXECUTABLE)
 			OUTPUT_VARIABLE R_VERSION
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
-	string(REGEX REPLACE "[a-zA-Z]|[(].*|[ ]" "" R_VERSION "${R_VERSION}")
+
+	string(
+		REGEX REPLACE
+			"[a-zA-Z]|[(].*|[ ]" ""
+			R_VERSION
+			"${R_VERSION}"
+	)
 
 	set(R_LIBRARY_DIR "${R_HOME_DIR}/bin/x64")
 	if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
 		set(R_LIBRARY_DIR "${R_HOME_DIR}/bin/i386")
 	endif()
 	find_library(R_LIBRARIES
-		NAMES
-			libR
-			R
-		PATHS
-			${R_LIBRARY_DIR}
-			"${R_HOME_DIR}/*"
+		NAMES libR R
+		PATHS ${R_LIBRARY_DIR} "${R_HOME_DIR}/*"
 	)
 	unset(R_LIBRARY_DIR)
 

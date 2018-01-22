@@ -16,26 +16,28 @@
 #   Rcpp                 - seamless R and C++ Integration
 #
 
-find_program(R_RSCRIPT_EXECUTABLE NAMES Rscript)
+find_program(R_RSCRIPT_EXECUTABLE
+	NAMES Rscript
+)
 
 if(R_RSCRIPT_EXECUTABLE)
 	execute_process(
 		COMMAND
-			Rscript -e "cat(R.home())"
+			${R_RSCRIPT_EXECUTABLE} -e "cat(R.home())"
 			OUTPUT_VARIABLE R_HOME_DIR
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
 	execute_process(
 		COMMAND
-			Rscript -e "cat(R.home('include'))"
+			${R_RSCRIPT_EXECUTABLE} -e "cat(R.home('include'))"
 			OUTPUT_VARIABLE R_INCLUDE_DIRS
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
 	execute_process(
 		COMMAND
-			Rscript -e "cat(R.version.string)"
+			${R_RSCRIPT_EXECUTABLE} -e "cat(R.version.string)"
 			OUTPUT_VARIABLE R_VERSION
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
@@ -62,17 +64,20 @@ if(R_RSCRIPT_EXECUTABLE)
 			if(component STREQUAL "Rcpp")
 				execute_process(
 					COMMAND
-					Rscript -e "library(Rcpp) ; cat(path.package('Rcpp'))"
-					OUTPUT_VARIABLE R_RCPP_HOME_DIR
-					OUTPUT_STRIP_TRAILING_WHITESPACE
+						${R_RSCRIPT_EXECUTABLE} -e "library(Rcpp) ; cat(path.package('Rcpp'))"
+						OUTPUT_VARIABLE R_RCPP_HOME_DIR
+						OUTPUT_STRIP_TRAILING_WHITESPACE
 				)
 				find_path(R_RCPP_INCLUDE_DIR
 					NAMES Rcpp.h
 					PATHS "${R_RCPP_HOME_DIR}/*"
 				)
 				if(R_RCPP_INCLUDE_DIR)
-					list(APPEND R_INCLUDE_DIRS
-						${R_RCPP_INCLUDE_DIR})
+					list(
+						APPEND
+							R_INCLUDE_DIRS
+							${R_RCPP_INCLUDE_DIR}
+					)
 					set(R_Rcpp_FOUND TRUE)
 				endif()
 				unset(R_RCPP_HOME_DIR)

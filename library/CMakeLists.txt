@@ -1,4 +1,19 @@
 ###############################################################################
+### General CMake setup.
+###############################################################################
+cmake_minimum_required(VERSION 3.4)
+project(tinyspline)
+
+# Turn on folders.
+# https://cmake.org/cmake/help/v3.0/prop_gbl/USE_FOLDERS.html
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Add additional CMake modules shipped with TinySpline.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+
+
+
+###############################################################################
 ### The following constants provide project-related information that may be
 ### used to configure external build tools. Accordingly, they are set wth
 ### 'CACHE INTERNAL'.
@@ -508,9 +523,6 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 	if (SWIG_FOUND)
 		include(${SWIG_USE_FILE})
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-		# Use additional CMake modules to find dependencies.
-		set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 		# TINYSPLINE_BINDINGS_FOLDER_NAME
 		set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")

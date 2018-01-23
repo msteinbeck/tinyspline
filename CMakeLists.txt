@@ -28,3 +28,8 @@ file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/pom.xml")
 if(${TINYSPLINE_WITH_JAVA})
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/pom.xml.in" "${CMAKE_CURRENT_BINARY_DIR}/pom.xml" @ONLY)
 endif()
+
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-${TINYSPLINE_REVISION}.rockspec")
+if(${TINYSPLINE_WITH_LUA})
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/tinyspline.rockspec.in" "${CMAKE_CURRENT_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-${TINYSPLINE_REVISION}.rockspec" @ONLY)
+endif()

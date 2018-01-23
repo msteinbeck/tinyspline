@@ -1,0 +1,34 @@
+package = "tinyspline"
+version = "@TINYSPLINE_VERSION@-@TINYSPLINE_REVISION@"
+source = {
+	url = "@TINYSPLINE_URL@",
+}
+description = {
+   summary = "@TINYSPLINE_SUMMARY@",
+   detailed = [[
+	@TINYSPLINE_DESCRIPTION@
+   ]],
+   homepage = "@TINYSPLINE_URL@",
+   license = "@TINYSPLINE_LICENSE@"
+}
+dependencies = {
+   "lua >= 5.1, < 5.4",
+}
+build = {
+   type = "command",
+   build_command = "@CMAKE_COMMAND@ --build . --target tinysplinelua;",
+   modules = {
+   },
+   platforms = {
+       unix = {
+          install = {
+              lib = { "lib/tinysplinelua.so" }
+	  }
+       },
+       windows = {
+          install = {
+              lib = { "lib/tinysplinelua.dll" }
+	  }
+       }
+   }
+}

@@ -4,7 +4,7 @@
 	<groupId>org.tinyspline</groupId>
 	<artifactId>tinyspline</artifactId>
 	<packaging>jar</packaging>
-	<version>@TINYSPLINE_VERSION@</version>
+	<version>@TINYSPLINE_VERSION@-@TINYSPLINE_TAG@</version>
 	<name>tinyspline</name>
 	<url>http://maven.apache.org</url>
 
@@ -48,7 +48,7 @@
 						<configuration>
 							<target>
 								<echo>Copying CMake generated jar to target</echo>
-								<copy file="${basedir}/lib/tinyspline.jar"
+								<copy file="${basedir}/lib/tinyspline.jar" overwrite="true"
 									tofile="${project.build.directory}/${project.artifactId}-${project.version}.jar">
 								</copy>
 							</target>

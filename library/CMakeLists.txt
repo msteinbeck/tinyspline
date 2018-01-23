@@ -33,10 +33,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 # TINYSPLINE_VERSION
 #   The current version of TinySpline.
 #
-# TINYSPLINE_SHORT_DESCRIPTION
+# TINYSPLINE_TAG
+#   The current tag of TinySpline. (alphaX, betaX, rcX, releaseX)
+#
+# TINYSPLINE_SUMMARY
 #   A short describtion.
 #
-# TINYSPLINE_LONG_DESCRIPTION
+# TINYSPLINE_DESCRIPTION
 #   The long describtion.
 #
 ###############################################################################
@@ -55,11 +58,14 @@ set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
 # TINYSPLINE_VERION
 set(TINYSPLINE_VERSION "0.1.3" CACHE INTERNAL "")
 
-# TINYSPLINE_SHORT_DESCRIPTION
-set(TINYSPLINE_SHORT_DESCRIPTION "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
+# TINYSPLINE_TAG
+set(TINYSPLINE_TAG "alpha1" CACHE INTERNAL "")
 
-# TINYSPLINE_LONG_DESCRIPTION
-set(TINYSPLINE_LONG_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bezier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
+# TINYSPLINE_SUMMARY
+set(TINYSPLINE_SUMMARY "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
+
+# TINYSPLINE_DESCRIPTION
+set(TINYSPLINE_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bezier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
 
 
 

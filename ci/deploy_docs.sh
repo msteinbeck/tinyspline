@@ -32,7 +32,7 @@ fi
 BUILD_DIR_FIXED="$SCRIPT_DIR/$BUILD_DIR"
 
 # Path to the docs that will be deployed.
-DOXYGEN_HTML_DIR="$BUILD_DIR_FIXED/doxygen/html"
+DOXYGEN_HTML_DIR="$BUILD_DIR_FIXED/docs/doxygen/html"
 # Verify that docs have been created.
 if [ ! -d "$DOXYGEN_HTML_DIR" ]; then
 	echo "Doxygen HTML output is not available; aborting."

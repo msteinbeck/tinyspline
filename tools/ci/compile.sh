@@ -16,6 +16,6 @@ BUILD_DIR_FIXED="$SCRIPT_DIR/$BUILD_DIR"
 # Build all targets.
 mkdir -p "$BUILD_DIR_FIXED"
 pushd "$BUILD_DIR_FIXED"
-	cmake "$SCRIPT_DIR/.." $CMAKE_FLAGS
+	cmake "$SCRIPT_DIR/../.." $CMAKE_FLAGS
 	cmake --build .
 popd

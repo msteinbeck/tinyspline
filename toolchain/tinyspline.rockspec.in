@@ -1,5 +1,5 @@
 package = "tinyspline"
-version = "@TINYSPLINE_VERSION@-@TINYSPLINE_REVISION@"
+version = "@TINYSPLINE_VERSION@-1"
 source = {
 	url = "@TINYSPLINE_URL@",
 }

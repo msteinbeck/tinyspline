@@ -40,7 +40,7 @@ class build_py(_build_py):
 
 
 setup(name=LIBRARY_NAME,
-	  version="@TINYSPLINE_VERSION@-@TINYSPLINE_REVISION@",
+	  version="@TINYSPLINE_VERSION@",
 	  description="@TINYSPLINE_SUMMARY@",
 	  long_description="@TINYSPLINE_DESCRIPTION@",
 	  author="@TINYSPLINE_AUTHOR@",

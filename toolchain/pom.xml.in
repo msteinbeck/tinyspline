@@ -4,7 +4,7 @@
 	<groupId>org.tinyspline</groupId>
 	<artifactId>tinyspline</artifactId>
 	<packaging>jar</packaging>
-	<version>@TINYSPLINE_VERSION@-@TINYSPLINE_REVISION@</version>
+	<version>@TINYSPLINE_VERSION@</version>
 	<name>tinyspline</name>
 	<url>http://maven.apache.org</url>
 

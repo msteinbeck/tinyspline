@@ -19,7 +19,7 @@ sudo: true
 osx_image: xcode9.2
 
 install:
-  - pushd ci
+  - pushd tools/ci
   - ./install_deps.sh
   - popd
 
@@ -29,7 +29,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE -DTINYSPLINE_DISABLE_RUBY=TRUE"; fi;
 
 script:
-  - pushd ci
+  - pushd tools/ci
   - ./compile.sh
   - ./deploy_docs.sh
   - popd

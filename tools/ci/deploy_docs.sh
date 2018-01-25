@@ -23,7 +23,7 @@ SHA=`git rev-parse --verify HEAD`
 # Directory where this script is located.
 SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
 
-# Verify that this script is next to 'compile.sh'.
+# Verify that this script is located next to 'compile.sh'.
 if [ ! -f "$SCRIPT_DIR/compile.sh" ]; then
     echo "Unable to find 'compile.sh'; aborting."
     exit -1
@@ -43,7 +43,7 @@ fi
 DEPLOY_KEY_PATH="$SCRIPT_DIR/deploy_key"
 # Path to encrypted deploy key.
 ENC_DEPLOY_KEY_PATH="$DEPLOY_KEY_PATH.enc"
-# Verify that encrypted deploy is available.
+# Verify that encrypted deploy key is available.
 if [ ! -f "$ENC_DEPLOY_KEY_PATH" ]; then
     echo "Unable to find encrypted deploy key; aborting."
     exit -1

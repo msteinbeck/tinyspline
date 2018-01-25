@@ -29,27 +29,6 @@ MIT License - see the LICENSE file in the source distribution.
 Feel free to ask for more features via the [issues](https://github.com/msteinbeck/tinyspline/issues)
 or to contribute to TinySpline. :)
 
-### Project Structure
-The source distribution of TinySpline consists of two sub-projects. The first one is the
-library itself, which is located in the `library` directory. It contains all files that
-are required to build TinySpline. The second provides some basic examples, located in the
-`examples` directory.
-
-The core of TinySpline has been implemented in C89 and consists of `tinyspline.h` and
-`tinyspline.c`. In order to use TinySpline's C interface, you can either copy those
-files into your project or use CMake to create a static or shared library.
-
-The C++ wrapper consists of `tinysplinecpp.h` and `tinysplinecpp.cpp`. Just like the
-C interface, you can copy those files (along with `tinyspline.h` and `tinyspline.c`)
-into your project or use CMake to create a static or shared library.
-
-All bindings of TinySpline work on top of the C++ wrapper and are generated using
-[Swig](http://www.swig.org/). `tinyspline.i` is used to configure language-independent
-settings. The file `tinysplineXYZ.i` adds language-related features (e.g. properties
-for Python). Using CMake to generate the bindings is highly recommended.
-
-Note: Use the file `debugging.h` to add some debugging features to the C interface.
-
 ### Getting Started
 The following listing uses the C++ wrapper to give a short example of TinySpline:
 
@@ -170,7 +149,7 @@ the source distribution (e.g. `Toolchain-arm.cmake`). Use the following command 
 your build directory to cross compile TinySpline to the desired platform:
 
 ```bash
-cmake -DCMAKE_TOOLCHAIN_FILE=<path to tinyspline>/toolchain/Toolchain-*.cmake ..
+cmake -DCMAKE_TOOLCHAIN_FILE=<path to tinyspline>/tools/toolchain/Toolchain-*.cmake ..
 ```
 
 #### Python 2 vs. Python 3
@@ -197,7 +176,7 @@ don't want to compile it.  You can pass an additional argument into CMake to pre
 specified language bindings from compiling:
 
 ```bash
-cmake -DTINYSPLINE_WITH_CSHARP=NO ..
+cmake -DTINYSPLINE_DISABLE_CSHARP=YES ..
 ```
 
 #### Install the C and C++ Libraries
@@ -213,60 +192,12 @@ Python, for instance, uses Distutils/Setuptools to copy the resulting files to P
 installation directories that CMake is not aware of. Thus, TinySpline ships further,
 language-related distribution tools that will be explained in the following sections.
 
-#### Install the Python Binding
-The root directory of TinySpline contains the Python script `setup.py`, which uses
-Setuptools to wrap the CMake build process. Additionally, it copies the resulting
-files to the appropriate Python installation directory. Use the following command
-to build and install the Python binding of TinySpline:
-
-```bash
-python setup.py install
-```
-
-Note that you may need root privileges to copy the files to the desired installation
-directory.
-
-#### Install the Java Binding
-There are several tools to manage the build process of software implemented in Java.
-TinySpline uses Maven to create and install the Java binding as Maven is well-supported
-by various integrated development environments. You will find the `pom.xml` file that
-is used to configure Maven in the root directory of the source distribution. This file
-follows the usual mantra of wrapping the CMake build process to create the binding.
-Additionally, the shared library that is required to use the binding is packaged into
-the jar archive. Use the following command to create and install the archive into your
-local Maven repository:
-
-```bash
-mvn install
-```
-
-If you run the above command on systems that do not support Unix Makefiles by default (for
-instance, the Windows operating system), you may get the following error message: "CMake
-Error: Could not create named generator Unix makefiles". This error results from the
-[cmake-maven-project](https://github.com/cmake-maven-project/cmake-maven-project) plug-in
-that requires an actual CMake generator to properly wrap the build process. That is, if
-you skip the generator configuration of `cmake-maven-project`, it fails with: "The
-parameters 'generator' for goal
-com.googlecode.cmake-maven-project:cmake-maven-plugin:3.4.1-b1:generate are missing or
-invalid". Thus, Maven has been configured to use the Unix makefiles generator by default.
-However, open the file `pom.xml` with you preferred text editor and replace the line:
-
-```xml
-<generator>Unix Makefiles</generator>
-```
-
-with one of the generators listed at:
-<http://www.cmake.org/cmake/help/v2.8.10/cmake.html#section_Generators>. Afterwards, build
-TinySpline with your new generator configuration:
-
-```bash
-maven clean install
-```
-
-#### Install the C# and Ruby Bindings
-Currently, TinySpline does not provide tools to install the bindings for C# and Ruby.
-However, adding such tools is planned for the future. If you have experience with, for
-instance, Ruby gems and Rake, feel free to create a pull request. :)
+### Install the bindings
+Depending on your configuration, binding-related distribution files are
+generated within the root of your build directory. That is, for instance, the
+file `setup.py` will be generated if support for Python has been detected.
+Currently, the following build tools are supported: Setuptools (Python), Maven
+(Java), and Luarocks (Lua).
 
 ### Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html) is a very good starting point for B-Splines.

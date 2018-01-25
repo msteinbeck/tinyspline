@@ -10,7 +10,7 @@ add_subdirectory(src)
 add_definitions("${TINYSPLINE_DEFINITIONS}")
 
 add_subdirectory(examples)
-add_subdirectory(tests)
+add_subdirectory(test)
 add_subdirectory(docs)
 
 

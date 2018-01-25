@@ -12,19 +12,4 @@ add_definitions("${TINYSPLINE_DEFINITIONS}")
 add_subdirectory(examples)
 add_subdirectory(test)
 add_subdirectory(docs)
-
-
-file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-if(${TINYSPLINE_WITH_PYTHON})
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/setup.py.in" "${CMAKE_CURRENT_BINARY_DIR}/setup.py" @ONLY)
-endif()
-
-file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/pom.xml")
-if(${TINYSPLINE_WITH_JAVA})
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/pom.xml.in" "${CMAKE_CURRENT_BINARY_DIR}/pom.xml" @ONLY)
-endif()
-
-file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec")
-if(${TINYSPLINE_WITH_LUA})
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/toolchain/tinyspline.rockspec.in" "${CMAKE_CURRENT_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec" @ONLY)
-endif()
+add_subdirectory(tools)

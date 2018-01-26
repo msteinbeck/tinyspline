@@ -149,7 +149,7 @@ the source distribution (e.g. `Toolchain-arm.cmake`). Use the following command 
 your build directory to cross compile TinySpline to the desired platform:
 
 ```bash
-cmake -DCMAKE_TOOLCHAIN_FILE=<path to tinyspline>/tools/toolchain/Toolchain-*.cmake ..
+cmake -DCMAKE_TOOLCHAIN_FILE=<path to tinyspline>/res/toolchain/Toolchain-*.cmake ..
 ```
 
 #### Python 2 vs. Python 3
@@ -192,7 +192,7 @@ Python, for instance, uses Distutils/Setuptools to copy the resulting files to P
 installation directories that CMake is not aware of. Thus, TinySpline ships further,
 language-related distribution tools that will be explained in the following sections.
 
-### Install the bindings
+### Install the Bindings
 Depending on your configuration, binding-related distribution files are
 generated within the root of your build directory. That is, for instance, the
 file `setup.py` will be generated if support for Python has been detected.

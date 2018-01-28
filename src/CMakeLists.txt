@@ -14,9 +14,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 
 
 ###############################################################################
-### The following constants provide project-related information that may be
-### used to configure external build tools. Accordingly, they are set wth
-### 'CACHE INTERNAL'.
+### The following constants store project-related information that are used to
+### configure external tools, such as Setuptools and Doxygen. Accordingly,
+### they are set wth 'CACHE INTERNAL'.
 #
 # TINYSPLINE_AUTHOR
 #   The author of TinySpline.
@@ -40,26 +40,47 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 #   The long describtion.
 #
 ###############################################################################
-# TINYSPLINE_AUTHOR
 set(TINYSPLINE_AUTHOR "Marcel Steinbeck" CACHE INTERNAL "")
 
-# TINYSPLINE_MAIL
 set(TINYSPLINE_MAIL "tinyspline@retux.de" CACHE INTERNAL "")
 
-# TINYSPLINE_URL
 set(TINYSPLINE_URL "https://github.com/msteinbeck/tinyspline" CACHE INTERNAL "")
 
-# TINYSPLINE_LICENSE
 set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
 
-# TINYSPLINE_VERION
 set(TINYSPLINE_VERSION "0.1.3" CACHE INTERNAL "")
 
-# TINYSPLINE_SUMMARY
 set(TINYSPLINE_SUMMARY "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 
-# TINYSPLINE_DESCRIPTION
 set(TINYSPLINE_DESCRIPTION "TinySpline is library for NURBS, B-Splines, and Bezier curves allowing you to handle splines with ease. The library has been implemented in ANSI C (C89) and provides a wrapper for C++ (C++11) along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very small by design with a minimum set of dependencies and an interface developed to be convenient without lacking enhanced features." CACHE INTERNAL "")
+
+
+
+###############################################################################
+### The following constants store location-related information that are used
+### to configure external tools, such as Setuptools and Doxygen. Accordingly,
+### they are set with 'CACHE INTERNAL'.
+#
+# TINYSPLINE_BINARY_OUTPUT_DIRECTORY
+#   Location of compiled binaries.
+#
+# TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY
+#   Location of the compiled libraries.
+###############################################################################
+set(TINYSPLINE_BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "")
+set(TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "")
+
+# First for the generic no-config case (e.g. with MinGW)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+# Second, for multi-config builds (e.g. MSVC)
+foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+		string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+endforeach()
 
 
 
@@ -152,35 +173,6 @@ if(DEFINED ENV{SWIG_EXECUTABLE})
 	message(STATUS "Using environment variable 'SWIG_EXECUTABLE'")
 	set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE})
 endif()
-
-
-
-###############################################################################
-### Set output directory for binaries to 'TINYSPLINE_BINARY_OUTPUT_DIRECTORY'
-### and for libraries to 'TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY'. Allows other
-### build systems like Python's 'setuptools' and Java's 'maven' to make
-### assumptions about the location of the resulting files.
-#
-# TINYSPLINE_BINARY_OUTPUT_DIRECTORY
-#   Location of the resulting binaries.
-#
-# TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY
-#   Location of the resulting libraries.
-###############################################################################
-set(TINYSPLINE_BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
-set(TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
-
-# First for the generic no-config case (e.g. with MinGW)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-# Second, for multi-config builds (e.g. MSVC)
-foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-		string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
-		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "" FORCE)
-endforeach()
 
 
 

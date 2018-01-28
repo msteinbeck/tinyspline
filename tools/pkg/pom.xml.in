@@ -48,7 +48,7 @@
 						<configuration>
 							<target>
 								<echo>Copying CMake generated jar to target</echo>
-								<copy file="${basedir}/lib/tinyspline.jar" overwrite="true"
+								<copy file="@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/tinyspline.jar" overwrite="true"
 									tofile="${project.build.directory}/${project.artifactId}-${project.version}.jar">
 								</copy>
 							</target>

@@ -21,12 +21,12 @@ build = {
 	platforms = {
 		unix = {
 			install = {
-				lib = { "lib/tinysplinelua.so" }
+				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/tinysplinelua.so" }
 			}
 		},
 		windows = {
 			install = {
-				lib = { "lib/tinysplinelua.dll" }
+				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/tinysplinelua.dll" }
 			}
 		}
 	}

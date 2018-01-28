@@ -24,13 +24,13 @@ class build_py(_build_py):
 			raise EnvironmentError("Error running CMake")
 
 		# Copy resulting files.
-		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*tinysplinepython*")):
+		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*@TINYSPLINE_PYTHON_CMAKE_TARGET@*")):
 			copy2(bin_file, bin_dir)
 		copy2(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "tinyspline.py"), bin_dir)
 
 		# Create __init__.py.
 		init_file = open(path.join(script_dir, "__init__.py"), "w+")
-		init_file.writelines("from .tinyspline import *\n")
+		init_file.writelines("from .@TINYSPLINE_PACKAGE_NAME@ import *\n")
 		init_file.close()
 
 		# distutils uses old-style classes, so no super()

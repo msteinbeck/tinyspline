@@ -34,7 +34,7 @@
 									<arg value="--build"/>
 									<arg value="."/>
 									<arg value="--target"/>
-									<arg value="tinysplinejava"/>
+									<arg value="@TINYSPLINE_JAVA_CMAKE_TARGET@"/>
 								</exec>
 							</target>
 						</configuration>

@@ -19,7 +19,7 @@ class build_py(_build_py):
 
                 # Generate and build binding.
 		cmake_cmd = ["@CMAKE_COMMAND@", "--build", ".",
-					 "--target", "_tinysplinepython"]
+					 "--target", "_@TINYSPLINE_PYTHON_CMAKE_TARGET@"]
 		if subprocess.call(cmake_cmd) != 0:
 			raise EnvironmentError("Error running CMake")
 

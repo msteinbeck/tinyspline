@@ -41,7 +41,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 #
 # TINYSPLINE_DESCRIPTION
 #   The long describtion.
-#
 ###############################################################################
 set(TINYSPLINE_PACKAGE_NAME "tinyspline" CACHE INTERNAL "")
 
@@ -86,6 +85,26 @@ foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
 		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
 		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
 endforeach()
+
+
+
+###############################################################################
+### The following constants store binding-related information that are used to
+### configure external tools, such as Setuptools and Doxygen. Accordingly,
+### they are set with 'CACHE INTERNAL'.
+#
+# TINYSPLINE_***_CMAKE_TARGET
+#   CMake buid target of binding ***.
+###############################################################################
+set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
+set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
+set(TINYSPLINE_JAVA_CMAKE_TARGET "tinysplinejava" CACHE INTERNAL "")
+set(TINYSPLINE_OCTAVE_CMAKE_TARGET "tinysplineoctave" CACHE INTERNAL "")
+set(TINYSPLINE_LUA_CMAKE_TARGET "tinysplinelua" CACHE INTERNAL "")
+set(TINYSPLINE_PHP_CMAKE_TARGET "tinysplinephp" CACHE INTERNAL "")
+set(TINYSPLINE_PYTHON_CMAKE_TARGET "tinysplinepython" CACHE INTERNAL "")
+set(TINYSPLINE_R_CMAKE_TARGET "tinyspliner" CACHE INTERNAL "")
+set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 
 
 
@@ -579,17 +598,17 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINES} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PYTHON_DIR})
 				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(tinysplinepython python tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_module(${TINYSPLINE_PYTHON_CMAKE_TARGET} python tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				else()
-					swig_add_library(tinysplinepython LANGUAGE python SOURCES tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_library(${TINYSPLINE_PYTHON_CMAKE_TARGET} LANGUAGE python SOURCES tinysplinepython.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinysplinepython ${PYTHON_LIBRARIES})
-				# for some reason the generated make target for python is '_tinysplinepython'
-				add_custom_command(TARGET _tinysplinepython POST_BUILD
+				swig_link_libraries(${TINYSPLINE_PYTHON_CMAKE_TARGET} ${PYTHON_LIBRARIES})
+				# for some reason the generated make target for python starts with '_'
+				add_custom_command(TARGET _${TINYSPLINE_PYTHON_CMAKE_TARGET} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_PYTHON_DIR}/tinysplinepython.py"
 					"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PYTHON_INTERFACE_FILE_NAME}"
 				)
-				set_target_properties(_tinysplinepython PROPERTIES
+				set_target_properties(_${TINYSPLINE_PYTHON_CMAKE_TARGET} PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
@@ -605,11 +624,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				set(CMAKE_SWIG_FLAGS -package "org.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR "${TINYSPLINE_JAVA_DIR}/org/tinyspline")
 				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(tinysplinejava java tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_module(${TINYSPLINE_JAVA_CMAKE_TARGET} java tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				else()
-					swig_add_library(tinysplinejava LANGUAGE java SOURCES tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_library(${TINYSPLINE_JAVA_CMAKE_TARGET} LANGUAGE java SOURCES tinysplinejava.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinysplinejava ${JNI_LIBRARIES})
+				swig_link_libraries(${TINYSPLINE_JAVA_CMAKE_TARGET} ${JNI_LIBRARIES})
 				
 				# Jar archive
 				find_package(Java COMPONENTS Development)
@@ -636,13 +655,13 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dll")
 					endif()
-					add_custom_command(TARGET tinysplinejava POST_BUILD
+					add_custom_command(TARGET ${TINYSPLINE_JAVA_CMAKE_TARGET} POST_BUILD
 						COMMAND ${CMAKE_COMMAND}
 							-E make_directory
 							"${TINYSPLINE_JAVA_DIR}/classes"
 						COMMAND ${CMAKE_COMMAND}
 							-E copy
-							"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:tinysplinejava>"
+							"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
 							"${TINYSPLINE_JAVA_DIR}/classes/${TINYSPLINE_JAVA_LIB_NAME}"
 						COMMAND "${Java_JAVAC_EXECUTABLE}"
 							-d "${TINYSPLINE_JAVA_DIR}/classes"
@@ -653,7 +672,7 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					)
 				endif()
 
-				set_target_properties(tinysplinejava PROPERTIES
+				set_target_properties(${TINYSPLINE_JAVA_CMAKE_TARGET} PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
@@ -669,12 +688,12 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_RUBY_DIR})
 				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(tinysplineruby ruby tinysplineruby.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_module(${TINYSPLINE_RUBY_CMAKE_TARGET} ruby tinysplineruby.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				else()
-					swig_add_library(tinysplineruby LANGUAGE ruby SOURCES tinysplineruby.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_library(${TINYSPLINE_RUBY_CMAKE_TARGET} LANGUAGE ruby SOURCES tinysplineruby.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinysplineruby ${RUBY_LIBRARY})
-				set_target_properties(tinysplineruby PROPERTIES
+				swig_link_libraries(${TINYSPLINE_RUBY_CMAKE_TARGET} ${RUBY_LIBRARY})
+				set_target_properties(${TINYSPLINE_RUBY_CMAKE_TARGET} PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
@@ -687,11 +706,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 			set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_DIR})
 			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-				swig_add_module(tinysplinecsharp csharp tinysplinecsharp.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				swig_add_module(${TINYSPLINE_CSHARP_CMAKE_TARGET} csharp tinysplinecsharp.i ${TINYSPLINE_CXX_SOURCE_FILES})
 			else()
-				swig_add_library(tinysplinecsharp LANGUAGE csharp SOURCES tinysplinecsharp.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				swig_add_library(${TINYSPLINE_CSHARP_CMAKE_TARGET} LANGUAGE csharp SOURCES tinysplinecsharp.i ${TINYSPLINE_CXX_SOURCE_FILES})
 			endif()
-			set_target_properties(tinysplinecsharp PROPERTIES
+			set_target_properties(${TINYSPLINE_CSHARP_CMAKE_TARGET} PROPERTIES
 				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 			)
@@ -704,11 +723,11 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 			if(TINYSPLINE_CSHARP_COMPILER)
 				if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
 					# csc neither supports the 'sdk' flag nor '/' in 'recursive'
-					add_custom_command(TARGET tinysplinecsharp POST_BUILD
+					add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
 						COMMAND ${TINYSPLINE_CSHARP_COMPILER} /target:library /out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}" /recurse:"${TINYSPLINE_CSHARP_DIR}\\*.cs"
 					)
 				else()
-					add_custom_command(TARGET tinysplinecsharp POST_BUILD
+					add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
 						COMMAND ${TINYSPLINE_CSHARP_COMPILER} -sdk:2 -target:library -out:"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_CSHARP_INTERFACE_FILE_NAME}" -recurse:"${TINYSPLINE_CSHARP_DIR}/*.cs"
 					)
 				endif()
@@ -747,15 +766,15 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 					set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 					set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_DIR})
 					if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-						swig_add_module(tinysplinephp ${TINYSPLINE_PHP_VERSION} tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
+						swig_add_module(${TINYSPLINE_PHP_CMAKE_TARGET} ${TINYSPLINE_PHP_VERSION} tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
 					else()
-						swig_add_library(tinysplinephp LANGUAGE ${TINYSPLINE_PHP_VERSION} SOURCES tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
+						swig_add_library(${TINYSPLINE_PHP_CMAKE_TARGET} LANGUAGE ${TINYSPLINE_PHP_VERSION} SOURCES tinysplinephp.i ${TINYSPLINE_CXX_SOURCE_FILES})
 					endif()
-					add_custom_command(TARGET tinysplinephp POST_BUILD
+					add_custom_command(TARGET ${TINYSPLINE_PHP_CMAKE_TARGET} POST_BUILD
 						COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_PHP_DIR}/tinysplinephp.php"
 						"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_PHP_INTERFACE_FILE_NAME}"
 					)
-					set_target_properties(tinysplinephp PROPERTIES
+					set_target_properties(${TINYSPLINE_PHP_CMAKE_TARGET} PROPERTIES
 						FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 						COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
 					)
@@ -776,12 +795,12 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_LUA_DIR})
 				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(tinysplinelua lua tinysplinelua.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_module(${TINYSPLINE_LUA_CMAKE_TARGET} lua tinysplinelua.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				else()
-					swig_add_library(tinysplinelua LANGUAGE lua SOURCES tinysplinelua.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_library(${TINYSPLINE_LUA_CMAKE_TARGET} LANGUAGE lua SOURCES tinysplinelua.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinysplinelua ${LUA_LIBRARIES})
-				set_target_properties(tinysplinelua PROPERTIES
+				swig_link_libraries(${TINYSPLINE_LUA_CMAKE_TARGET} ${LUA_LIBRARIES})
+				set_target_properties(${TINYSPLINE_LUA_CMAKE_TARGET} PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)
@@ -791,20 +810,20 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 		# D
 		if(NOT TINYSPLINE_DISABLE_D)
 			set_source_files_properties(tinysplinedlang.i PROPERTIES CPLUSPLUS ON)
-			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary tinysplinedlang -module tinyspline)
+			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET} -module ${TINYSPLINE_PACKAGE_NAME})
 			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_DIR})
 			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-				swig_add_module(tinysplinedlang d tinysplinedlang.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				swig_add_module(${TINYSPLINE_DLANG_CMAKE_TARGET} d tinysplinedlang.i ${TINYSPLINE_CXX_SOURCE_FILES})
 			else()
-				swig_add_library(tinysplinedlang LANGUAGE d SOURCES tinysplinedlang.i ${TINYSPLINE_CXX_SOURCE_FILES})
+				swig_add_library(${TINYSPLINE_DLANG_CMAKE_TARGET} LANGUAGE d SOURCES tinysplinedlang.i ${TINYSPLINE_CXX_SOURCE_FILES})
 			endif()
-			add_custom_command(TARGET tinysplinedlang POST_BUILD
+			add_custom_command(TARGET ${TINYSPLINE_DLANG_CMAKE_TARGET} POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_DLANG_DIR}/${TINYSPLINE_DLANG_INTERFACE_FILE_NAME}"
 				"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_DLANG_INTERFACE_FILE_NAME}"
 				COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_DLANG_DIR}/${TINYSPLINE_DLANG_INTERMEDIATE_FILE_NAME}"
 				"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_DLANG_INTERMEDIATE_FILE_NAME}"
 			)
-			set_target_properties(tinysplinedlang PROPERTIES
+			set_target_properties(${TINYSPLINE_DLANG_CMAKE_TARGET} PROPERTIES
 				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 			)
@@ -832,15 +851,15 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				else()
 					include_directories(${OCTAVE_INCLUDE_DIRS})
 					set_source_files_properties(tinysplineoctave.i PROPERTIES CPLUSPLUS ON)
-					set(CMAKE_SWIG_FLAGS -module "tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+					set(CMAKE_SWIG_FLAGS -module ${TINYSPLINE_PACKAGE_NAME} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 					set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_OCTAVE_DIR})
 					if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-						swig_add_module(tinysplineoctave octave tinysplineoctave.i ${TINYSPLINE_CXX_SOURCE_FILES})
+						swig_add_module(${TINYSPLINE_OCTAVE_CMAKE_TARGET} octave tinysplineoctave.i ${TINYSPLINE_CXX_SOURCE_FILES})
 					else()
-						swig_add_library(tinysplineoctave LANGUAGE octave SOURCES tinysplineoctave.i ${TINYSPLINE_CXX_SOURCE_FILES})
+						swig_add_library(${TINYSPLINE_OCTAVE_CMAKE_TARGET} LANGUAGE octave SOURCES tinysplineoctave.i ${TINYSPLINE_CXX_SOURCE_FILES})
 					endif()
-					swig_link_libraries(tinysplineoctave ${OCTAVE_LIBRARIES})
-					set_target_properties(tinysplineoctave PROPERTIES
+					swig_link_libraries(${TINYSPLINE_OCTAVE_CMAKE_TARGET} ${OCTAVE_LIBRARIES})
+					set_target_properties(${TINYSPLINE_OCTAVE_CMAKE_TARGET} PROPERTIES
 						FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 						COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 						OUTPUT_NAME "tinyspline"
@@ -858,16 +877,16 @@ if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
 				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_R_DIR})
 				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(tinyspliner r tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_module(${TINYSPLINE_R_CMAKE_TARGET} r tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				else()
-					swig_add_library(tinyspliner LANGUAGE r SOURCES tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
+					swig_add_library(${TINYSPLINE_R_CMAKE_TARGET} LANGUAGE r SOURCES tinyspliner.i ${TINYSPLINE_CXX_SOURCE_FILES})
 				endif()
-				swig_link_libraries(tinyspliner ${R_LIBRARIES})
-				add_custom_command(TARGET tinyspliner POST_BUILD
+				swig_link_libraries(${TINYSPLINE_R_CMAKE_TARGET} ${R_LIBRARIES})
+				add_custom_command(TARGET ${TINYSPLINE_R_CMAKE_TARGET} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_R_DIR}/tinyspliner.R"
 					"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_R_INTERFACE_FILE_NAME}"
 				)
-				set_target_properties(tinyspliner PROPERTIES
+				set_target_properties(${TINYSPLINE_R_CMAKE_TARGET} PROPERTIES
 					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
 				)

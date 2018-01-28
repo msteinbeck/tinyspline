@@ -16,7 +16,7 @@ dependencies = {
 }
 build = {
 	type = "command",
-	build_command = "@CMAKE_COMMAND@ --build . --target tinysplinelua;",
+	build_command = "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_LUA_CMAKE_TARGET@",
 	modules = {},
 	platforms = {
 		unix = {

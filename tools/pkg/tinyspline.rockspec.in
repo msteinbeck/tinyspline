@@ -1,4 +1,4 @@
-package = "tinyspline"
+package = "@TINYSPLINE_PACKAGE_NAME@"
 version = "@TINYSPLINE_VERSION@-1"
 source = {
 	url = "@TINYSPLINE_URL@",

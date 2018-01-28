@@ -7,15 +7,13 @@ from glob import glob
 import subprocess
 import sys
 
-LIBRARY_NAME="tinyspline"
-
 
 class build_py(_build_py):
 	def run(self):
 		script_dir = path.dirname(path.realpath(__file__))
 
                 # This directory will contain the resulting files.
-		bin_dir = path.join(script_dir, self.build_lib, LIBRARY_NAME)
+		bin_dir = path.join(script_dir, self.build_lib, "@TINYSPLINE_PACKAGE_NAME@")
 		if not path.exists(bin_dir):
 			self.mkpath(bin_dir)
 
@@ -26,7 +24,7 @@ class build_py(_build_py):
 			raise EnvironmentError("Error running CMake")
 
 		# Copy resulting files.
-		for bin_file in glob(path.join("lib", "*tinysplinepython*")):
+		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*tinysplinepython*")):
 			copy2(bin_file, bin_dir)
 		copy2(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "tinyspline.py"), bin_dir)
 
@@ -39,7 +37,7 @@ class build_py(_build_py):
 		_build_py.run(self)
 
 
-setup(name=LIBRARY_NAME,
+setup(name="@TINYSPLINE_PACKAGE_NAME@",
 	  version="@TINYSPLINE_VERSION@",
 	  description="@TINYSPLINE_SUMMARY@",
 	  long_description="@TINYSPLINE_DESCRIPTION@",
@@ -54,6 +52,6 @@ setup(name=LIBRARY_NAME,
 		  "License :: OSI Approved :: MIT License"
 	  ],
 	  cmdclass={"build_py": build_py},
-	  packages=[LIBRARY_NAME],
-	  package_dir={LIBRARY_NAME: "."}
+	  packages=["@TINYSPLINE_PACKAGE_NAME@"],
+	  package_dir={"@TINYSPLINE_PACKAGE_NAME@": "."}
      )

@@ -18,6 +18,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 ### configure external tools, such as Setuptools and Doxygen. Accordingly,
 ### they are set wth 'CACHE INTERNAL'.
 #
+# TINYSPLINE_PACKAGE_NAME
+#   The name of the package.
+#
 # TINYSPLINE_AUTHOR
 #   The author of TinySpline.
 #
@@ -40,6 +43,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 #   The long describtion.
 #
 ###############################################################################
+set(TINYSPLINE_PACKAGE_NAME "tinyspline" CACHE INTERNAL "")
+
 set(TINYSPLINE_AUTHOR "Marcel Steinbeck" CACHE INTERNAL "")
 
 set(TINYSPLINE_MAIL "tinyspline@retux.de" CACHE INTERNAL "")

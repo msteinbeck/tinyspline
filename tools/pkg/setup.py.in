@@ -1,0 +1,57 @@
+from distutils.core import setup
+from distutils.command.build_py import build_py as _build_py
+
+from shutil import rmtree, copy2
+from os import path, chdir
+from glob import glob
+import subprocess
+import sys
+
+
+class build_py(_build_py):
+	def run(self):
+		script_dir = path.dirname(path.realpath(__file__))
+
+                # This directory will contain the resulting files.
+		bin_dir = path.join(script_dir, self.build_lib, "@TINYSPLINE_PACKAGE_NAME@")
+		if not path.exists(bin_dir):
+			self.mkpath(bin_dir)
+
+                # Generate and build binding.
+		cmake_cmd = ["@CMAKE_COMMAND@", "--build", ".",
+					 "--target", "_@TINYSPLINE_PYTHON_CMAKE_TARGET@"]
+		if subprocess.call(cmake_cmd) != 0:
+			raise EnvironmentError("Error running CMake")
+
+		# Copy resulting files.
+		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*@TINYSPLINE_PYTHON_CMAKE_TARGET@*")):
+			copy2(bin_file, bin_dir)
+		copy2(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "tinyspline.py"), bin_dir)
+
+		# Create __init__.py.
+		init_file = open(path.join(script_dir, "__init__.py"), "w+")
+		init_file.writelines("from .@TINYSPLINE_PACKAGE_NAME@ import *\n")
+		init_file.close()
+
+		# distutils uses old-style classes, so no super()
+		_build_py.run(self)
+
+
+setup(name="@TINYSPLINE_PACKAGE_NAME@",
+	  version="@TINYSPLINE_VERSION@",
+	  description="@TINYSPLINE_SUMMARY@",
+	  long_description="@TINYSPLINE_DESCRIPTION@",
+	  author="@TINYSPLINE_AUTHOR@",
+	  author_email="@TINYSPLINE_MAIL@",
+	  license="@TINYSPLINE_LICENSE@",
+	  url="@TINYSPLINE_URL@",
+	  classifiers=[
+		  "Topic :: Scientific/Engineering :: Mathematics",
+		  "Topic :: Software Development :: Libraries :: Python Modules",
+		  "Programming Language :: Python",
+		  "License :: OSI Approved :: MIT License"
+	  ],
+	  cmdclass={"build_py": build_py},
+	  packages=["@TINYSPLINE_PACKAGE_NAME@"],
+	  package_dir={"@TINYSPLINE_PACKAGE_NAME@": "."}
+     )

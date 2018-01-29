@@ -18,10 +18,10 @@ extern "C" {
 * should be fine for most modern hardware, such as x86, x86_64, and arm.      *
 *                                                                             *
 ******************************************************************************/
-#ifdef TINYSPLINE_DOUBLE_PRECISION
-typedef double tsReal;
-#else
+#ifdef TINYSPLINE_FLOAT_PRECISION
 typedef float tsReal;
+#else
+typedef double tsReal;
 #endif
 
 #define FLT_MAX_ABS_ERROR 1e-5

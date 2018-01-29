@@ -1,38 +1,35 @@
+# Ignore branches testing third-party CI environments.
+branches:
+  except:
+    - appveyor
+    - circleci
+
+# Travis CI tests only Clang. GCC is tested elsewhere.
 language: cpp
+compiler: clang
 
 os:
   - linux
   - osx
 
-compiler:
-  - gcc
-  - clang
-
-env:
-  - CMAKE_FLAGS=""
-  - CMAKE_FLAGS="-DTINYSPLINE_DOUBLE_PRECISION=YES"
-  - CMAKE_FLAGS="-DTINYSPLINE_DISABLE_CXX11_FEATURES=YES"
-  - CMAKE_FLAGS="-DTINYSPLINE_DOUBLE_PRECISION=YES -DTINYSPLINE_DISABLE_CXX11_FEATURES=YES"
+# Ubuntu 16.04
+dist: xenial
+sudo: true
 
 osx_image: xcode9.2
 
-dist: xenial
-
-sudo: true
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:timsc/swig-3.0.12 -y; sudo apt-get -qq update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/php; brew update; fi
-
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install swig3.0 cmake python-dev ruby-dev php-dev liblua5.3-dev octave-pkg-dev openjdk-8-jdk r-base r-cran-rcpp -y; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install swig php71 lua; fi
+  - pushd tools/ci
+  - ./install_deps.sh
+  - popd
 
 before_script:
-  - mkdir build
-  - cd build
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_WITH_PHP=FALSE -DTINYSPLINE_WITH_RUBY=FALSE"; fi;
-  - cmake .. $CMAKE_FLAGS
+  - export BUILD_DIR="build"
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE -DTINYSPLINE_DISABLE_RUBY=TRUE"; fi;
 
 script:
-  - cmake --build .
+  - pushd tools/ci
+  - ./compile.sh
+  - ./deploy_docs.sh
+  - popd

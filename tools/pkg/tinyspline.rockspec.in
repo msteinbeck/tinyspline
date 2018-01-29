@@ -1,0 +1,33 @@
+package = "@TINYSPLINE_PACKAGE_NAME@"
+version = "@TINYSPLINE_VERSION@-1"
+source = {
+	url = "@TINYSPLINE_URL@",
+}
+description = {
+	summary = "@TINYSPLINE_SUMMARY@",
+	detailed = [[
+		@TINYSPLINE_DESCRIPTION@
+	]],
+	homepage = "@TINYSPLINE_URL@",
+	license = "@TINYSPLINE_LICENSE@"
+}
+dependencies = {
+	"lua >= 5.1, < 5.4",
+}
+build = {
+	type = "command",
+	build_command = "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_LUA_CMAKE_TARGET@",
+	modules = {},
+	platforms = {
+		unix = {
+			install = {
+				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/@TINYSPLINE_LUA_CMAKE_TARGET@.so" }
+			}
+		},
+		windows = {
+			install = {
+				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/@TINYSPLINE_LUA_CMAKE_TARGET@.dll" }
+			}
+		}
+	}
+}

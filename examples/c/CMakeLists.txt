@@ -41,7 +41,7 @@ endif()
 ###############################################################################
 ### Create examples. Exclude GLUT related examples in double precision mode.
 ###############################################################################
-if(GLUT_FOUND AND OPENGL_FOUND AND NOT TINYSPLINE_DOUBLE_PRECISION)
+if(GLUT_FOUND AND OPENGL_FOUND AND TINYSPLINE_FLOAT_PRECISION)
 	add_executable(bspline bspline.c)
 	target_link_libraries(bspline
 		LINK_PUBLIC tinyspline_static

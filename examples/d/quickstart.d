@@ -10,30 +10,30 @@ void main()
 
 	// Setup control points.
 	Vector ctrlp = spline.ctrlp();
-	ctrlp[0]  = -1.75f; // x0
-	ctrlp[1]  = -1.0f;  // y0
-	ctrlp[2]  = -1.5f;  // x1
-	ctrlp[3]  = -0.5f;  // y1
-	ctrlp[4]  = -1.5f;  // x2
-	ctrlp[5]  =  0.0f;  // y2
-	ctrlp[6]  = -1.25f; // x3
-	ctrlp[7]  =  0.5f;  // y3
-	ctrlp[8]  = -0.75f; // x4
-	ctrlp[9]  =  0.75f; // y4
-	ctrlp[1]  =  0.0f;  // x5
-	ctrlp[11] =  0.5f;  // y5
-	ctrlp[12] =  0.5f;  // x6
-	ctrlp[13] =  0.0f;  // y6
+	ctrlp[0]  = -1.75; // x0
+	ctrlp[1]  = -1.0;  // y0
+	ctrlp[2]  = -1.5;  // x1
+	ctrlp[3]  = -0.5;  // y1
+	ctrlp[4]  = -1.5;  // x2
+	ctrlp[5]  =  0.0;  // y2
+	ctrlp[6]  = -1.25; // x3
+	ctrlp[7]  =  0.5;  // y3
+	ctrlp[8]  = -0.75; // x4
+	ctrlp[9]  =  0.75; // y4
+	ctrlp[1]  =  0.0;  // x5
+	ctrlp[11] =  0.5;  // y5
+	ctrlp[12] =  0.5;  // x6
+	ctrlp[13] =  0.0;  // y6
 	spline.setCtrlp(ctrlp);
 
 	// Evaluate `spline` at u = 0.4 using 'evaluate'.
-	Vector result = spline.evaluate(0.4f).result();
+	Vector result = spline.evaluate(0.4).result();
 	writefln("x = %f, y = %f", result[0], result[1]);
 
 	// Derive `spline` and subdivide it into a sequence of Bezier curves.
 	BSpline beziers = spline.derive().toBeziers();
 
 	// Evaluate `beziers` at u = 0.3 using '()' instead of 'evaluate'.
-	result = beziers(0.3f).result();
+	result = beziers(0.3).result();
 	writefln("x = %f, y = %f", result[0], result[1]);
 }

@@ -26,7 +26,7 @@ class build_py(_build_py):
 		# Copy resulting files.
 		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*@TINYSPLINE_PYTHON_CMAKE_TARGET@*")):
 			copy2(bin_file, bin_dir)
-		copy2(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "tinyspline.py"), bin_dir)
+		copy2("@TINYSPLINE_PYTHON_INTERFACE_FILE@", bin_dir)
 
 		# Create __init__.py.
 		init_file = open(path.join(script_dir, "__init__.py"), "w+")

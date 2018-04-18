@@ -59,7 +59,7 @@ typedef enum
 	/* The dimension of the control points are 0. */
 	TS_DIM_ZERO = -2,
 
-	/* Degree of spline (deg) >= number of control points (n_ctrlp). */
+	/* Degree of spline >= number of control points. */
 	TS_DEG_GE_NCTRLP = -3,
 
 	/* Spline is not defined at knot value u. */
@@ -77,7 +77,7 @@ typedef enum
 	/* Spline is not derivable */
 	TS_UNDERIVABLE = -8,
 
-	/* len_ctrlp % dim != 0 */
+	/* len_control_points % dim != 0 */
 	TS_LCTRLP_DIM_MISMATCH = -10
 } tsError;
 
@@ -262,7 +262,7 @@ size_t ts_bspline_degree(tsBSpline spline);
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p degree >= ts_bspline_get_ctrlp(spline).
+ * 	If \p degree >= ts_bspline_get_control_points(spline).
  */
 tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
 
@@ -286,15 +286,15 @@ size_t ts_bspline_order(tsBSpline spline);
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p order > ts_bspline_get_ctrlp(spline) or if \p order == 0
+ * 	If \p order > ts_bspline_get_control_points(spline) or if \p order == 0
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
- * 	which will always be >= ts_bspline_get_ctrlp(spline) ).
+ * 	which will always be >= ts_bspline_get_control_points(spline) ).
  */
 tsError ts_bspline_set_order(tsBSpline spline, size_t order);
 
 /**
  * Returns the dimension of \p spline. The dimension of a spline describes the
- * number of components for each point in ts_bspline_get_ctrlp(spline).
+ * number of components for each point in ts_bspline_get_control_points(spline).
  * One-dimensional splines are possible, albeit their benefit might be
  * questionable.
  *
@@ -309,12 +309,12 @@ size_t ts_bspline_dimension(tsBSpline spline);
  * Sets the dimension of \p spline. The following conditions must be satisfied:
  *
  * 	(1) dim >= 1
- * 	(2) len_ctrlp % dim == 0
+ * 	(2) len_control_points % dim == 0
  *
- * with _len_ctrlp_ being the length of the control point array of \p spline.
- * The dimension of a spline describes the number of components for each point
- * in ts_bspline_get_ctrlp(spline). One-dimensional splines are possible,
- * albeit their benefit might be questionable.
+ * with _len_control_points_ being the length of the control point array of \p
+ * spline. The dimension of a spline describes the number of components for
+ * each point in ts_bspline_get_control_points(spline). One-dimensional splines
+ * are possible, albeit their benefit might be questionable.
  *
  * @param spline
  * 	The spline whose dimension will be set.
@@ -325,7 +325,7 @@ size_t ts_bspline_dimension(tsBSpline spline);
  * @return TS_DIM_ZERO
  * 	If \p dimension == 0.
  * @return TS_LCTRLP_DIM_MISMATCH
- * 	If len_ctrlp % \p dim != 0
+ * 	If len_control_points % \p dim != 0
  */
 tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
 
@@ -337,7 +337,7 @@ tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
  * @return
  * 	The length of the control point array of \p spline.
  */
-size_t ts_bspline_len_ctrlp(tsBSpline spline);
+size_t ts_bspline_len_control_points(tsBSpline spline);
 
 /**
  * Returns the number of control points of \p spline.
@@ -347,7 +347,7 @@ size_t ts_bspline_len_ctrlp(tsBSpline spline);
  * @return
  * 	The number of control points of \p spline.
  */
-size_t ts_bspline_num_ctrlp(tsBSpline spline);
+size_t ts_bspline_num_control_points(tsBSpline spline);
 
 /**
  * Returns the size of the control point array of \p spline. This function may
@@ -358,7 +358,7 @@ size_t ts_bspline_num_ctrlp(tsBSpline spline);
  * @return
  * 	The size of the control point array of \p spline.
  */
-size_t ts_bspline_sof_ctrlp(tsBSpline spline);
+size_t ts_bspline_sof_control_points(tsBSpline spline);
 
 /**
  * Returns a deep copy of the control points of \p spline.
@@ -392,7 +392,7 @@ size_t ts_bspline_sof_ctrlp(tsBSpline spline);
  * @return
  * 	A deep copy of the control points of \p spline or NULL.
  */
-tsReal * ts_bspline_ctrlp(tsBSpline spline);
+tsReal * ts_bspline_control_points(tsBSpline spline);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
@@ -404,7 +404,7 @@ tsReal * ts_bspline_ctrlp(tsBSpline spline);
  * @return TS_SUCCESS
  * 	This function never fails.
  */
-tsError ts_bspline_set_ctrlp(tsBSpline spline, const tsReal *ctrlp);
+tsError ts_bspline_set_control_points(tsBSpline spline, const tsReal *ctrlp);
 
 /**
  * Returns the number of knots of \p spline.
@@ -732,7 +732,7 @@ tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_);
+tsError ts_bspline_copy(tsBSpline original, tsBSpline *_copy_);
 
 /**
  * The move constructor of tsBSpline.
@@ -787,7 +787,7 @@ void ts_deboornet_default(tsDeBoorNet *_deBoorNet_);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_);
+tsError ts_deboornet_copy(tsDeBoorNet original, tsDeBoorNet *_copy_);
 
 /**
  * The move constructor of tsDeBoorNet.

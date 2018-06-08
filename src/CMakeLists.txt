@@ -490,6 +490,7 @@ if(TARGET_SUPPORTS_SHARED_LIBS)
 	install(TARGETS tinyspline_shared
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
+		RUNTIME DESTINATION bin
 	)
 endif()
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
@@ -522,6 +523,7 @@ if(NOT TINYSPLINE_DISABLE_CXX AND TINYSPLINE_CXX_AVAILABLE)
 		install(TARGETS tinysplinecpp_shared
 			LIBRARY DESTINATION lib
 			ARCHIVE DESTINATION lib
+			RUNTIME DESTINATION bin
 		)
 	endif()
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})

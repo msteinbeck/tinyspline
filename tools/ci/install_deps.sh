@@ -31,7 +31,7 @@ pushd "$DEPS_DIR"
 		brew update
 		brew install \
 			swig                \
-			php71               \
+			php72               \
 			lua
 	fi
 

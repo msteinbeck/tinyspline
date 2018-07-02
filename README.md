@@ -4,12 +4,12 @@ TinySpline
 [![Build Status](https://travis-ci.org/msteinbeck/tinyspline.svg?branch=master)](https://travis-ci.org/msteinbeck/tinyspline)
 [![Build status](https://ci.appveyor.com/api/projects/status/mu9qlojuff4rvea3/branch/master?svg=true)](https://ci.appveyor.com/project/msteinbeck/tinyspline/branch/master)
 
-TinySpline is a library for NURBS, B-Splines, and Bézier curves, giving you access to several
-operations on splines. The library has been implemented in C (C89) and provides a wrapper for
-C++ (C++11) along with auto-generated bindings for C#, D, Java, Octave, Lua, PHP, Python, R,
-and Ruby. The focus of TinySpline is to be very small in design with a minimum set of
-dependencies and an interface developed to be convenient for all levels without lacking
-enhanced features.
+TinySpline is library for NURBS, B-Splines, and Bézier curves, allowing you to
+handle splines with ease. The library has been implemented in ANSI C (C89) and
+provides a wrapper for C++ (C++11) along with auto-generated bindings for C#,
+D, Java, Lua, Octave, PHP, Python, R, and Ruby. TinySpline strives to be very
+small by design with a minimum set of dependencies and an interface developed
+to be convenient without lacking enhanced features.
 
 ### License
 MIT License - see the LICENSE file in the source distribution.

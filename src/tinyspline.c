@@ -348,7 +348,7 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	if (deg >= n_ctrlp)
 		longjmp(buf, TS_DEG_GE_NCTRLP);
 
-	_spline_->pImpl = (struct tsBSplineImpl*) malloc(sof_spline);
+	_spline_->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
 	if (!_spline_->pImpl)
 		longjmp(buf, TS_MALLOC);
 
@@ -425,7 +425,7 @@ void ts_bspline_free(tsBSpline *_spline_)
 
 /* ------------------------------------------------------------------------- */
 
-void ts_deboornet_default(tsDeBoorNet* _deBoorNet_)
+void ts_deboornet_default(tsDeBoorNet *_deBoorNet_)
 {
 	_deBoorNet_->pImpl = NULL;
 }
@@ -437,7 +437,7 @@ void ts_deboornet_free(tsDeBoorNet *_deBoorNet_)
 	ts_deboornet_default(_deBoorNet_);
 }
 
-void ts_internal_deboornet_copy(tsDeBoorNet original, tsDeBoorNet* _copy,
+void ts_internal_deboornet_copy(tsDeBoorNet original, tsDeBoorNet *_copy,
 	jmp_buf buf)
 {
 	size_t size;
@@ -450,7 +450,7 @@ void ts_internal_deboornet_copy(tsDeBoorNet original, tsDeBoorNet* _copy,
 	memcpy(_copy->pImpl, original.pImpl, size);
 }
 
-tsError ts_deboornet_copy(tsDeBoorNet original, tsDeBoorNet* _copy_)
+tsError ts_deboornet_copy(tsDeBoorNet original, tsDeBoorNet *_copy_)
 {
 	tsError err;
 	jmp_buf buf;

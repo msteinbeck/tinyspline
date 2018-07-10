@@ -804,13 +804,13 @@ void ts_internal_bspline_evaluate(tsBSpline spline, tsReal u,
 	}
 }
 
-tsError ts_bspline_evaluate(tsBSpline bspline, tsReal u,
+tsError ts_bspline_evaluate(tsBSpline spline, tsReal u,
 	tsDeBoorNet* _deBoorNet_)
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_evaluate(bspline, u, _deBoorNet_, buf);
+		ts_internal_bspline_evaluate(spline, u, _deBoorNet_, buf);
 	CATCH
 		ts_deboornet_default(_deBoorNet_);
 	ETRY
@@ -821,7 +821,7 @@ tsError ts_bspline_evaluate(tsBSpline bspline, tsReal u,
 
 /******************************************************************************
 *                                                                             *
-* :: Internal functions                                                       *
+* :: Transformation Functions                                                 *
 *                                                                             *
 ******************************************************************************/
 void ts_internal_bspline_fill_knots(
@@ -1037,8 +1037,6 @@ void ts_internal_bspline_insert_knot(
 	}
 }
 
-
-
 void ts_internal_bspline_split(
 	tsBSpline bspline, const tsReal u,
 	tsBSpline* split, size_t* k, jmp_buf buf
@@ -1066,12 +1064,6 @@ void ts_internal_bspline_split(
 	if (e < 0)
 		longjmp(buf, e);
 }
-
-
-
-
-
-
 
 void ts_internal_bspline_derive(
 	tsBSpline original,
@@ -1203,41 +1195,6 @@ void ts_internal_bspline_to_beziers(
 		longjmp(buf, e);
 }
 
-void ts_internal_bspline_set_ctrlp(
-	tsBSpline bspline, const tsReal* ctrlp,
-	tsBSpline* result, jmp_buf buf
-)
-{
-	const size_t s = bspline.pImpl->n_ctrlp * bspline.pImpl->dim * sizeof(tsReal);
-	ts_internal_bspline_copy(bspline, result, buf);
-	memmove(result->pImpl->ctrlp, ctrlp, s);
-}
-
-void ts_internal_bspline_set_knots(
-	tsBSpline bspline, const tsReal* knots,
-	tsBSpline* result, jmp_buf buf
-)
-{
-	const size_t s = bspline.pImpl->n_knots * sizeof(tsReal);
-	ts_internal_bspline_copy(bspline, result, buf);
-	memmove(result->pImpl->knots, knots, s);
-}
-
-
-
-/******************************************************************************
-*                                                                             *
-* :: Interface implementation                                                 *
-*                                                                             *
-******************************************************************************/
-
-
-
-
-
-
-
-
 tsError ts_bspline_derive(
 	tsBSpline original, tsBSpline* derivative
 )
@@ -1269,8 +1226,6 @@ tsError ts_bspline_fill_knots(
 	ETRY
 	return err;
 }
-
-
 
 tsError ts_bspline_insert_knot(
 	tsBSpline bspline, tsReal u, size_t n, tsBSpline* result, size_t* k

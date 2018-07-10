@@ -340,6 +340,9 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	const size_t sof_knots = n_knots + sof_real;
 	const size_t sof_spline = sof_impl + sof_ctrlp + sof_knots;
 
+	tsError e;
+	jmp_buf b;
+
 	if (dim < 1)
 		longjmp(buf, TS_DIM_ZERO);
 	if (deg >= n_ctrlp)
@@ -353,8 +356,14 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	_spline_->pImpl->dim = dim;
 	_spline_->pImpl->n_ctrlp = n_ctrlp;
 	_spline_->pImpl->n_knots = n_knots;
-	ts_internal_bspline_fill_knots(
-		*_spline_, type, 0.f, 1.f, _spline_, buf);
+
+	TRY(b, e)
+		ts_internal_bspline_fill_knots(
+			*_spline_, type, 0.f, 1.f, _spline_, b);
+	CATCH
+		ts_bspline_free(_spline_);
+		longjmp(buf, e);
+	ETRY
 }
 
 tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,

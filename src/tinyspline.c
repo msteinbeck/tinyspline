@@ -481,9 +481,9 @@ void ts_internal_bspline_thomas_algorithm(const tsReal* points, size_t n,
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
-	tsReal* m;      /* The array of weights. */
-	size_t len_m;   /* The length of m. */
-	size_t lst;     /* The index of the last control point in \p points. */
+	tsReal* m;      /* Array of weights. */
+	size_t len_m;   /* Length of m. */
+	size_t lst;     /* Index of the last control point in \p points. */
 	size_t i, d;    /* Used in for loops. */
 	size_t j, k, l; /* Used as temporary indices. */
 
@@ -555,15 +555,16 @@ void ts_internal_bspline_thomas_algorithm(const tsReal* points, size_t n,
 void ts_internal_relaxed_uniform_cubic_bspline(const tsReal* points, size_t n,
 	size_t dim, tsBSpline* _spline_, jmp_buf buf)
 {
-	const size_t order = 4; /* The order of the spline to interpolate. */
+	const size_t order = 4;    /* Order of spline to interpolate. */
 	const tsReal as = 1.f/6.f; /* The value 'a sixth'. */
 	const tsReal at = 1.f/3.f; /* The value 'a third'. */
 	const tsReal tt = 2.f/3.f; /* The value 'two third'. */
-	size_t sof_c; /* The size of a single control point. */
-	const tsReal* b = points; /* The array of the b values. */
-	tsReal* s; /* The array of the s values. */
-	size_t i, d; /* Used in for loops */
-	size_t j, k, l; /* Uses as temporary indices. */
+	size_t sof_c;              /* Size of a single control point. */
+	const tsReal* b = points;  /* Array of the b values. */
+	tsReal* s;                 /* Array of the s values. */
+	size_t i, d;               /* Used in for loops */
+	size_t j, k, l;            /* Uses as temporary indices. */
+
 	tsError e_;
 	jmp_buf b_;
 
@@ -582,7 +583,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(const tsReal* points, size_t n,
 
 	TRY(b_, e_)
 		s = (tsReal*) malloc(n * sof_c);
-		if (s == NULL)
+		if (!s)
 			longjmp(b_, TS_MALLOC);
 	CATCH
 		ts_bspline_free(_spline_);
@@ -618,6 +619,7 @@ void ts_internal_relaxed_uniform_cubic_bspline(const tsReal* points, size_t n,
 		}
 	}
 
+	/* we are done */
 	free(s);
 }
 
@@ -626,8 +628,9 @@ void ts_internal_bspline_interpolate_cubic(const tsReal* points, size_t n,
 {
 	tsError e;
 	jmp_buf b;
+
 	tsReal* thomas = (tsReal*) malloc(n*dim*sizeof(tsReal));
-	if (thomas == NULL)
+	if (!thomas)
 		longjmp(buf, TS_MALLOC);
 
 	TRY(b, e)

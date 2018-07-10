@@ -333,10 +333,11 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 {
 	const size_t order = deg + 1;
 	const size_t n_knots = n_ctrlp + order;
+	const size_t len_ctrlp = n_ctrlp * dim;
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsBSplineImpl);
-	const size_t sof_ctrlp = (n_ctrlp * dim) * sof_real;
+	const size_t sof_ctrlp = len_ctrlp * sof_real;
 	const size_t sof_knots = n_knots + sof_real;
 	const size_t sof_spline = sof_impl + sof_ctrlp + sof_knots;
 
@@ -356,8 +357,8 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	_spline_->pImpl->dim = dim;
 	_spline_->pImpl->n_ctrlp = n_ctrlp;
 	_spline_->pImpl->n_knots = n_knots;
-	_spline_->pImpl->ctrlp = ((tsReal *) (_spline_->pImpl + 1)) - sof_real;
-	_spline_->pImpl->knots = _spline_->pImpl->ctrlp + sof_ctrlp;
+	_spline_->pImpl->ctrlp = (tsReal *) (& _spline_->pImpl[1]);
+	_spline_->pImpl->knots = _spline_->pImpl->ctrlp + len_ctrlp;
 
 	TRY(b, e)
 		ts_internal_bspline_fill_knots(
@@ -428,6 +429,34 @@ void ts_bspline_free(tsBSpline *_spline_)
 void ts_deboornet_default(tsDeBoorNet *_deBoorNet_)
 {
 	_deBoorNet_->pImpl = NULL;
+}
+
+void ts_internal_deboornet_new(tsBSpline spline, tsDeBoorNet *_deBoorNet_,
+	jmp_buf buf)
+{
+	const size_t dim = ts_bspline_dimension(spline);
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t N = ts_bspline_degree(spline);
+	const size_t n_points = (size_t)(N * (N+1) * 0.5f);
+	const size_t len_points = n_points * dim;
+
+	const size_t sof_real = sizeof(tsReal);
+	const size_t sof_impl = sizeof(struct tsDeBoorNetImpl);
+	const size_t sof_points = n_points * dim * sof_real;
+	const size_t sof_net = sof_impl * sof_points;
+
+	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
+	if (!_deBoorNet_->pImpl)
+		longjmp(buf, TS_MALLOC);
+
+	_deBoorNet_->pImpl->u = 0.f;
+	_deBoorNet_->pImpl->k = 0;
+	_deBoorNet_->pImpl->s = 0;
+	_deBoorNet_->pImpl->h = deg;
+	_deBoorNet_->pImpl->dim = dim;
+	_deBoorNet_->pImpl->n_points = n_points;
+	_deBoorNet_->pImpl->points = (tsReal *) (& _deBoorNet_->pImpl[1]);
+	_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points + len_points;
 }
 
 void ts_deboornet_free(tsDeBoorNet *_deBoorNet_)
@@ -665,6 +694,133 @@ tsError ts_bspline_interpolate_cubic(const tsReal* points, size_t n,
 
 /******************************************************************************
 *                                                                             *
+* :: Query Functions                                                          *
+*                                                                             *
+******************************************************************************/
+void ts_internal_bspline_evaluate(tsBSpline spline, tsReal u,
+	tsDeBoorNet* _deBoorNet_, jmp_buf buf)
+{
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t order = ts_bspline_order(spline);
+	const size_t dim = ts_bspline_dimension(spline);
+	const size_t sof_ctrlp = ts_bspline_sof_control_points(spline);
+
+	size_t k;        /**< Index of \p u. */
+	size_t s;        /**< Multiplicity of \p u. */
+
+	tsReal uk;       /**< The actual used u. */
+	size_t from;     /**< Offset used to copy values. */
+	size_t fst;      /**< First affected control point, inclusive. */
+	size_t lst;      /**< Last affected control point, inclusive. */
+	size_t N;        /**< Number of affected control points. */
+
+	/* The following indices are used to create the DeBoor net. */
+	size_t lidx;     /**< Current left index. */
+	size_t ridx;     /**< Current right index. */
+	size_t tidx;     /**< Current to index. */
+	size_t r, i, d;  /**< Used in for loop. */
+	tsReal ui;       /**< Knot value at index i. */
+	tsReal a, a_hat; /**< Weighting factors of control points. */
+
+	/* Setup the net with its default values. */
+	ts_internal_deboornet_new(spline, _deBoorNet_, buf);
+
+	/* 1. Find index k such that u is in between [u_k, u_k+1).
+	 * 2. Setup already known values.
+	 * 3. Decide by multiplicity of u how to calculate point P(u). */
+
+	/* 1. */
+	ts_internal_bspline_find_u(spline, u, &k, &s, buf);
+
+	/* 2. */
+	uk = spline.pImpl->knots[k]; /* Ensures that with any precision of */
+	_deBoorNet_->pImpl->u =      /* tsReal the knot vector stays valid. */
+		ts_fequals(u, uk) ? uk : u;
+	_deBoorNet_->pImpl->k = k;
+	_deBoorNet_->pImpl->s = s;
+        _deBoorNet_->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */
+
+	/* 3. (by 1. s <= order)
+	 *
+	 * 3a) Check for s = order.
+	 *     Take the two points k-s and k-s + 1. If one of
+	 *     them doesn't exist, take only the other.
+	 * 3b) Use de boor algorithm to find point P(u). */
+	if (s == order) {
+		/* only one of the two control points exists */
+		if (k == deg || /* only the first */
+		    k == spline.pImpl->n_knots - 1) { /* only the last */
+			from = k == deg ? 0 : (k-s) * dim;
+			_deBoorNet_->pImpl->n_points = 1;
+			memcpy(_deBoorNet_->pImpl->points,
+			       spline.pImpl->ctrlp + from,
+			       sof_ctrlp);
+			_deBoorNet_->pImpl->result =
+				_deBoorNet_->pImpl->points;
+		} else {
+			from = (k-s) * dim;
+			_deBoorNet_->pImpl->n_points = 2;
+			memcpy(_deBoorNet_->pImpl->points,
+			       spline.pImpl->ctrlp + from,
+			       2 * sof_ctrlp);
+			_deBoorNet_->pImpl->result =
+				_deBoorNet_->pImpl->points+dim;
+		}
+	} else { /* by 3a) s <= deg (order = deg+1) */
+		fst = k-deg; /* by 1. k >= deg */
+		lst = k-s; /* s <= deg <= k */
+		N = lst-fst + 1; /* lst <= fst implies N >= 1 */
+
+		_deBoorNet_->pImpl->n_points = (size_t)(N * (N+1) * 0.5f);
+		_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points +
+			(_deBoorNet_->pImpl->n_points-1)*dim;
+
+		/* copy initial values to output */
+		memcpy(_deBoorNet_->pImpl->points,
+		       spline.pImpl->ctrlp + fst*dim,
+		       N * sof_ctrlp);
+
+		lidx = 0;
+		ridx = dim;
+		tidx = N*dim; /* N >= 1 implies tidx > 0 */
+		r = 1;
+		for (;r <= _deBoorNet_->pImpl->h; r++) {
+			i = fst + r;
+			for (; i <= lst; i++) {
+				ui = spline.pImpl->knots[i];
+				a = (_deBoorNet_->pImpl->u - ui) /
+					(spline.pImpl->knots[i+deg-r+1] - ui);
+				a_hat = 1.f-a;
+
+				for (d = 0; d < dim; d++) {
+					_deBoorNet_->pImpl->points[tidx++] =
+						a_hat * _deBoorNet_->pImpl->points[lidx++] +
+						a * _deBoorNet_->pImpl->points[ridx++];
+				}
+			}
+			lidx += dim;
+			ridx += dim;
+		}
+	}
+}
+
+tsError ts_bspline_evaluate(tsBSpline bspline, tsReal u,
+	tsDeBoorNet* _deBoorNet_)
+{
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_evaluate(bspline, u, _deBoorNet_, buf);
+	CATCH
+		ts_deboornet_default(_deBoorNet_);
+	ETRY
+	return err;
+}
+
+
+
+/******************************************************************************
+*                                                                             *
 * :: Internal functions                                                       *
 *                                                                             *
 ******************************************************************************/
@@ -881,113 +1037,7 @@ void ts_internal_bspline_insert_knot(
 	}
 }
 
-void ts_internal_bspline_evaluate(
-	tsBSpline bspline, const tsReal u,
-	tsDeBoorNet* deBoorNet, jmp_buf buf
-)
-{
-	const size_t deg = bspline.pImpl->deg;
-	const size_t order = bspline.pImpl->deg + 1;
-	const size_t dim = bspline.pImpl->dim;
-	const size_t sof_c = dim * sizeof(tsReal); /* The size of a single
- * control points.*/
-	size_t k;
-	size_t s;
-	tsReal uk; /* The actual used u. */
-	size_t from; /* An offset used to copy values. */
-	size_t fst; /* The first affected control point, inclusive. */
-	size_t lst; /* The last affected control point, inclusive. */
-	size_t N; /* The number of affected control points. */
-	/* the following indices are used to create the DeBoor net. */
-	size_t lidx; /* The current left index. */
-	size_t ridx; /* The current right index. */
-	size_t tidx; /* The current to index. */
-	size_t r, i, d; /* Used in for loop. */
-	tsReal ui; /* The knot value at index i. */
-	tsReal a, a_hat; /* The weighting factors of the control points. */
 
-	/* Setup the net with its default values. */
-	ts_deboornet_default(deBoorNet);
-
-	/* 1. Find index k such that u is in between [u_k, u_k+1).
-	 * 2. Setup already known values.
-	 * 3. Decide by multiplicity of u how to calculate point P(u). */
-
-	/* 1. */
-	ts_internal_bspline_find_u(bspline, u, &k, &s, buf);
-	deBoorNet->pImpl->k = k;
-	deBoorNet->pImpl->s = s;
-
-	/* 2. */
-	uk = bspline.pImpl->knots[k];                    /* Ensures that with any */
-	deBoorNet->pImpl->u = ts_fequals(u, uk) ? uk : u; /* tsReal precision the
-												* knot vector stays valid. */
-	deBoorNet->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */
-	deBoorNet->pImpl->dim = dim;
-
-	/* 3. (by 1. s <= order)
-	 *
-	 * 3a) Check for s = order.
-	 *     Take the two points k-s and k-s + 1. If one of
-	 *     them doesn't exist, take only the other.
-	 * 3b) Use de boor algorithm to find point P(u). */
-	if (s == order) {
-		/* only one of the two control points exists */
-		if (k == deg ||                  /* only the first control point */
-			k == bspline.pImpl->n_knots - 1) { /* only the last control point */
-
-			deBoorNet->pImpl->points = (tsReal*) malloc(sof_c);
-			if (deBoorNet->pImpl->points == NULL)
-				longjmp(buf, TS_MALLOC);
-			deBoorNet->pImpl->result = deBoorNet->pImpl->points;
-			deBoorNet->pImpl->n_points = 1;
-			from = k == deg ? 0 : (k-s) * dim;
-			memcpy(deBoorNet->pImpl->points, bspline.pImpl->ctrlp + from, sof_c);
-		} else {
-			deBoorNet->pImpl->points = (tsReal*) malloc(2 * sof_c);
-			if (deBoorNet->pImpl->points == NULL)
-				longjmp(buf, TS_MALLOC);
-			deBoorNet->pImpl->result = deBoorNet->pImpl->points+dim;
-			deBoorNet->pImpl->n_points = 2;
-			from = (k-s) * dim;
-			memcpy(deBoorNet->pImpl->points, bspline.pImpl->ctrlp + from, 2 * sof_c);
-		}
-	} else { /* by 3a) s <= deg (order = deg+1) */
-		fst = k-deg; /* by 1. k >= deg */
-		lst = k-s; /* s <= deg <= k */
-		N = lst-fst + 1; /* lst <= fst implies N >= 1 */
-
-		deBoorNet->pImpl->n_points = (size_t)(N * (N+1) * 0.5f); /* always fits */
-		deBoorNet->pImpl->points = (tsReal*) malloc(deBoorNet->pImpl->n_points * sof_c);
-		if (deBoorNet->pImpl->points == NULL)
-			longjmp(buf, TS_MALLOC);
-		deBoorNet->pImpl->result = deBoorNet->pImpl->points + (deBoorNet->pImpl->n_points-1)*dim;
-
-		/* copy initial values to output */
-		memcpy(deBoorNet->pImpl->points, bspline.pImpl->ctrlp + fst*dim, N * sof_c);
-
-		lidx = 0;
-		ridx = dim;
-		tidx = N*dim; /* N >= 1 implies tidx > 0 */
-		r = 1;
-		for (;r <= deBoorNet->pImpl->h; r++) {
-			i = fst + r;
-			for (; i <= lst; i++) {
-				ui = bspline.pImpl->knots[i];
-				a = (deBoorNet->pImpl->u - ui) / (bspline.pImpl->knots[i+deg-r+1] - ui);
-				a_hat = 1.f-a;
-
-				for (d = 0; d < dim; d++) {
-					deBoorNet->pImpl->points[tidx++] =
-							a_hat * deBoorNet->pImpl->points[lidx++] +
-							a * deBoorNet->pImpl->points[ridx++];
-				}
-			}
-			lidx += dim;
-			ridx += dim;
-		}
-	}
-}
 
 void ts_internal_bspline_split(
 	tsBSpline bspline, const tsReal u,
@@ -1220,19 +1270,7 @@ tsError ts_bspline_fill_knots(
 	return err;
 }
 
-tsError ts_bspline_evaluate(
-	tsBSpline bspline, tsReal u, tsDeBoorNet* deBoorNet
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_evaluate(bspline, u, deBoorNet, buf);
-	CATCH
-		ts_deboornet_default(deBoorNet);
-	ETRY
-	return err;
-}
+
 
 tsError ts_bspline_insert_knot(
 	tsBSpline bspline, tsReal u, size_t n, tsBSpline* result, size_t* k

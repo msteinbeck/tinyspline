@@ -356,6 +356,8 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	_spline_->pImpl->dim = dim;
 	_spline_->pImpl->n_ctrlp = n_ctrlp;
 	_spline_->pImpl->n_knots = n_knots;
+	_spline_->pImpl->ctrlp = ((tsReal *) (_spline_->pImpl + 1)) - sof_real;
+	_spline_->pImpl->knots = _spline_->pImpl->ctrlp + sof_ctrlp;
 
 	TRY(b, e)
 		ts_internal_bspline_fill_knots(

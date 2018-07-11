@@ -201,7 +201,7 @@ tsReal * ts_bspline_knots(tsBSpline spline)
 	size = ts_bspline_sof_knots(spline);
 	knots = malloc(size);
 	if (knots)
-		memcpy(knots, spline.pImpl->ctrlp, size);
+		memcpy(knots, spline.pImpl->knots, size);
 	return knots;
 }
 

@@ -58,8 +58,8 @@ struct tsDeBoorNetImpl
 * :: Forward Declarations & Internal Utility Functions                        *
 *                                                                             *
 ******************************************************************************/
-void ts_internal_bspline_fill_knots(tsBSpline original, tsBSplineType type,
-	tsReal min, tsReal max, tsBSpline* result, jmp_buf buf);
+void ts_internal_bspline_fill_knots(tsBSpline spline, tsBSplineType type,
+	tsReal min, tsReal max, tsBSpline* _result_, jmp_buf buf);
 
 size_t ts_internal_bspline_sof_state(tsBSpline spline)
 {
@@ -823,14 +823,79 @@ tsError ts_bspline_eval(tsBSpline spline, tsReal u, tsDeBoorNet *_deBoorNet_)
 * :: Transformation Functions                                                 *
 *                                                                             *
 ******************************************************************************/
-void ts_internal_bspline_fill_knots(
-		tsBSpline original, const tsBSplineType type,
-		const tsReal min, const tsReal max,
-		tsBSpline* result, jmp_buf buf
-)
+void ts_internal_bspline_derive(tsBSpline spline, tsBSpline *_derivative_,
+	jmp_buf buf)
 {
-	const size_t n_knots = original.pImpl->n_knots;
-	const size_t deg = original.pImpl->deg;
+	const size_t sof_f = sizeof(tsReal);
+	const size_t dim = spline.pImpl->dim;
+	const size_t deg = spline.pImpl->deg;
+	const size_t nc = spline.pImpl->n_ctrlp;
+	const size_t nk = spline.pImpl->n_knots;
+	tsReal* from_ctrlp = spline.pImpl->ctrlp;
+	tsReal* from_knots = spline.pImpl->knots;
+	tsReal* to_ctrlp = NULL;
+	tsReal* to_knots = NULL;
+	size_t i, j, k;
+
+	if (deg < 1 || nc < 2)
+		longjmp(buf, TS_UNDERIVABLE);
+
+	if (spline.pImpl != _derivative_->pImpl) {
+		ts_internal_bspline_new(nc-1, dim, deg-1, TS_NONE, _derivative_, buf);
+		to_ctrlp = _derivative_->pImpl->ctrlp;
+		to_knots = _derivative_->pImpl->knots;
+	} else {
+		to_ctrlp = (tsReal*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
+		if (to_ctrlp == NULL)
+			longjmp(buf, TS_MALLOC);
+		to_knots = to_ctrlp + (nc-1)*dim;
+	}
+
+	for (i = 0; i < nc-1; i++) {
+		for (j = 0; j < dim; j++) {
+			if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
+				free(to_ctrlp);
+				longjmp(buf, TS_UNDERIVABLE);
+			} else {
+				k = i*dim + j;
+				to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
+				to_ctrlp[k] *= deg;
+				to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
+			}
+		}
+	}
+	memcpy(to_knots, from_knots+1, (nk-2)*sof_f);
+
+	if (spline.pImpl == _derivative_->pImpl) {
+		/* free old memory */
+		free(from_ctrlp);
+		/* assign new values */
+		_derivative_->pImpl->deg = deg-1;
+		_derivative_->pImpl->n_ctrlp = nc-1;
+		_derivative_->pImpl->n_knots = nk-2;
+		_derivative_->pImpl->ctrlp = to_ctrlp;
+		_derivative_->pImpl->knots = to_knots;
+	}
+}
+
+tsError ts_bspline_derive(tsBSpline spline, tsBSpline *_derivative_)
+{
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_derive(spline, _derivative_, buf);
+	CATCH
+		if (spline.pImpl != _derivative_->pImpl)
+			ts_bspline_default(_derivative_);
+	ETRY
+	return err;
+}
+
+void ts_internal_bspline_fill_knots(tsBSpline spline, tsBSplineType type,
+	tsReal min, tsReal max, tsBSpline *_result_, jmp_buf buf)
+{
+	const size_t n_knots = spline.pImpl->n_knots;
+	const size_t deg = spline.pImpl->deg;
 	const size_t order = deg + 1; /* ensures order >= 1. */
 	tsReal fac; /* The factor used to calculate the knot values. */
 	size_t i; /* Used in for loops. */
@@ -844,36 +909,53 @@ void ts_internal_bspline_fill_knots(
 		longjmp(buf, TS_KNOTS_DECR);
 
 	/* copy spline even if type is TS_NONE */
-	ts_internal_bspline_copy(original, result, buf);
+	ts_internal_bspline_copy(spline, _result_, buf);
 
 	if (type == TS_OPENED) {
 		/* ensures that the first knot value is exactly \min */
-		result->pImpl->knots[0] = min; /* n_knots >= 2 */
+		_result_->pImpl->knots[0] = min; /* n_knots >= 2 */
 
 		fac = (max-min) / (n_knots-1); /* n_knots >= 2 */
 		for (i = 1; i < n_knots-1; i++)
-			result->pImpl->knots[i] = min + i*fac;
+			_result_->pImpl->knots[i] = min + i*fac;
 
 		/* ensure that the last knot value is exactly \max */
-		result->pImpl->knots[i] = max;
+		_result_->pImpl->knots[i] = max;
 	} else if (type == TS_CLAMPED) {
 		/* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
 		fac = (max-min) / (n_knots - 2*deg - 1);
 
-		ts_arr_fill(result->pImpl->knots, order, min);
+		ts_arr_fill(_result_->pImpl->knots, order, min);
 		for (i = order ;i < n_knots-order; i++)
-			result->pImpl->knots[i] = min + (i-deg)*fac;
-		ts_arr_fill(result->pImpl->knots + i, order, max);
+			_result_->pImpl->knots[i] = min + (i-deg)*fac;
+		ts_arr_fill(_result_->pImpl->knots + i, order, max);
 	} else if (type == TS_BEZIERS) {
 		/* n_knots >= 2*order implies n_knots/order >= 2 */
 		fac = (max-min) / (n_knots/order - 1);
 
-		ts_arr_fill(result->pImpl->knots, order, min);
+		ts_arr_fill(_result_->pImpl->knots, order, min);
 		for (i = order; i < n_knots-order; i += order)
-			ts_arr_fill(result->pImpl->knots + i, order, min + (i/order)*fac);
-		ts_arr_fill(result->pImpl->knots + i, order, max);
+			ts_arr_fill(_result_->pImpl->knots + i, order, min + (i/order)*fac);
+		ts_arr_fill(_result_->pImpl->knots + i, order, max);
 	}
 }
+
+tsError ts_bspline_fill_knots(tsBSpline spline, tsBSplineType type,
+	tsReal min, tsReal max, tsBSpline *_result_)
+{
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_fill_knots(
+			spline, type, min, max, _result_, buf);
+	CATCH
+		if (spline.pImpl != _result_->pImpl)
+			ts_bspline_default(_result_);
+	ETRY
+	return err;
+}
+
+
 
 void ts_internal_bspline_resize(
 		tsBSpline bspline, const int n, const int back,
@@ -1064,63 +1146,6 @@ void ts_internal_bspline_split(
 		longjmp(buf, e);
 }
 
-void ts_internal_bspline_derive(
-	tsBSpline original,
-	tsBSpline* derivative, jmp_buf buf
-)
-{
-	const size_t sof_f = sizeof(tsReal);
-	const size_t dim = original.pImpl->dim;
-	const size_t deg = original.pImpl->deg;
-	const size_t nc = original.pImpl->n_ctrlp;
-	const size_t nk = original.pImpl->n_knots;
-	tsReal* from_ctrlp = original.pImpl->ctrlp;
-	tsReal* from_knots = original.pImpl->knots;
-	tsReal* to_ctrlp = NULL;
-	tsReal* to_knots = NULL;
-	size_t i, j, k;
-
-	if (deg < 1 || nc < 2)
-		longjmp(buf, TS_UNDERIVABLE);
-
-	if (original.pImpl != derivative->pImpl) {
-		ts_internal_bspline_new(nc-1, dim, deg-1, TS_NONE, derivative, buf);
-		to_ctrlp = derivative->pImpl->ctrlp;
-		to_knots = derivative->pImpl->knots;
-	} else {
-		to_ctrlp = (tsReal*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
-		if (to_ctrlp == NULL)
-			longjmp(buf, TS_MALLOC);
-		to_knots = to_ctrlp + (nc-1)*dim;
-	}
-
-	for (i = 0; i < nc-1; i++) {
-		for (j = 0; j < dim; j++) {
-			if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
-				free(to_ctrlp);
-				longjmp(buf, TS_UNDERIVABLE);
-			} else {
-				k = i*dim + j;
-				to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
-				to_ctrlp[k] *= deg;
-				to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
-			}
-		}
-	}
-	memcpy(to_knots, from_knots+1, (nk-2)*sof_f);
-
-	if (original.pImpl == derivative->pImpl) {
-		/* free old memory */
-		free(from_ctrlp);
-		/* assign new values */
-		derivative->pImpl->deg = deg-1;
-		derivative->pImpl->n_ctrlp = nc-1;
-		derivative->pImpl->n_knots = nk-2;
-		derivative->pImpl->ctrlp = to_ctrlp;
-		derivative->pImpl->knots = to_knots;
-	}
-}
-
 void ts_internal_bspline_buckle(
 	tsBSpline bspline, const tsReal b,
 	tsBSpline* buckled, jmp_buf buf
@@ -1194,37 +1219,9 @@ void ts_internal_bspline_to_beziers(
 		longjmp(buf, e);
 }
 
-tsError ts_bspline_derive(
-	tsBSpline original, tsBSpline* derivative
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_derive(original, derivative, buf);
-	CATCH
-		if (original.pImpl != derivative->pImpl)
-			ts_bspline_default(derivative);
-	ETRY
-	return err;
-}
 
-tsError ts_bspline_fill_knots(
-	tsBSpline original, tsBSplineType type, tsReal min, tsReal max,
-	tsBSpline* result
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_fill_knots(
-			original, type, min, max, result, buf);
-	CATCH
-		if (original.pImpl != result->pImpl)
-			ts_bspline_default(result);
-	ETRY
-	return err;
-}
+
+
 
 tsError ts_bspline_insert_knot(
 	tsBSpline bspline, tsReal u, size_t n, tsBSpline* result, size_t* k

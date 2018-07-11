@@ -1153,7 +1153,7 @@ tsError ts_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
  * @return TS_MALLOC
  * 	If \p spline != \p \_buckled\_ and allocating memory failed.
  */
-tsError ts_bspline_buckle(tsBSpline original, tsReal b, tsBSpline *_buckled_);
+tsError ts_bspline_buckle(tsBSpline spline, tsReal b, tsBSpline *_buckled_);
 
 /**
  * Subdivides \p spline into a sequence of Bezier curvs by splitting it at

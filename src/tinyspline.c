@@ -323,7 +323,7 @@ tsReal * ts_deboornet_result(tsDeBoorNet net)
 * :: Constructors, Destructors, Copy, and Move Functions                      *
 *                                                                             *
 ******************************************************************************/
-void ts_bspline_default(tsBSpline* _spline_)
+void ts_bspline_default(tsBSpline *_spline_)
 {
 	_spline_->pImpl = NULL;
 }
@@ -383,7 +383,7 @@ tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	return err;
 }
 
-void ts_internal_bspline_copy(tsBSpline original, tsBSpline* _copy_,
+void ts_internal_bspline_copy(tsBSpline original, tsBSpline *_copy_,
 	jmp_buf buf)
 {
 	size_t size;
@@ -396,7 +396,7 @@ void ts_internal_bspline_copy(tsBSpline original, tsBSpline* _copy_,
 	memcpy(_copy_->pImpl, original.pImpl, size);
 }
 
-tsError ts_bspline_copy(tsBSpline original, tsBSpline* _copy_)
+tsError ts_bspline_copy(tsBSpline original, tsBSpline *_copy_)
 {
 	tsError err;
 	jmp_buf buf;
@@ -409,7 +409,7 @@ tsError ts_bspline_copy(tsBSpline original, tsBSpline* _copy_)
 	return err;
 }
 
-void ts_bspline_move(tsBSpline* from, tsBSpline* _to_)
+void ts_bspline_move(tsBSpline *from, tsBSpline *_to_)
 {
 	if (from == _to_)
 		return;
@@ -507,8 +507,8 @@ void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_)
 * :: Interpolation and Approximation Functions                                *
 *                                                                             *
 ******************************************************************************/
-void ts_internal_bspline_thomas_algorithm(const tsReal* points, size_t n,
-	size_t dim, tsReal* _result_, jmp_buf buf)
+void ts_internal_bspline_thomas_algorithm(const tsReal *points, size_t n,
+	size_t dim, tsReal *_result_, jmp_buf buf)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
@@ -583,8 +583,8 @@ void ts_internal_bspline_thomas_algorithm(const tsReal* points, size_t n,
 	free(m);
 }
 
-void ts_internal_relaxed_uniform_cubic_bspline(const tsReal* points, size_t n,
-	size_t dim, tsBSpline* _spline_, jmp_buf buf)
+void ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
+	size_t dim, tsBSpline *_spline_, jmp_buf buf)
 {
 	const size_t order = 4;    /* Order of spline to interpolate. */
 	const tsReal as = 1.f/6.f; /* The value 'a sixth'. */
@@ -654,8 +654,8 @@ void ts_internal_relaxed_uniform_cubic_bspline(const tsReal* points, size_t n,
 	free(s);
 }
 
-void ts_internal_bspline_interpolate_cubic(const tsReal* points, size_t n,
-	size_t dim, tsBSpline* _spline_, jmp_buf buf)
+void ts_internal_bspline_interpolate_cubic(const tsReal *points, size_t n,
+	size_t dim, tsBSpline *_spline_, jmp_buf buf)
 {
 	tsError e;
 	jmp_buf b;
@@ -676,8 +676,8 @@ void ts_internal_bspline_interpolate_cubic(const tsReal* points, size_t n,
 		longjmp(buf, e);
 }
 
-tsError ts_bspline_interpolate_cubic(const tsReal* points, size_t n,
-	size_t dim, tsBSpline* _spline_)
+tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
+	size_t dim, tsBSpline *_spline_)
 {
 	tsError err;
 	jmp_buf buf;
@@ -1146,27 +1146,21 @@ tsError ts_bspline_insert_knot(tsBSpline bspline, tsReal u, size_t n,
 	return err;
 }
 
-
-
-
-
-void ts_internal_bspline_split(
-	tsBSpline bspline, const tsReal u,
-	tsBSpline* split, size_t* k, jmp_buf buf
-)
+void ts_internal_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
+	size_t* k, jmp_buf buf)
 {
 	tsDeBoorNet net;
 	tsError e;
 	jmp_buf b;
 
 	TRY(b, e)
-		ts_internal_bspline_eval(bspline, u, &net, b);
-		if (net.pImpl->s == bspline.pImpl->deg + 1) {
-			ts_internal_bspline_copy(bspline, split, b);
+		ts_internal_bspline_eval(spline, u, &net, b);
+		if (net.pImpl->s == spline.pImpl->deg + 1) {
+			ts_internal_bspline_copy(spline, _split_, b);
 			*k = net.pImpl->k;
 		} else {
 			ts_internal_bspline_insert_knot(
-					bspline, net, net.pImpl->h+1, split, b);
+					spline, net, net.pImpl->h+1, _split_, b);
 			*k = net.pImpl->k + net.pImpl->h + 1;
 		}
 	CATCH
@@ -1178,45 +1172,68 @@ void ts_internal_bspline_split(
 		longjmp(buf, e);
 }
 
-void ts_internal_bspline_buckle(
-	tsBSpline bspline, const tsReal b,
-	tsBSpline* buckled, jmp_buf buf
-)
+tsError ts_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
+	size_t* k)
+{
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_split(spline, u, _split_, k, buf);
+	CATCH
+		if (spline.pImpl != _split_->pImpl)
+			ts_bspline_default(_split_);
+	ETRY
+	return err;
+}
+
+void ts_internal_bspline_buckle(tsBSpline spline, tsReal b,
+	tsBSpline *_buckled_, jmp_buf buf)
 {
 	const tsReal b_hat  = 1.f-b; /* The straightening factor. */
-	const size_t dim = bspline.pImpl->dim;
-	const size_t N = bspline.pImpl->n_ctrlp;
-	const tsReal* p0 = bspline.pImpl->ctrlp; /* Pointer to first ctrlp. */
+	const size_t dim = spline.pImpl->dim;
+	const size_t N = spline.pImpl->n_ctrlp;
+	const tsReal* p0 = spline.pImpl->ctrlp; /* Pointer to first ctrlp. */
 	const tsReal* pn_1 = p0 + (N-1)*dim; /* Pointer to the last ctrlp. */
 	size_t i, d; /* Used in for loops. */
 
-	ts_internal_bspline_copy(bspline, buckled, buf);
+	ts_internal_bspline_copy(spline, _buckled_, buf);
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {
-			buckled->pImpl->ctrlp[i*dim + d] =
-				b * buckled->pImpl->ctrlp[i*dim + d] +
+			_buckled_->pImpl->ctrlp[i*dim + d] =
+				b * _buckled_->pImpl->ctrlp[i*dim + d] +
 				b_hat * (p0[d] + ((tsReal)i / (N-1)) * (pn_1[d] - p0[d]));
 		}
 	}
 }
 
-void ts_internal_bspline_to_beziers(
-	tsBSpline bspline,
-	tsBSpline* beziers, jmp_buf buf
-)
+tsError ts_bspline_buckle(tsBSpline spline, tsReal b, tsBSpline *_buckled_)
+{
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_buckle(spline, b, _buckled_, buf);
+	CATCH
+		if (spline.pImpl != _buckled_->pImpl)
+			ts_bspline_default(_buckled_);
+	ETRY
+	return err;
+}
+
+void ts_internal_bspline_to_beziers(tsBSpline spline, tsBSpline *_beziers_,
+	jmp_buf buf)
 {
 	tsError e;
 	jmp_buf b;
-	const size_t deg = bspline.pImpl->deg;
-	const size_t order = bspline.pImpl->deg + 1;
+	const size_t deg = spline.pImpl->deg;
+	const size_t order = spline.pImpl->deg + 1;
 	tsBSpline tmp;
 	int resize; /* The number of control points to add/remove. */
 	size_t k; /* The index of the splitted knot value. */
 	tsReal u_min; /* The minimum of the knot values. */
 	tsReal u_max; /* The maximum of the knot values. */
 
-	ts_internal_bspline_copy(bspline, &tmp, buf);
+	ts_internal_bspline_copy(spline, &tmp, buf);
 
 	TRY(b, e)
 		/* fix first control point if necessary */
@@ -1241,9 +1258,9 @@ void ts_internal_bspline_to_beziers(
 			k++;
 		}
 
-		if (bspline.pImpl == beziers->pImpl)
-			ts_bspline_free(beziers);
-		ts_bspline_move(&tmp, beziers);
+		if (spline.pImpl == _beziers_->pImpl)
+			ts_bspline_free(_beziers_);
+		ts_bspline_move(&tmp, _beziers_);
 	ETRY
 
 	ts_bspline_free(&tmp);
@@ -1251,59 +1268,26 @@ void ts_internal_bspline_to_beziers(
 		longjmp(buf, e);
 }
 
-
-
-
-
-
-
-
-
-tsError ts_bspline_split(
-	tsBSpline bspline, tsReal u, tsBSpline* split, size_t* k
-)
+tsError ts_bspline_to_beziers(tsBSpline spline, tsBSpline *_beziers_)
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_split(bspline, u, split, k, buf);
+		ts_internal_bspline_to_beziers(spline, _beziers_, buf);
 	CATCH
-		if (bspline.pImpl != split->pImpl)
-			ts_bspline_default(split);
+		if (spline.pImpl != _beziers_->pImpl)
+			ts_bspline_default(_beziers_);
 	ETRY
 	return err;
 }
 
-tsError ts_bspline_buckle(
-	tsBSpline bspline, tsReal b, tsBSpline* buckled
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_buckle(bspline, b, buckled, buf);
-	CATCH
-		if (bspline.pImpl != buckled->pImpl)
-			ts_bspline_default(buckled);
-	ETRY
-	return err;
-}
 
-tsError ts_bspline_to_beziers(
-	tsBSpline bspline, tsBSpline* beziers
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_to_beziers(bspline, beziers, buf);
-	CATCH
-		if (bspline.pImpl != beziers->pImpl)
-			ts_bspline_default(beziers);
-	ETRY
-	return err;
-}
 
+/******************************************************************************
+*                                                                             *
+* :: Utility Functions                                                        *
+*                                                                             *
+******************************************************************************/
 int ts_fequals(tsReal x, tsReal y)
 {
 	if (fabs(x-y) <= FLT_MAX_ABS_ERROR) {
@@ -1336,7 +1320,7 @@ const char* ts_enum_str(tsError err)
 	return "unknown error";
 }
 
-tsError ts_str_enum(const char* str)
+tsError ts_str_enum(const char *str)
 {
 	if (!strcmp(str, ts_enum_str(TS_MALLOC)))
 		return TS_MALLOC;
@@ -1364,9 +1348,7 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 		arr[i] = val;
 }
 
-tsReal ts_ctrlp_dist2(
-	const tsReal *x, const tsReal *y, size_t dim
-)
+tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, size_t dim)
 {
 	tsReal sum = 0;
 	size_t i;

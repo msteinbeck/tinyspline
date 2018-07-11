@@ -955,20 +955,16 @@ tsError ts_bspline_fill_knots(tsBSpline spline, tsBSplineType type,
 	return err;
 }
 
-
-
-void ts_internal_bspline_resize(
-		tsBSpline bspline, const int n, const int back,
-		tsBSpline* resized, jmp_buf buf
-)
+void ts_internal_bspline_resize(tsBSpline spline, int n, int back,
+	tsBSpline *_resized_, jmp_buf buf)
 {
-	const size_t deg = bspline.pImpl->deg;
-	const size_t dim = bspline.pImpl->dim;
+	const size_t deg = spline.pImpl->deg;
+	const size_t dim = spline.pImpl->dim;
 	const size_t sof_f = sizeof(tsReal);
 	const size_t sof_c = dim * sof_f;
 
-	const size_t n_ctrlp = bspline.pImpl->n_ctrlp;
-	const size_t n_knots = bspline.pImpl->n_knots;
+	const size_t n_ctrlp = spline.pImpl->n_ctrlp;
+	const size_t n_knots = spline.pImpl->n_knots;
 	const size_t nn_ctrlp = n_ctrlp + n; /* The new length of ctrlp. */
 	const size_t nn_knots = n_knots + n; /* The new length of knots. */
 	const size_t sof_ncnk = (nn_ctrlp*dim + nn_knots) * sof_f;
@@ -977,21 +973,21 @@ void ts_internal_bspline_resize(
 	const size_t min_n_knots = n < 0 ? nn_knots : n_knots; /* the minimum of
  * the knots old and new size. */
 
-	tsReal* from_ctrlp = bspline.pImpl->ctrlp;
-	tsReal* from_knots = bspline.pImpl->knots;
+	tsReal* from_ctrlp = spline.pImpl->ctrlp;
+	tsReal* from_knots = spline.pImpl->knots;
 	tsReal* to_ctrlp = NULL;
 	tsReal* to_knots = NULL;
 
 	/* If n is 0 the spline must not be resized. */
 	if (n == 0) {
-		ts_internal_bspline_copy(bspline, resized, buf);
+		ts_internal_bspline_copy(spline, _resized_, buf);
 		return;
 	}
 
-	if (bspline.pImpl != resized->pImpl) {
-		ts_internal_bspline_new(nn_ctrlp, dim, deg, TS_NONE, resized, buf);
-		to_ctrlp = resized->pImpl->ctrlp;
-		to_knots = resized->pImpl->knots;
+	if (spline.pImpl != _resized_->pImpl) {
+		ts_internal_bspline_new(nn_ctrlp, dim, deg, TS_NONE, _resized_, buf);
+		to_ctrlp = _resized_->pImpl->ctrlp;
+		to_knots = _resized_->pImpl->knots;
 	} else {
 		if (nn_ctrlp <= deg)
 			longjmp(buf, TS_DEG_GE_NCTRLP);
@@ -1015,24 +1011,36 @@ void ts_internal_bspline_resize(
 	}
 
 	/* Cleanup if necessary. */
-	if (bspline.pImpl == resized->pImpl) {
+	if (spline.pImpl == _resized_->pImpl) {
 		/* free old memory */
 		free(from_ctrlp);
 		/* assign new values */
-		resized->pImpl->ctrlp = to_ctrlp;
-		resized->pImpl->knots = to_knots;
-		resized->pImpl->n_ctrlp = nn_ctrlp;
-		resized->pImpl->n_knots = nn_knots;
+		_resized_->pImpl->ctrlp = to_ctrlp;
+		_resized_->pImpl->knots = to_knots;
+		_resized_->pImpl->n_ctrlp = nn_ctrlp;
+		_resized_->pImpl->n_knots = nn_knots;
 	}
 }
 
-void ts_internal_bspline_insert_knot(
-		tsBSpline bspline, tsDeBoorNet deBoorNet, const size_t n,
-		tsBSpline* result, jmp_buf buf
-)
+tsError ts_bspline_resize(tsBSpline bspline, int n, int back,
+	tsBSpline *_resized_)
 {
-	const size_t deg = bspline.pImpl->deg;
-	const size_t dim = bspline.pImpl->dim;
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_resize(bspline, n, back, _resized_, buf);
+	CATCH
+		if (bspline.pImpl != _resized_->pImpl)
+			ts_bspline_default(_resized_);
+	ETRY
+	return err;
+}
+
+void ts_internal_bspline_insert_knot(tsBSpline spline, tsDeBoorNet deBoorNet,
+	size_t n, tsBSpline *_result_, jmp_buf buf)
+{
+	const size_t deg = spline.pImpl->deg;
+	const size_t dim = spline.pImpl->dim;
 	const size_t k = deBoorNet.pImpl->k;
 	const size_t sof_f = sizeof(tsReal);
 	const size_t sof_c = dim * sof_f;
@@ -1043,13 +1051,13 @@ void ts_internal_bspline_insert_knot(
  * later on, thus use int. */
 	size_t i; /* Used in for loops. */
 
-	if (deBoorNet.pImpl->s+n > bspline.pImpl->deg + 1) {
+	if (deBoorNet.pImpl->s+n > spline.pImpl->deg + 1) {
 		longjmp(buf, TS_MULTIPLICITY);
 	}
 
 	/* Use ::ts_bspline_resize even if \n is 0 to copy
 	 * the spline if necessary. */
-	ts_internal_bspline_resize(bspline, (int)n, 1, result, buf);
+	ts_internal_bspline_resize(spline, (int)n, 1, _result_, buf);
 	if (n == 0) /* Nothing to insert. */
 		return;
 
@@ -1068,15 +1076,15 @@ void ts_internal_bspline_insert_knot(
 	 * c) Copy left hand side knots from original b-spline.
 	 * d) Copy right hand side knots form original b-spline. */
 	/* copy control points */
-	memmove(result->pImpl->ctrlp, bspline.pImpl->ctrlp, (k-deg) * sof_c); /* a) */
-	from = bspline.pImpl->ctrlp + dim*(k-deg+N);
-	to   = result->pImpl->ctrlp  + dim*(k-deg+N+n); /* n >= 0 implies to >= from */
-	memmove(to, from, (result->pImpl->n_ctrlp-n-(k-deg+N)) * sof_c); /* b) */
+	memmove(_result_->pImpl->ctrlp, spline.pImpl->ctrlp, (k-deg) * sof_c); /* a) */
+	from = spline.pImpl->ctrlp + dim*(k-deg+N);
+	to   = _result_->pImpl->ctrlp  + dim*(k-deg+N+n); /* n >= 0 implies to >= from */
+	memmove(to, from, (_result_->pImpl->n_ctrlp-n-(k-deg+N)) * sof_c); /* b) */
 	/* copy knots */
-	memmove(result->pImpl->knots, bspline.pImpl->knots, (k+1) * sof_f); /* c) */
-	from = bspline.pImpl->knots + k+1;
-	to   = result->pImpl->knots  + k+1+n; /* n >= 0 implies to >= from */
-	memmove(to, from, (result->pImpl->n_knots-n-(k+1)) * sof_f); /* d) */
+	memmove(_result_->pImpl->knots, spline.pImpl->knots, (k+1) * sof_f); /* c) */
+	from = spline.pImpl->knots + k+1;
+	to   = _result_->pImpl->knots  + k+1+n; /* n >= 0 implies to >= from */
+	memmove(to, from, (_result_->pImpl->n_knots-n-(k+1)) * sof_f); /* d) */
 
 	/* 2.
 	 *
@@ -1085,7 +1093,7 @@ void ts_internal_bspline_insert_knot(
 	 * c) Copy right hand side control points from de boor net.
 	 * d) Insert knots with u_k. */
 	from = deBoorNet.pImpl->points;
-	to = result->pImpl->ctrlp + (k-deg)*dim;
+	to = _result_->pImpl->ctrlp + (k-deg)*dim;
 	stride = (int)(N*dim);
 
 	/* copy control points */
@@ -1111,12 +1119,36 @@ void ts_internal_bspline_insert_knot(
 		to += dim;
 	}
 	/* copy knots */
-	to = result->pImpl->knots+k+1;
+	to = _result_->pImpl->knots+k+1;
 	for (i = 0; i < n; i++) { /* d) */
 		*to = deBoorNet.pImpl->u;
 		to++;
 	}
 }
+
+tsError ts_bspline_insert_knot(tsBSpline bspline, tsReal u, size_t n,
+	tsBSpline *_result_, size_t* k)
+{
+	tsDeBoorNet net;
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		ts_internal_bspline_eval(bspline, u, &net, buf);
+		ts_internal_bspline_insert_knot(bspline, net, n, _result_, buf);
+		*k = net.pImpl->k+n;
+	CATCH
+		if (bspline.pImpl != _result_->pImpl)
+			ts_bspline_default(_result_);
+		*k = 0;
+	ETRY
+
+	ts_deboornet_free(&net);
+	return err;
+}
+
+
+
+
 
 void ts_internal_bspline_split(
 	tsBSpline bspline, const tsReal u,
@@ -1223,41 +1255,9 @@ void ts_internal_bspline_to_beziers(
 
 
 
-tsError ts_bspline_insert_knot(
-	tsBSpline bspline, tsReal u, size_t n, tsBSpline* result, size_t* k
-)
-{
-	tsDeBoorNet net;
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_eval(bspline, u, &net, buf);
-		ts_internal_bspline_insert_knot(bspline, net, n, result, buf);
-		*k = net.pImpl->k+n;
-	CATCH
-		if (bspline.pImpl != result->pImpl)
-			ts_bspline_default(result);
-		*k = 0;
-	ETRY
 
-	ts_deboornet_free(&net);
-	return err;
-}
 
-tsError ts_bspline_resize(
-	tsBSpline bspline, int n, int back, tsBSpline* resized
-)
-{
-	tsError err;
-	jmp_buf buf;
-	TRY(buf, err)
-		ts_internal_bspline_resize(bspline, n, back, resized, buf);
-	CATCH
-		if (bspline.pImpl != resized->pImpl)
-			ts_bspline_default(resized);
-	ETRY
-	return err;
-}
+
 
 tsError ts_bspline_split(
 	tsBSpline bspline, tsReal u, tsBSpline* split, size_t* k

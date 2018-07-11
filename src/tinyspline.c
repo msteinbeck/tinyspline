@@ -325,13 +325,13 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	tsBSplineType type, tsBSpline *_spline_, jmp_buf buf)
 {
 	const size_t order = deg + 1;
-	const size_t n_knots = n_ctrlp + order;
+	const size_t num_knots = n_ctrlp + order;
 	const size_t len_ctrlp = n_ctrlp * dim;
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsBSplineImpl);
 	const size_t sof_ctrlp = len_ctrlp * sof_real;
-	const size_t sof_knots = n_knots + sof_real;
+	const size_t sof_knots = num_knots * sof_real;
 	const size_t sof_spline = sof_impl + sof_ctrlp + sof_knots;
 
 	tsError e;
@@ -349,7 +349,7 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	_spline_->pImpl->deg = deg;
 	_spline_->pImpl->dim = dim;
 	_spline_->pImpl->n_ctrlp = n_ctrlp;
-	_spline_->pImpl->n_knots = n_knots;
+	_spline_->pImpl->n_knots = num_knots;
 	_spline_->pImpl->ctrlp = (tsReal *) (& _spline_->pImpl[1]);
 	_spline_->pImpl->knots = _spline_->pImpl->ctrlp + len_ctrlp;
 

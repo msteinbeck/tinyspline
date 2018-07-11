@@ -893,8 +893,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_evaluate(tsBSpline spline, tsReal u,
-	tsDeBoorNet *_deBoorNet_);
+tsError ts_bspline_eval(tsBSpline spline, tsReal u, tsDeBoorNet *_deBoorNet_);
 
 
 

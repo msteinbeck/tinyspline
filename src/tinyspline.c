@@ -697,8 +697,8 @@ tsError ts_bspline_interpolate_cubic(const tsReal* points, size_t n,
 * :: Query Functions                                                          *
 *                                                                             *
 ******************************************************************************/
-void ts_internal_bspline_evaluate(tsBSpline spline, tsReal u,
-	tsDeBoorNet* _deBoorNet_, jmp_buf buf)
+void ts_internal_bspline_eval(tsBSpline spline, tsReal u,
+	tsDeBoorNet *_deBoorNet_, jmp_buf buf)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
@@ -804,13 +804,12 @@ void ts_internal_bspline_evaluate(tsBSpline spline, tsReal u,
 	}
 }
 
-tsError ts_bspline_evaluate(tsBSpline spline, tsReal u,
-	tsDeBoorNet* _deBoorNet_)
+tsError ts_bspline_eval(tsBSpline spline, tsReal u, tsDeBoorNet *_deBoorNet_)
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_evaluate(spline, u, _deBoorNet_, buf);
+		ts_internal_bspline_eval(spline, u, _deBoorNet_, buf);
 	CATCH
 		ts_deboornet_default(_deBoorNet_);
 	ETRY
@@ -1019,7 +1018,7 @@ void ts_internal_bspline_insert_knot(
 	from -= dim;
 	to += (N-n)*dim;
 	stride = -(int)(N-n+1) * (int)dim; /* N = h+1 with h = deg-s
- * (ts_internal_bspline_evaluate) implies N = deg-s+1 = order-s.
+ * (ts_internal_bspline_eval) implies N = deg-s+1 = order-s.
  * n <= order-s implies N-n+1 >= order-s - order-s + 1 = 1. Thus,
  * -(int)(N-n+1) <= -1. */
 
@@ -1047,7 +1046,7 @@ void ts_internal_bspline_split(
 	jmp_buf b;
 
 	TRY(b, e)
-		ts_internal_bspline_evaluate(bspline, u, &net, b);
+		ts_internal_bspline_eval(bspline, u, &net, b);
 		if (net.pImpl->s == bspline.pImpl->deg + 1) {
 			ts_internal_bspline_copy(bspline, split, b);
 			*k = net.pImpl->k;
@@ -1235,7 +1234,7 @@ tsError ts_bspline_insert_knot(
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_evaluate(bspline, u, &net, buf);
+		ts_internal_bspline_eval(bspline, u, &net, buf);
 		ts_internal_bspline_insert_knot(bspline, net, n, result, buf);
 		*k = net.pImpl->k+n;
 	CATCH

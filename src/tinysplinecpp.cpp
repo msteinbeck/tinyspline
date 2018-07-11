@@ -212,7 +212,7 @@ tinyspline::DeBoorNet tinyspline::BSpline::evaluate(
 	const tinyspline::real u) const
 {
 	tinyspline::DeBoorNet deBoorNet;
-	const tsError err = ts_bspline_evaluate(&bspline, u, deBoorNet.data());
+	const tsError err = ts_bspline_eval(&bspline, u, deBoorNet.data());
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));
 	return deBoorNet;

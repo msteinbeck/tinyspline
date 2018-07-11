@@ -4,42 +4,54 @@
 #include "tinyspline.h"
 #include <stdio.h>
 
-void ts_bspline_print(const tsBSpline* bspline)
+void ts_bspline_print(const tsBSpline spline)
 {
+	const size_t dim = ts_bspline_dimension(spline);
+	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
+	const size_t num_knots = ts_bspline_num_knots(spline);
+	tsReal *ctrlp = ts_bspline_control_points(spline);
+	tsReal *knots = ts_bspline_knots(spline);
 	size_t i, j;
 	
 	printf("########### control points (%lu) ###########\n",
-		   (unsigned long) bspline->n_ctrlp);
-	for (i = 0; i < bspline->n_ctrlp; i++) {
-		for (j = 0; j < bspline->dim; j++) {
-			printf("%f\t", bspline->ctrlp[i * bspline->dim + j]);
+		   (unsigned long) num_ctrlp);
+	for (i = 0; i < num_ctrlp; i++) {
+		for (j = 0; j < dim; j++) {
+			printf("%f\t", ctrlp[i * dim + j]);
 		}
 		printf("\n");
 	}
 	printf("\n");
 	
 	printf("########### knots(%lu) ###########\n",
-		   (unsigned long) bspline->n_knots);
-	for (i = 0; i < bspline->n_knots; i++) {
-		printf("%f  ", bspline->knots[i]);
+		   (unsigned long) num_knots);
+	for (i = 0; i < num_knots; i++) {
+		printf("%f  ", knots[i]);
 	}
 	printf("\n\n");
+
+	free(ctrlp);
+	free(knots);
 }
 
-void ts_deboornet_print(const tsDeBoorNet* net)
+void ts_deboornet_print(const tsDeBoorNet net)
 {
+	const size_t dim = ts_deboornet_dimension(net);
+	const size_t num_points = ts_deboornet_num_points(net);
+	tsReal *points = ts_deboornet_points(net);
 	size_t i, j;
 	
 	printf("########### points (%lu) ###########\n",
-		   (unsigned long) net->n_points);
-	for (i = 0; i < net->n_points; i++) {
-		for (j = 0; j < net->dim; j++) {
-			printf("%f\t", net->points[i * net->dim + j]);
+		   (unsigned long) num_points);
+	for (i = 0; i < num_points; i++) {
+		for (j = 0; j < dim; j++) {
+			printf("%f\t", points[i * dim + j]);
 		}
 		printf("\n");
 	}
 	printf("\n\n");
-	
+
+	free(points);
 }
 
 #endif	/* DEBUGGING_H */

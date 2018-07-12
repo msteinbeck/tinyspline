@@ -406,7 +406,7 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *_to_)
 {
 	if (from == _to_)
 		return;
-	memcpy(_to_, from, ts_internal_bspline_sof_state(*from));
+	_to_->pImpl = from->pImpl;
 	ts_bspline_default(from);
 }
 
@@ -489,8 +489,8 @@ void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_)
 {
 	if (from == _to_)
 		return;
-	memcpy(_to_, from, ts_internal_deboornet_sof_state(*from));
-	ts_deboornet_default(_to_);
+	_to_->pImpl = from->pImpl;
+	ts_deboornet_default(from);
 }
 
 
@@ -955,16 +955,18 @@ void ts_internal_bspline_resize(tsBSpline spline, int n, int back,
 {
 	const size_t deg = spline.pImpl->deg;
 	const size_t dim = spline.pImpl->dim;
-	const size_t sof_f = sizeof(tsReal);
-	const size_t sof_c = dim * sof_f;
+	const size_t sof_real = sizeof(tsReal);
 
-	const size_t n_ctrlp = spline.pImpl->n_ctrlp;
-	const size_t n_knots = spline.pImpl->n_knots;
-	const size_t nn_ctrlp = n_ctrlp + n; /**< New length of ctrlp. */
-	const size_t nn_knots = n_knots + n; /**< New length of knots. */
-	const size_t sof_ncnk = (nn_ctrlp*dim + nn_knots) * sof_f;
-	const size_t min_n_ctrlp = n < 0 ? nn_ctrlp : n_ctrlp;
-	const size_t min_n_knots = n < 0 ? nn_knots : n_knots;
+	const size_t num_ctrlp = spline.pImpl->n_ctrlp;
+	const size_t num_knots = spline.pImpl->n_knots;
+	const size_t nnum_ctrlp = num_ctrlp + n; /**< New length of ctrlp. */
+	const size_t nnum_knots = num_knots + n; /**< New length of knots. */
+	const size_t min_num_ctrlp = n < 0 ? nnum_ctrlp : num_ctrlp;
+	const size_t min_num_knots = n < 0 ? nnum_knots : num_knots;
+
+	const size_t sof_min_num_ctrlp = min_num_ctrlp * sof_real;
+	const size_t sof_min_num_knots = min_num_knots * sof_real;
+	tsBSpline tmp;
 
 	tsReal* from_ctrlp = spline.pImpl->ctrlp;
 	tsReal* from_knots = spline.pImpl->knots;
@@ -977,43 +979,24 @@ void ts_internal_bspline_resize(tsBSpline spline, int n, int back,
 		return;
 	}
 
-	if (spline.pImpl != _resized_->pImpl) {
-		ts_internal_bspline_new(
-			nn_ctrlp, dim, deg, TS_NONE, _resized_, buf);
-		to_ctrlp = _resized_->pImpl->ctrlp;
-		to_knots = _resized_->pImpl->knots;
-	} else {
-		if (nn_ctrlp <= deg)
-			longjmp(buf, TS_DEG_GE_NCTRLP);
-		to_ctrlp = (tsReal*) malloc(sof_ncnk);
-		if (to_ctrlp == NULL)
-			longjmp(buf, TS_MALLOC);
-		to_knots = to_ctrlp + nn_ctrlp*dim;
-	}
+	ts_internal_bspline_new(nnum_ctrlp, dim, deg, TS_NONE, &tmp, buf);
+	to_ctrlp = tmp.pImpl->ctrlp;
+	to_knots = tmp.pImpl->knots;
 
 	/* Copy control points and knots. */
 	if (!back && n < 0) {
-		memcpy(to_ctrlp, from_ctrlp - n*dim, min_n_ctrlp * sof_c);
-		memcpy(to_knots, from_knots - n, min_n_knots * sof_f);
+		memcpy(to_ctrlp, from_ctrlp + n*dim, sof_min_num_ctrlp);
+		memcpy(to_knots, from_knots + n    , sof_min_num_knots);
 	} else if (!back && n > 0) {
-		memcpy(to_ctrlp + n*dim, from_ctrlp, min_n_ctrlp * sof_c);
-		memcpy(to_knots + n, from_knots, min_n_knots * sof_f);
+		memcpy(to_ctrlp + n*dim, from_ctrlp, sof_min_num_ctrlp);
+		memcpy(to_knots + n    , from_knots, sof_min_num_knots);
 	} else {
 		/* n != 0 implies back == true */
-		memcpy(to_ctrlp, from_ctrlp, min_n_ctrlp * sof_c);
-		memcpy(to_knots, from_knots, min_n_knots * sof_f);
+		memcpy(to_ctrlp, from_ctrlp, sof_min_num_ctrlp);
+		memcpy(to_knots, from_knots, sof_min_num_knots);
 	}
 
-	/* Cleanup if necessary. */
-	if (spline.pImpl == _resized_->pImpl) {
-		/* free old memory */
-		free(from_ctrlp);
-		/* assign new values */
-		_resized_->pImpl->ctrlp = to_ctrlp;
-		_resized_->pImpl->knots = to_knots;
-		_resized_->pImpl->n_ctrlp = nn_ctrlp;
-		_resized_->pImpl->n_knots = nn_knots;
-	}
+	_resized_->pImpl = tmp.pImpl;
 }
 
 tsError ts_bspline_resize(tsBSpline bspline, int n, int back,

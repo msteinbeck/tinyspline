@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <tinyspline.h>
 
 tsBSpline spline, derivative;
 GLUnurbsObj *theNurb;
@@ -38,27 +39,30 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	spline.ctrlp[0] = -1.75;
-	spline.ctrlp[1] = -1.0;
-	spline.ctrlp[2] = 0.0;
-	spline.ctrlp[3] = -1.5;
-	spline.ctrlp[4] = -0.5;
-	spline.ctrlp[5] = 0.0;
-	spline.ctrlp[6] = -1.5;
-	spline.ctrlp[7] = 0.0;
-	spline.ctrlp[8] = 0.0;
-	spline.ctrlp[9] = -1.25;
-	spline.ctrlp[10] = 0.5;
-	spline.ctrlp[11] = 0.0;
-	spline.ctrlp[12] = -0.75;
-	spline.ctrlp[13] = 0.75;
-	spline.ctrlp[14] = 0.0;
-	spline.ctrlp[15] = 0.0;
-	spline.ctrlp[16] = 0.5;
-	spline.ctrlp[17] = 0.0;
-	spline.ctrlp[18] = 0.5;
-	spline.ctrlp[19] = 0.0;
-	spline.ctrlp[20] = 0.0;
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ctrlp[0]  = -1.75f;
+	ctrlp[1]  = -1.0f;
+	ctrlp[2]  =  0.0f;
+	ctrlp[3]  = -1.5f;
+	ctrlp[4]  = -0.5f;
+	ctrlp[5]  =  0.0f;
+	ctrlp[6]  = -1.5f;
+	ctrlp[7]  =  0.0f;
+	ctrlp[8]  =  0.0f;
+	ctrlp[9]  = -1.25f;
+	ctrlp[10] =  0.5f;
+	ctrlp[11] =  0.0f;
+	ctrlp[12] = -0.75f;
+	ctrlp[13] =  0.75f;
+	ctrlp[14] =  0.0f;
+	ctrlp[15] =  0.0f;
+	ctrlp[16] =  0.5f;
+	ctrlp[17] =  0.0f;
+	ctrlp[18] =  0.5f;
+	ctrlp[19] =  0.0f;
+	ctrlp[20] =  0.0f;
+	ts_bspline_set_control_points(&spline, ctrlp);
+	free(ctrlp);
 
 	ts_bspline_derive(&spline, &derivative);
 }
@@ -71,51 +75,65 @@ void tear_down()
 
 void display(void)
 {
-	tsDeBoorNet net1, net2, net3;
 	size_t i;
+	tsDeBoorNet net1, net2, net3;
+	tsReal *result1, *result2, *result3;
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	tsReal *knots = ts_bspline_knots(&spline);
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
-	gluNurbsCurve(
-				  theNurb,
-				  (GLint)spline.n_knots,
-				  spline.knots,
-				  (GLint)spline.dim,
-				  spline.ctrlp,
-				  (GLint)spline.order,
-				  GL_MAP1_VERTEX_3
-				  );
+		gluNurbsCurve(
+			theNurb,
+			(GLint)ts_bspline_num_knots(&spline),
+			knots,
+			(GLint)ts_bspline_dimension(&spline),
+			ctrlp,
+			(GLint)ts_bspline_order(&spline),
+			GL_MAP1_VERTEX_3
+		);
 	gluEndCurve(theNurb);
 
 	/* draw control points */
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < spline.n_ctrlp; i++) 
-		 glVertex3fv(&spline.ctrlp[i * spline.dim]);
+	  for (i = 0; i < ts_bspline_num_control_points(&spline); i++) 
+		 glVertex3fv(&ctrlp[i * ts_bspline_dimension(&spline)]);
 	glEnd();
 	
 	/* draw derivative */
 	glColor3f(0.0, 0.0, 1.0);
 	glPointSize(5.0);
-	ts_bspline_evaluate(&spline, u, &net1);
-	ts_bspline_evaluate(&derivative, u, &net2);
-	ts_bspline_evaluate(&derivative, u, &net3);
-	for (i = 0; i < net2.dim; i++) {
-		/* subdivided by 6 just to avoid the tangent to exit from the window */
-		net2.result[i] = net1.result[i] + net2.result[i] / 6.f;
-		net3.result[i] = net1.result[i] - net3.result[i] / 6.f;
+	ts_bspline_eval(&spline, u, &net1);
+	result1 = ts_deboornet_result(&net1);
+	ts_bspline_eval(&derivative, u, &net2);
+	result2 = ts_deboornet_result(&net2);
+	ts_bspline_eval(&derivative, u, &net3);
+	result3 = ts_deboornet_result(&net3);
+	for (i = 0; i < ts_deboornet_dimension(&net2); i++) {
+		/* subdivided by 6 just to avoid the
+		 * tangent to exit from the window */
+		result2[i] = result1[i] + result2[i] / 6.f;
+		result3[i] = result1[i] - result3[i] / 6.f;
 	}
 	glBegin(GL_LINES);
-		glVertex3fv(net3.result);
-		glVertex3fv(net2.result);
+		glVertex3fv(result3);
+		glVertex3fv(result2);
 	glEnd();
+	
 	ts_deboornet_free(&net1);
 	ts_deboornet_free(&net2);
 	ts_deboornet_free(&net3);
+	free(result1);
+	free(result2);
+	free(result3);
+	free(ctrlp);
+	free(knots);
 
 	u += 0.001f;
 	if (u > 1.f) {
@@ -162,7 +180,7 @@ void reshape(int w, int h)
    gluPerspective (45.0, (GLdouble)w/(GLdouble)h, 3.0, 8.0);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   glTranslatef (0.0, 0.0, -5.0);
+   glTranslatef (0.0f, 0.0f, -5.0f);
 }
 
 int main(int argc, char** argv)

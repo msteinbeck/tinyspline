@@ -250,7 +250,7 @@ typedef struct
  * @return
  * 	The degree of \p spline.
  */
-size_t ts_bspline_degree(tsBSpline spline);
+size_t ts_bspline_degree(const tsBSpline *spline);
 
 /**
  * Sets the degree of \p spline.
@@ -264,7 +264,7 @@ size_t ts_bspline_degree(tsBSpline spline);
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= ts_bspline_get_control_points(spline).
  */
-tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
+tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg);
 
 /**
  * Returns the order (degree + 1) of \p spline.
@@ -274,7 +274,7 @@ tsError ts_bspline_set_degree(tsBSpline spline, size_t deg);
  * @return
  * 	The order of \p spline.
  */
-size_t ts_bspline_order(tsBSpline spline);
+size_t ts_bspline_order(const tsBSpline *spline);
 
 /**
  * Sets the order (degree + 1) of \p spline.
@@ -290,7 +290,7 @@ size_t ts_bspline_order(tsBSpline spline);
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
  * 	which will always be >= ts_bspline_get_control_points(spline) ).
  */
-tsError ts_bspline_set_order(tsBSpline spline, size_t order);
+tsError ts_bspline_set_order(tsBSpline *spline, size_t order);
 
 /**
  * Returns the dimension of \p spline. The dimension of a spline describes the
@@ -303,7 +303,7 @@ tsError ts_bspline_set_order(tsBSpline spline, size_t order);
  * @return
  * 	The dimension of \p spline.
  */
-size_t ts_bspline_dimension(tsBSpline spline);
+size_t ts_bspline_dimension(const tsBSpline *spline);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
@@ -327,7 +327,7 @@ size_t ts_bspline_dimension(tsBSpline spline);
  * @return TS_LCTRLP_DIM_MISMATCH
  * 	If len_control_points % \p dim != 0
  */
-tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
+tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim);
 
 /**
  * Returns the length of the control point array of \p spline.
@@ -337,7 +337,7 @@ tsError ts_bspline_set_dimension(tsBSpline spline, size_t dim);
  * @return
  * 	The length of the control point array of \p spline.
  */
-size_t ts_bspline_len_control_points(tsBSpline spline);
+size_t ts_bspline_len_control_points(const tsBSpline *spline);
 
 /**
  * Returns the number of control points of \p spline.
@@ -347,7 +347,7 @@ size_t ts_bspline_len_control_points(tsBSpline spline);
  * @return
  * 	The number of control points of \p spline.
  */
-size_t ts_bspline_num_control_points(tsBSpline spline);
+size_t ts_bspline_num_control_points(const tsBSpline *spline);
 
 /**
  * Returns the size of the control point array of \p spline. This function may
@@ -358,7 +358,7 @@ size_t ts_bspline_num_control_points(tsBSpline spline);
  * @return
  * 	The size of the control point array of \p spline.
  */
-size_t ts_bspline_sof_control_points(tsBSpline spline);
+size_t ts_bspline_sof_control_points(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the control points of \p spline.
@@ -392,7 +392,7 @@ size_t ts_bspline_sof_control_points(tsBSpline spline);
  * @return
  * 	A deep copy of the control points of \p spline or NULL.
  */
-tsReal * ts_bspline_control_points(tsBSpline spline);
+tsReal * ts_bspline_control_points(const tsBSpline *spline);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
@@ -404,7 +404,7 @@ tsReal * ts_bspline_control_points(tsBSpline spline);
  * @return TS_SUCCESS
  * 	This function never fails.
  */
-tsError ts_bspline_set_control_points(tsBSpline spline, const tsReal *ctrlp);
+tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp);
 
 /**
  * Returns the number of knots of \p spline.
@@ -414,7 +414,7 @@ tsError ts_bspline_set_control_points(tsBSpline spline, const tsReal *ctrlp);
  * @return
  * 	The number of knots of \p spline.
  */
-size_t ts_bspline_num_knots(tsBSpline spline);
+size_t ts_bspline_num_knots(const tsBSpline *spline);
 
 /**
  * Returns the size of the knot array of \p spline. This function may be useful
@@ -425,7 +425,7 @@ size_t ts_bspline_num_knots(tsBSpline spline);
  * @return TS_SUCCESS
  * 	The size of the knot array of \p spline.
  */
-size_t ts_bspline_sof_knots(tsBSpline spline);
+size_t ts_bspline_sof_knots(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the knots of \p spline.
@@ -459,7 +459,7 @@ size_t ts_bspline_sof_knots(tsBSpline spline);
  * @return
  * 	A deep copy of the knots of \p spline or NULL.
  */
-tsReal * ts_bspline_knots(tsBSpline spline);
+tsReal * ts_bspline_knots(const tsBSpline *spline);
 
 /**
  * Sets the knot of \p spline. Creates a deep copy of \p knots.
@@ -475,7 +475,7 @@ tsReal * ts_bspline_knots(tsBSpline spline);
  * @return TS_MULTIPLICITY
  * 	If there is a knot with multiplicity > order
  */
-tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
+tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots);
 
 /* ------------------------------------------------------------------------- */
 
@@ -487,7 +487,7 @@ tsError ts_bspline_set_knots(tsBSpline spline, const tsReal *knots);
  * @return
  * 	The knot of \p net.
  */
-tsReal ts_deboornet_knot(tsDeBoorNet net);
+tsReal ts_deboornet_knot(const tsDeBoorNet *net);
 
 /**
  * Returns the index [u_k, u_k+1) with u being the knot of \p net.
@@ -497,7 +497,7 @@ tsReal ts_deboornet_knot(tsDeBoorNet net);
  * @return
  * 	The index [u_k, u_k+1) with u being the knot of \p net.
  */
-size_t ts_deboornet_index(tsDeBoorNet net);
+size_t ts_deboornet_index(const tsDeBoorNet *net);
 
 /**
  * Returns the multiplicity of the knot of \p net.
@@ -507,7 +507,7 @@ size_t ts_deboornet_index(tsDeBoorNet net);
  * @return
  * 	The multiplicity of the knot of \p net.
  */
-size_t ts_deboornet_multiplicity(tsDeBoorNet net);
+size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
 
 /**
  * Returns the number of insertion that were necessary to evaluate the knot of
@@ -519,7 +519,7 @@ size_t ts_deboornet_multiplicity(tsDeBoorNet net);
  * 	The number of insertions that were necessary to evaluate the knot of \p
  * 	net.
  */
-size_t ts_deboornet_num_insertions(tsDeBoorNet net);
+size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
 
 /**
  * Returns the dimension of \p net. The dimension of a net describes the number
@@ -532,7 +532,7 @@ size_t ts_deboornet_num_insertions(tsDeBoorNet net);
  * @return
  * 	The dimension of \p net.
  */
-size_t ts_deboornet_dimension(tsDeBoorNet net);
+size_t ts_deboornet_dimension(const tsDeBoorNet *net);
 
 /**
  * Returns the length of the point array of \p net.
@@ -542,7 +542,7 @@ size_t ts_deboornet_dimension(tsDeBoorNet net);
  * @return
  * 	The length of the point array of \p net.
  */
-size_t ts_deboornet_len_points(tsDeBoorNet net);
+size_t ts_deboornet_len_points(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points of \p net.
@@ -552,7 +552,7 @@ size_t ts_deboornet_len_points(tsDeBoorNet net);
  * @return
  * 	The number of points of \p net.
  */
-size_t ts_deboornet_num_points(tsDeBoorNet net);
+size_t ts_deboornet_num_points(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the point array of \p net. This function may be useful
@@ -563,7 +563,7 @@ size_t ts_deboornet_num_points(tsDeBoorNet net);
  * @return
  * 	The size of the point array of \p net.
  */
-size_t ts_deboornet_sof_points(tsDeBoorNet net);
+size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the points of \p net.
@@ -597,7 +597,7 @@ size_t ts_deboornet_sof_points(tsDeBoorNet net);
  * @return
  * 	A deep copy of the points of \p net or NULL.
  */
-tsReal * ts_deboornet_points(tsDeBoorNet net);
+tsReal * ts_deboornet_points(const tsDeBoorNet *net);
 
 /**
  * Returns the length of the result array of \p net.
@@ -607,7 +607,7 @@ tsReal * ts_deboornet_points(tsDeBoorNet net);
  * @return
  * 	The length of the result array of \p net.
  */
-size_t ts_deboornet_len_result(tsDeBoorNet net);
+size_t ts_deboornet_len_result(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points in the result array of \p net
@@ -618,7 +618,7 @@ size_t ts_deboornet_len_result(tsDeBoorNet net);
  * @return
  * 	The number of points in the result array of \p net.
  */
-size_t ts_deboornet_num_result(tsDeBoorNet net);
+size_t ts_deboornet_num_result(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the result array of \p net. This function may be useful
@@ -629,7 +629,7 @@ size_t ts_deboornet_num_result(tsDeBoorNet net);
  * @return TS_SUCCESS
  * 	The size of the result array of \p net.
  */
-size_t ts_deboornet_sof_result(tsDeBoorNet net);
+size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the result of \p net.
@@ -663,7 +663,7 @@ size_t ts_deboornet_sof_result(tsDeBoorNet net);
  * @return
  * 	A deep copy of the result of \p net or NULL.
  */
-tsReal * ts_deboornet_result(tsDeBoorNet net);
+tsReal * ts_deboornet_result(const tsDeBoorNet *net);
 
 
 
@@ -732,7 +732,7 @@ tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_copy(tsBSpline original, tsBSpline *_copy_);
+tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_);
 
 /**
  * The move constructor of tsBSpline.
@@ -787,7 +787,7 @@ void ts_deboornet_default(tsDeBoorNet *_deBoorNet_);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_copy(tsDeBoorNet original, tsDeBoorNet *_copy_);
+tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_);
 
 /**
  * The move constructor of tsDeBoorNet.
@@ -893,7 +893,8 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_eval(tsBSpline spline, tsReal u, tsDeBoorNet *_deBoorNet_);
+tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
+	tsDeBoorNet *_deBoorNet_);
 
 
 
@@ -1001,7 +1002,7 @@ tsError ts_bspline_eval(tsBSpline spline, tsReal u, tsDeBoorNet *_deBoorNet_);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_derive(tsBSpline spline, tsBSpline *_derivative_);
+tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
 
 /**
  * Fills the knot vector of \p spline according to \p type with minimum knot
@@ -1043,8 +1044,8 @@ tsError ts_bspline_derive(tsBSpline spline, tsBSpline *_derivative_);
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_fill_knots(tsBSpline spline, tsBSplineType type, tsReal min,
-	tsReal max, tsBSpline *_result_);
+tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
+	tsReal min, tsReal max, tsBSpline *_result_);
 
 /**
  * Inserts the knot value \p u \p n times into \p spline and stores the result
@@ -1070,7 +1071,7 @@ tsError ts_bspline_fill_knots(tsBSpline spline, tsBSplineType type, tsReal min,
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_insert_knot(tsBSpline spline, tsReal u, size_t n,
+tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
 	tsBSpline *_result_, size_t *_k_);
 
 /**
@@ -1095,7 +1096,7 @@ tsError ts_bspline_insert_knot(tsBSpline spline, tsReal u, size_t n,
  * @return TS_MALLOC
  * 	If \p spline != \p \_result\_ and allocating memory failed.
  */
-tsError ts_bspline_resize(tsBSpline spline, int n, int back,
+tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
 	tsBSpline *_resized_);
 
 /**
@@ -1119,8 +1120,8 @@ tsError ts_bspline_resize(tsBSpline spline, int n, int back,
  * @return TS_MALLOC
  * 	If \p spline != \p \_split\_ and allocating memory failed.
  */
-tsError ts_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
-	 size_t *_k_);
+tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
+	size_t *_k_);
 
 /**
  * Buckles \p spline by \p b and stores the result in \p \_buckled\_. Creates
@@ -1153,7 +1154,8 @@ tsError ts_bspline_split(tsBSpline spline, tsReal u, tsBSpline *_split_,
  * @return TS_MALLOC
  * 	If \p spline != \p \_buckled\_ and allocating memory failed.
  */
-tsError ts_bspline_buckle(tsBSpline spline, tsReal b, tsBSpline *_buckled_);
+tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
+	tsBSpline *_buckled_);
 
 /**
  * Subdivides \p spline into a sequence of Bezier curvs by splitting it at
@@ -1172,7 +1174,7 @@ tsError ts_bspline_buckle(tsBSpline spline, tsReal b, tsBSpline *_buckled_);
  * @return TS_MALLOC
  * 	If \p spline != \p \_beizers\_ and allocating memory failed.
  */
-tsError ts_bspline_to_beziers(tsBSpline spline, tsBSpline *_beziers_);
+tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 
 
 

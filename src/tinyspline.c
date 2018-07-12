@@ -778,7 +778,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 		ridx = dim;
 		tidx = N*dim; /* N >= 1 implies tidx > 0 */
 		r = 1;
-		for (;r <= _deBoorNet_->pImpl->h; r++) {
+		for (;r <= ts_deboornet_num_insertions(_deBoorNet_); r++) {
 			i = fst + r;
 			for (; i <= lst; i++) {
 				ui = spline->pImpl->knots[i];
@@ -1052,7 +1052,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 
 	/* n > 0 implies s <= deg implies a regular evaluation implies h+1 is
 	 * valid. */
-	N = deBoorNet->pImpl->h+1;
+	N = ts_deboornet_num_insertions(deBoorNet) + 1;
 
 	/* 1. Copy all necessary control points and knots from
 	 *    the original B-Spline.
@@ -1161,9 +1161,11 @@ void ts_internal_bspline_split(const tsBSpline *spline, tsReal u,
 			ts_internal_bspline_copy(spline, _split_, b);
 			*k = ts_deboornet_index(&net);
 		} else {
-			ts_internal_bspline_insert_knot(
-				spline, &net, net.pImpl->h+1, _split_, b);
-			*k = ts_deboornet_index(&net) + net.pImpl->h + 1;
+			ts_internal_bspline_insert_knot(spline, &net,
+				ts_deboornet_num_insertions(&net) + 1,
+				_split_, b);
+			*k = ts_deboornet_index(&net) +
+				ts_deboornet_num_insertions(&net) + 1;
 		}
 	CATCH
 		*k = 0;

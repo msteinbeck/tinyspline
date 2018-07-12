@@ -1024,7 +1024,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
-	const size_t k = deBoorNet->pImpl->k;
+	const size_t k = ts_deboornet_index(deBoorNet);
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
 
@@ -1135,7 +1135,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
 		ts_internal_bspline_eval(spline, u, &net, buf);
 		ts_internal_bspline_insert_knot(
 			spline, &net, n, _result_, buf);
-		*k = net.pImpl->k+n;
+		*k = ts_deboornet_index(&net) + n;
 	CATCH
 		if (spline->pImpl != _result_->pImpl)
 			ts_bspline_default(_result_);
@@ -1157,11 +1157,11 @@ void ts_internal_bspline_split(const tsBSpline *spline, tsReal u,
 		ts_internal_bspline_eval(spline, u, &net, b);
 		if (net.pImpl->s == ts_bspline_order(spline)) {
 			ts_internal_bspline_copy(spline, _split_, b);
-			*k = net.pImpl->k;
+			*k = ts_deboornet_index(&net);
 		} else {
 			ts_internal_bspline_insert_knot(
 				spline, &net, net.pImpl->h+1, _split_, b);
-			*k = net.pImpl->k + net.pImpl->h + 1;
+			*k = ts_deboornet_index(&net) + net.pImpl->h + 1;
 		}
 	CATCH
 		*k = 0;

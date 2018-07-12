@@ -429,13 +429,11 @@ void ts_internal_deboornet_new(tsBSpline spline, tsDeBoorNet *_deBoorNet_,
 {
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t N = ts_bspline_degree(spline);
-	const size_t n_points = (size_t)(N * (N+1) * 0.5f);
-	const size_t len_points = n_points * dim;
+	const size_t num_points = (size_t)(deg * (deg+1) * 0.5f);
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsDeBoorNetImpl);
-	const size_t sof_points = n_points * dim * sof_real;
+	const size_t sof_points = num_points * dim * sof_real;
 	const size_t sof_net = sof_impl * sof_points;
 
 	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
@@ -447,9 +445,10 @@ void ts_internal_deboornet_new(tsBSpline spline, tsDeBoorNet *_deBoorNet_,
 	_deBoorNet_->pImpl->s = 0;
 	_deBoorNet_->pImpl->h = deg;
 	_deBoorNet_->pImpl->dim = dim;
-	_deBoorNet_->pImpl->n_points = n_points;
+	_deBoorNet_->pImpl->n_points = num_points;
 	_deBoorNet_->pImpl->points = (tsReal *) (& _deBoorNet_->pImpl[1]);
-	_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points + len_points;
+	_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points +
+		(num_points-1)*dim; /* last point in result */
 }
 
 void ts_deboornet_free(tsDeBoorNet *_deBoorNet_)
@@ -696,7 +695,7 @@ void ts_internal_bspline_eval(tsBSpline spline, tsReal u,
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
 	const size_t dim = ts_bspline_dimension(spline);
-	const size_t sof_ctrlp = ts_bspline_sof_control_points(spline);
+	const size_t sof_ctrlp = dim * sizeof(tsReal);
 
 	size_t k;        /**< Index of \p u. */
 	size_t s;        /**< Multiplicity of \p u. */

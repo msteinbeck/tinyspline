@@ -330,9 +330,9 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsBSplineImpl);
-	const size_t sof_ctrlp = len_ctrlp * sof_real;
-	const size_t sof_knots = num_knots * sof_real;
-	const size_t sof_spline = sof_impl + sof_ctrlp + sof_knots;
+	const size_t sof_ctrlp_vec = len_ctrlp * sof_real;
+	const size_t sof_knots_vec = num_knots * sof_real;
+	const size_t sof_spline = sof_impl + sof_ctrlp_vec + sof_knots_vec;
 
 	tsError e;
 	jmp_buf b;
@@ -433,8 +433,8 @@ void ts_internal_deboornet_new(tsBSpline spline, tsDeBoorNet *_deBoorNet_,
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsDeBoorNetImpl);
-	const size_t sof_points = num_points * dim * sof_real;
-	const size_t sof_net = sof_impl * sof_points;
+	const size_t sof_points_vec = num_points * dim * sof_real;
+	const size_t sof_net = sof_impl * sof_points_vec;
 
 	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
 	if (!_deBoorNet_->pImpl)
@@ -578,15 +578,15 @@ void ts_internal_bspline_thomas_algorithm(const tsReal *points, size_t n,
 void ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	size_t dim, tsBSpline *_spline_, jmp_buf buf)
 {
-	const size_t order = 4;    /* Order of spline to interpolate. */
-	const tsReal as = 1.f/6.f; /* The value 'a sixth'. */
-	const tsReal at = 1.f/3.f; /* The value 'a third'. */
-	const tsReal tt = 2.f/3.f; /* The value 'two third'. */
-	size_t sof_c;              /* Size of a single control point. */
-	const tsReal* b = points;  /* Array of the b values. */
-	tsReal* s;                 /* Array of the s values. */
-	size_t i, d;               /* Used in for loops */
-	size_t j, k, l;            /* Uses as temporary indices. */
+	const size_t order = 4;    /**< Order of spline to interpolate. */
+	const tsReal as = 1.f/6.f; /**< The value 'a sixth'. */
+	const tsReal at = 1.f/3.f; /**< The value 'a third'. */
+	const tsReal tt = 2.f/3.f; /**< The value 'two third'. */
+	size_t sof_ctrlp;          /**< Size of a single control point. */
+	const tsReal* b = points;  /**< Array of the b values. */
+	tsReal* s;                 /**< Array of the s values. */
+	size_t i, d;               /**< Used in for loops */
+	size_t j, k, l;            /**< Used as temporary indices. */
 
 	tsError e_;
 	jmp_buf b_;
@@ -598,14 +598,14 @@ void ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 		longjmp(buf, TS_DEG_GE_NCTRLP);
 	/* in the following n >= 2 applies */
 
-	sof_c = dim * sizeof(tsReal); /* dim > 0 implies sof_c > 0 */
+	sof_ctrlp = dim * sizeof(tsReal); /* dim > 0 implies sof_ctrlp > 0 */
 
 	/* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
 	ts_internal_bspline_new(
 		(n-1)*4, dim, order-1, TS_BEZIERS, _spline_, buf);
 
 	TRY(b_, e_)
-		s = (tsReal*) malloc(n * sof_c);
+		s = (tsReal*) malloc(n * sof_ctrlp);
 		if (!s)
 			longjmp(b_, TS_MALLOC);
 	CATCH
@@ -614,8 +614,8 @@ void ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	ETRY
 
 	/* set s_0 to b_0 and s_n = b_n */
-	memcpy(s, b, sof_c);
-	memcpy(s + (n-1)*dim, b + (n-1)*dim, sof_c);
+	memcpy(s, b, sof_ctrlp);
+	memcpy(s + (n-1)*dim, b + (n-1)*dim, sof_ctrlp);
 
 	/* set s_i = 1/6*b_i + 2/3*b_{i-1} + 1/6*b_{i+1}*/
 	for (i = 1; i < n-1; i++) {

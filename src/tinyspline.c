@@ -995,7 +995,9 @@ void ts_internal_bspline_resize(tsBSpline spline, int n, int back,
 		memcpy(to_knots, from_knots, sof_min_num_knots);
 	}
 
-	_resized_->pImpl = tmp.pImpl;
+	if (spline.pImpl == _resized_->pImpl)
+		ts_bspline_free(_resized_);
+	ts_bspline_move(&tmp, _resized_);
 }
 
 tsError ts_bspline_resize(tsBSpline bspline, int n, int back,

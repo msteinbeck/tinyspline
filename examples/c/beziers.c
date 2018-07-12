@@ -73,7 +73,7 @@ void display(void)
 	tsBSpline draw;
 	tsReal *ctrlp_spline, *ctrlp_draw;
 	tsReal *knots_draw;
-	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (drawBeziers)
@@ -104,7 +104,7 @@ void display(void)
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < ts_bspline_num_control_points(spline); i++) 
+	  for (i = 0; i < ts_bspline_num_control_points(spline); i++)
 		 glVertex3fv(&ctrlp_spline[i * ts_bspline_dimension(spline)]);
 	glEnd();
 

@@ -821,36 +821,30 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 void ts_internal_bspline_derive(const tsBSpline *spline,
 	tsBSpline *_derivative_, jmp_buf buf)
 {
-	const size_t sof_f = sizeof(tsReal);
+	const size_t sof_real = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t nc = ts_bspline_num_control_points(spline);
-	const size_t nk = ts_bspline_num_knots(spline);
+	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
+	const size_t num_knots = ts_bspline_num_knots(spline);
+
+	tsBSpline tmp;
 	tsReal* from_ctrlp = spline->pImpl->ctrlp;
 	tsReal* from_knots = spline->pImpl->knots;
 	tsReal* to_ctrlp = NULL;
 	tsReal* to_knots = NULL;
 	size_t i, j, k;
 
-	if (deg < 1 || nc < 2)
+	if (deg < 1 || num_ctrlp < 2)
 		longjmp(buf, TS_UNDERIVABLE);
 
-	if (spline != _derivative_) {
-		ts_internal_bspline_new(
-			nc-1, dim, deg-1, TS_NONE, _derivative_, buf);
-		to_ctrlp = _derivative_->pImpl->ctrlp;
-		to_knots = _derivative_->pImpl->knots;
-	} else {
-		to_ctrlp = (tsReal*) malloc( ((nc-1)*dim + (nk-2)) * sof_f );
-		if (to_ctrlp == NULL)
-			longjmp(buf, TS_MALLOC);
-		to_knots = to_ctrlp + (nc-1)*dim;
-	}
+	ts_internal_bspline_new(num_ctrlp-1, dim, deg-1, TS_NONE, &tmp, buf);
+	to_ctrlp = tmp.pImpl->ctrlp;
+	to_knots = tmp.pImpl->knots;
 
-	for (i = 0; i < nc-1; i++) {
+	for (i = 0; i < num_ctrlp-1; i++) {
 		for (j = 0; j < dim; j++) {
 			if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
-				free(to_ctrlp);
+				ts_bspline_free(&tmp);
 				longjmp(buf, TS_UNDERIVABLE);
 			} else {
 				k = i*dim + j;
@@ -860,18 +854,11 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 			}
 		}
 	}
-	memcpy(to_knots, from_knots+1, (nk-2)*sof_f);
+	memcpy(to_knots, from_knots+1, (num_knots-2)*sof_real);
 
-	if (spline == _derivative_) {
-		/* free old memory */
-		free(from_ctrlp);
-		/* assign new values */
-		_derivative_->pImpl->deg = deg-1;
-		_derivative_->pImpl->n_ctrlp = nc-1;
-		_derivative_->pImpl->n_knots = nk-2;
-		_derivative_->pImpl->ctrlp = to_ctrlp;
-		_derivative_->pImpl->knots = to_knots;
-	}
+	if (spline == _derivative_)
+		ts_bspline_free(_derivative_);
+	ts_bspline_move(&tmp, _derivative_);
 }
 
 tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_)

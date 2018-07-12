@@ -81,7 +81,7 @@ void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
-	const size_t num_knots = spline->pImpl->n_knots;
+	const size_t num_knots = ts_bspline_num_knots(spline);
 
 	*k = *s = 0;
 	for (; *k < num_knots; (*k)++) {
@@ -213,7 +213,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots)
 	order = ts_bspline_order(spline);
 	lst_knot = spline->pImpl->knots[0];
 	mult = 1;
-	for (idx = 1; idx < spline->pImpl->n_knots; idx++)
+	for (idx = 1; idx < ts_bspline_num_knots(spline); idx++)
 	{
 		knot = knots[idx];
 		if (ts_fequals(lst_knot, knot))
@@ -696,6 +696,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
 	const size_t dim = ts_bspline_dimension(spline);
+	const size_t num_knots = ts_bspline_num_knots(spline);
 	const size_t sof_ctrlp = dim * sizeof(tsReal);
 
 	size_t k;        /**< Index of \p u. */
@@ -742,7 +743,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 	if (s == order) {
 		/* only one of the two control points exists */
 		if (k == deg || /* only the first */
-		    k == spline->pImpl->n_knots - 1) { /* only the last */
+		    k == num_knots - 1) { /* only the last */
 			from = k == deg ? 0 : (k-s) * dim;
 			_deBoorNet_->pImpl->n_points = 1;
 			memcpy(_deBoorNet_->pImpl->points,
@@ -824,7 +825,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t nc = ts_bspline_num_control_points(spline);
-	const size_t nk = spline->pImpl->n_knots;
+	const size_t nk = ts_bspline_num_knots(spline);
 	tsReal* from_ctrlp = spline->pImpl->ctrlp;
 	tsReal* from_knots = spline->pImpl->knots;
 	tsReal* to_ctrlp = NULL;
@@ -890,7 +891,7 @@ void ts_internal_bspline_fill_knots(const tsBSpline *spline,
 	tsBSplineType type, tsReal min, tsReal max, tsBSpline *_result_,
 	jmp_buf buf)
 {
-	const size_t n_knots = spline->pImpl->n_knots;
+	const size_t n_knots = ts_bspline_num_knots(spline);
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = deg + 1; /**< ensures order >= 1. */
 	tsReal fac; /**< Factor used to calculate the knot values. */
@@ -960,7 +961,7 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 	const size_t sof_real = sizeof(tsReal);
 
 	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
-	const size_t num_knots = spline->pImpl->n_knots;
+	const size_t num_knots = ts_bspline_num_knots(spline);
 	const size_t nnum_ctrlp = num_ctrlp + n; /**< New length of ctrlp. */
 	const size_t nnum_knots = num_knots + n; /**< New length of knots. */
 	const size_t min_num_ctrlp_vec = n < 0 ? nnum_ctrlp : num_ctrlp;
@@ -1034,6 +1035,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	size_t i;     /**< Used in for loops. */
 
 	size_t num_ctrlp_result;
+	size_t num_knots_result;
 
 	if (deBoorNet->pImpl->s+n > ts_bspline_order(spline)) {
 		longjmp(buf, TS_MULTIPLICITY);
@@ -1045,6 +1047,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	if (n == 0) /* Nothing to insert. */
 		return;
 	num_ctrlp_result = ts_bspline_num_control_points(_result_);
+	num_knots_result = ts_bspline_num_knots(_result_);
 
 	/* n > 0 implies s <= deg implies a regular evaluation implies h+1 is
 	 * valid. */
@@ -1080,7 +1083,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	to   = _result_->pImpl->knots  + k+1+n;
 	memmove(to,                                        /* d) */
 		from,
-		(_result_->pImpl->n_knots-n-(k+1)) * sof_real);
+		(num_knots_result-n-(k+1)) * sof_real);
 
 	/* 2.
 	 *
@@ -1243,15 +1246,15 @@ void ts_internal_bspline_to_beziers(const tsBSpline *spline,
 		}
 
 		/* fix last control point if necessary */
-		u_max = tmp.pImpl->knots[tmp.pImpl->n_knots - order];
-		if (!ts_fequals(tmp.pImpl->knots[tmp.pImpl->n_knots-1], u_max)) {
+		u_max = tmp.pImpl->knots[ts_bspline_num_knots(&tmp) - order];
+		if (!ts_fequals(tmp.pImpl->knots[ts_bspline_num_knots(&tmp) - 1], u_max)) {
 			ts_internal_bspline_split(&tmp, u_max, &tmp, &k, b);
-			resize = (int)(-1*deg + (k - (tmp.pImpl->n_knots - order)));
+			resize = (int)(-1*deg + (k - (ts_bspline_num_knots(&tmp) - order)));
 			ts_internal_bspline_resize(&tmp, resize, 1, &tmp, b);
 		}
 
 		k = order;
-		while (k < tmp.pImpl->n_knots - order) {
+		while (k < ts_bspline_num_knots(&tmp) - order) {
 			ts_internal_bspline_split(
 				&tmp, tmp.pImpl->knots[k], &tmp, &k, b);
 			k++;

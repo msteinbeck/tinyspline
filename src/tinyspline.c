@@ -821,7 +821,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 	tsBSpline *_derivative_, jmp_buf buf)
 {
 	const size_t sof_f = sizeof(tsReal);
-	const size_t dim = spline->pImpl->dim;
+	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t nc = spline->pImpl->n_ctrlp;
 	const size_t nk = spline->pImpl->n_knots;
@@ -956,7 +956,7 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 	tsBSpline *_resized_, jmp_buf buf)
 {
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t dim = spline->pImpl->dim;
+	const size_t dim = ts_bspline_dimension(spline);
 	const size_t sof_real = sizeof(tsReal);
 
 	const size_t num_ctrlp = spline->pImpl->n_ctrlp;
@@ -1022,7 +1022,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	jmp_buf buf)
 {
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t dim = spline->pImpl->dim;
+	const size_t dim = ts_bspline_dimension(spline);
 	const size_t k = deBoorNet->pImpl->k;
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
@@ -1183,7 +1183,7 @@ void ts_internal_bspline_buckle(const tsBSpline *spline, tsReal b,
 	tsBSpline *_buckled_, jmp_buf buf)
 {
 	const tsReal b_hat  = 1.f-b; /**< The straightening factor. */
-	const size_t dim = spline->pImpl->dim;
+	const size_t dim = ts_bspline_dimension(spline);
 	const size_t N = spline->pImpl->n_ctrlp;
 	const tsReal* p0 = spline->pImpl->ctrlp; /**< First ctrlp. */
 	const tsReal* pn_1 = p0 + (N-1)*dim; /**< Last ctrlp. */

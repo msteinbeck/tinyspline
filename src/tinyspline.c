@@ -963,11 +963,11 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 	const size_t num_knots = spline->pImpl->n_knots;
 	const size_t nnum_ctrlp = num_ctrlp + n; /**< New length of ctrlp. */
 	const size_t nnum_knots = num_knots + n; /**< New length of knots. */
-	const size_t min_num_ctrlp = n < 0 ? nnum_ctrlp : num_ctrlp;
-	const size_t min_num_knots = n < 0 ? nnum_knots : num_knots;
+	const size_t min_num_ctrlp_vec = n < 0 ? nnum_ctrlp : num_ctrlp;
+	const size_t min_num_knots_vec = n < 0 ? nnum_knots : num_knots;
 
-	const size_t sof_min_num_ctrlp = min_num_ctrlp * sof_real;
-	const size_t sof_min_num_knots = min_num_knots * sof_real;
+	const size_t sof_min_num_ctrlp = min_num_ctrlp_vec * dim * sof_real;
+	const size_t sof_min_num_knots = min_num_knots_vec * sof_real;
 	tsBSpline tmp;
 
 	tsReal* from_ctrlp = spline->pImpl->ctrlp;

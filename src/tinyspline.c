@@ -1025,6 +1025,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t k = ts_deboornet_index(deBoorNet);
+	const size_t s = ts_deboornet_multiplicity(deBoorNet);
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
 
@@ -1037,7 +1038,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	size_t num_ctrlp_result;
 	size_t num_knots_result;
 
-	if (deBoorNet->pImpl->s+n > ts_bspline_order(spline)) {
+	if (s+n > ts_bspline_order(spline)) {
 		longjmp(buf, TS_MULTIPLICITY);
 	}
 
@@ -1155,7 +1156,8 @@ void ts_internal_bspline_split(const tsBSpline *spline, tsReal u,
 
 	TRY(b, e)
 		ts_internal_bspline_eval(spline, u, &net, b);
-		if (net.pImpl->s == ts_bspline_order(spline)) {
+		if (ts_deboornet_multiplicity(&net)
+		    		== ts_bspline_order(spline)) {
 			ts_internal_bspline_copy(spline, _split_, b);
 			*k = ts_deboornet_index(&net);
 		} else {

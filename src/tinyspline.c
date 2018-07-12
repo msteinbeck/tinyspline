@@ -388,6 +388,9 @@ void ts_internal_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
 	if (!_copy_->pImpl)
 		longjmp(buf, TS_MALLOC);
 	memcpy(_copy_->pImpl, original->pImpl, size);
+	_copy_->pImpl->ctrlp = (tsReal *) (& _copy_->pImpl[1]);
+	_copy_->pImpl->knots = _copy_->pImpl->ctrlp +
+		ts_bspline_len_control_points(_copy_);
 }
 
 tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_)
@@ -470,6 +473,10 @@ void ts_internal_deboornet_copy(const tsDeBoorNet *original,
 	if (!_copy->pImpl)
 		longjmp(buf, TS_MALLOC);
 	memcpy(_copy->pImpl, original->pImpl, size);
+	_copy->pImpl->points = (tsReal *) (& _copy->pImpl[1]);
+	_copy->pImpl->result = _copy->pImpl->points +
+		(ts_deboornet_len_points(_copy) - /* last point in result */
+			       ts_deboornet_dimension(_copy));
 }
 
 tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_)

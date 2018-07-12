@@ -4,7 +4,7 @@
 #include "tinyspline.h"
 #include <stdio.h>
 
-void ts_bspline_print(const tsBSpline spline)
+void ts_bspline_print(const tsBSpline *spline)
 {
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
@@ -34,7 +34,7 @@ void ts_bspline_print(const tsBSpline spline)
 	free(knots);
 }
 
-void ts_deboornet_print(const tsDeBoorNet net)
+void ts_deboornet_print(const tsDeBoorNet *net)
 {
 	const size_t dim = ts_deboornet_dimension(net);
 	const size_t num_points = ts_deboornet_num_points(net);

@@ -36,7 +36,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(spline);
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  =  0.0f;
@@ -58,7 +58,7 @@ void setup()
 	ctrlp[18] =  0.5f;
 	ctrlp[19] =  0.0f;
 	ctrlp[20] =  0.0f;
-	ts_bspline_set_control_points(spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp);
 	free(ctrlp);
 }
 
@@ -77,35 +77,35 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (drawBeziers)
-		ts_bspline_to_beziers(spline, &draw);
+		ts_bspline_to_beziers(&spline, &draw);
 	else
-		ts_bspline_copy(spline, &draw);
+		ts_bspline_copy(&spline, &draw);
 
 	/* draw 'draw' */
-	ctrlp_draw = ts_bspline_control_points(draw);
-	knots_draw = ts_bspline_knots(draw);
+	ctrlp_draw = ts_bspline_control_points(&draw);
+	knots_draw = ts_bspline_knots(&draw);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
 		gluNurbsCurve(
 			theNurb,
-			(GLint)ts_bspline_num_knots(draw),
+			(GLint)ts_bspline_num_knots(&draw),
 			knots_draw,
-			(GLint)ts_bspline_dimension(draw),
+			(GLint)ts_bspline_dimension(&draw),
 			ctrlp_draw,
-			(GLint)ts_bspline_order(draw),
+			(GLint)ts_bspline_order(&draw),
 			GL_MAP1_VERTEX_3
 		);
 	gluEndCurve(theNurb);
 	ts_bspline_free(&draw);
 
 	/* draw control points */
-	ctrlp_spline = ts_bspline_control_points(spline);
+	ctrlp_spline = ts_bspline_control_points(&spline);
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < ts_bspline_num_control_points(spline); i++)
-		 glVertex3fv(&ctrlp_spline[i * ts_bspline_dimension(spline)]);
+	  for (i = 0; i < ts_bspline_num_control_points(&spline); i++)
+		 glVertex3fv(&ctrlp_spline[i * ts_bspline_dimension(&spline)]);
 	glEnd();
 
 	ts_bspline_free(&draw);

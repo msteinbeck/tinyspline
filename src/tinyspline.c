@@ -381,7 +381,7 @@ void ts_internal_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
 	jmp_buf buf)
 {
 	size_t size;
-	if (original->pImpl == _copy_->pImpl)
+	if (original == _copy_)
 		return;
 	size = ts_internal_bspline_sof_state(original);
 	_copy_->pImpl = malloc(size);
@@ -397,7 +397,7 @@ tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_)
 	TRY(buf, err)
 		ts_internal_bspline_copy(original, _copy_, buf);
 	CATCH
-		if (original->pImpl != _copy_->pImpl)
+		if (original != _copy_)
 			ts_bspline_default(_copy_);
 	ETRY
 	return err;
@@ -463,7 +463,7 @@ void ts_internal_deboornet_copy(const tsDeBoorNet *original,
 	tsDeBoorNet *_copy, jmp_buf buf)
 {
 	size_t size;
-	if (original->pImpl == _copy->pImpl)
+	if (original == _copy)
 		return;
 	size = ts_internal_deboornet_sof_state(original);
 	_copy->pImpl = malloc(size);
@@ -479,7 +479,7 @@ tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_)
 	TRY(buf, err)
 		ts_internal_deboornet_copy(original, _copy_, buf);
 	CATCH
-		if (original->pImpl != _copy_->pImpl)
+		if (original != _copy_)
 			ts_deboornet_default(_copy_);
 	ETRY
 	return err;
@@ -835,7 +835,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 	if (deg < 1 || nc < 2)
 		longjmp(buf, TS_UNDERIVABLE);
 
-	if (spline->pImpl != _derivative_->pImpl) {
+	if (spline != _derivative_) {
 		ts_internal_bspline_new(
 			nc-1, dim, deg-1, TS_NONE, _derivative_, buf);
 		to_ctrlp = _derivative_->pImpl->ctrlp;
@@ -862,7 +862,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 	}
 	memcpy(to_knots, from_knots+1, (nk-2)*sof_f);
 
-	if (spline->pImpl == _derivative_->pImpl) {
+	if (spline == _derivative_) {
 		/* free old memory */
 		free(from_ctrlp);
 		/* assign new values */
@@ -881,7 +881,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_)
 	TRY(buf, err)
 		ts_internal_bspline_derive(spline, _derivative_, buf);
 	CATCH
-		if (spline->pImpl != _derivative_->pImpl)
+		if (spline != _derivative_)
 			ts_bspline_default(_derivative_);
 	ETRY
 	return err;
@@ -947,7 +947,7 @@ tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
 		ts_internal_bspline_fill_knots(
 			spline, type, min, max, _result_, buf);
 	CATCH
-		if (spline->pImpl != _result_->pImpl)
+		if (spline != _result_)
 			ts_bspline_default(_result_);
 	ETRY
 	return err;
@@ -999,7 +999,7 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 		memcpy(to_knots, from_knots, sof_min_num_knots);
 	}
 
-	if (spline->pImpl == _resized_->pImpl)
+	if (spline == _resized_)
 		ts_bspline_free(_resized_);
 	ts_bspline_move(&tmp, _resized_);
 }
@@ -1012,7 +1012,7 @@ tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
 	TRY(buf, err)
 		ts_internal_bspline_resize(spline, n, back, _resized_, buf);
 	CATCH
-		if (spline->pImpl != _resized_->pImpl)
+		if (spline != _resized_)
 			ts_bspline_default(_resized_);
 	ETRY
 	return err;
@@ -1081,7 +1081,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 		(k+1) * sof_real);
 	from = spline->pImpl->knots + k+1;
 	/* n >= 0 implies to >= from */
-	to   = _result_->pImpl->knots  + k+1+n;
+	to = _result_->pImpl->knots  + k+1+n;
 	memmove(to,                                        /* d) */
 		from,
 		(num_knots_result-n-(k+1)) * sof_real);
@@ -1138,7 +1138,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
 			spline, &net, n, _result_, buf);
 		*k = ts_deboornet_index(&net) + n;
 	CATCH
-		if (spline->pImpl != _result_->pImpl)
+		if (spline != _result_)
 			ts_bspline_default(_result_);
 		*k = 0;
 	ETRY
@@ -1184,7 +1184,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
 	TRY(buf, err)
 		ts_internal_bspline_split(spline, u, _split_, k, buf);
 	CATCH
-		if (spline->pImpl != _split_->pImpl)
+		if (spline != _split_)
 			ts_bspline_default(_split_);
 	ETRY
 	return err;
@@ -1219,7 +1219,7 @@ tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
 	TRY(buf, err)
 		ts_internal_bspline_buckle(spline, b, _buckled_, buf);
 	CATCH
-		if (spline->pImpl != _buckled_->pImpl)
+		if (spline != _buckled_)
 			ts_bspline_default(_buckled_);
 	ETRY
 	return err;
@@ -1264,7 +1264,7 @@ void ts_internal_bspline_to_beziers(const tsBSpline *spline,
 			k++;
 		}
 
-		if (spline->pImpl == _beziers_->pImpl)
+		if (spline == _beziers_)
 			ts_bspline_free(_beziers_);
 		ts_bspline_move(&tmp, _beziers_);
 	ETRY
@@ -1281,7 +1281,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_)
 	TRY(buf, err)
 		ts_internal_bspline_to_beziers(spline, _beziers_, buf);
 	CATCH
-		if (spline->pImpl != _beziers_->pImpl)
+		if (spline != _beziers_)
 			ts_bspline_default(_beziers_);
 	ETRY
 	return err;

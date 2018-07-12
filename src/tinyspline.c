@@ -767,7 +767,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 
 		_deBoorNet_->pImpl->n_points = (size_t)(N * (N+1) * 0.5f);
 		_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points +
-			(_deBoorNet_->pImpl->n_points-1)*dim;
+			(ts_deboornet_num_points(_deBoorNet_)-1) * dim;
 
 		/* copy initial values to output */
 		memcpy(_deBoorNet_->pImpl->points,

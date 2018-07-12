@@ -120,7 +120,7 @@ size_t ts_bspline_degree(const tsBSpline *spline)
 
 tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg)
 {
-	if (deg >= spline->pImpl->n_ctrlp)
+	if (deg >= ts_bspline_num_control_points(spline))
 		return TS_DEG_GE_NCTRLP;
 	spline->pImpl->deg = deg;
 	return TS_SUCCESS;
@@ -823,7 +823,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 	const size_t sof_f = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t nc = spline->pImpl->n_ctrlp;
+	const size_t nc = ts_bspline_num_control_points(spline);
 	const size_t nk = spline->pImpl->n_knots;
 	tsReal* from_ctrlp = spline->pImpl->ctrlp;
 	tsReal* from_knots = spline->pImpl->knots;
@@ -959,7 +959,7 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t sof_real = sizeof(tsReal);
 
-	const size_t num_ctrlp = spline->pImpl->n_ctrlp;
+	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
 	const size_t num_knots = spline->pImpl->n_knots;
 	const size_t nnum_ctrlp = num_ctrlp + n; /**< New length of ctrlp. */
 	const size_t nnum_knots = num_knots + n; /**< New length of knots. */
@@ -1026,11 +1026,14 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	const size_t k = deBoorNet->pImpl->k;
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
+
 	size_t N;     /**< Number of affected control points. */
 	tsReal* from; /**< Pointer to copy the values from. */
 	tsReal* to;   /**< Pointer to copy the values to. */
 	int stride;   /**< Stride of the next pointer to copy. */
 	size_t i;     /**< Used in for loops. */
+
+	size_t num_ctrlp_result;
 
 	if (deBoorNet->pImpl->s+n > ts_bspline_order(spline)) {
 		longjmp(buf, TS_MULTIPLICITY);
@@ -1041,6 +1044,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	ts_internal_bspline_resize(spline, (int)n, 1, _result_, buf);
 	if (n == 0) /* Nothing to insert. */
 		return;
+	num_ctrlp_result = ts_bspline_num_control_points(_result_);
 
 	/* n > 0 implies s <= deg implies a regular evaluation implies h+1 is
 	 * valid. */
@@ -1066,7 +1070,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	to = _result_->pImpl->ctrlp  + dim*(k-deg+N+n);
 	memmove(to,                                        /* b) */
 		from,
-		(_result_->pImpl->n_ctrlp-n-(k-deg+N)) * sof_ctrlp);
+		(num_ctrlp_result-n-(k-deg+N)) * sof_ctrlp);
 	/* copy knots */
 	memmove(_result_->pImpl->knots,                    /* c) */
 		spline->pImpl->knots,
@@ -1184,7 +1188,7 @@ void ts_internal_bspline_buckle(const tsBSpline *spline, tsReal b,
 {
 	const tsReal b_hat  = 1.f-b; /**< The straightening factor. */
 	const size_t dim = ts_bspline_dimension(spline);
-	const size_t N = spline->pImpl->n_ctrlp;
+	const size_t N = ts_bspline_num_control_points(spline);
 	const tsReal* p0 = spline->pImpl->ctrlp; /**< First ctrlp. */
 	const tsReal* pn_1 = p0 + (N-1)*dim; /**< Last ctrlp. */
 	size_t i, d; /**< Used in for loops. */

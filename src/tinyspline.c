@@ -79,8 +79,8 @@ size_t ts_internal_deboornet_sof_state(const tsDeBoorNet *net)
 void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	size_t *s, jmp_buf buf)
 {
-	const size_t deg = spline->pImpl->deg;
-	const size_t order = spline->pImpl->deg + 1;
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t order = ts_bspline_order(spline);
 	const size_t num_knots = spline->pImpl->n_knots;
 
 	*k = *s = 0;
@@ -822,7 +822,7 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 {
 	const size_t sof_f = sizeof(tsReal);
 	const size_t dim = spline->pImpl->dim;
-	const size_t deg = spline->pImpl->deg;
+	const size_t deg = ts_bspline_degree(spline);
 	const size_t nc = spline->pImpl->n_ctrlp;
 	const size_t nk = spline->pImpl->n_knots;
 	tsReal* from_ctrlp = spline->pImpl->ctrlp;
@@ -891,7 +891,7 @@ void ts_internal_bspline_fill_knots(const tsBSpline *spline,
 	jmp_buf buf)
 {
 	const size_t n_knots = spline->pImpl->n_knots;
-	const size_t deg = spline->pImpl->deg;
+	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = deg + 1; /**< ensures order >= 1. */
 	tsReal fac; /**< Factor used to calculate the knot values. */
 	size_t i; /**< Used in for loops. */
@@ -955,7 +955,7 @@ tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
 void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 	tsBSpline *_resized_, jmp_buf buf)
 {
-	const size_t deg = spline->pImpl->deg;
+	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = spline->pImpl->dim;
 	const size_t sof_real = sizeof(tsReal);
 
@@ -1021,7 +1021,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	const tsDeBoorNet *deBoorNet, size_t n, tsBSpline *_result_,
 	jmp_buf buf)
 {
-	const size_t deg = spline->pImpl->deg;
+	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = spline->pImpl->dim;
 	const size_t k = deBoorNet->pImpl->k;
 	const size_t sof_real = sizeof(tsReal);
@@ -1032,7 +1032,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	int stride;   /**< Stride of the next pointer to copy. */
 	size_t i;     /**< Used in for loops. */
 
-	if (deBoorNet->pImpl->s+n > spline->pImpl->deg + 1) {
+	if (deBoorNet->pImpl->s+n > ts_bspline_order(spline)) {
 		longjmp(buf, TS_MULTIPLICITY);
 	}
 
@@ -1148,7 +1148,7 @@ void ts_internal_bspline_split(const tsBSpline *spline, tsReal u,
 
 	TRY(b, e)
 		ts_internal_bspline_eval(spline, u, &net, b);
-		if (net.pImpl->s == spline->pImpl->deg + 1) {
+		if (net.pImpl->s == ts_bspline_order(spline)) {
 			ts_internal_bspline_copy(spline, _split_, b);
 			*k = net.pImpl->k;
 		} else {
@@ -1219,8 +1219,8 @@ void ts_internal_bspline_to_beziers(const tsBSpline *spline,
 {
 	tsError e;
 	jmp_buf b;
-	const size_t deg = spline->pImpl->deg;
-	const size_t order = spline->pImpl->deg + 1;
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t order = ts_bspline_order(spline);
 	tsBSpline tmp;
 	int resize;   /* Number of control points to add/remove. */
 	size_t k;     /* Index of the split knot value. */

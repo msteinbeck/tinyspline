@@ -782,7 +782,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 			i = fst + r;
 			for (; i <= lst; i++) {
 				ui = spline->pImpl->knots[i];
-				a = (_deBoorNet_->pImpl->u - ui) /
+				a = (ts_deboornet_knot(_deBoorNet_) - ui) /
 					(spline->pImpl->knots[i+deg-r+1] - ui);
 				a_hat = 1.f-a;
 
@@ -1120,7 +1120,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	/* copy knots */
 	to = _result_->pImpl->knots+k+1;
 	for (i = 0; i < n; i++) {                          /* d) */
-		*to = deBoorNet->pImpl->u;
+		*to = ts_deboornet_knot(deBoorNet);
 		to++;
 	}
 }

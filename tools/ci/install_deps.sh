@@ -27,11 +27,9 @@ pushd "$DEPS_DIR"
 	fi
 
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-		brew tap homebrew/php
 		brew update
 		brew install \
 			swig                \
-			php71               \
 			lua
 	fi
 

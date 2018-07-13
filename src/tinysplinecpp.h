@@ -19,12 +19,11 @@ public:
 	DeBoorNet& operator=(const DeBoorNet &other);
 
 	/* Getter */
-	real u() const;
-	size_t k() const;
-	size_t s() const;
-	size_t h() const;
-	size_t dim() const;
-	size_t nPoints() const;
+	real knot() const;
+	size_t index() const;
+	size_t multiplicity() const;
+	size_t num_insertions() const;
+	size_t dimension() const;
 	std::vector<real> points() const;
 	std::vector<real> result() const;
 	tsDeBoorNet * data();
@@ -41,7 +40,7 @@ public:
 #endif
 
 private:
-	tsDeBoorNet deBoorNet;
+	tsDeBoorNet net;
 };
 
 class BSpline {
@@ -60,18 +59,18 @@ public:
 	DeBoorNet operator()(real u) const;
 
 	/* Getter */
-	size_t deg() const;
+	size_t degree() const;
 	size_t order() const;
-	size_t dim() const;
-	size_t nCtrlp() const;
-	size_t nKnots() const;
-	std::vector<real> ctrlp() const;
+	size_t dimension() const;
+	std::vector<real> controlPoints() const;
 	std::vector<real> knots() const;
 	tsBSpline * data();
-	DeBoorNet evaluate(real u) const;
+
+	/* Query */
+	DeBoorNet eval(real u) const;
 
 	/* Modifications */
-	void setCtrlp(const std::vector<real> &ctrlp);
+	void setControlPoints(const std::vector<real> &ctrlp);
 	void setKnots(const std::vector<real> &knots);
 
 	/* Transformations */
@@ -95,7 +94,7 @@ public:
 #endif
 
 private:
-	tsBSpline bspline;
+	tsBSpline spline;
 };
 
 class Utils {

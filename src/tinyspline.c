@@ -90,12 +90,11 @@ tsReal * ts_internal_deboornet_access_points(const tsDeBoorNet *net)
 
 tsReal * ts_internal_deboornet_access_result(const tsDeBoorNet *net)
 {
-	tsReal *points = ts_internal_deboornet_access_points(net);
 	if (ts_deboornet_num_result(net) == 2) {
-		return points;
+		return ts_internal_deboornet_access_points(net);
 	} else {
-		return points +
-		       /* Last point in `points`. */
+		return ts_internal_deboornet_access_points(net) +
+			/* Last point in `points`. */
 		       (ts_deboornet_len_points(net) -
 			ts_deboornet_dimension(net));
 	}

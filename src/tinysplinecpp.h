@@ -22,7 +22,7 @@ public:
 	real knot() const;
 	size_t index() const;
 	size_t multiplicity() const;
-	size_t num_insertions() const;
+	size_t numInsertions() const;
 	size_t dimension() const;
 	std::vector<real> points() const;
 	std::vector<real> result() const;

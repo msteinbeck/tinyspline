@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 	tinyspline::BSpline spline(7);
 
 	// Setup control points.
-	std::vector<tinyspline::real> ctrlp = spline.ctrlp();
+	std::vector<tinyspline::real> ctrlp = spline.controlPoints();
 	ctrlp[0]  = -1.75; // x0
 	ctrlp[1]  = -1.0;  // y0
 	ctrlp[2]  = -1.5;  // x1
@@ -24,13 +24,13 @@ int main(int argc, char **argv)
 	ctrlp[11] =  0.5;  // y5
 	ctrlp[12] =  0.5;  // x6
 	ctrlp[13] =  0.0;  // y6
-	spline.setCtrlp(ctrlp);
+	spline.setControlPoints(ctrlp);
 
 	// Stores our evaluation results.
 	std::vector<tinyspline::real> result;
 
 	// Evaluate `spline` at u = 0.4 using 'evaluate'.
-	result = spline.evaluate(0.4).result();
+	result = spline.eval(0.4).result();
 	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
 
 	// Derive `spline` and subdivide it into a sequence of Bezier curves.

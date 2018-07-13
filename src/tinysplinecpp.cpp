@@ -49,7 +49,7 @@ size_t tinyspline::DeBoorNet::multiplicity() const
 	return ts_deboornet_multiplicity(&net);
 }
 
-size_t tinyspline::DeBoorNet::num_insertions() const
+size_t tinyspline::DeBoorNet::numInsertions() const
 {
 	return ts_deboornet_num_insertions(&net);
 }

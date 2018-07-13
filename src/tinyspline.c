@@ -47,8 +47,6 @@ struct tsDeBoorNetImpl
 	size_t h; /**< Number of insertions required to obtain result. */
 	size_t dim; /**< Dimension of points. (2D => x, y) */
 	size_t n_points; /** Number of points in 'points'. */
-	tsReal *points; /**< The calculated points of a net. */
-	tsReal *result; /**< Points to the result in 'points'. */
 };
 
 
@@ -74,6 +72,24 @@ size_t ts_internal_deboornet_sof_state(const tsDeBoorNet *net)
 	return sizeof(struct tsDeBoorNetImpl) +
 	       ts_deboornet_sof_points(net) +
 	       ts_deboornet_sof_result(net);
+}
+
+tsReal * ts_internal_deboornet_access_points(const tsDeBoorNet *net)
+{
+	return (tsReal *) (& net->pImpl[1]);
+}
+
+tsReal * ts_internal_deboornet_access_result(const tsDeBoorNet *net)
+{
+	tsReal *points = ts_internal_deboornet_access_points(net);
+	if (ts_deboornet_num_result(net) == 2) {
+		return points;
+	} else {
+		return points +
+		       /* Last point in `points`. */
+		       (ts_deboornet_len_points(net) -
+			ts_deboornet_dimension(net));
+	}
 }
 
 void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
@@ -279,8 +295,11 @@ tsReal * ts_deboornet_points(const tsDeBoorNet *net)
 	tsReal *points;
 	size = ts_deboornet_sof_points(net);
 	points = malloc(size);
-	if (points)
-		memcpy(points, net->pImpl->points, size);
+	if (points) {
+		memcpy(points,
+		       ts_internal_deboornet_access_points(net),
+		       size);
+	}
 	return points;
 }
 
@@ -305,8 +324,11 @@ tsReal * ts_deboornet_result(const tsDeBoorNet *net)
 	tsReal *result;
 	size = ts_deboornet_sof_result(net);
 	result = malloc(size);
-	if (result)
-		memcpy(result, net->pImpl->result, size);
+	if (result) {
+		memcpy(result,
+		       ts_internal_deboornet_access_result(net),
+		       size);
+	}
 	return result;
 }
 
@@ -450,9 +472,6 @@ void ts_internal_deboornet_new(const tsBSpline *spline,
 	_deBoorNet_->pImpl->h = deg;
 	_deBoorNet_->pImpl->dim = dim;
 	_deBoorNet_->pImpl->n_points = num_points;
-	_deBoorNet_->pImpl->points = (tsReal *) (& _deBoorNet_->pImpl[1]);
-	_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points +
-		(num_points-1)*dim; /* last point in result */
 }
 
 void ts_deboornet_free(tsDeBoorNet *_deBoorNet_)
@@ -473,10 +492,6 @@ void ts_internal_deboornet_copy(const tsDeBoorNet *original,
 	if (!_copy->pImpl)
 		longjmp(buf, TS_MALLOC);
 	memcpy(_copy->pImpl, original->pImpl, size);
-	_copy->pImpl->points = (tsReal *) (& _copy->pImpl[1]);
-	_copy->pImpl->result = _copy->pImpl->points +
-		(ts_deboornet_len_points(_copy) - /* last point in result */
-			       ts_deboornet_dimension(_copy));
 }
 
 tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_)
@@ -706,6 +721,8 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 	const size_t num_knots = ts_bspline_num_knots(spline);
 	const size_t sof_ctrlp = dim * sizeof(tsReal);
 
+	tsReal *points;  /**< Pointer to the points of \p _deBoorNet_. */
+
 	size_t k;        /**< Index of \p u. */
 	size_t s;        /**< Multiplicity of \p u. */
 
@@ -725,6 +742,7 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 
 	/* Setup the net with its default values. */
 	ts_internal_deboornet_new(spline, _deBoorNet_, buf);
+	points = ts_internal_deboornet_access_points(_deBoorNet_);
 
 	/* 1. Find index k such that u is in between [u_k, u_k+1).
 	 * 2. Setup already known values.
@@ -753,19 +771,15 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 		    k == num_knots - 1) { /* only the last */
 			from = k == deg ? 0 : (k-s) * dim;
 			_deBoorNet_->pImpl->n_points = 1;
-			memcpy(_deBoorNet_->pImpl->points,
+			memcpy(points,
 			       spline->pImpl->ctrlp + from,
 			       sof_ctrlp);
-			_deBoorNet_->pImpl->result =
-				_deBoorNet_->pImpl->points;
 		} else {
 			from = (k-s) * dim;
 			_deBoorNet_->pImpl->n_points = 2;
-			memcpy(_deBoorNet_->pImpl->points,
+			memcpy(points,
 			       spline->pImpl->ctrlp + from,
 			       2 * sof_ctrlp);
-			_deBoorNet_->pImpl->result =
-				_deBoorNet_->pImpl->points+dim;
 		}
 	} else { /* by 3a) s <= deg (order = deg+1) */
 		fst = k-deg; /* by 1. k >= deg */
@@ -773,11 +787,9 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 		N = lst-fst + 1; /* lst <= fst implies N >= 1 */
 
 		_deBoorNet_->pImpl->n_points = (size_t)(N * (N+1) * 0.5f);
-		_deBoorNet_->pImpl->result = _deBoorNet_->pImpl->points +
-			(ts_deboornet_num_points(_deBoorNet_)-1) * dim;
 
 		/* copy initial values to output */
-		memcpy(_deBoorNet_->pImpl->points,
+		memcpy(points,
 		       spline->pImpl->ctrlp + fst*dim,
 		       N * sof_ctrlp);
 
@@ -794,9 +806,9 @@ void ts_internal_bspline_eval(const tsBSpline *spline, tsReal u,
 				a_hat = 1.f-a;
 
 				for (d = 0; d < dim; d++) {
-					_deBoorNet_->pImpl->points[tidx++] =
-						a_hat * _deBoorNet_->pImpl->points[lidx++] +
-						a * _deBoorNet_->pImpl->points[ridx++];
+					points[tidx++] =
+						a_hat * points[lidx++] +
+						a     * points[ridx++];
 				}
 			}
 			lidx += dim;
@@ -1086,7 +1098,7 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	 * b) Copy middle part control points from de boor net.
 	 * c) Copy right hand side control points from de boor net.
 	 * d) Insert knots with u_k. */
-	from = deBoorNet->pImpl->points;
+	from = ts_internal_deboornet_access_points(deBoorNet);
 	to = _result_->pImpl->ctrlp + (k-deg)*dim;
 	stride = (int)(N*dim);
 

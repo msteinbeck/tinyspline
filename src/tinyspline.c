@@ -1256,36 +1256,47 @@ void ts_internal_bspline_to_beziers(const tsBSpline *spline,
 	tsReal u_min;  /**< Minimum of the knot values. */
 	tsReal u_max;  /**< Maximum of the knot values. */
 
-	tsBSpline tmp; /**< Temporarily stores the result. */
-	tsReal *knots; /**< Pointer to the knots of tmp. */
+	tsBSpline tmp;    /**< Temporarily stores the result. */
+	tsReal *knots;    /**< Pointer to the knots of tmp. */
+	size_t num_knots; /**< Number of knots in tmp. */
 
 	tsError e;
 	jmp_buf b;
 
 	ts_internal_bspline_copy(spline, &tmp, buf);
 	knots = ts_internal_bspline_access_knots(&tmp);
+	num_knots = ts_bspline_num_knots(&tmp);
 
 	TRY(b, e)
+		/* DO NOT FORGET TO UPDATE knots AND num_knots AFTER EACH
+		 * TRANSFORMATION OF tmp! */
+
 		/* fix first control point if necessary */
 		u_min = knots[deg];
 		if (!ts_fequals(knots[0], u_min)) {
 			ts_internal_bspline_split(&tmp, u_min, &tmp, &k, b);
 			resize = (int)(-1*deg + (deg*2 - k));
 			ts_internal_bspline_resize(&tmp, resize, 0, &tmp, b);
+			knots = ts_internal_bspline_access_knots(&tmp);
+			num_knots = ts_bspline_num_knots(&tmp);
 		}
 
 		/* fix last control point if necessary */
-		u_max = knots[ts_bspline_num_knots(&tmp) - order];
-		if (!ts_fequals(knots[ts_bspline_num_knots(&tmp) - 1], u_max)) {
+		u_max = knots[num_knots - order];
+		if (!ts_fequals(knots[num_knots - 1], u_max)) {
 			ts_internal_bspline_split(&tmp, u_max, &tmp, &k, b);
-			resize = (int)(-1*deg + (k - (ts_bspline_num_knots(&tmp) - order)));
+			num_knots = ts_bspline_num_knots(&tmp);
+			resize = (int)(-1*deg + (k - (num_knots - order)));
 			ts_internal_bspline_resize(&tmp, resize, 1, &tmp, b);
+			knots = ts_internal_bspline_access_knots(&tmp);
+			num_knots = ts_bspline_num_knots(&tmp);
 		}
 
 		k = order;
-		while (k < ts_bspline_num_knots(&tmp) - order) {
-			ts_internal_bspline_split(
-				&tmp, knots[k], &tmp, &k, b);
+		while (k < num_knots - order) {
+			ts_internal_bspline_split(&tmp, knots[k], &tmp, &k, b);
+			knots = ts_internal_bspline_access_knots(&tmp);
+			num_knots = ts_bspline_num_knots(&tmp);
 			k++;
 		}
 

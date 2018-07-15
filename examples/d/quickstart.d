@@ -9,7 +9,7 @@ void main()
 	BSpline spline = new BSpline(7);
 
 	// Setup control points.
-	Vector ctrlp = spline.ctrlp();
+	Vector ctrlp = spline.getControlPoints();
 	ctrlp[0]  = -1.75; // x0
 	ctrlp[1]  = -1.0;  // y0
 	ctrlp[2]  = -1.5;  // x1
@@ -24,10 +24,10 @@ void main()
 	ctrlp[11] =  0.5;  // y5
 	ctrlp[12] =  0.5;  // x6
 	ctrlp[13] =  0.0;  // y6
-	spline.setCtrlp(ctrlp);
+	spline.setControlPoints(ctrlp);
 
 	// Evaluate `spline` at u = 0.4 using 'evaluate'.
-	Vector result = spline.evaluate(0.4).result();
+	Vector result = spline.eval(0.4).result();
 	writefln("x = %f, y = %f", result[0], result[1]);
 
 	// Derive `spline` and subdivide it into a sequence of Bezier curves.

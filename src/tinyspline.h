@@ -104,13 +104,13 @@ typedef enum
 
 /**
  * Represents a B-Spline which may also be used for NURBS, Bezier curves,
- * lines, and points. NURBS are represented using homogeneous coordinates where
+ * lines, and points. NURBS are represented by homogeneous coordinates where
  * the last component of a control point is its weight. Bezier curves are
- * B-Splines with 'n_ctrlp == order' and clamped knot vector making the curve
- * passing through the first and last control point. If a Bezier curve consists
- * of two control points only, we call them a line. Points, ultimately, are
- * just very short lines having only a single control point. Consequently, the
- * degree of a point is zero.
+ * B-Splines with 'num_control_points == order' and a clamped knot vector,
+ * making the curve passing through its first and last control point. If a
+ * Bezier curve consists of two control points only, we call them a line.
+ * Points, ultimately, are just very short lines with a single control point.
+ * Consequently, the degree of a point is zero.
  *
  * Two dimensional control points are organized as follows:
  *
@@ -120,21 +120,12 @@ typedef enum
  *
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
- * ... and so on. NURBS are represented using homogeneous coordinates. For
+ * ... and so on. NURBS are represented by homogeneous coordinates. For
  * instance, let's say we have a NURBS in 2D consisting of 11 control points
  * where 'w_i' is the weight of the i'th control point. Then the corresponding
  * control points are organized as follows:
  *
  *     [x_0, y_0, w_0, x_1, y_1, w_1, ..., x_10, y_10, w_10]
- *
- * Note: The fields 'ctrlp' and 'knots' share the same array (similar to the
- *       approach used in 'tsDeBoorNet'). That is, the first elements of this
- *       array contain the control points of a spline whereas the last elements
- *       contain its knots. Accordingly, you should never free 'knots'
- *       explicitly. Using 'ts_bspline_free()' to free dynamically allocated
- *       memory is to be preferred anyway. If 'ctrlp' and 'knots' do not share
- *       the same array, or at least a consistent block of data, functions
- *       provided by TinySpline my fail because values are copied block wise.
  */
 typedef struct
 {
@@ -151,16 +142,12 @@ typedef struct
  *
  * All points of the net are stored in 'points'. The resulting point of an
  * evaluation is the last point in 'points' and, for the sake of convenience,
- * may be accessed using 'result':
+ * may be accessed with 'result':
  *
  *     tsDeBoorNet net = ...    // evaluate an arbitrary spline and store
- *                              // resulting net of points in 'net'
+ *                              // the resulting net of points in 'net'
  *
- *     net.result ...           // use 'result' to access resulting point
- *
- * Note: You should never free 'result' explicitly as it is just a convenient
- *       accessor for the last point in 'points'. Using 'ts_deboornet_free()'
- *       to free dynamically allocated memory is to be preferred anyway.
+ *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
  * Two dimensional points are organized as follows:
  *
@@ -174,8 +161,8 @@ typedef struct
  *
  * There is a special case in which the evaluation of a knot value 'u' returns
  * two instead of one result. It occurs when the multiplicity of 'u' ( s(u) )
- * is equals to a spline's order indicating that the spline is discontinuous at
- * 'u'. This is common practice for B-Splines (or NURBS) consisting of
+ * is equals to a spline's order, indicating that the spline is discontinuous
+ * at 'u'. This is common practice for B-Splines (or NURBS) consisting of
  * connected Bezier curves where the endpoint of curve 'c_i' is equals to the
  * start point of curve 'c_i+1'. The end point of 'c_i' and the start point of
  * 'c_i+1' may still be completely different though, yielding to a spline
@@ -189,25 +176,25 @@ typedef struct
  * already shown above for regular cases:
  *
  *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // at given knot value yielding to a net with
+ *                              // at given knot value, yielding to a net with
  *                              // two results
  *
- *     net.result ...           // use 'result' to access resulting point
+ *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
  * However, you can use both points if necessary:
  *
  *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // at given knot value yielding to a net with
+ *                              // at given knot value, yielding to a net with
  *                              // two results
  *
- *     net.result[0] ...        // 'result[0]' stores the first component of
- *                              // the first point
+ *     ts_deboornet_result(...)[0] ...    // stores the first component of the
+ *                                        // first point
  *
- *     net.result[net.dim]      // 'result[net.dim]' stores the first component
- *                              // of the second point
+ *     ts_deboornet_result(...)[net.dim] // stores the first component of the
+ *                                       // second point
  *
  * As if this wasn't complicated enough, there is an exception for our special
- * case yielding to exactly one result (just like the regular case) even if
+ * case, yielding to exactly one result (just like the regular case) even if
  * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
  * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
  * evaluated at 'u = 0' or 'u = 1' then 'result' is *always* a single point
@@ -217,7 +204,7 @@ typedef struct
  *     tsDeBoorNet net = ...    // evaluate a spline at lower or upper bound of
  *                              // its domain, for instance, 0 or 1
  *
- *     net.result ...           // use 'result' to access resulting point
+ *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
  * In summary, we have three different types of evaluation. 1) The regular case
  * returning all points of the net we used to calculate the resulting point. 2)

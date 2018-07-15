@@ -22,21 +22,56 @@
 // Generate getter and setter.
 #ifndef SWIGD
 %include <attribute.i>
-%attribute(tinyspline::BSpline, size_t, deg, deg);
-%attribute(tinyspline::BSpline, size_t, order, order);
-%attribute(tinyspline::BSpline, size_t, dim, dim);
-%attribute(tinyspline::BSpline, size_t, nCtrlp, nCtrlp);
-%attribute(tinyspline::BSpline, size_t, nKnots, nKnots);
-%attributeval(tinyspline::BSpline, std::vector<tinyspline::real>, ctrlp, ctrlp, setCtrlp);
-%attributeval(tinyspline::BSpline, std::vector<tinyspline::real>, knots, knots, setKnots);
-%attribute(tinyspline::DeBoorNet, tinyspline::real, u, u);
-%attribute(tinyspline::DeBoorNet, size_t, k, k);
-%attribute(tinyspline::DeBoorNet, size_t, s, s);
-%attribute(tinyspline::DeBoorNet, size_t, h, h);
-%attribute(tinyspline::DeBoorNet, size_t, dim, dim);
-%attribute(tinyspline::DeBoorNet, size_t, nPoints, nPoints);
-%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::real>, points, points);
-%attributeval(tinyspline::DeBoorNet, std::vector<tinyspline::real>, result, result);
+%attribute(tinyspline::BSpline,
+	size_t,
+	degree,
+	degree);
+%attribute(tinyspline::BSpline,
+	size_t,
+	order,
+	order);
+%attribute(tinyspline::BSpline,
+	size_t,
+	dimension,
+	dimension);
+%attributeval(tinyspline::BSpline,
+	std::vector<tinyspline::real>,
+	controlPoints,
+	controlPoints,
+	setControlPoints);
+%attributeval(tinyspline::BSpline,
+	std::vector<tinyspline::real>,
+	knots,
+	knots,
+	setKnots);
+%attribute(tinyspline::DeBoorNet,
+	tinyspline::real,
+	knot,
+	knot);
+%attribute(tinyspline::DeBoorNet,
+	size_t,
+	index,
+	index);
+%attribute(tinyspline::DeBoorNet,
+	size_t,
+	multiplicity,
+	multiplicity);
+%attribute(tinyspline::DeBoorNet,
+	size_t,
+	numInsertions,
+	numInsertions);
+%attribute(tinyspline::DeBoorNet,
+	size_t,
+	dimension,
+	dimension);
+%attributeval(tinyspline::DeBoorNet,
+	std::vector<tinyspline::real>,
+	points,
+	points);
+%attributeval(tinyspline::DeBoorNet,
+	std::vector<tinyspline::real>,
+	result,
+	result);
 #endif
 
 // Make strings directly accessible in target language.

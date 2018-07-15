@@ -6,7 +6,7 @@ from tinyspline import *
 spline = BSpline(7)
 
 # Setup control points.
-ctrlp = spline.ctrlp
+ctrlp = spline.controlPoints
 ctrlp[0]  = -1.75 # x0
 ctrlp[1]  = -1.0  # y0
 ctrlp[2]  = -1.5  # x1
@@ -21,15 +21,15 @@ ctrlp[10] =  0.0  # x5
 ctrlp[11] =  0.5  # y5
 ctrlp[12] =  0.5  # x6
 ctrlp[13] =  0.0  # y6
-spline.ctrlp = ctrlp
+spline.controlPoints = ctrlp
 
 # Evaluate `spline` at u = 0.4 using 'evaluate'.
-result = spline.evaluate(0.4).result
-print("x = ", result[0], ", y = ", result[1])
+result = spline.eval(0.4).result
+print("x = {}, y = {}".format(result[0], result[1]))
 
 # Derive `spline` and subdivide it into a sequence of Bezier curves.
 beziers = spline.derive().toBeziers()
 
 # Evaluate `beziers` at u = 0.3 using '()' instead of 'evaluate'.
 result = beziers(0.3).result
-print("x = ", result[0], ", y = ", result[1])
+print("x = {}, y = {}".format(result[0], result[1]))

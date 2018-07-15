@@ -69,16 +69,16 @@ public class Swing extends JPanel implements
 		});
 		final BSpline spline = Utils.interpolateCubic(
 				toInterpolate, 2).toBeziers();
-		if (spline.getNCtrlp() % 4 != 0) { // just to be sure
+		if (spline.getControlPoints().size() % 4 != 0) { // just to be sure
 			throw new IllegalStateException(
 					"Unexpected number of control points.");
 		}
 
 		// draw sequence curve by curve
+		List<Double> ctrlp = spline.getControlPoints();
 		final int order = (int) spline.getOrder();
-		final int dim = (int) spline.getDim();
-		final int nBeziers = (int) spline.getNCtrlp() / order;
-		List<Double> ctrlp = spline.getCtrlp();
+		final int dim = (int) spline.getDimension();
+		final int nBeziers = (int) (ctrlp.size() / dim) / order;
 		final Path2D.Double path = new Path2D.Double();
 		for (int i = 0; i < nBeziers; i++) {
 			path.moveTo(ctrlp.get(i*dim*order), ctrlp.get(i*dim*order + 1));

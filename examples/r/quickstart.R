@@ -11,7 +11,7 @@ cacheMetaData(1)
 spline <- BSpline(7)
 
 # Setup control points.
-ctrlp <- BSpline_ctrlp_get(spline)
+ctrlp <- BSpline_controlPoints_get(spline)
 ctrlp[1]  = -1.75 # x0
 ctrlp[2]  = -1.0  # y0
 ctrlp[3]  = -1.5  # x1
@@ -26,18 +26,18 @@ ctrlp[11] =  0.0  # x5
 ctrlp[12] =  0.5  # y5
 ctrlp[13] =  0.5  # x6
 ctrlp[14] =  0.0  # y6
-invisible(BSpline_ctrlp_set(spline, ctrlp))
+invisible(BSpline_controlPoints_set(spline, ctrlp))
 
 # Evaluate `spline` at u = 0.4.
-result = BSpline_evaluate(spline, 0.4)
+result = BSpline_eval(spline, 0.4)
 result = DeBoorNet_result_get(.Last.value)
-cat("x = ", result[1], "y = ", result[2], "\n")
+cat("x = ", result[1], ", y = ", result[2], "\n")
 
 # Derive `spline` and subdivide it into a sequence of Bezier curves.
 beziers = BSpline_derive(spline)
 beziers = BSpline_toBeziers(.Last.value)
 
 # Evaluate `beziers` at u = 0.3.
-result = BSpline_evaluate(beziers, 0.3)
+result = BSpline_eval(beziers, 0.3)
 result = DeBoorNet_result_get(.Last.value)
-cat("x = ", result[1], "y = ", result[2], "\n")
+cat("x = ", result[1], ", y = ", result[2], "\n")

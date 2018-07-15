@@ -1,0 +1,5 @@
+Compile:
+  csc -r:TinySpline.dll QuickStart.cs
+
+Run (Mono):
+  mono QuickStart.exe

@@ -29,66 +29,74 @@ tsReal u = 0.f;
 ********************************************************/
 void setup()
 {
-	const tsReal w = (tsReal)(sqrt(2.f) / 2.f);
+	const tsReal w = (tsReal) (sqrt(2) / 2.f);
 	ts_bspline_new(9, 4, 2, TS_CLAMPED ,&spline);
 	
-	spline.ctrlp[0] = 1.f;
-	spline.ctrlp[1] = 0.f;
-	spline.ctrlp[2] = 0.f;
-	spline.ctrlp[3] = 1.f;
+	/* set control points */
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ctrlp[0] = 1.f;
+	ctrlp[1] = 0.f;
+	ctrlp[2] = 0.f;
+	ctrlp[3] = 1.f;
 	
-	spline.ctrlp[4] = w;
-	spline.ctrlp[5] = w;
-	spline.ctrlp[6] = 0.f;
-	spline.ctrlp[7] = w;
+	ctrlp[4] = w;
+	ctrlp[5] = w;
+	ctrlp[6] = 0.f;
+	ctrlp[7] = w;
 	
-	spline.ctrlp[8] = 0.f;
-	spline.ctrlp[9] = 1.f;
-	spline.ctrlp[10] = 0.f;
-	spline.ctrlp[11] = 1.f;
+	ctrlp[8] = 0.f;
+	ctrlp[9] = 1.f;
+	ctrlp[10] = 0.f;
+	ctrlp[11] = 1.f;
 	
-	spline.ctrlp[12]  = -w;
-	spline.ctrlp[13] = w;
-	spline.ctrlp[14] = 0.f;
-	spline.ctrlp[15] = w;
+	ctrlp[12]  = -w;
+	ctrlp[13] = w;
+	ctrlp[14] = 0.f;
+	ctrlp[15] = w;
 	
-	spline.ctrlp[16] = -1.f;
-	spline.ctrlp[17] = 0.f;
-	spline.ctrlp[18] = 0.f;
-	spline.ctrlp[19] = 1.f;
+	ctrlp[16] = -1.f;
+	ctrlp[17] = 0.f;
+	ctrlp[18] = 0.f;
+	ctrlp[19] = 1.f;
 	
-	spline.ctrlp[20] = -w;
-	spline.ctrlp[21] = -w;
-	spline.ctrlp[22] = 0.f;
-	spline.ctrlp[23] = w;
+	ctrlp[20] = -w;
+	ctrlp[21] = -w;
+	ctrlp[22] = 0.f;
+	ctrlp[23] = w;
 	
-	spline.ctrlp[24] = 0.f;
-	spline.ctrlp[25] = -1.f;
-	spline.ctrlp[26] = 0.f;
-	spline.ctrlp[27] = 1.f;
+	ctrlp[24] = 0.f;
+	ctrlp[25] = -1.f;
+	ctrlp[26] = 0.f;
+	ctrlp[27] = 1.f;
 	
-	spline.ctrlp[28] = w;
-	spline.ctrlp[29] = -w;
-	spline.ctrlp[30] = 0.f;
-	spline.ctrlp[31] = w;
+	ctrlp[28] = w;
+	ctrlp[29] = -w;
+	ctrlp[30] = 0.f;
+	ctrlp[31] = w;
 	
-	spline.ctrlp[32] = 1.f;
-	spline.ctrlp[33] = 0.f;
-	spline.ctrlp[34] = 0.f;
-	spline.ctrlp[35] = 1.f;
+	ctrlp[32] = 1.f;
+	ctrlp[33] = 0.f;
+	ctrlp[34] = 0.f;
+	ctrlp[35] = 1.f;
+	ts_bspline_set_control_points(&spline, ctrlp);
+	free(ctrlp);
 	
-	spline.knots[0] = 0.f;
-	spline.knots[1] = 0.f;
-	spline.knots[2] = 0.f;
-	spline.knots[3] = 1.f/4.f;
-	spline.knots[4] = 1.f/4.f;
-	spline.knots[5] = 2.f/4.f;
-	spline.knots[6] = 2.f/4.f;
-	spline.knots[7] = 3.f/4.f;
-	spline.knots[8] = 3.f/4.f;
-	spline.knots[9] = 1.f;
-	spline.knots[10] = 1.f;
-	spline.knots[11] = 1.f;
+	/* set knots */
+	tsReal *knots = ts_bspline_knots(&spline);
+	knots[0] = 0.f;
+	knots[1] = 0.f;
+	knots[2] = 0.f;
+	knots[3] = 1.f/4.f;
+	knots[4] = 1.f/4.f;
+	knots[5] = 2.f/4.f;
+	knots[6] = 2.f/4.f;
+	knots[7] = 3.f/4.f;
+	knots[8] = 3.f/4.f;
+	knots[9] = 1.f;
+	knots[10] = 1.f;
+	knots[11] = 1.f;
+	ts_bspline_set_knots(&spline, knots);
+	free(knots);
 }
 
 void tear_down()
@@ -98,8 +106,12 @@ void tear_down()
 
 void display(void)
 {
-	tsDeBoorNet net;
 	size_t i;
+	tsDeBoorNet net;
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	tsReal *knots = ts_bspline_knots(&spline);
+	tsReal *result;
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
@@ -108,11 +120,11 @@ void display(void)
 	gluBeginCurve(theNurb);
 		gluNurbsCurve(
 			theNurb, 
-			(GLint)spline.n_knots,
-			spline.knots, 
-			(GLint)spline.dim,
-			spline.ctrlp, 
-			(GLint)spline.order,
+			(GLint)ts_bspline_num_knots(&spline),
+			knots, 
+			(GLint)ts_bspline_dimension(&spline),
+			ctrlp, 
+			(GLint)ts_bspline_order(&spline),
 			GL_MAP1_VERTEX_4
 		);
 	gluEndCurve(theNurb);
@@ -121,18 +133,25 @@ void display(void)
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < spline.n_ctrlp; i++) 
-		 glVertex3fv(&spline.ctrlp[i * spline.dim]);
+	  for (i = 0; i < ts_bspline_num_control_points(&spline); i++) 
+		 glVertex3fv(&ctrlp[i * ts_bspline_dimension(&spline)]);
 	glEnd();
+	
+	/* eval spline */
+	ts_bspline_eval(&spline, u, &net);
+	result = ts_deboornet_result(&net);
 	
 	/* draw evaluation */
 	glColor3f(0.0, 0.0, 1.0);
 	glPointSize(5.0);
-	ts_bspline_evaluate(&spline, u, &net);
 	glBegin(GL_POINTS);
-		glVertex4fv(net.result);
+		glVertex4fv(result);
 	glEnd();
+	
 	ts_deboornet_free(&net);
+	free(ctrlp);
+	free(knots);
+	free(result);
 	
 	u += 0.001f;
 	if (u > 1.f) {
@@ -179,7 +198,7 @@ void reshape(int w, int h)
    gluPerspective (45.0, (GLdouble)w/(GLdouble)h, 3.0, 8.0);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   glTranslatef (0.0, 0.0, -5.0);
+   glTranslatef (0.0f, 0.0f, -5.0f);
 }
 
 int main(int argc, char** argv)

@@ -13,9 +13,9 @@ points <- c(
 	0.6, 0.5, 0,
 	0.9, 0.9, 0)
 spline <- Utils_interpolateCubic(points, 3)
-dim    <- BSpline_dim_get(spline)
+dim    <- BSpline_dimension_get(spline)
 order  <- BSpline_order_get(spline)
-ctrlp  <- BSpline_ctrlp_get(spline)
+ctrlp  <- BSpline_controlPoints_get(spline)
 
 X11()
 grid.newpage()

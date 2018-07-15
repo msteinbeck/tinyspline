@@ -11,7 +11,7 @@ extern "C" {
 
 /******************************************************************************
 *                                                                             *
-* System Dependent Configuration                                              *
+* :: System Dependent Configuration                                           *
 *                                                                             *
 * The following configuration values must be adjusted to your system. Some of *
 * them may be configured using preprocessor definitions. The default values   *
@@ -31,7 +31,7 @@ typedef double tsReal;
 
 /******************************************************************************
 *                                                                             *
-* Data Types                                                                  *
+* :: Data Types                                                               *
 *                                                                             *
 * The following section defines all data types available in TinySpline.       *
 *                                                                             *
@@ -59,7 +59,7 @@ typedef enum
 	/* The dimension of the control points are 0. */
 	TS_DIM_ZERO = -2,
 
-	/* Degree of spline (deg) >= number of control points (n_ctrlp). */
+	/* Degree of spline >= number of control points. */
 	TS_DEG_GE_NCTRLP = -3,
 
 	/* Spline is not defined at knot value u. */
@@ -75,7 +75,10 @@ typedef enum
 	TS_NUM_KNOTS = -7,
 
 	/* Spline is not derivable */
-	TS_UNDERIVABLE = -8
+	TS_UNDERIVABLE = -8,
+
+	/* len_control_points % dim != 0 */
+	TS_LCTRLP_DIM_MISMATCH = -10
 } tsError;
 
 /**
@@ -135,26 +138,7 @@ typedef enum
  */
 typedef struct
 {
-	/* Degree of B-Spline basis function. */
-	size_t deg;
-
-	/* A convenience field for deg+1. */
-	size_t order;
-
-	/* Dimension of a control points. */
-	size_t dim;
-
-	/* Number of control points. */
-	size_t n_ctrlp;
-
-	/* Number of knots (n_ctrlp + deg + 1). */
-	size_t n_knots;
-
-	/* Control points of a spline. */
-	tsReal *ctrlp;
-
-	/* Knot vector of a spline (ascending order). */
-	tsReal *knots;
+	struct tsBSplineImpl *pImpl; /**< The actual implementation. */
 } tsBSpline;
 
 /**
@@ -245,36 +229,447 @@ typedef struct
  */
 typedef struct
 {
-	/* The evaluated knot value. */
-	tsReal u;
-
-	/* The index [u_k, u_k+1) */
-	size_t k;
-
-	/* Multiplicity of u_k. */
-	size_t s;
-
-	/* How many times u must be inserted to get the resulting point. */
-	size_t h;
-
-	/* Dimension of a control point. */
-	size_t dim;
-
-	/* Number of points in 'points'. */
-	size_t n_points;
-
-	/* Points of the net used to evaluate u_k. */
-	tsReal *points;
-
-	/* A convenient pointer to the result in 'points'. */
-	tsReal *result;
+	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
 } tsDeBoorNet;
 
 
 
 /******************************************************************************
 *                                                                             *
-* Constructors, Destructors, Copy, and Move Functions                         *
+* :: Field Access Functions                                                   *
+*                                                                             *
+* The following section contains getter and setter functions for the internal *
+* state of the structs listed above.                                          *
+*                                                                             *
+******************************************************************************/
+/**
+ * Returns the degree of \p spline.
+ *
+ * @param spline
+ * 	The spline whose degree will be read.
+ * @return
+ * 	The degree of \p spline.
+ */
+size_t ts_bspline_degree(const tsBSpline *spline);
+
+/**
+ * Sets the degree of \p spline.
+ *
+ * @param spline
+ * 	The spline whose degree will be set.
+ * @param deg
+ * 	The degree to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p degree >= ts_bspline_get_control_points(spline).
+ */
+tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg);
+
+/**
+ * Returns the order (degree + 1) of \p spline.
+ *
+ * @param spline
+ * 	The spline whose order will be read.
+ * @return
+ * 	The order of \p spline.
+ */
+size_t ts_bspline_order(const tsBSpline *spline);
+
+/**
+ * Sets the order (degree + 1) of \p spline.
+ *
+ * @param spline
+ * 	The spline whose order will be set.
+ * @param order
+ * 	The order to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p order > ts_bspline_get_control_points(spline) or if \p order == 0
+ * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
+ * 	which will always be >= ts_bspline_get_control_points(spline) ).
+ */
+tsError ts_bspline_set_order(tsBSpline *spline, size_t order);
+
+/**
+ * Returns the dimension of \p spline. The dimension of a spline describes the
+ * number of components for each point in ts_bspline_get_control_points(spline).
+ * One-dimensional splines are possible, albeit their benefit might be
+ * questionable.
+ *
+ * @param spline
+ * 	The spline whose dimension will be read.
+ * @return
+ * 	The dimension of \p spline.
+ */
+size_t ts_bspline_dimension(const tsBSpline *spline);
+
+/**
+ * Sets the dimension of \p spline. The following conditions must be satisfied:
+ *
+ * 	(1) dim >= 1
+ * 	(2) len_control_points % dim == 0
+ *
+ * with _len_control_points_ being the length of the control point array of \p
+ * spline. The dimension of a spline describes the number of components for
+ * each point in ts_bspline_get_control_points(spline). One-dimensional splines
+ * are possible, albeit their benefit might be questionable.
+ *
+ * @param spline
+ * 	The spline whose dimension will be set.
+ * @param dim
+ * 	The dimension to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension == 0.
+ * @return TS_LCTRLP_DIM_MISMATCH
+ * 	If len_control_points % \p dim != 0
+ */
+tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim);
+
+/**
+ * Returns the length of the control point array of \p spline.
+ *
+ * @param spline
+ * 	The spline with its control point array whose length will be read.
+ * @return
+ * 	The length of the control point array of \p spline.
+ */
+size_t ts_bspline_len_control_points(const tsBSpline *spline);
+
+/**
+ * Returns the number of control points of \p spline.
+ *
+ * @param spline
+ * 	The spline whose number of control points will be read.
+ * @return
+ * 	The number of control points of \p spline.
+ */
+size_t ts_bspline_num_control_points(const tsBSpline *spline);
+
+/**
+ * Returns the size of the control point array of \p spline. This function may
+ * be useful when copying control points using memcpy or memmove.
+ *
+ * @param spline
+ * 	The spline with its control point array whose size will be read.
+ * @return
+ * 	The size of the control point array of \p spline.
+ */
+size_t ts_bspline_sof_control_points(const tsBSpline *spline);
+
+/**
+ * Returns a deep copy of the control points of \p spline.
+ *
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
+ * 	return NULL instead of using TS_MALLOC.
+ *
+ * @param spline
+ * 	The spline whose control points will be read.
+ * @return
+ * 	A deep copy of the control points of \p spline or NULL.
+ */
+tsReal * ts_bspline_control_points(const tsBSpline *spline);
+
+/**
+ * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
+ *
+ * @param spline
+ * 	The spline whose control points will be set.
+ * @param ctrlp
+ * 	The values to deep copy.
+ * @return TS_SUCCESS
+ * 	This function never fails.
+ */
+tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp);
+
+/**
+ * Returns the number of knots of \p spline.
+ *
+ * @param spline
+ * 	The spline whose number of knots will be read.
+ * @return
+ * 	The number of knots of \p spline.
+ */
+size_t ts_bspline_num_knots(const tsBSpline *spline);
+
+/**
+ * Returns the size of the knot array of \p spline. This function may be useful
+ * when copying knots using memcpy or memmove.
+ *
+ * @param spline
+ * 	The spline with its knot array whose size will be read.
+ * @return TS_SUCCESS
+ * 	The size of the knot array of \p spline.
+ */
+size_t ts_bspline_sof_knots(const tsBSpline *spline);
+
+/**
+ * Returns a deep copy of the knots of \p spline.
+ *
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
+ * 	return NULL instead of using TS_MALLOC.
+ *
+ * @param spline
+ * 	The spline whose knots will be read.
+ * @return
+ * 	A deep copy of the knots of \p spline or NULL.
+ */
+tsReal * ts_bspline_knots(const tsBSpline *spline);
+
+/**
+ * Sets the knot of \p spline. Creates a deep copy of \p knots.
+ *
+ * @param spline
+ * 	The spline whose knots will be set.
+ * @param knots
+ * 	The values to deep copy.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_KNOTS_DECR
+ * 	If the knot vector is decreasing.
+ * @return TS_MULTIPLICITY
+ * 	If there is a knot with multiplicity > order
+ */
+tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots);
+
+/* ------------------------------------------------------------------------- */
+
+/**
+ * Returns the knot (sometimes also called 'u' or 't') of \p net.
+ *
+ * @param net
+ * 	The net whose knot will be read.
+ * @return
+ * 	The knot of \p net.
+ */
+tsReal ts_deboornet_knot(const tsDeBoorNet *net);
+
+/**
+ * Returns the index [u_k, u_k+1) with u being the knot of \p net.
+ *
+ * @param net
+ * 	The net whose index will be read.
+ * @return
+ * 	The index [u_k, u_k+1) with u being the knot of \p net.
+ */
+size_t ts_deboornet_index(const tsDeBoorNet *net);
+
+/**
+ * Returns the multiplicity of the knot of \p net.
+ *
+ * @param net
+ * 	The net whose multiplicity will be read.
+ * @return
+ * 	The multiplicity of the knot of \p net.
+ */
+size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
+
+/**
+ * Returns the number of insertion that were necessary to evaluate the knot of
+ * \p net.
+ *
+ * @param net
+ * 	The net with its knot whose number of insertions will be read.
+ * @return
+ * 	The number of insertions that were necessary to evaluate the knot of \p
+ * 	net.
+ */
+size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
+
+/**
+ * Returns the dimension of \p net. The dimension of a net describes the number
+ * of components for each point in ts_bspline_get_points(spline).
+ * One-dimensional nets are possible, albeit their benefit might be
+ * questionable.
+ *
+ * @param net
+ * 	The net whose dimension will be read.
+ * @return
+ * 	The dimension of \p net.
+ */
+size_t ts_deboornet_dimension(const tsDeBoorNet *net);
+
+/**
+ * Returns the length of the point array of \p net.
+ *
+ * @param net
+ * 	The net with its point array whose length will be read.
+ * @return
+ * 	The length of the point array of \p net.
+ */
+size_t ts_deboornet_len_points(const tsDeBoorNet *net);
+
+/**
+ * Returns the number of points of \p net.
+ *
+ * @param net
+ * 	The net whose number of points will be read.
+ * @return
+ * 	The number of points of \p net.
+ */
+size_t ts_deboornet_num_points(const tsDeBoorNet *net);
+
+/**
+ * Returns the size of the point array of \p net. This function may be useful
+ * when copying points using memcpy or memmove.
+ *
+ * @param net
+ * 	The net with its point array whose size will be read.
+ * @return
+ * 	The size of the point array of \p net.
+ */
+size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
+
+/**
+ * Returns a deep copy of the points of \p net.
+ *
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
+ * 	return NULL instead of using TS_MALLOC.
+ *
+ * @param net
+ * 	The net whose points will be read.
+ * @return
+ * 	A deep copy of the points of \p net or NULL.
+ */
+tsReal * ts_deboornet_points(const tsDeBoorNet *net);
+
+/**
+ * Returns the length of the result array of \p net.
+ *
+ * @param net
+ * 	The net with its result array whose length will be read.
+ * @return
+ * 	The length of the result array of \p net.
+ */
+size_t ts_deboornet_len_result(const tsDeBoorNet *net);
+
+/**
+ * Returns the number of points in the result array of \p net
+ * (1 <= num_result <= 2).
+ *
+ * @param net
+ * 	The net with its result array whose number of points will be read.
+ * @return
+ * 	The number of points in the result array of \p net.
+ */
+size_t ts_deboornet_num_result(const tsDeBoorNet *net);
+
+/**
+ * Returns the size of the result array of \p net. This function may be useful
+ * when copying results using memcpy or memmove.
+ *
+ * @param net
+ * 	The net with its result array whose size will be read.
+ * @return TS_SUCCESS
+ * 	The size of the result array of \p net.
+ */
+size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
+
+/**
+ * Returns a deep copy of the result of \p net.
+ *
+ * 	Why does this function return NULL instead of using TS_MALLOC in case
+ * 	of allocation issues?
+ *
+ * 	At the time of developing this interface different design aspects have
+ * 	been considered. Firstly, getter functions should return the requested
+ * 	value instead of writing the result into an output parameter. That way,
+ * 	one can directly assign the returned value to a (const) variable.
+ * 	Secondly, getter functions should return a deep copy of a value to make
+ * 	this library robust against inadvertent changes which may break the
+ * 	internal state a particular object.
+ *
+ * 	With this in mind, one will notice that these are conflicting demands
+ * 	as returning a deep copy of an array compels a function to allocate the
+ * 	necessary memory using malloc, which may fail due to lack of enough
+ * 	heap memory but must be handled by the user. One could argue that
+ * 	passing an output parameter of type tsError allows to handle this issue
+ * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
+ * 	for a getter function to fail. Thus, error handling using tsError
+ * 	(which, for getter functions, means to check for TS_MALLOC only) and
+ * 	using NULL checks is quite similar.
+ *
+ * 	Hence, for the sake of uniformity, memory allocating getter functions
+ * 	return NULL instead of using TS_MALLOC.
+ *
+ * @param net
+ * 	The net whose result will be read.
+ * @return
+ * 	A deep copy of the result of \p net or NULL.
+ */
+tsReal * ts_deboornet_result(const tsDeBoorNet *net);
+
+
+
+/******************************************************************************
+*                                                                             *
+* :: Constructors, Destructors, Copy, and Move Functions                      *
 *                                                                             *
 * The following section contains functions to create and delete instances of  *
 * the data types listed above. Additionally, each data type has a copy and    *
@@ -363,6 +758,8 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
  */
 void ts_bspline_free(tsBSpline *_spline_);
 
+/* ------------------------------------------------------------------------- */
+
 /**
  * The default constructor of tsDeBoorNet.
  *
@@ -420,7 +817,7 @@ void ts_deboornet_free(tsDeBoorNet *_deBoorNet_);
 
 /******************************************************************************
 *                                                                             *
-* Interpolation and Approximation Functions                                   *
+* :: Interpolation and Approximation Functions                                *
 *                                                                             *
 * The following section contains functions to interpolate and approximate     *
 * arbitrary splines.                                                          *
@@ -470,7 +867,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 
 /******************************************************************************
 *                                                                             *
-* Query Functions                                                             *
+* :: Query Functions                                                          *
 *                                                                             *
 * The following section contains functions to query splines.                  *
 *                                                                             *
@@ -496,14 +893,14 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
+tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	tsDeBoorNet *_deBoorNet_);
 
 
 
 /******************************************************************************
 *                                                                             *
-* Transformation functions                                                    *
+* :: Transformation functions                                                 *
 *                                                                             *
 * TinySpline is a library focusing on transformations. That is, most          *
 * functions are used to transform splines by modifying their state, e.g.,     *
@@ -606,55 +1003,6 @@ tsError ts_bspline_evaluate(const tsBSpline *spline, tsReal u,
  * 	If allocating memory failed.
  */
 tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
-
-/**
- * Creates a deep copy of \p spline (only if \p spline != \p \_result\_) and
- * copies the first \p spline->n_ctrlp * \p spline->dim values from \p ctrlp
- * to \p \_result\_->ctrlp using memmove. The behaviour of this function is
- * undefined, if the length of \p ctrlp is less than \p spline->n_ctrlp *
- * \p spline->dim.
- *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
- * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose
- * 	control points are replaced with \p ctrlp.
- * @param ctrlp
- * 	The control points to copy to \p \_result\_->ctrlp.
- * @param \_result\_
- * 	The output parameter storing the result of this function.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
- */
-tsError ts_bspline_set_ctrlp(const tsBSpline *spline, const tsReal *ctrlp,
-	tsBSpline *_result_);
-
-/**
- * Creates a deep copy of \p spline (only if \p spline != \p \_result\_) and
- * copies the the first \p spline->n_knots from \p knots to \p \_result\_
- * using memmove. The behaviour of this function is undefined, if the length
- * of \p knots is less than \p spline->n_knots.
- *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
- * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose
- * 	knots are replaced with \p knots.
- * @param knots
- * 	The knots to copy to \p \_result\_->knots.
- * @param \_result\_
- * 	The output parameter storing the result of this function.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
- */
-tsError ts_bspline_set_knots(const tsBSpline *spline, const tsReal *knots,
-	tsBSpline *_result_);
 
 /**
  * Fills the knot vector of \p spline according to \p type with minimum knot
@@ -772,8 +1120,8 @@ tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
  * @return TS_MALLOC
  * 	If \p spline != \p \_split\_ and allocating memory failed.
  */
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u,
-	tsBSpline *_split_, size_t *_k_);
+tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
+	size_t *_k_);
 
 /**
  * Buckles \p spline by \p b and stores the result in \p \_buckled\_. Creates
@@ -806,7 +1154,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If \p spline != \p \_buckled\_ and allocating memory failed.
  */
-tsError ts_bspline_buckle(const tsBSpline *original, tsReal b,
+tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
 	tsBSpline *_buckled_);
 
 /**
@@ -832,10 +1180,10 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 
 /******************************************************************************
 *                                                                             *
-* Utility Functions                                                           *
+* :: Utility Functions                                                        *
 *                                                                             *
 * The following section contains utility functions used by TinySpline which   *
-* also may be helpful when working with this library.                         *
+* also may be helpful when using this library.                                *
 *                                                                             *
 ******************************************************************************/
 /**

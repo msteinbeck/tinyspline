@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h> 
+#include <math.h>
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
@@ -38,15 +38,18 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	spline.ctrlp[0] = -1.0f;
-	spline.ctrlp[1] = 1.0f;
-	spline.ctrlp[2] = 0.0f;
-	spline.ctrlp[3] = 1.0f;
-	spline.ctrlp[4] = 1.0f;
-	spline.ctrlp[5] = 0.0f;
-	spline.ctrlp[6] = 1.0f;
-	spline.ctrlp[7] = -1.0f;
-	spline.ctrlp[8] = 0.0f;
+	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ctrlp[0] = -1.0f;
+	ctrlp[1] =  1.0f;
+	ctrlp[2] =  0.0f;
+	ctrlp[3] =  1.0f;
+	ctrlp[4] =  1.0f;
+	ctrlp[5] =  0.0f;
+	ctrlp[6] =  1.0f;
+	ctrlp[7] = -1.0f;
+	ctrlp[8] =  0.0f;
+	ts_bspline_set_control_points(&spline, ctrlp);
+	free(ctrlp);
 }
 
 void tear_down()
@@ -56,23 +59,27 @@ void tear_down()
 
 void display(void)
 {
-	tsBSpline buckled;
 	size_t i;
+	tsBSpline buckled;
+	tsReal *ctrlp, *knots;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ts_bspline_buckle(&spline, b, &buckled);
-	
-	/* draw spline */
+
+	/* draw buckled */
+	ctrlp = ts_bspline_control_points(&buckled);
+	knots = ts_bspline_knots(&buckled);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
 		gluNurbsCurve(
 			theNurb, 
-			(GLint)buckled.n_knots,
-			buckled.knots,
-			(GLint)buckled.dim,
-			buckled.ctrlp,
-			(GLint)buckled.order,
+			(GLint)ts_bspline_num_knots(&buckled),
+			knots,
+			(GLint)ts_bspline_dimension(&buckled),
+			ctrlp,
+			(GLint)ts_bspline_order(&buckled),
 			GL_MAP1_VERTEX_3
 		);
 	gluEndCurve(theNurb);
@@ -81,17 +88,20 @@ void display(void)
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < spline.n_ctrlp; i++) 
-		 glVertex3fv(&spline.ctrlp[i * spline.dim]);
+	  for (i = 0; i < ts_bspline_num_control_points(&buckled); i++)
+		 glVertex3fv(&ctrlp[i * ts_bspline_dimension(&buckled)]);
 	glEnd();
-	
-	glutSwapBuffers();
-	glutPostRedisplay();
+
+	ts_bspline_free(&buckled);
+	free(ctrlp);
+	free(knots);
 
 	b -= 0.001f;
-	if (b < 0.f) {
+	if (b < 0.f)
 		b = 1.f;
-	}
+
+	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 
@@ -130,7 +140,7 @@ void reshape(int w, int h)
    gluPerspective (45.0, (GLdouble)w/(GLdouble)h, 3.0, 8.0);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   glTranslatef (0.0, 0.0, -5.0);
+   glTranslatef (0.0f, 0.0f, -5.0f);
 }
 
 int main(int argc, char** argv)

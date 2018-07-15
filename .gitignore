@@ -1,6 +1,7 @@
 bin
 build
 .idea
+cmake-build-debug
 *~
 *.swp
 *.swo

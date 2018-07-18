@@ -2,6 +2,11 @@
 #include <stdexcept>
 #include <cstdio>
 
+// Surpress warning C4996 (sprintf_s).
+#ifdef _MSC_VER
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 /******************************************************************************
 *                                                                             *
 * DeBoorNet                                                                   *

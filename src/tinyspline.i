@@ -83,11 +83,6 @@
 %ignore tinyspline::DeBoorNet::data;
 %ignore tsBSpline;
 %ignore tinyspline::BSpline::data;
-// Ignore move semantics.
-%ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
-%ignore tinyspline::swap(DeBoorNet &, DeBoorNet &);
-%ignore tinyspline::BSpline::BSpline(BSpline &&);
-%ignore tinyspline::swap(BSpline &, BSpline &);
 
 // Rename exported enums and enum values.
 %rename(BSplineType) tsBSplineType;
@@ -101,7 +96,6 @@
 	#include "tinysplinecpp.h"
 %}
 
-%include "tinyspline.h"
 %include "tinysplinecpp.h"
 
 // Make std::vector<tinyspline::real> available in target language. Is also required by

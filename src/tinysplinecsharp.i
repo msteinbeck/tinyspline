@@ -39,6 +39,7 @@
 
 %include "tinyspline.i"
 
+%include "tinyspline.h"
 namespace std {
 	%template(RealVector) vector<tinyspline::real>;
 };

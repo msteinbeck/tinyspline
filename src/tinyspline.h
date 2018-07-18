@@ -350,36 +350,16 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
 /**
  * Returns a deep copy of the control points of \p spline.
  *
- * 	Why does this function return NULL instead of using TS_MALLOC in case
- * 	of allocation issues?
- *
- * 	At the time of developing this interface different design aspects have
- * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter. That way,
- * 	one can directly assign the returned value to a (const) variable.
- * 	Secondly, getter functions should return a deep copy of a value to make
- * 	this library robust against inadvertent changes which may break the
- * 	internal state a particular object.
- *
- * 	With this in mind, one will notice that these are conflicting demands
- * 	as returning a deep copy of an array compels a function to allocate the
- * 	necessary memory using malloc, which may fail due to lack of enough
- * 	heap memory but must be handled by the user. One could argue that
- * 	passing an output parameter of type tsError allows to handle this issue
- * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
- * 	for a getter function to fail. Thus, error handling using tsError
- * 	(which, for getter functions, means to check for TS_MALLOC only) and
- * 	using NULL checks is quite similar.
- *
- * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of using TS_MALLOC.
- *
  * @param spline
  * 	The spline whose control points will be read.
- * @return
- * 	A deep copy of the control points of \p spline or NULL.
+ * @param ctrlp
+ * 	The output array.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
-tsReal * ts_bspline_control_points(const tsBSpline *spline);
+tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
@@ -417,36 +397,16 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
 /**
  * Returns a deep copy of the knots of \p spline.
  *
- * 	Why does this function return NULL instead of using TS_MALLOC in case
- * 	of allocation issues?
- *
- * 	At the time of developing this interface different design aspects have
- * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter. That way,
- * 	one can directly assign the returned value to a (const) variable.
- * 	Secondly, getter functions should return a deep copy of a value to make
- * 	this library robust against inadvertent changes which may break the
- * 	internal state a particular object.
- *
- * 	With this in mind, one will notice that these are conflicting demands
- * 	as returning a deep copy of an array compels a function to allocate the
- * 	necessary memory using malloc, which may fail due to lack of enough
- * 	heap memory but must be handled by the user. One could argue that
- * 	passing an output parameter of type tsError allows to handle this issue
- * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
- * 	for a getter function to fail. Thus, error handling using tsError
- * 	(which, for getter functions, means to check for TS_MALLOC only) and
- * 	using NULL checks is quite similar.
- *
- * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of using TS_MALLOC.
- *
  * @param spline
  * 	The spline whose knots will be read.
- * @return
- * 	A deep copy of the knots of \p spline or NULL.
+ * @param knots
+ * 	The output array.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
-tsReal * ts_bspline_knots(const tsBSpline *spline);
+tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots);
 
 /**
  * Sets the knot of \p spline. Creates a deep copy of \p knots.
@@ -555,36 +515,16 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
 /**
  * Returns a deep copy of the points of \p net.
  *
- * 	Why does this function return NULL instead of using TS_MALLOC in case
- * 	of allocation issues?
- *
- * 	At the time of developing this interface different design aspects have
- * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter. That way,
- * 	one can directly assign the returned value to a (const) variable.
- * 	Secondly, getter functions should return a deep copy of a value to make
- * 	this library robust against inadvertent changes which may break the
- * 	internal state a particular object.
- *
- * 	With this in mind, one will notice that these are conflicting demands
- * 	as returning a deep copy of an array compels a function to allocate the
- * 	necessary memory using malloc, which may fail due to lack of enough
- * 	heap memory but must be handled by the user. One could argue that
- * 	passing an output parameter of type tsError allows to handle this issue
- * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
- * 	for a getter function to fail. Thus, error handling using tsError
- * 	(which, for getter functions, means to check for TS_MALLOC only) and
- * 	using NULL checks is quite similar.
- *
- * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of using TS_MALLOC.
- *
  * @param net
  * 	The net whose points will be read.
- * @return
- * 	A deep copy of the points of \p net or NULL.
+ * @param points
+ * 	The output array.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
-tsReal * ts_deboornet_points(const tsDeBoorNet *net);
+tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points);
 
 /**
  * Returns the length of the result array of \p net.
@@ -621,36 +561,16 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
 /**
  * Returns a deep copy of the result of \p net.
  *
- * 	Why does this function return NULL instead of using TS_MALLOC in case
- * 	of allocation issues?
- *
- * 	At the time of developing this interface different design aspects have
- * 	been considered. Firstly, getter functions should return the requested
- * 	value instead of writing the result into an output parameter. That way,
- * 	one can directly assign the returned value to a (const) variable.
- * 	Secondly, getter functions should return a deep copy of a value to make
- * 	this library robust against inadvertent changes which may break the
- * 	internal state a particular object.
- *
- * 	With this in mind, one will notice that these are conflicting demands
- * 	as returning a deep copy of an array compels a function to allocate the
- * 	necessary memory using malloc, which may fail due to lack of enough
- * 	heap memory but must be handled by the user. One could argue that
- * 	passing an output parameter of type tsError allows to handle this issue
- * 	using TS_MALLOC, but, keep in mind that malloc is the only possibility
- * 	for a getter function to fail. Thus, error handling using tsError
- * 	(which, for getter functions, means to check for TS_MALLOC only) and
- * 	using NULL checks is quite similar.
- *
- * 	Hence, for the sake of uniformity, memory allocating getter functions
- * 	return NULL instead of using TS_MALLOC.
- *
  * @param net
  * 	The net whose result will be read.
- * @return
- * 	A deep copy of the result of \p net or NULL.
+ * @param result
+ * 	The output array.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
-tsReal * ts_deboornet_result(const tsDeBoorNet *net);
+tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result);
 
 
 

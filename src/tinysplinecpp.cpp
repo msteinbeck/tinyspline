@@ -67,9 +67,10 @@ size_t tinyspline::DeBoorNet::dimension() const
 
 std::vector<tinyspline::real> tinyspline::DeBoorNet::points() const
 {
-	tsReal *points = ts_deboornet_points(&net);
-	if (!points)
-		throw std::runtime_error(ts_enum_str(TS_MALLOC));
+	tsReal *points;
+	tsError err = ts_deboornet_points(&net, &points);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
 	size_t num_points = ts_deboornet_num_points(&net);
 	tinyspline::real *begin = points;
 	tinyspline::real *end = begin + num_points * dimension();
@@ -81,9 +82,10 @@ std::vector<tinyspline::real> tinyspline::DeBoorNet::points() const
 
 std::vector<tinyspline::real> tinyspline::DeBoorNet::result() const
 {
-	tsReal *result = ts_deboornet_result(&net);
-	if (!result)
-		throw std::runtime_error(ts_enum_str(TS_MALLOC));
+	tsReal *result;
+	tsError err = ts_deboornet_result(&net, &result);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
 	size_t num_result = ts_deboornet_num_result(&net);
 	tinyspline::real *begin = result;
 	tinyspline::real *end = begin + num_result * dimension();
@@ -163,9 +165,10 @@ size_t tinyspline::BSpline::dimension() const
 
 std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 {
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
-	if (!ctrlp)
-		throw std::runtime_error(ts_enum_str(TS_MALLOC));
+	tsReal *ctrlp;
+	tsError err = ts_bspline_control_points(&spline, &ctrlp);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
 	size_t num_ctrlp = ts_bspline_num_control_points(&spline);
 	tinyspline::real *begin  = ctrlp;
 	tinyspline::real *end = begin + num_ctrlp * dimension();
@@ -177,9 +180,10 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 
 std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 {
-	tsReal *knots = ts_bspline_knots(&spline);
-	if (!knots)
-		throw std::runtime_error(ts_enum_str(TS_MALLOC));
+	tsReal *knots;
+	tsError err = ts_bspline_knots(&spline, &knots);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
 	size_t num_knots = ts_bspline_num_knots(&spline);
 	tinyspline::real *begin = knots;
 	tinyspline::real *end = begin + num_knots;

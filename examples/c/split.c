@@ -29,6 +29,8 @@ tsReal u = 0.f;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp;
+
 	ts_bspline_new(
 		7,      /* number of control points */
 		3,      /* dimension of each point */
@@ -38,7 +40,7 @@ void setup()
 	);
 
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  = 0.0f;
@@ -82,8 +84,8 @@ void display(void)
 	
 	/* draw split */
 	ts_bspline_split(&spline, u, &split, &k);
-	ctrlp_split = ts_bspline_control_points(&split);
-	knots_split = ts_bspline_knots(&split);
+	ts_bspline_control_points(&split, &ctrlp_split);
+	ts_bspline_knots(&split, &knots_split);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -99,7 +101,7 @@ void display(void)
 	gluEndCurve(theNurb);
 
 	/* draw control points of spline */
-	ctrlp_spline = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp_spline);
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
@@ -109,7 +111,7 @@ void display(void)
 
 	/* eval spline */
 	ts_bspline_eval(&spline, u, &net);
-	result = ts_deboornet_result(&net);
+	ts_deboornet_result(&net, &result);
 	
 	/* draw split point */
 	glColor3f(0.0, 0.0, 1.0);

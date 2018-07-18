@@ -192,18 +192,18 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline)
 	return ts_bspline_len_control_points(spline) * sizeof(tsReal);
 }
 
-tsReal * ts_bspline_control_points(const tsBSpline *spline)
+tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp)
 {
-	size_t size;
-	tsReal *ctrlp;
-	size = ts_bspline_sof_control_points(spline);
-	ctrlp = malloc(size);
-	if (ctrlp) {
-		memcpy(ctrlp,
+	const size_t size = ts_bspline_sof_control_points(spline);
+	*ctrlp = malloc(size);
+	if (!*ctrlp) {
+		return TS_MALLOC;
+	} else {
+		memcpy(*ctrlp,
 		       ts_internal_bspline_access_ctrlp(spline),
 		       size);
+		return TS_SUCCESS;
 	}
-	return ctrlp;
 }
 
 tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp)
@@ -223,18 +223,18 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline)
 	return ts_bspline_num_knots(spline) * sizeof(tsReal);
 }
 
-tsReal * ts_bspline_knots(const tsBSpline *spline)
+tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots)
 {
-	size_t size;
-	tsReal *knots;
-	size = ts_bspline_sof_knots(spline);
-	knots = malloc(size);
-	if (knots) {
-		memcpy(knots,
+	const size_t size = ts_bspline_sof_knots(spline);
+	*knots = malloc(size);
+	if (!*knots) {
+		return TS_MALLOC;
+	} else {
+		memcpy(*knots,
 		       ts_internal_bspline_access_knots(spline),
 		       size);
+		return TS_SUCCESS;
 	}
-	return knots;
 }
 
 tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots)
@@ -304,18 +304,18 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net)
 	return ts_deboornet_len_points(net) * sizeof(tsReal);
 }
 
-tsReal * ts_deboornet_points(const tsDeBoorNet *net)
+tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points)
 {
-	size_t size;
-	tsReal *points;
-	size = ts_deboornet_sof_points(net);
-	points = malloc(size);
-	if (points) {
-		memcpy(points,
+	const size_t size = ts_deboornet_sof_points(net);
+	*points = malloc(size);
+	if (!*points) {
+		return TS_MALLOC;
+	} else {
+		memcpy(*points,
 		       ts_internal_deboornet_access_points(net),
 		       size);
+		return TS_SUCCESS;
 	}
-	return points;
 }
 
 size_t ts_deboornet_len_result(const tsDeBoorNet *net)
@@ -333,18 +333,18 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net)
 	return ts_deboornet_len_result(net) * sizeof(tsReal);
 }
 
-tsReal * ts_deboornet_result(const tsDeBoorNet *net)
+tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result)
 {
-	size_t size;
-	tsReal *result;
-	size = ts_deboornet_sof_result(net);
-	result = malloc(size);
-	if (result) {
-		memcpy(result,
+	const size_t size = ts_deboornet_sof_result(net);
+	*result = malloc(size);
+	if (!*result) {
+		return TS_MALLOC;
+	} else {
+		memcpy(*result,
 		       ts_internal_deboornet_access_result(net),
 		       size);
+		return TS_SUCCESS;
 	}
-	return result;
 }
 
 

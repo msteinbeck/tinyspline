@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	);
 
 	/* Setup control points of `spline`. */
-	ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
 	ctrlp[2]  = -1.5f;  /* x1 */
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
 	/* Evaluate `spline` at u = 0.4. */
 	ts_bspline_eval(&spline, 0.4f, &net);
-	result = ts_deboornet_result(&net);
+	ts_deboornet_result(&net, &result);
 	printf("x = %f, y = %f\n", result[0], result[1]);
 	ts_deboornet_free(&net);
 	free(result);
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
 	/* Evaluate `beziers` at u = 0.3. */
 	ts_bspline_eval(&beziers, 0.3f, &net);
-	result = ts_deboornet_result(&net);
+	ts_deboornet_result(&net, &result);
 	printf("x = %f, y = %f\n", result[0], result[1]);
 	ts_deboornet_free(&net);
 	free(result);

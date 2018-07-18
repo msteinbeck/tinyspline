@@ -51,7 +51,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -67,13 +67,13 @@ void setup()
 	for (i = 0; i < 3; i++)
 		B[i] = ctrlp[i+3];
 
-	knots = ts_bspline_knots(&spline);
+	ts_bspline_knots(&spline, &knots);
 	mid = (knots[ts_bspline_num_knots(&spline)- 1] - knots[0]) /2;
 	free(knots);
 
 	ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
-	ctrlp = ts_bspline_control_points(&spline);
-	knots = ts_bspline_knots(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_knots(&spline, &knots);
 
 	A = ctrlp;
 	D = ctrlp + 3;

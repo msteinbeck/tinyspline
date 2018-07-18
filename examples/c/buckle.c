@@ -29,6 +29,8 @@ tsReal b = 1.f;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp;
+	
 	ts_bspline_new(
 		3,      /* number of control points */
 		3,      /* dimension of each point */
@@ -38,7 +40,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -68,8 +70,8 @@ void display(void)
 	ts_bspline_buckle(&spline, b, &buckled);
 
 	/* draw buckled */
-	ctrlp = ts_bspline_control_points(&buckled);
-	knots = ts_bspline_knots(&buckled);
+	ts_bspline_control_points(&buckled, &ctrlp);
+	ts_bspline_knots(&buckled, &knots);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);

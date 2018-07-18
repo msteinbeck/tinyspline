@@ -30,6 +30,8 @@ tsReal u = 0.f;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp;
+	
 	ts_bspline_new(
 		7,      /* number of control points */
 		3,      /* dimension of each point */
@@ -39,7 +41,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  =  0.0f;
@@ -78,12 +80,13 @@ void display(void)
 	size_t i;
 	tsDeBoorNet net1, net2, net3;
 	tsReal *result1, *result2, *result3;
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
-	tsReal *knots = ts_bspline_knots(&spline);
+	tsReal *ctrlp, *knots;
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
+	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_knots(&spline, &knots);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -110,11 +113,11 @@ void display(void)
 	glColor3f(0.0, 0.0, 1.0);
 	glPointSize(5.0);
 	ts_bspline_eval(&spline, u, &net1);
-	result1 = ts_deboornet_result(&net1);
+	ts_deboornet_result(&net1, &result1);
 	ts_bspline_eval(&derivative, u, &net2);
-	result2 = ts_deboornet_result(&net2);
+	ts_deboornet_result(&net2, &result2);
 	ts_bspline_eval(&derivative, u, &net3);
-	result3 = ts_deboornet_result(&net3);
+	ts_deboornet_result(&net3, &result3);
 	for (i = 0; i < ts_deboornet_dimension(&net2); i++) {
 		/* subdivided by 6 just to avoid the
 		 * tangent to exit from the window */

@@ -29,51 +29,53 @@ tsReal u = 0.f;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp, *knots;
 	const tsReal w = (tsReal) (sqrt(2) / 2.f);
+
 	ts_bspline_new(9, 4, 2, TS_CLAMPED ,&spline);
-	
+
 	/* set control points */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0] = 1.f;
 	ctrlp[1] = 0.f;
 	ctrlp[2] = 0.f;
 	ctrlp[3] = 1.f;
-	
+
 	ctrlp[4] = w;
 	ctrlp[5] = w;
 	ctrlp[6] = 0.f;
 	ctrlp[7] = w;
-	
+
 	ctrlp[8] = 0.f;
 	ctrlp[9] = 1.f;
 	ctrlp[10] = 0.f;
 	ctrlp[11] = 1.f;
-	
+
 	ctrlp[12]  = -w;
 	ctrlp[13] = w;
 	ctrlp[14] = 0.f;
 	ctrlp[15] = w;
-	
+
 	ctrlp[16] = -1.f;
 	ctrlp[17] = 0.f;
 	ctrlp[18] = 0.f;
 	ctrlp[19] = 1.f;
-	
+
 	ctrlp[20] = -w;
 	ctrlp[21] = -w;
 	ctrlp[22] = 0.f;
 	ctrlp[23] = w;
-	
+
 	ctrlp[24] = 0.f;
 	ctrlp[25] = -1.f;
 	ctrlp[26] = 0.f;
 	ctrlp[27] = 1.f;
-	
+
 	ctrlp[28] = w;
 	ctrlp[29] = -w;
 	ctrlp[30] = 0.f;
 	ctrlp[31] = w;
-	
+
 	ctrlp[32] = 1.f;
 	ctrlp[33] = 0.f;
 	ctrlp[34] = 0.f;
@@ -82,7 +84,7 @@ void setup()
 	free(ctrlp);
 	
 	/* set knots */
-	tsReal *knots = ts_bspline_knots(&spline);
+	ts_bspline_knots(&spline, &knots);
 	knots[0] = 0.f;
 	knots[1] = 0.f;
 	knots[2] = 0.f;
@@ -108,13 +110,15 @@ void display(void)
 {
 	size_t i;
 	tsDeBoorNet net;
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
-	tsReal *knots = ts_bspline_knots(&spline);
+	tsReal *ctrlp;
+	tsReal *knots;
 	tsReal *result;
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
+	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_knots(&spline, &knots);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -139,7 +143,7 @@ void display(void)
 	
 	/* eval spline */
 	ts_bspline_eval(&spline, u, &net);
-	result = ts_deboornet_result(&net);
+	ts_deboornet_result(&net, &result);
 	
 	/* draw evaluation */
 	glColor3f(0.0, 0.0, 1.0);

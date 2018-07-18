@@ -35,6 +35,8 @@ tsReal w = 0.001f;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp;
+
 	ts_bspline_new(
 		3,      /* number of control points */
 		4,      /* dimension of each point */
@@ -44,7 +46,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -78,9 +80,10 @@ void displayText( float x, float y, float r, float g, float b, const char *strin
 
 void display(void)
 {
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
-	tsReal *knots = ts_bspline_knots(&spline);
-	
+	tsReal *ctrlp, *knots;
+	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_knots(&spline, &knots);
+
 	char buffer[256];
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

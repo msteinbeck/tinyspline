@@ -6,12 +6,13 @@
 
 void ts_bspline_print(const tsBSpline *spline)
 {
+	tsReal *ctrlp, *knots;
+	size_t i, j;
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
-	tsReal *ctrlp = ts_bspline_control_points(spline);
-	tsReal *knots = ts_bspline_knots(spline);
-	size_t i, j;
+	ts_bspline_control_points(spline, &ctrlp);
+	ts_bspline_knots(spline, &knots);
 	
 	printf("########### control points (%lu) ###########\n",
 		   (unsigned long) num_ctrlp);
@@ -36,10 +37,11 @@ void ts_bspline_print(const tsBSpline *spline)
 
 void ts_deboornet_print(const tsDeBoorNet *net)
 {
+	tsReal *points;
+	size_t i, j;
 	const size_t dim = ts_deboornet_dimension(net);
 	const size_t num_points = ts_deboornet_num_points(net);
-	tsReal *points = ts_deboornet_points(net);
-	size_t i, j;
+	ts_deboornet_points(net, &points);
 	
 	printf("########### points (%lu) ###########\n",
 		   (unsigned long) num_points);

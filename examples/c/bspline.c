@@ -28,6 +28,8 @@ GLUnurbsObj *theNurb;
 ********************************************************/
 void setup()
 {
+	tsReal *ctrlp;
+
 	ts_bspline_new(
 		7,      /* number of control points */
 		3,      /* dimension of each point */
@@ -37,7 +39,7 @@ void setup()
 	);
 	
 	/* Setup control points. */
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
+	ts_bspline_control_points(&spline, &ctrlp);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  = 0.0f;
@@ -72,13 +74,15 @@ void display(void)
 {
 	size_t i;
 	tsDeBoorNet net;
-	tsReal *ctrlp = ts_bspline_control_points(&spline);
-	tsReal *knots = ts_bspline_knots(&spline);
+	tsReal *ctrlp;
+	tsReal *knots;
 	tsReal *result;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
+	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_knots(&spline, &knots);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -103,7 +107,7 @@ void display(void)
 
 	/* eval spline */
 	ts_bspline_eval(&spline, 0.5f, &net);
-	result = ts_deboornet_result(&net);
+	ts_deboornet_result(&net, &result);
 	
 	/* draw evaluation */
 	glColor3f(0.0, 0.0, 1.0);

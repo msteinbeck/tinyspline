@@ -28,17 +28,6 @@ public:
 	std::vector<real> result() const;
 	tsDeBoorNet * data();
 
-	/* C++11 features */
-#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-	DeBoorNet(DeBoorNet &&other) noexcept;
-	DeBoorNet & operator=(DeBoorNet &&other) noexcept;
-	void swap(DeBoorNet &other);
-	friend void swap(DeBoorNet &left, DeBoorNet &right)
-	{
-		left.swap(right);
-	}
-#endif
-
 private:
 	tsDeBoorNet net;
 };
@@ -81,17 +70,6 @@ public:
 	BSpline buckle(real b) const;
 	BSpline toBeziers() const;
 	BSpline derive() const;
-
-	/* C++11 features */
-#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-	BSpline(BSpline &&other) noexcept;
-	BSpline& operator=(BSpline &&other) noexcept;
-	void swap(BSpline &other);
-	friend void swap(BSpline &left, BSpline &right)
-	{
-		left.swap(right);
-	}
-#endif
 
 private:
 	tsBSpline spline;

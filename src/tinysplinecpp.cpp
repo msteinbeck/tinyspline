@@ -1,5 +1,6 @@
 #include "tinysplinecpp.h"
 #include <stdexcept>
+#include <cstdio>
 
 /******************************************************************************
 *                                                                             *
@@ -69,7 +70,7 @@ std::vector<tinyspline::real> tinyspline::DeBoorNet::points() const
 	tinyspline::real *end = begin + num_points * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(points);
+	delete points;
 	return vec;
 }
 
@@ -83,7 +84,7 @@ std::vector<tinyspline::real> tinyspline::DeBoorNet::result() const
 	tinyspline::real *end = begin + num_result * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(result);
+	delete result;
 	return vec;
 }
 
@@ -92,30 +93,6 @@ tsDeBoorNet * tinyspline::DeBoorNet::data()
 	return &net;
 }
 
-#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-tinyspline::DeBoorNet::DeBoorNet(tinyspline::DeBoorNet &&other) noexcept
-{
-	ts_deboornet_default(&net);
-	swap(other);
-}
-
-tinyspline::DeBoorNet & tinyspline::DeBoorNet::operator=(
-	tinyspline::DeBoorNet &&other) noexcept
-{
-	if (&other != this) {
-		ts_deboornet_free(&net);
-		swap(other);
-	}
-	return *this;
-}
-
-void tinyspline::DeBoorNet::swap(tinyspline::DeBoorNet &other)
-{
-	if (&other != this) {
-		std::swap(net.pImpl, other.net.pImpl);
-	}
-}
-#endif
 
 
 /******************************************************************************
@@ -189,7 +166,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	tinyspline::real *end = begin + num_ctrlp * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(ctrlp);
+	delete ctrlp;
 	return vec;
 }
 
@@ -203,7 +180,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 	tinyspline::real *end = begin + num_knots;
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(knots);
+	delete knots;
 	return vec;
 }
 
@@ -225,10 +202,15 @@ void tinyspline::BSpline::setControlPoints(
 	const std::vector<tinyspline::real> &ctrlp)
 {
 	size_t expected = ts_bspline_len_control_points(&spline);
-	if (ctrlp.size() != expected) {
+	size_t actual = ctrlp.size();
+	if (expected != actual) {
+		char expected_str[32];
+		char actual_str[32];
+		sprintf(expected_str, "%zu", expected);
+		sprintf(actual_str, "%zu", actual);
 		throw std::runtime_error(
-			"Expected size: " + std::to_string(expected) +
-			", Actual size: " + std::to_string(ctrlp.size()));
+			"Expected size: " + std::string(expected_str) +
+			", Actual size: " + std::string(actual_str));
 	}
 	tsError err = ts_bspline_set_control_points(&spline, ctrlp.data());
 	if (err < 0)
@@ -238,10 +220,15 @@ void tinyspline::BSpline::setControlPoints(
 void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
 {
 	size_t expected = ts_bspline_num_knots(&spline);
-	if (knots.size() != expected) {
+	size_t actual = knots.size();
+	if (expected != actual) {
+		char expected_str[32];
+		char actual_str[32];
+		sprintf(expected_str, "%zu", expected);
+		sprintf(actual_str, "%zu", actual);
 		throw std::runtime_error(
-			"Expected size: " + std::to_string(expected) +
-			", Actual size: " + std::to_string(knots.size()));
+			"Expected size: " + std::string(expected_str) +
+			", Actual size: " + std::string(actual_str));
 	}
 	tsError err = ts_bspline_set_knots(&spline, knots.data());
 	if (err < 0)
@@ -316,37 +303,13 @@ tinyspline::BSpline tinyspline::BSpline::derive() const
 	return bs;
 }
 
-#ifndef TINYSPLINE_DISABLE_CXX11_FEATURES
-tinyspline::BSpline::BSpline(tinyspline::BSpline &&other) noexcept
-{
-	ts_bspline_default(&spline);
-	swap(other);
-}
-
-tinyspline::BSpline & tinyspline::BSpline::operator=(
-	tinyspline::BSpline &&other) noexcept
-{
-	if (&other != this) {
-		ts_bspline_free(&spline);
-		swap(other);
-	}
-	return *this;
-}
-
-void tinyspline::BSpline::swap(tinyspline::BSpline &other)
-{
-	if (&other != this) {
-		std::swap(spline.pImpl, other.spline.pImpl);
-	}
-}
-#endif
 
 
-/********************************************************
-*                                                       *
-* Utils                                                 *
-*                                                       *
-********************************************************/
+/******************************************************************************
+*                                                                             *
+* Utils                                                                       *
+*                                                                             *
+******************************************************************************/
 tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 	const std::vector<tinyspline::real> *points, size_t dim)
 {

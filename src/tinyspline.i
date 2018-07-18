@@ -96,6 +96,7 @@
 	#include "tinysplinecpp.h"
 %}
 
+%include "tinyspline.h"
 %include "tinysplinecpp.h"
 
 // Make std::vector<tinyspline::real> available in target language. Is also required by

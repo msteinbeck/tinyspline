@@ -2,6 +2,8 @@
 
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore ts_deboornet_result;
+
 
 // Map std::vector<tinyspline::real> to R vector.
 %typemap(scoerceout) std::vector<tinyspline::real> * %{ %}

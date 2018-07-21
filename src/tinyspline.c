@@ -359,12 +359,12 @@ void ts_bspline_default(tsBSpline *_spline_)
 	_spline_->pImpl = NULL;
 }
 
-void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
-	tsBSplineType type, tsBSpline *_spline_, jmp_buf buf)
+void ts_internal_bspline_new(size_t num_control_points, size_t dimension,
+	size_t degree, tsBSplineType type, tsBSpline *_spline_, jmp_buf buf)
 {
-	const size_t order = deg + 1;
-	const size_t num_knots = n_ctrlp + order;
-	const size_t len_ctrlp = n_ctrlp * dim;
+	const size_t order = degree + 1;
+	const size_t num_knots = num_control_points + order;
+	const size_t len_ctrlp = num_control_points * dimension;
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsBSplineImpl);
@@ -375,18 +375,18 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	tsError e;
 	jmp_buf b;
 
-	if (dim < 1)
+	if (dimension < 1)
 		longjmp(buf, TS_DIM_ZERO);
-	if (deg >= n_ctrlp)
+	if (degree >= num_control_points)
 		longjmp(buf, TS_DEG_GE_NCTRLP);
 
 	_spline_->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
 	if (!_spline_->pImpl)
 		longjmp(buf, TS_MALLOC);
 
-	_spline_->pImpl->deg = deg;
-	_spline_->pImpl->dim = dim;
-	_spline_->pImpl->n_ctrlp = n_ctrlp;
+	_spline_->pImpl->deg = degree;
+	_spline_->pImpl->dim = dimension;
+	_spline_->pImpl->n_ctrlp = num_control_points;
 	_spline_->pImpl->n_knots = num_knots;
 
 	TRY(b, e)
@@ -398,14 +398,15 @@ void ts_internal_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 	ETRY
 }
 
-tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
-	tsBSplineType type, tsBSpline *_spline_)
+tsError ts_bspline_new(size_t num_control_points, size_t dimension,
+	size_t degree, tsBSplineType type, tsBSpline *_spline_)
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
 		ts_internal_bspline_new(
-			n_ctrlp, dim, deg, type, _spline_, buf);
+			num_control_points, dimension,
+			degree, type, _spline_, buf);
 	CATCH
 		ts_bspline_default(_spline_);
 	ETRY
@@ -484,11 +485,11 @@ void ts_internal_deboornet_new(const tsBSpline *spline,
 	_deBoorNet_->pImpl->n_points = num_points;
 }
 
-void ts_deboornet_free(tsDeBoorNet *_deBoorNet_)
+void ts_deboornet_free(tsDeBoorNet *_net_)
 {
-	if (_deBoorNet_->pImpl)
-		free(_deBoorNet_->pImpl);
-	ts_deboornet_default(_deBoorNet_);
+	if (_net_->pImpl)
+		free(_net_->pImpl);
+	ts_deboornet_default(_net_);
 }
 
 void ts_internal_deboornet_copy(const tsDeBoorNet *original,

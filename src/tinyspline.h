@@ -13,8 +13,8 @@ extern "C" {
 *                                                                             *
 * :: System Dependent Configuration                                           *
 *                                                                             *
-* The following configuration values must be adjusted to your system. Some of *
-* them may be configured using preprocessor definitions. The default values   *
+* The following configuration values must be adapted to your system. Some of  *
+* them may be configured with preprocessor definitions. The default values    *
 * should be fine for most modern hardware, such as x86, x86_64, and arm.      *
 *                                                                             *
 ******************************************************************************/
@@ -37,15 +37,13 @@ typedef double tsReal;
 *                                                                             *
 ******************************************************************************/
 /**
- * Contains all error codes used by TinySpline. The following code snippet
- * shows how to handle errors:
+ * Defines the error codes used by various functions to indicate different
+ * types of errors. The following code snippet shows how to handle errors:
  *
- *      tsError err = ...       // any function call here
- *      if (err < 0) {          // or use err != TS_SUCCESS
+ *      tsError err = ...                  // any function call here
+ *      if (err) {                         // or use err != TS_SUCCESS
  *          printf("we got an error!");
- *
- *          // you may want to reuse error codes
- *          return err;
+ *          return err;                    // you may want to reuse error codes
  *      }
  */
 typedef enum
@@ -82,8 +80,8 @@ typedef enum
 } tsError;
 
 /**
- * Describes how the knot vector of a spline is organized. If you don't know
- * what an opened or clamped spline is, have a look at:
+ * Describes the structure of the knot vector of a NURBS/B-Spline. For more
+ * details, see:
  *
  *     www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
  */
@@ -105,27 +103,28 @@ typedef enum
 /**
  * Represents a B-Spline which may also be used for NURBS, Bezier curves,
  * lines, and points. NURBS are represented by homogeneous coordinates where
- * the last component of a control point is its weight. Bezier curves are
- * B-Splines with 'num_control_points == order' and a clamped knot vector,
- * making the curve passing through its first and last control point. If a
- * Bezier curve consists of two control points only, we call them a line.
- * Points, ultimately, are just very short lines with a single control point.
- * Consequently, the degree of a point is zero.
+ * the last component of a control point stores the weight of this control
+ * point. Bezier curves are B-Splines with 'num_control_points == order' and a
+ * clamped knot vector, therefore passing through their first and last control
+ * point (a property which does not necessarily apply to B-Splines and NURBS).
+ * If a Bezier curve consists of two control points only, we call it a line.
+ * Points, ultimately, are just very short lines consisting of a single control
+ * point.
  *
- * Two dimensional control points are organized as follows:
+ * Two dimensional control points are stored as follows:
  *
  *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
  *
- * Tree dimensional control points are organized as follows:
+ * Tree dimensional control points are stored as follows:
  *
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
  * ... and so on. NURBS are represented by homogeneous coordinates. For
- * instance, let's say we have a NURBS in 2D consisting of 11 control points
- * where 'w_i' is the weight of the i'th control point. Then the corresponding
- * control points are organized as follows:
+ * example, let's say we have a NURBS in 2D consisting of 11 control points
+ * where 'w_i' is the weight of the i'th control point. Then, the corresponding
+ * control points are stored as follows:
  *
- *     [x_0, y_0, w_0, x_1, y_1, w_1, ..., x_10, y_10, w_10]
+ *     [x_0*w_0, y_0*w_0, w_0, x_1*w_1, y_1*w_1, w_1, ..., x_10*w_10, y_10*w_10, w_10]
  */
 typedef struct
 {
@@ -140,60 +139,60 @@ typedef struct
  *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
  *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
  *
- * All points of the net are stored in 'points'. The resulting point of an
- * evaluation is the last point in 'points' and, for the sake of convenience,
- * may be accessed with 'result':
+ * All points of a net are stored in 'points'. The resulting point is the last
+ * point in 'points' and, for the sake of convenience, may be accessed with
+ * 'result':
  *
  *     tsDeBoorNet net = ...    // evaluate an arbitrary spline and store
  *                              // the resulting net of points in 'net'
  *
  *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
- * Two dimensional points are organized as follows:
+ * Two dimensional points are stored as follows:
  *
  *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
  *
- * Tree dimensional points are organized as follows:
+ * Tree dimensional points are stored as follows:
  *
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
- * ... and so on.
+ * ... and so on. The output also supports homogeneous coordinates described
+ * above.
  *
  * There is a special case in which the evaluation of a knot value 'u' returns
- * two instead of one result. It occurs when the multiplicity of 'u' ( s(u) )
+ * two results instead of one. It occurs when the multiplicity of 'u' ( s(u) )
  * is equals to a spline's order, indicating that the spline is discontinuous
- * at 'u'. This is common practice for B-Splines (or NURBS) consisting of
+ * at 'u'. This is common practice for B-Splines (and NURBS) consisting of
  * connected Bezier curves where the endpoint of curve 'c_i' is equals to the
  * start point of curve 'c_i+1'. The end point of 'c_i' and the start point of
  * 'c_i+1' may still be completely different though, yielding to a spline
  * having a (real and visible) gap at 'u'. Consequently, De Boor's algorithm
- * must return two results if 's(u) == order' in order to give you access to
- * the desired points.  In such case, 'points' stores only the two resulting
- * points (there is no net to create) and 'result' points to the *first* point
- * in 'points' ('points' and 'result' store the same pointer). Since having
- * (real) gaps in splines is unusual, both points in 'points' are generally
- * equals making it easy to handle this special case by accessing 'result' as
- * already shown above for regular cases:
+ * must return two results if 's(u) == order' in order to give access to the
+ * desired points.  In such case, 'points' stores only the two resulting points
+ * (there is no net to calculate) and 'result' points to the *first* point in
+ * 'points'. Since having (real) gaps in splines is unusual, both points in
+ * 'points' are generally equals, making it easy to handle this special case by
+ * accessing 'result' as already shown above for regular cases:
  *
  *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // at given knot value, yielding to a net with
+ *                              // the given knot value, yielding to a net with
  *                              // two results
  *
  *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
- * However, you can use both points if necessary:
+ * However, you can access both points if necessary:
  *
  *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // at given knot value, yielding to a net with
+ *                              // the given knot value, yielding to a net with
  *                              // two results
  *
- *     ts_deboornet_result(...)[0] ...    // stores the first component of the
- *                                        // first point
+ *     ts_deboornet_result(...)[0] ...       // stores the first component of
+ *                                           // the first point
  *
- *     ts_deboornet_result(...)[net.dim] // stores the first component of the
- *                                       // second point
+ *     ts_deboornet_result(...)[dim(spline)] // stores the first component of
+ *                                           // the second point
  *
- * As if this wasn't complicated enough, there is an exception for our special
+ * As if this wasn't complicated enough, there is an exception for this special
  * case, yielding to exactly one result (just like the regular case) even if
  * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
  * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
@@ -201,18 +200,18 @@ typedef struct
  * regardless of the multiplicity of 'u'. Hence, handling this exception is
  * straightforward:
  *
- *     tsDeBoorNet net = ...    // evaluate a spline at lower or upper bound of
- *                              // its domain, for instance, 0 or 1
+ *     tsDeBoorNet net = ...    // evaluate a spline at the lower or upper
+ *                              // bound of its domain, for instance, 0 or 1
  *
  *     ts_deboornet_result(...) // use 'result' to access the resulting point
  *
  * In summary, we have three different types of evaluation. 1) The regular case
  * returning all points of the net we used to calculate the resulting point. 2)
  * The special case returning exactly two points which is required for splines
- * having (real) gaps. 3) The exception of 2) returning exactly one point even
- * if 's(u) == order'. All in all this looks quite complex (and actually it is)
- * but for most applications you don't need to bother with them. Just use
- * 'result' to access your evaluation point.
+ * with (real) gaps. 3) The exception of 2) returning exactly one point even if
+ * 's(u) == order'. All in all this looks quite complex (and actually it is)
+ * but for most applications you do not have to deal with it. Just use 'result'
+ * to access the outcome of De Boor's algorithm.
  */
 typedef struct
 {
@@ -233,7 +232,7 @@ typedef struct
  * Returns the degree of \p spline.
  *
  * @param spline
- * 	The spline whose degree will be read.
+ * 	The spline whose degree is read.
  * @return
  * 	The degree of \p spline.
  */
@@ -243,7 +242,7 @@ size_t ts_bspline_degree(const tsBSpline *spline);
  * Sets the degree of \p spline.
  *
  * @param spline
- * 	The spline whose degree will be set.
+ * 	The spline whose degree is set.
  * @param deg
  * 	The degree to be set.
  * @return TS_SUCCESS
@@ -257,7 +256,7 @@ tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg);
  * Returns the order (degree + 1) of \p spline.
  *
  * @param spline
- * 	The spline whose order will be read.
+ * 	The spline whose order is read.
  * @return
  * 	The order of \p spline.
  */
@@ -267,7 +266,7 @@ size_t ts_bspline_order(const tsBSpline *spline);
  * Sets the order (degree + 1) of \p spline.
  *
  * @param spline
- * 	The spline whose order will be set.
+ * 	The spline whose order is set.
  * @param order
  * 	The order to be set.
  * @return TS_SUCCESS
@@ -275,7 +274,7 @@ size_t ts_bspline_order(const tsBSpline *spline);
  * @return TS_DEG_GE_NCTRLP
  * 	If \p order > ts_bspline_get_control_points(spline) or if \p order == 0
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
- * 	which will always be >= ts_bspline_get_control_points(spline) ).
+ * 	which always is >= ts_bspline_get_control_points(spline) ).
  */
 tsError ts_bspline_set_order(tsBSpline *spline, size_t order);
 
@@ -286,7 +285,7 @@ tsError ts_bspline_set_order(tsBSpline *spline, size_t order);
  * questionable.
  *
  * @param spline
- * 	The spline whose dimension will be read.
+ * 	The spline whose dimension is read.
  * @return
  * 	The dimension of \p spline.
  */
@@ -304,7 +303,7 @@ size_t ts_bspline_dimension(const tsBSpline *spline);
  * are possible, albeit their benefit might be questionable.
  *
  * @param spline
- * 	The spline whose dimension will be set.
+ * 	The spline whose dimension is set.
  * @param dim
  * 	The dimension to be set.
  * @return TS_SUCCESS
@@ -320,7 +319,7 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim);
  * Returns the length of the control point array of \p spline.
  *
  * @param spline
- * 	The spline with its control point array whose length will be read.
+ * 	The spline with its control point array whose length is read.
  * @return
  * 	The length of the control point array of \p spline.
  */
@@ -330,7 +329,7 @@ size_t ts_bspline_len_control_points(const tsBSpline *spline);
  * Returns the number of control points of \p spline.
  *
  * @param spline
- * 	The spline whose number of control points will be read.
+ * 	The spline whose number of control points is read.
  * @return
  * 	The number of control points of \p spline.
  */
@@ -341,7 +340,7 @@ size_t ts_bspline_num_control_points(const tsBSpline *spline);
  * be useful when copying control points using memcpy or memmove.
  *
  * @param spline
- * 	The spline with its control point array whose size will be read.
+ * 	The spline with its control point array whose size is read.
  * @return
  * 	The size of the control point array of \p spline.
  */
@@ -351,7 +350,7 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
  * Returns a deep copy of the control points of \p spline.
  *
  * @param spline
- * 	The spline whose control points will be read.
+ * 	The spline whose control points are read.
  * @param ctrlp
  * 	The output array.
  * @return TS_SUCCESS
@@ -365,11 +364,11 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp);
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
  *
  * @param spline
- * 	The spline whose control points will be set.
+ * 	The spline whose control points are set.
  * @param ctrlp
  * 	The values to deep copy.
  * @return TS_SUCCESS
- * 	This function never fails.
+ * 	On success.
  */
 tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp);
 
@@ -377,7 +376,7 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp);
  * Returns the number of knots of \p spline.
  *
  * @param spline
- * 	The spline whose number of knots will be read.
+ * 	The spline whose number of knots is read.
  * @return
  * 	The number of knots of \p spline.
  */
@@ -388,7 +387,7 @@ size_t ts_bspline_num_knots(const tsBSpline *spline);
  * when copying knots using memcpy or memmove.
  *
  * @param spline
- * 	The spline with its knot array whose size will be read.
+ * 	The spline with its knot array whose size is read.
  * @return TS_SUCCESS
  * 	The size of the knot array of \p spline.
  */
@@ -398,7 +397,7 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
  * Returns a deep copy of the knots of \p spline.
  *
  * @param spline
- * 	The spline whose knots will be read.
+ * 	The spline whose knots are read.
  * @param knots
  * 	The output array.
  * @return TS_SUCCESS
@@ -409,10 +408,10 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
 tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots);
 
 /**
- * Sets the knot of \p spline. Creates a deep copy of \p knots.
+ * Sets the knots of \p spline. Creates a deep copy of \p knots.
  *
  * @param spline
- * 	The spline whose knots will be set.
+ * 	The spline whose knots are set.
  * @param knots
  * 	The values to deep copy.
  * @return TS_SUCCESS
@@ -430,7 +429,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots);
  * Returns the knot (sometimes also called 'u' or 't') of \p net.
  *
  * @param net
- * 	The net whose knot will be read.
+ * 	The net whose knot is read.
  * @return
  * 	The knot of \p net.
  */
@@ -440,7 +439,7 @@ tsReal ts_deboornet_knot(const tsDeBoorNet *net);
  * Returns the index [u_k, u_k+1) with u being the knot of \p net.
  *
  * @param net
- * 	The net whose index will be read.
+ * 	The net whose index is read.
  * @return
  * 	The index [u_k, u_k+1) with u being the knot of \p net.
  */
@@ -450,7 +449,7 @@ size_t ts_deboornet_index(const tsDeBoorNet *net);
  * Returns the multiplicity of the knot of \p net.
  *
  * @param net
- * 	The net whose multiplicity will be read.
+ * 	The net whose multiplicity is read.
  * @return
  * 	The multiplicity of the knot of \p net.
  */
@@ -461,7 +460,7 @@ size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
  * \p net.
  *
  * @param net
- * 	The net with its knot whose number of insertions will be read.
+ * 	The net with its knot whose number of insertions is read.
  * @return
  * 	The number of insertions that were necessary to evaluate the knot of \p
  * 	net.
@@ -475,7 +474,7 @@ size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
  * questionable.
  *
  * @param net
- * 	The net whose dimension will be read.
+ * 	The net whose dimension is read.
  * @return
  * 	The dimension of \p net.
  */
@@ -485,7 +484,7 @@ size_t ts_deboornet_dimension(const tsDeBoorNet *net);
  * Returns the length of the point array of \p net.
  *
  * @param net
- * 	The net with its point array whose length will be read.
+ * 	The net with its point array whose length is read.
  * @return
  * 	The length of the point array of \p net.
  */
@@ -495,7 +494,7 @@ size_t ts_deboornet_len_points(const tsDeBoorNet *net);
  * Returns the number of points of \p net.
  *
  * @param net
- * 	The net whose number of points will be read.
+ * 	The net whose number of points is read.
  * @return
  * 	The number of points of \p net.
  */
@@ -506,7 +505,7 @@ size_t ts_deboornet_num_points(const tsDeBoorNet *net);
  * when copying points using memcpy or memmove.
  *
  * @param net
- * 	The net with its point array whose size will be read.
+ * 	The net with its point array whose size is read.
  * @return
  * 	The size of the point array of \p net.
  */
@@ -516,7 +515,7 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
  * Returns a deep copy of the points of \p net.
  *
  * @param net
- * 	The net whose points will be read.
+ * 	The net whose points is read.
  * @param points
  * 	The output array.
  * @return TS_SUCCESS
@@ -530,7 +529,7 @@ tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points);
  * Returns the length of the result array of \p net.
  *
  * @param net
- * 	The net with its result array whose length will be read.
+ * 	The net with its result array whose length is read.
  * @return
  * 	The length of the result array of \p net.
  */
@@ -541,7 +540,7 @@ size_t ts_deboornet_len_result(const tsDeBoorNet *net);
  * (1 <= num_result <= 2).
  *
  * @param net
- * 	The net with its result array whose number of points will be read.
+ * 	The net with its result array whose number of points is read.
  * @return
  * 	The number of points in the result array of \p net.
  */
@@ -552,7 +551,7 @@ size_t ts_deboornet_num_result(const tsDeBoorNet *net);
  * when copying results using memcpy or memmove.
  *
  * @param net
- * 	The net with its result array whose size will be read.
+ * 	The net with its result array whose size is read.
  * @return TS_SUCCESS
  * 	The size of the result array of \p net.
  */
@@ -562,7 +561,7 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
  * Returns a deep copy of the result of \p net.
  *
  * @param net
- * 	The net whose result will be read.
+ * 	The net whose result is read.
  * @param result
  * 	The output array.
  * @return TS_SUCCESS

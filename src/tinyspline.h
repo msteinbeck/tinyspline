@@ -593,46 +593,41 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result);
 void ts_bspline_default(tsBSpline *_spline_);
 
 /**
- * A convenient constructor for tsBSpline.
+ * Creates a new spline and stores the result in \p \_spline\_.
  *
- * On error, all values of \p \_spline\_ are set to 0/NULL.
- *
- * @param n_ctrlp
+ * @param num_control_points
  * 	The number of control points of \p \_spline\_.
- * @param dim
- * 	The dimension of each control point in \p \_spline\_.
- * @param deg
+ * @param dimension
+ * 	The dimension of each control point of \p \_spline\_.
+ * @param degree
  * 	The degree of \p \_spline\_.
  * @param type
  * 	How to setup the knot vector of \p \_spline\_.
  * @param \_spline\_
- * 	The output parameter storing the result of this function.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p deg == 0.
+ * 	If \p degree == 0.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p deg >= \p n_ctrlp.
+ * 	If \p degree >= \p num_control_points.
  * @return TS_NUM_KNOTS
- * 	If \p type == ::TS_BEZIERS and (\p n_ctrlp % \p deg + 1) != 0.
+ * 	If \p type == ::TS_BEZIERS and
+ * 	(\p num_control_points % \p degree + 1) != 0.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
-	tsBSplineType type, tsBSpline *_spline_);
+tsError ts_bspline_new(size_t num_control_points, size_t dimension,
+       size_t degree, tsBSplineType type, tsBSpline *_spline_);
 
 /**
- * The copy constructor of tsBSpline.
- *
- * Creates a deep copy of \p original and stores the result in \p \_copy\_.
- *
- * On error, all values of \p \_copy\_ are set to 0/NULL. Does nothing, if
- * \p original == \p \_copy\_.
+ * Creates a deep copy of \p original and stores the copied values in
+ * \p \_copy\_. Does nothing, if \p original == \p \_copy\_.
  *
  * @param original
  * 	The spline to deep copy.
  * @param \_copy\_
- * 	The output parameter storing the copied values of \p original.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -641,23 +636,19 @@ tsError ts_bspline_new(size_t n_ctrlp, size_t dim, size_t deg,
 tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_);
 
 /**
- * The move constructor of tsBSpline.
- *
- * Moves all values from \p from to \p \_to\_ and calls ::ts_bspline_default
- * on \p from afterwards. Does nothing, if \p from == \p \_to\_.
+ * Moves the ownership of the data of \p from to \p \_to\_. After calling this
+ * function, \p from points to NULL. Does nothing, if \p from == \p \_to\_.
  * 
  * @param from
  * 	The spline whose values are moved to \p \_to\_.
  * @param \_to\_
- * 	The output parameter storing the moved values of \p from.
+ * 	The output parameter.
  */
 void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
 
 /**
- * The destructor of tsBSpline.
- *
- * Frees all dynamically allocated memory in \p \_spline\_ and calls
- * ::ts_bspline_default afterwards.
+ * Frees the dynamically allocated memory of \p \_spline\_. After calling this
+ * function, \p \_spline\_ points to NULL.
  * 
  * @param \_spline\_
  * 	The spline to free.
@@ -677,17 +668,13 @@ void ts_bspline_free(tsBSpline *_spline_);
 void ts_deboornet_default(tsDeBoorNet *_deBoorNet_);
 
 /**
- * The copy constructor of tsDeBoorNet.
- *
- * Creates a deep copy of \p original and stores the result in \p \_copy\_.
- *
- * On error, all values of \p _copy_ are set to 0/NULL. Does nothing, if
- * \p original == \p \_copy\_.
+ * Creates a deep copy of \p original and stores the copied values in
+ * \p \_copy\_. Does nothing, if \p original == \p \_copy\_.
  *
  * @param original
  * 	The net to deep copy.
  * @param \_copy\_
- * 	The output parameter storing the copied values of \p original.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -696,28 +683,24 @@ void ts_deboornet_default(tsDeBoorNet *_deBoorNet_);
 tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_);
 
 /**
- * The move constructor of tsDeBoorNet.
- *
- * Moves all values from \p from to \p \_to\_ and calls ::ts_deboornet_default
- * on \p from afterwards. Does nothing, if \p from == \p \_to\_.
+ * Moves the ownership of the data of \p from to \p \_to\_. After calling this
+ * function, \p from points to NULL. Does nothing, if \p from == \p \_to\_.
  * 
  * @param from
  * 	The net whose values are moved to \p \_to\_.
  * @param \_to\_
- * 	The output parameter storing the moved values of \p from.
+ * 	The output parameter.
  */
 void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_);
 
 /**
- * The destructor of tsDeBoorNet.
- *
- * Frees all dynamically allocated memory in \p \_deBoorNet\_ and calls
- * ::ts_deboornet_default afterwards.
+ * Frees the dynamically allocated memory of \p \_net\_. After calling this
+ * function, \p \_net\_ points to NULL.
  * 
- * @param \_deBoorNet\_
+ * @param \_net\_
  * 	The net to free.
  */
-void ts_deboornet_free(tsDeBoorNet *_deBoorNet_);
+void ts_deboornet_free(tsDeBoorNet *_net_);
 
 
 

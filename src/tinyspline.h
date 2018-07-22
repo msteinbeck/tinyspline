@@ -583,16 +583,6 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result);
 *                                                                             *
 ******************************************************************************/
 /**
- * The default constructor of tsBSpline.
- *
- * All values of \p \_spline\_ are set to 0/NULL.
- * 
- * @param \_spline\_
- * 	The spline whose values are set 0/NULL.
- */
-void ts_bspline_default(tsBSpline *_spline_);
-
-/**
  * Creates a new spline and stores the result in \p \_spline\_.
  *
  * @param num_control_points
@@ -656,16 +646,6 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
 void ts_bspline_free(tsBSpline *_spline_);
 
 /* ------------------------------------------------------------------------- */
-
-/**
- * The default constructor of tsDeBoorNet.
- *
- * All values of \p \_deBoorNet\_ are set to 0/NULL.
- * 
- * @param \_deBoorNet\_
- * 	The net whose values are set 0/NULL.
- */
-void ts_deboornet_default(tsDeBoorNet *_deBoorNet_);
 
 /**
  * Creates a deep copy of \p original and stores the copied values in

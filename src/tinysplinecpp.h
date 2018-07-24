@@ -7,11 +7,11 @@
 namespace tinyspline {
 
 typedef tsReal real;
+class BSpline;
 
 class DeBoorNet {
 public:
 	/* Constructors & Destructors */
-	DeBoorNet();
 	DeBoorNet(const DeBoorNet &other);
 	~DeBoorNet();
 
@@ -30,6 +30,11 @@ public:
 
 private:
 	tsDeBoorNet net;
+
+	/* Constructors & Destructors */
+	DeBoorNet();
+
+	friend class BSpline;
 };
 
 class BSpline {

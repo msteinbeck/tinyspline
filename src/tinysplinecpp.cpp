@@ -14,7 +14,7 @@
 ******************************************************************************/
 tinyspline::DeBoorNet::DeBoorNet()
 {
-	ts_deboornet_default(&net);
+	net.pImpl = NULL;
 }
 
 tinyspline::DeBoorNet::DeBoorNet(const tinyspline::DeBoorNet &other)
@@ -109,7 +109,13 @@ tsDeBoorNet * tinyspline::DeBoorNet::data()
 ******************************************************************************/
 tinyspline::BSpline::BSpline()
 {
-	ts_bspline_default(&spline);
+	tsReal ctrlp[3] = { 0, 0, 0 };
+	tsError err = ts_bspline_new(1, 3, 0, TS_CLAMPED, &spline);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+	err = ts_bspline_set_control_points(&spline, ctrlp);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
 }
 
 tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)

@@ -862,27 +862,33 @@ void ts_internal_bspline_derive(const tsBSpline *spline,
 
 	size_t i, j, k; /**< Used in for loops. */
 
-	if (deg < 1 || num_ctrlp < 2)
-		longjmp(buf, TS_UNDERIVABLE);
-
-	ts_internal_bspline_new(num_ctrlp-1, dim, deg-1, TS_NONE, &tmp, buf);
+	if (deg == 0) {
+		ts_internal_bspline_copy(spline, &tmp, buf);
+	} else {
+		ts_internal_bspline_new(num_ctrlp - 1, dim, deg - 1,
+					TS_NONE, &tmp, buf);
+	}
 	to_ctrlp = ts_internal_bspline_access_ctrlp(&tmp);
 	to_knots = ts_internal_bspline_access_knots(&tmp);
 
-	for (i = 0; i < num_ctrlp-1; i++) {
-		for (j = 0; j < dim; j++) {
-			if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
-				ts_bspline_free(&tmp);
-				longjmp(buf, TS_UNDERIVABLE);
-			} else {
-				k = i*dim + j;
-				to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
-				to_ctrlp[k] *= deg;
-				to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
+	if (deg == 0) {
+		ts_arr_fill(to_ctrlp, num_ctrlp, 0.f);
+	} else {
+		for (i = 0; i < num_ctrlp-1; i++) {
+			for (j = 0; j < dim; j++) {
+				if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
+					ts_bspline_free(&tmp);
+					longjmp(buf, TS_UNDERIVABLE);
+				} else {
+					k = i*dim + j;
+					to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
+					to_ctrlp[k] *= deg;
+					to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
+				}
 			}
 		}
+		memcpy(to_knots, from_knots+1, (num_knots-2)*sof_real);
 	}
-	memcpy(to_knots, from_knots+1, (num_knots-2)*sof_real);
 
 	if (spline == _derivative_)
 		ts_bspline_free(_derivative_);

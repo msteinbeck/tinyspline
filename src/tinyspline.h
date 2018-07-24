@@ -826,13 +826,15 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 *                                                                             *
 ******************************************************************************/
 /**
- * Computes the derivative of \p spline, see:
+ * Returns the \p n'th derivative of \p spline and stores the result in
+ * \p \_derivative\_. Creates a deep copy of \p spline, if
+ * \p spline != \p \_result\_. For more details, see:
  * 
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
- * The derivative of a spline _s_ of degree _d_ with _m_ control points and
- * _n_ knots is another spline _s'_ of degree _d-1_ with _m-1_ control points
- * and _n-2_ knots, defined over _s_ as:
+ * The derivative of a spline _s_ of degree _d_ (_d_ > 0) with _m_ control
+ * points and _n_ knots is another spline _s'_ of degree _d-1_ with _m-1_
+ * control points and _n-2_ knots, defined over _s_ as:
  * 
  * \f{eqnarray*}{
  *   s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u) *
@@ -849,21 +851,18 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * \f}
  * 
  * where the multiplicity of the first and the last knot value _u_ is _p_
- * rather than _p+1_.
- *
- * On error, (and if \p spline != \p \_derivative\_) all values of
- * \p \_derivative\_ are set to 0/NULL.
+ * rather than _p+1_. The derivative of a point (degree == 0) is another point
+ * with coordinates 0.
  *
  * @param spline
  * 	The spline to derive.
  * @param \_derivative\_
- *	The output parameter storing the derivative of \p spline.
+ *	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_UNDERIVABLE
- * 	If \p spline->deg < 1, \p spline->n_ctrlp < 2, or the multiplicity of
- * 	an internal knot of \p spline is greater than the degree of \p spline.
- * 	NOTE: This will be fixed in the future.
+ * 	If the multiplicity of an internal knot of \p spline is greater than
+ * 	the degree of \p spline. NOTE: This will be fixed in the future.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */

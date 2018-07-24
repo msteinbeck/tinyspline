@@ -745,18 +745,14 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * Evaluates \p spline at knot value \p u and stores the result in
  * \p \_deBoorNet\_.
  *
- * On error, all values of \p \_deBoorNet\_ are set to 0/NULL.
- *
  * @param spline
  * 	The spline to evaluate.
  * @param u
  * 	The knot value to evaluate.
  * @param \_deBoorNet\_
- * 	The output parameter storing the evaluation result.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_MULTIPLICITY
- * 	If multiplicity s(\p u) > order of \p spline.
  * @return TS_U_UNDEFINED
  * 	If \p spline is not defined at knot value \p u.
  * @return TS_MALLOC
@@ -879,31 +875,19 @@ tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
  * \p \_result\_. Creates a deep copy of \p spline, if
  * \p spline != \p \_result\_.
  *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
  * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose knot
- * 	vector is filled according to \p type with minimum knot value \p min
- * 	and maximum knot value \p max.
+ * 	The spline whose knot vector is filled according to \p type with
+ * 	minimum knot value \p min and maximum knot value \p max.
  * @param type
- * 	How to fill the knot vector of \p \_result\_.
+ * 	How to fill the knot vector.
  * @param min
- * 	The minimum knot value of the knot vector of \p \_result\_.
+ * 	The minimum value of the knot vector.
  * @param max
- * 	The maximum knot value of the knot vector of \p \_result\_.
+ * 	The maximum value of the knot vector.
  * @param \_result\_
- * 	The output parameter storing the result of this function.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p spline->n_knots < 2*(\p original->deg+1). We can reuse this
- * 	error code because \p spline->n_knots < 2*(\p spline->deg+1) implies
- * 	\p spline->deg >= \p spline->n_ctrlp. Furthermore, using
- * 	TS_DEG_GE_NCTRLP instead of TS_NUM_KNOTS ensures that TS_NUM_KNOTS is
- * 	not used twice for this function. To be more fail-safe,
- * 	\p spline->deg+1 instead of \p spline->order is used, to make sure
- * 	that \p spline->deg+1 >= 1.
  * @return TS_NUM_KNOTS
  * 	If \p type == TS_BEZIERS and
  * 	\p spline->n_knots % \p spline->order != 0.
@@ -911,7 +895,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
  * 	If \p min >= \p max. (::ts_fequals is used to determine whether
  * 	\p min == \p max).
  * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
 	tsReal min, tsReal max, tsBSpline *_result_);
@@ -921,73 +905,61 @@ tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
  * in \p \_result\_. Creates a deep copy of \p spline, if
  * \p spline != \p \_result\_.
  * 
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- * 
  * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and whose knot
- * 	vector is extended with \p u \p n times.
+ * 	The spline whose knot vector is extended.
  * @param u
  * 	The knot value to insert.
  * @param n
  * 	How many times \p u should be inserted.
  * @param \_result\_
- * 	The output parameter storing the updated knot vector.
+ * 	The output parameter.
  * @param \_k\_
- * 	The output parameter storing the last index of \p u in \p \_result\_.
+ * 	Stores the last index of \p u in \p \_result\_.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
 	tsBSpline *_result_, size_t *_k_);
 
 /**
- * Resizes \p spline by \p n (number of control points) and stores the result
- * in \p \_resized\_. Creates a deep copy of \p spline, if
+ * Resizes \p spline by \p num_control_points and stores the result in
+ * \p \_resized\_. Creates a deep copy of \p spline, if
  * \p spline != \p \_result\_. If \p back != 0 \p spline is resized at the
  * end. If \p back == 0 \p spline is resized at front.
  *
- * On error, (and if \p spline != \p \_result\_) all values of \p \_result\_
- * are set to 0/NULL.
- *
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
- * 	If the degree of \p \_resized\_ would be >= the number of the control
+ * 	If the degree of \p \_resized\_ would be >= the number of control
  * 	points of \p \_resized\_.
- * @return TS_DIM_ZERO
- * 	If \p spline != \p \_result\_ and \p spline->dim == 0.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p spline != \p \_result\_ and
- * 	\p spline->deg >= \p spline->n_ctrlp.
  * @return TS_MALLOC
- * 	If \p spline != \p \_result\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
-tsError ts_bspline_resize(const tsBSpline *spline, int n, int back,
-	tsBSpline *_resized_);
+tsError ts_bspline_resize(const tsBSpline *spline, int num_control_points,
+	int back, tsBSpline *_resized_);
 
 /**
- * Splits \p spline at \p u and stores the result in \p \_split\_. That is,
- * \p u is inserted _n_ times such that s(\p u) == \p \_split\_->order.
- * Creates a deep copy of \p spline, if \p spline != \p \_split\_.
- * 
- * On error, (and if \p spline != \p \_split\_) all values of \p \_split\_
- * are set to 0/NULL.
+ * Splits \p spline at knot value \p u and stores the result in \p \_split\_.
+ * That is, \p u is inserted _n_ times such that the multiplicity of \p u in
+ * \p spline is equal to the spline's order. Creates a deep copy of \p spline,
+ * if \p spline != \p \_split\_.
  * 
  * @param spline
- * 	The spline to deep copy (if \p spline != \p \_result\_) and split.
+ * 	The spline to split.
  * @param u
  * 	The split point.
  * @param \_split\_
- * 	The output parameter storing the split spline.
+ * 	The output parameter.
  * @param \_k\_
- * 	The output parameter storing the last index of \p u in \p \_split\_.
+ * 	Stores the last index of \p u in \p \_split\_.
  * @return TS_SUCCESS
  * 	On success.
+ * @return TS_U_UNDEFINED
+ * 	If \p spline is not defined at knot value \p u.
  * @return TS_MALLOC
- * 	If \p spline != \p \_split\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
 	size_t *_k_);
@@ -1009,39 +981,33 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * the original shape (maximum buckle). If \b < 0 or \b > 1 the behaviour is
  * undefined, though, it will not result in an error.
  *
- * On error, (and if \p spline != \p \_buckled\_) all values of \p \_buckled\_
- * are set to 0/NULL.
- *
  * @param spline
- * 	The spline to buckle by \p b.
+ * 	The spline to buckle.
  * @param b
  * 	The buckle factor (usually 0.0 <= \p b <= 1.0).
  * @param \_buckled\_
- * 	The output parameter storing the buckled spline.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
- * 	If \p spline != \p \_buckled\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
 	tsBSpline *_buckled_);
 
 /**
- * Subdivides \p spline into a sequence of Bezier curvs by splitting it at
+ * Subdivides \p spline into a sequence of Bezier curves by splitting it at
  * each internal knot value. Creates a deep copy of \p spline, if
  * \p spline != \p \_beziers\_.
  * 
- * On error, (and if \p spline != \p \_beziers\_) all values of \p \_beziers\_
- * are set to 0/NULL.
- * 
  * @param spline
- * 	The spline to subdivide into a sequence of Bezier curves.
+ * 	The spline to subdivide.
  * @param \_beziers\_
- * 	The output parameter storing the sequence of Bezier curves.
+ * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
- * 	If \p spline != \p \_beizers\_ and allocating memory failed.
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 

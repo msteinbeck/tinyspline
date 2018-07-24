@@ -129,8 +129,6 @@ void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	}
 
 	/* keep in mind that currently k is k+1 */
-	if (*s > order)
-		longjmp(buf, TS_MULTIPLICITY);
 	if (*k <= deg)                /* u < u_min */
 		longjmp(buf, TS_U_UNDEFINED);
 	if (*k == num_knots && *s == 0) /* u > u_last */
@@ -917,8 +915,6 @@ void ts_internal_bspline_fill_knots(const tsBSpline *spline,
 	tsReal *knots; /**< Pointer to the knots of \p _result_. */
 
 	/* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
-	if (n_knots < 2*order)
-		longjmp(buf, TS_DEG_GE_NCTRLP);
 	if (type == TS_BEZIERS && n_knots % order != 0)
 		longjmp(buf, TS_NUM_KNOTS);
 	if (min > max || ts_fequals(min, max))

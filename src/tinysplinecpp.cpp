@@ -309,10 +309,10 @@ tinyspline::BSpline tinyspline::BSpline::toBeziers() const
 	return bs;
 }
 
-tinyspline::BSpline tinyspline::BSpline::derive() const
+tinyspline::BSpline tinyspline::BSpline::derive(size_t n) const
 {
 	tinyspline::BSpline bs;
-	tsError err = ts_bspline_derive(&spline, &bs.spline);
+	tsError err = ts_bspline_derive(&spline, n, &bs.spline);
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));
 	return bs;

@@ -866,7 +866,8 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_);
+tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
+	tsBSpline *_derivative_);
 
 /**
  * Fills the knot vector of \p spline according to \p type with minimum knot

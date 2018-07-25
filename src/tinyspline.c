@@ -844,62 +844,77 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 * :: Transformation Functions                                                 *
 *                                                                             *
 ******************************************************************************/
-void ts_internal_bspline_derive(const tsBSpline *spline,
+void ts_internal_bspline_derive(const tsBSpline *spline, size_t n,
 	tsBSpline *_derivative_, jmp_buf buf)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
-	const size_t deg = ts_bspline_degree(spline);
-	const size_t num_ctrlp = ts_bspline_num_control_points(spline);
-	const size_t num_knots = ts_bspline_num_knots(spline);
+	size_t deg = ts_bspline_degree(spline);
+	size_t num_ctrlp = ts_bspline_num_control_points(spline);
+	size_t num_knots = ts_bspline_num_knots(spline);
 
-	tsBSpline tmp;  /**< Temporarily stores the result. */
-	const tsReal* from_ctrlp = ts_internal_bspline_access_ctrlp(spline);
-	const tsReal* from_knots = ts_internal_bspline_access_knots(spline);
-	tsReal* to_ctrlp = NULL; /**< Pointer to the control points of tmp. */
-	tsReal* to_knots = NULL; /**< Pointer to the knots of tmp. */
+	tsBSpline worker; /**< Stores intermediate results. */
+	tsReal* ctrlp;    /**< Pointer to the control points of worker. */
+	tsReal* knots;    /**< Pointer to the knots of worker. */
 
-	size_t i, j, k; /**< Used in for loops. */
+	size_t m, i, j, k, l; /**< Used in for loops. */
 
-	if (deg == 0) {
-		ts_internal_bspline_copy(spline, &tmp, buf);
-	} else {
-		ts_internal_bspline_new(num_ctrlp - 1, dim, deg - 1,
-					TS_NONE, &tmp, buf);
-	}
-	to_ctrlp = ts_internal_bspline_access_ctrlp(&tmp);
-	to_knots = ts_internal_bspline_access_knots(&tmp);
+	tsBSpline swap; /**< Used to swap worker and _derivative_. */
+	jmp_buf b;
+	tsError err;
+
+	ts_internal_bspline_copy(spline, &worker, buf);
+	ctrlp = ts_internal_bspline_access_ctrlp(&worker);
+	knots = ts_internal_bspline_access_knots(&worker);
 
 	if (deg == 0) {
-		ts_arr_fill(to_ctrlp, num_ctrlp, 0.f);
+		ts_arr_fill(ctrlp, num_ctrlp, 0.f);
 	} else {
-		for (i = 0; i < num_ctrlp-1; i++) {
-			for (j = 0; j < dim; j++) {
-				if (ts_fequals(from_knots[i+deg+1], from_knots[i+1])) {
-					ts_bspline_free(&tmp);
-					longjmp(buf, TS_UNDERIVABLE);
-				} else {
-					k = i*dim + j;
-					to_ctrlp[k] = from_ctrlp[(i+1)*dim + j] - from_ctrlp[k];
-					to_ctrlp[k] *= deg;
-					to_ctrlp[k] /= from_knots[i+deg+1] - from_knots[i+1];
+		for (m = 1; m <= n; m++) { /* from 1st to n'th derivative */
+			for (i = 0; i < num_ctrlp-1; i++) {
+				for (j = 0; j < dim; j++) {
+					if (ts_fequals(knots[i+deg+1], knots[i+1])) {
+						ts_bspline_free(&worker);
+						longjmp(buf, TS_UNDERIVABLE);
+					} else {
+						k = i    *dim + j;
+						l = (i+1)*dim + j;
+						ctrlp[k] = ctrlp[l] - ctrlp[k];
+						ctrlp[k] *= deg;
+						ctrlp[k] /= knots[i+deg+1] - knots[i+1];
+					}
 				}
 			}
+			deg       -= 1;
+			num_ctrlp -= 1;
+			num_knots -= 2;
+			knots     += 1;
 		}
-		memcpy(to_knots, from_knots+1, (num_knots-2)*sof_real);
 	}
 
+	TRY(b, err)
+		ts_internal_bspline_new(num_ctrlp, dim, deg, TS_NONE, &swap, b);
+	CATCH
+		ts_bspline_free(&worker);
+		longjmp(buf, err);
+	ETRY
+	memcpy(ts_internal_bspline_access_ctrlp(&swap), ctrlp,
+	       num_ctrlp * dim * sof_real);
+	memcpy(ts_internal_bspline_access_knots(&swap), knots,
+	       num_knots * sof_real);
+	ts_bspline_free(&worker);
 	if (spline == _derivative_)
 		ts_bspline_free(_derivative_);
-	ts_bspline_move(&tmp, _derivative_);
+	ts_bspline_move(&swap, _derivative_);
 }
 
-tsError ts_bspline_derive(const tsBSpline *spline, tsBSpline *_derivative_)
+tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
+	tsBSpline *_derivative_)
 {
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		ts_internal_bspline_derive(spline, _derivative_, buf);
+		ts_internal_bspline_derive(spline, n, _derivative_, buf);
 	CATCH
 		if (spline != _derivative_)
 			ts_internal_bspline_init(_derivative_);

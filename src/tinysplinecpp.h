@@ -74,7 +74,7 @@ public:
 	BSpline split(real u) const;
 	BSpline buckle(real b) const;
 	BSpline toBeziers() const;
-	BSpline derive() const;
+	BSpline derive(size_t n = 1) const;
 
 private:
 	tsBSpline spline;

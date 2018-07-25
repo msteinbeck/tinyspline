@@ -66,7 +66,7 @@ void setup()
 	ts_bspline_set_control_points(&spline, ctrlp);
 	free(ctrlp);
 
-	ts_bspline_derive(&spline, &derivative);
+	ts_bspline_derive(&spline, 1, &derivative);
 }
 
 void tear_down()

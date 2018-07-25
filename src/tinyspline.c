@@ -114,7 +114,6 @@ void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	size_t *s, jmp_buf buf)
 {
 	const size_t deg = ts_bspline_degree(spline);
-	const size_t order = ts_bspline_order(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
 	const tsReal *knots = ts_internal_bspline_access_knots(spline);
 

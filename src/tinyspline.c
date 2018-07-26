@@ -867,10 +867,11 @@ void ts_internal_bspline_derive(const tsBSpline *spline, size_t n,
 	ctrlp = ts_internal_bspline_access_ctrlp(&worker);
 	knots = ts_internal_bspline_access_knots(&worker);
 
-	if (deg == 0) {
-		ts_arr_fill(ctrlp, num_ctrlp, 0.f);
-	} else {
-		for (m = 1; m <= n; m++) { /* from 1st to n'th derivative */
+	for (m = 1; m <= n; m++) { /* from 1st to n'th derivative */
+		if (deg == 0) {
+			ts_arr_fill(ctrlp, num_ctrlp * dim, 0.f);
+			break;
+		} else {
 			for (i = 0; i < num_ctrlp-1; i++) {
 				for (j = 0; j < dim; j++) {
 					if (ts_fequals(knots[i+deg+1], knots[i+1])) {

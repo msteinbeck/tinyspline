@@ -464,10 +464,12 @@ void ts_internal_deboornet_new(const tsBSpline *spline,
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t num_points = (size_t)(deg * (deg+1) * 0.5f);
+	/* Handle case deg <= 1 which generates too few points. */
+	const size_t fixed_num_points = num_points < 2 ? 2 : num_points;
 
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(struct tsDeBoorNetImpl);
-	const size_t sof_points_vec = num_points * dim * sof_real;
+	const size_t sof_points_vec = fixed_num_points * dim * sof_real;
 	const size_t sof_net = sof_impl * sof_points_vec;
 
 	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
@@ -479,7 +481,7 @@ void ts_internal_deboornet_new(const tsBSpline *spline,
 	_deBoorNet_->pImpl->s = 0;
 	_deBoorNet_->pImpl->h = deg;
 	_deBoorNet_->pImpl->dim = dim;
-	_deBoorNet_->pImpl->n_points = num_points;
+	_deBoorNet_->pImpl->n_points = fixed_num_points;
 }
 
 void ts_deboornet_free(tsDeBoorNet *_net_)

@@ -83,7 +83,7 @@ pushd "$TARGET_DIR"
 	cp -a "$DOXYGEN_HTML_DIR/." ./
 
 	# Copy CircleCI config directory.
-	cp -a "$CIRCLECI_CONFIG_DIR/." ./
+	cp -R "$CIRCLECI_CONFIG_DIR" ./
 
 	# Set user name and email for commit.
 	git config user.name "Travis CI"

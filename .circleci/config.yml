@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: Installing Dependencies
-          command: pushd tools/ci && ./install_debs.sh && popd
+          command: pushd tools/ci && ./install_deps.sh && popd
       - run:
           name: Compiling Code
           command: pushd tools/ci && BUILD_DIR=build ./compile.sh && popd

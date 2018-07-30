@@ -39,6 +39,15 @@ if [ ! -d "$DOXYGEN_HTML_DIR" ]; then
 	exit -1
 fi
 
+# Path to the CircleCI config directory. It is required to prevent
+# TARGET_BRANCH from being tested by CircleCI (which fails due to missing
+# tests).
+CIRCLECI_CONFIG_DIR="SCRIPT_DIR/../../.circleci"
+if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
+	echo "CircleCI config directory is not available; aborting."
+	exit -1
+fi
+
 # Path to unencrypted deploy key.
 DEPLOY_KEY_PATH="$SCRIPT_DIR/deploy_key"
 # Path to encrypted deploy key.
@@ -72,6 +81,9 @@ git clone -b $TARGET_BRANCH $SSH_REPO $TARGET_DIR
 pushd "$TARGET_DIR"
 	# Copy docs.
 	cp -a "$DOXYGEN_HTML_DIR/." ./
+
+	# Copy CircleCI config directory.
+	cp -a "$CIRCLECI_CONFIG_DIR/." ./
 
 	# Set user name and email for commit.
 	git config user.name "Travis CI"

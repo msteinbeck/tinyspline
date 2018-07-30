@@ -10,8 +10,9 @@ general:
 
 jobs:
   build:
-    docker:
-      - image: "debian:stretch"
+    machine:
+      enabled: true
+      image: circleci/classic:edge
     steps:
       - checkout
       - run:

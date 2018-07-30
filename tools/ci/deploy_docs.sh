@@ -42,7 +42,7 @@ fi
 # Path to the CircleCI config directory. It is required to prevent
 # TARGET_BRANCH from being tested by CircleCI (which fails due to missing
 # tests).
-CIRCLECI_CONFIG_DIR="SCRIPT_DIR/../../.circleci"
+CIRCLECI_CONFIG_DIR="$SCRIPT_DIR/../../.circleci"
 if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
 	echo "CircleCI config directory is not available; aborting."
 	exit -1

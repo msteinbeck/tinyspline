@@ -36,6 +36,7 @@ pushd "$DEPS_DIR"
 		doxygen             \
 		graphviz            \
 		python-dev          \
+		liblua5.2-dev       \
 		octave-pkg-dev      \
 		r-base              \
 		r-cran-rcpp         \

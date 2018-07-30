@@ -36,7 +36,7 @@ pushd "$DEPS_DIR"
 		doxygen             \
 		graphviz            \
 		python-dev          \
-		php-dev             \
+		php5-dev            \
 		liblua5.2-dev       \
 		octave-pkg-dev      \
 		r-base              \

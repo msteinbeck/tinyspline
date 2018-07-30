@@ -9,6 +9,7 @@ DEPS_DIR="$SCRIPT_DIR/deps"
 mkdir -p "$DEPS_DIR"
 
 pushd "$DEPS_DIR"
+	# Install dependencies from package manager.
 	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 		sudo apt-get -qq update
 		sudo apt-get install --no-install-recommends \
@@ -24,11 +25,21 @@ pushd "$DEPS_DIR"
 			r-cran-rcpp         \
 			-y;
 	fi
-
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 		brew update
 		brew install \
 			lua
+	fi
+	if [ "$CIRCLECI" == "true" ]; then
+	sudo apt-get -qq update
+	sudo apt-get install --no-install-recommends \
+		doxygen             \
+		graphviz            \
+		python-dev          \
+		octave-pkg-dev      \
+		r-base              \
+		r-cran-rcpp         \
+		-y;
 	fi
 
 	# Install CMake-3.11.0 from binary package.

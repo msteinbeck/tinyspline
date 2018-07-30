@@ -12,7 +12,6 @@ pushd "$DEPS_DIR"
 	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 		sudo apt-get -qq update
 		sudo apt-get install --no-install-recommends \
-			cmake               \
 			doxygen             \
 			graphviz            \
 			python-dev          \
@@ -29,13 +28,17 @@ pushd "$DEPS_DIR"
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 		brew update
 		brew install \
-			swig                \
 			lua
 	fi
 
-	# Install CMake-3.12.0 from binary package.
-	wget https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.tar.gz
-	sudo tar xf cmake-3.12.0-Linux-x86_64.tar.gz --strip 1 -C /usr/local
+	# Install CMake-3.11.0 from binary package.
+	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+		https://cmake.org/files/v3.11/cmake-3.11.0-Darwin-x86_64.tar.gz
+		sudo tar xf cmake-3.11.0-Darwin-x86_64.tar.gz --strip 1 -C /usr/local
+	else
+		wget https://cmake.org/files/v3.11/cmake-3.11.0-Linux-x86_64.tar.gz
+		sudo tar xf cmake-3.11.0-Linux-x86_64.tar.gz --strip 1 -C /usr/local
+	fi
 
 	# Compile and install Swig-3.0.12 from source.
 	wget https://github.com/swig/swig/archive/rel-3.0.12.tar.gz

@@ -1,0 +1,22 @@
+version: 2
+
+# Ignore branches testing third-party CI environments.
+general:
+  branches:
+    ignore:
+      - appveyor
+      - travisci
+      - gh-pages
+
+jobs:
+  build:
+    docker:
+      - image: "debian:stretch"
+    steps:
+      - checkout
+      - run:
+          name: Installing Dependencies
+          command: pushd tools/ci && ./install_debs.sh && popd
+      - run:
+          name: Compiling Code
+          command: pushd tools/ci && BUILD_DIR=build ./compile.sh && popd

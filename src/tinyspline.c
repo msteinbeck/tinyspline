@@ -202,7 +202,7 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline)
 tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp)
 {
 	const size_t size = ts_bspline_sof_control_points(spline);
-	*ctrlp = malloc(size);
+	*ctrlp = (tsReal*) malloc(size);
 	if (!*ctrlp) {
 		return TS_MALLOC;
 	} else {
@@ -233,7 +233,7 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline)
 tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots)
 {
 	const size_t size = ts_bspline_sof_knots(spline);
-	*knots = malloc(size);
+	*knots = (tsReal*) malloc(size);
 	if (!*knots) {
 		return TS_MALLOC;
 	} else {
@@ -314,7 +314,7 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net)
 tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points)
 {
 	const size_t size = ts_deboornet_sof_points(net);
-	*points = malloc(size);
+	*points = (tsReal*) malloc(size);
 	if (!*points) {
 		return TS_MALLOC;
 	} else {
@@ -343,7 +343,7 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net)
 tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result)
 {
 	const size_t size = ts_deboornet_sof_result(net);
-	*result = malloc(size);
+	*result = (tsReal*) malloc(size);
 	if (!*result) {
 		return TS_MALLOC;
 	} else {
@@ -422,7 +422,7 @@ void ts_internal_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
 	if (original == _copy_)
 		return;
 	size = ts_internal_bspline_sof_state(original);
-	_copy_->pImpl = malloc(size);
+	_copy_->pImpl = (struct tsBSplineImpl *) malloc(size);
 	if (!_copy_->pImpl)
 		longjmp(buf, TS_MALLOC);
 	memcpy(_copy_->pImpl, original->pImpl, size);
@@ -499,7 +499,7 @@ void ts_internal_deboornet_copy(const tsDeBoorNet *original,
 	if (original == _copy)
 		return;
 	size = ts_internal_deboornet_sof_state(original);
-	_copy->pImpl = malloc(size);
+	_copy->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
 	if (!_copy->pImpl)
 		longjmp(buf, TS_MALLOC);
 	memcpy(_copy->pImpl, original->pImpl, size);

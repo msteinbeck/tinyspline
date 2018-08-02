@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	free(result);
 
 	/* Derive `spline` ... */
-	ts_bspline_derive(&spline, &beziers);
+	ts_bspline_derive(&spline, 1, &beziers);
 	/* ... and subdivide it into a sequence of Bezier curves. */
 	ts_bspline_to_beziers(&beziers, &beziers);
 

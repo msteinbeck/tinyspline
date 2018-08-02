@@ -1397,7 +1397,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 
 	/* Set degree and dimension. */
 	status = json_object_set_number(
-	spline_object, "degree", deg);
+		spline_object, "degree", (double) deg);
 	if (status != JSONSuccess) {
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
@@ -1405,7 +1405,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		return TS_MALLOC;
 	}
 	status = json_object_set_number(
-		spline_object, "dimension", dim);
+		spline_object, "dimension", (double) dim);
 	if (status != JSONSuccess) {
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
@@ -1429,7 +1429,8 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		return TS_MALLOC;
 	}
 	for (i = 0; i < len_ctrlp; i++) {
-		status = json_array_append_number(ctrlp_array, ctrlp[i]);
+		status = json_array_append_number(
+			ctrlp_array, (double) ctrlp[i]);
 		if (status != JSONSuccess) {
 			json_value_free(spline_value);
 			json_value_free(knots_value);
@@ -1451,7 +1452,8 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		return TS_MALLOC;
 	}
 	for (i = 0; i < len_knots; i++) {
-		status = json_array_append_number(knots_array, knots[i]);
+		status = json_array_append_number(
+			knots_array, (double) knots[i]);
 		if (status != JSONSuccess) {
 			json_value_free(spline_value);
 			return TS_MALLOC;

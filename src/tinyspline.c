@@ -1,9 +1,4 @@
 #include "tinyspline.h"
-
-/* Suppress warning C4232 (caused by parson). */
-#ifdef _MSC_VER
-#pragma warning(disable:4232)
-#endif
 #include "parson.h" /* serialization */
 
 #include <stdlib.h> /* malloc, free */

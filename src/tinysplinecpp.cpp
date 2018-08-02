@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cstdio>
 
-// Surpress warning C4996 (sprintf_s).
+// Suppress warning C4996 (sprintf_s).
 #ifdef _MSC_VER
 #pragma warning(disable:4996)
 #endif

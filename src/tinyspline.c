@@ -1,8 +1,13 @@
 #include "tinyspline.h"
-#include "parson.h"
+
+/* Suppress warning C4232 (caused by parson). */
+#ifdef _MSC_VER
+#pragma warning(disable:4232)
+#endif
+#include "parson.h" /* serialization */
 
 #include <stdlib.h> /* malloc, free */
-#include <math.h> /* fabs, sqrt */
+#include <math.h>   /* fabs, sqrt */
 #include <string.h> /* memcpy, memmove, strcmp */
 #include <setjmp.h> /* setjmp, longjmp */
 

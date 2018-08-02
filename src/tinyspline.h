@@ -1015,6 +1015,31 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 
 /******************************************************************************
 *                                                                             *
+* :: Serialization and Persistence Functions                                  *
+*                                                                             *
+* The following section contains functions to serialize and persist the data  *
+ * types listed above                                                         *
+*                                                                             *
+******************************************************************************/
+/**
+ * Serializes \p spline to a null-terminated JSON string and stores the result
+ * in \p \_json\_.
+ *
+ * @param spline
+ * 	The spline to serialize.
+ * @param json
+ * 	The output parameter.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_);
+
+
+
+/******************************************************************************
+*                                                                             *
 * :: Utility Functions                                                        *
 *                                                                             *
 * The following section contains utility functions used by TinySpline which   *

@@ -1,4 +1,5 @@
 #include "tinyspline.h"
+#include "parson.h"
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h> /* fabs, sqrt */
@@ -1342,6 +1343,131 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_)
 			ts_internal_bspline_init(_beziers_);
 	ETRY
 	return err;
+}
+
+
+
+/******************************************************************************
+*                                                                             *
+* :: Serialization and Persistence Functions                                  *
+*                                                                             *
+******************************************************************************/
+tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
+{
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t dim = ts_bspline_dimension(spline);
+	const size_t len_ctrlp = ts_bspline_len_control_points(spline);
+	const size_t len_knots = ts_bspline_num_knots(spline);
+    const tsReal *ctrlp = ts_internal_bspline_access_ctrlp(spline);
+    const tsReal *knots = ts_internal_bspline_access_knots(spline);
+
+	size_t i; /**< Used in loops */
+
+	JSON_Value  *spline_value;
+	JSON_Object *spline_object;
+	JSON_Value  *ctrlp_value;
+	JSON_Array  *ctrlp_array;
+    JSON_Value  *knots_value;
+    JSON_Array  *knots_array;
+    JSON_Status status; /**< Status of last json operation. */
+
+    /* Initialize parson structs. */
+    spline_value = json_value_init_object();
+    if (!spline_value) {
+        return TS_MALLOC;
+    }
+    ctrlp_value = json_value_init_array();
+    if (!ctrlp_value) {
+        json_value_free(spline_value);
+        return TS_MALLOC;
+    }
+    knots_value = json_value_init_array();
+    if (!knots_value) {
+        json_value_free(spline_value);
+        json_value_free(ctrlp_value);
+        return TS_MALLOC;
+    }
+    spline_object = json_value_get_object(spline_value);
+    if (!spline_object) {
+        json_value_free(spline_value);
+        json_value_free(ctrlp_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+
+	/* Set degree and dimension. */
+	status = json_object_set_number(
+            spline_object, "degree", deg);
+    if (status != JSONSuccess) {
+        json_value_free(spline_value);
+        json_value_free(ctrlp_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+	status = json_object_set_number(
+            spline_object, "dimension", dim);
+    if (status != JSONSuccess) {
+        json_value_free(spline_value);
+        json_value_free(ctrlp_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+
+	/* Set control points. */
+    status = json_object_set_value(
+            spline_object, "control_points", ctrlp_value);
+    if (status != JSONSuccess) {
+        json_value_free(spline_value);
+        json_value_free(ctrlp_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+	ctrlp_array = json_array(ctrlp_value);
+    if (!ctrlp_array){
+        json_value_free(spline_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+	for (i = 0; i < len_ctrlp; i++) {
+        status = json_array_append_number(ctrlp_array, ctrlp[i]);
+        if (status != JSONSuccess) {
+            json_value_free(spline_value);
+            json_value_free(knots_value);
+            return TS_MALLOC;
+        }
+    }
+
+	/* Set knots. */
+    status = json_object_set_value(
+            spline_object, "knots", knots_value);
+    if (status != JSONSuccess) {
+        json_value_free(spline_value);
+        json_value_free(knots_value);
+        return TS_MALLOC;
+    }
+    knots_array = json_array(knots_value);
+    if (!knots_array) {
+        json_value_free(spline_value);
+        return TS_MALLOC;
+    }
+	for (i = 0; i < len_knots; i++) {
+        status = json_array_append_number(knots_array, knots[i]);
+        if (status != JSONSuccess) {
+            json_value_free(spline_value);
+            return TS_MALLOC;
+        }
+    }
+
+	/* Generate string. */
+	*_json_ = json_serialize_to_string_pretty(spline_value);
+	if (!*_json_) {
+        json_value_free(spline_value);
+        return TS_MALLOC;
+    }
+
+    /* Cleanup and return. */
+	json_value_free(spline_value);
+	return TS_SUCCESS;
 }
 
 

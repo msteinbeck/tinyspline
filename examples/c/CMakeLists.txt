@@ -41,6 +41,20 @@ endif()
 ###############################################################################
 ### Create examples. Exclude GLUT related examples in double precision mode.
 ###############################################################################
+add_executable(quickstart_c quickstart.c)
+target_link_libraries(quickstart_c
+		LINK_PUBLIC tinyspline_static
+		${TINYSPLINE_LIBRARIES}
+		)
+set_target_properties(quickstart_c PROPERTIES FOLDER "examples/c")
+
+add_executable(json_export_c json_export.c)
+target_link_libraries(json_export_c
+		LINK_PUBLIC tinyspline_static
+		${TINYSPLINE_LIBRARIES}
+		)
+set_target_properties(json_export_c PROPERTIES FOLDER "examples/c")
+
 if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 		AND GLUT_FOUND AND OPENGL_FOUND)
 	add_executable(bspline bspline.c)
@@ -105,11 +119,4 @@ if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
 	)
 	set_target_properties(triangle-nurbs PROPERTIES FOLDER "examples/c")
-
-	add_executable(quickstart-c quickstart.c)
-	target_link_libraries(quickstart-c
-		LINK_PUBLIC tinyspline_static
-		${TINYSPLINE_LIBRARIES}
-	)
-	set_target_properties(quickstart-c PROPERTIES FOLDER "examples/c")
 endif()

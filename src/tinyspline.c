@@ -1352,7 +1352,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_)
 * :: Serialization and Persistence Functions                                  *
 *                                                                             *
 ******************************************************************************/
-tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
+JSON_Value * ts_internal_bspline_to_json(const tsBSpline * spline, jmp_buf buf)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1374,25 +1374,25 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 	/* Initialize parson structs. */
 	spline_value = json_value_init_object();
 	if (!spline_value) {
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	ctrlp_value = json_value_init_array();
 	if (!ctrlp_value) {
 		json_value_free(spline_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	knots_value = json_value_init_array();
 	if (!knots_value) {
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	spline_object = json_value_get_object(spline_value);
 	if (!spline_object) {
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 
 	/* Set degree and dimension. */
@@ -1402,7 +1402,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	status = json_object_set_number(
 		spline_object, "dimension", (double) dim);
@@ -1410,7 +1410,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 
 	/* Set control points. */
@@ -1420,13 +1420,13 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		json_value_free(spline_value);
 		json_value_free(ctrlp_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	ctrlp_array = json_array(ctrlp_value);
 	if (!ctrlp_array){
 		json_value_free(spline_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	for (i = 0; i < len_ctrlp; i++) {
 		status = json_array_append_number(
@@ -1434,7 +1434,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 		if (status != JSONSuccess) {
 			json_value_free(spline_value);
 			json_value_free(knots_value);
-			return TS_MALLOC;
+			longjmp(buf, TS_MALLOC);
 		}
 	}
 
@@ -1444,31 +1444,59 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 	if (status != JSONSuccess) {
 		json_value_free(spline_value);
 		json_value_free(knots_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	knots_array = json_array(knots_value);
 	if (!knots_array) {
 		json_value_free(spline_value);
-		return TS_MALLOC;
+		longjmp(buf, TS_MALLOC);
 	}
 	for (i = 0; i < len_knots; i++) {
 		status = json_array_append_number(
 			knots_array, (double) knots[i]);
 		if (status != JSONSuccess) {
 			json_value_free(spline_value);
-			return TS_MALLOC;
+			longjmp(buf, TS_MALLOC);
 		}
 	}
 
-	/* Generate string. */
-	*_json_ = json_serialize_to_string_pretty(spline_value);
-	if (!*_json_) {
-		json_value_free(spline_value);
-		return TS_MALLOC;
-	}
+	/* Done. */
+	return spline_value;
+}
 
-	/* Cleanup and return. */
-	json_value_free(spline_value);
+tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
+{
+	tsError err;
+	jmp_buf buf;
+	JSON_Value *value = NULL;
+	*_json_ = NULL;
+	TRY(buf, err)
+		value = ts_internal_bspline_to_json(spline, buf);
+	CATCH
+		return err;
+	ETRY
+	*_json_ = json_serialize_to_string_pretty(value);
+	json_value_free(value);
+	if (!*_json_)
+		return TS_MALLOC;
+	return TS_SUCCESS;
+}
+
+tsError ts_bspline_save_json(const tsBSpline *spline, const char *path)
+{
+	tsError err;
+	jmp_buf buf;
+	JSON_Status status;
+	JSON_Value *value = NULL;
+	TRY(buf, err)
+		value = ts_internal_bspline_to_json(spline, buf);
+	CATCH
+		return err;
+	ETRY
+	status = json_serialize_to_file_pretty(value, path);
+	json_value_free(value);
+	if (status != JSONSuccess)
+		return TS_IO_ERROR;
 	return TS_SUCCESS;
 }
 
@@ -1508,6 +1536,8 @@ const char* ts_enum_str(tsError err)
 		return "unexpected number of knots";
 	else if (err == TS_UNDERIVABLE)
 		return "spline is not derivable";
+	else if (err == TS_IO_ERROR)
+		return "io error";
 	return "unknown error";
 }
 
@@ -1529,6 +1559,8 @@ tsError ts_str_enum(const char *str)
 		return TS_NUM_KNOTS;
 	else if (!strcmp(str, ts_enum_str(TS_UNDERIVABLE)))
 		return TS_UNDERIVABLE;
+	else if (!strcmp(str, ts_enum_str(TS_IO_ERROR)))
+		return TS_IO_ERROR;
 	return TS_SUCCESS;
 }
 

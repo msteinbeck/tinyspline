@@ -76,7 +76,10 @@ typedef enum
 	TS_UNDERIVABLE = -8,
 
 	/* len_control_points % dim != 0 */
-	TS_LCTRLP_DIM_MISMATCH = -10
+	TS_LCTRLP_DIM_MISMATCH = -10,
+
+	/* An error occurred while reading/writing a file. */
+	TS_IO_ERROR
 } tsError;
 
 /**
@@ -1035,6 +1038,22 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
  * 	If allocating memory failed.
  */
 tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_);
+
+/**
+ * Saves \p spline as JSON ASCII file.
+ *
+ * @param spline
+ * 	The spline to save.
+ * @param path
+ * 	Path of the JSON file.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_IO_ERROR
+ * 	If an error occurred while saving \p spline.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_save_json(const tsBSpline *spline, const char *path);
 
 
 

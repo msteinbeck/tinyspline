@@ -1018,7 +1018,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_);
 * :: Serialization and Persistence Functions                                  *
 *                                                                             *
 * The following section contains functions to serialize and persist the data  *
- * types listed above                                                         *
+* types listed above.                                                         *
 *                                                                             *
 ******************************************************************************/
 /**

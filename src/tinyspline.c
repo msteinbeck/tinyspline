@@ -1538,6 +1538,8 @@ const char* ts_enum_str(tsError err)
 		return "spline is not derivable";
 	else if (err == TS_IO_ERROR)
 		return "io error";
+	else if (err == TS_PARSE_ERROR)
+		return "parse error";
 	return "unknown error";
 }
 
@@ -1561,6 +1563,8 @@ tsError ts_str_enum(const char *str)
 		return TS_UNDERIVABLE;
 	else if (!strcmp(str, ts_enum_str(TS_IO_ERROR)))
 		return TS_IO_ERROR;
+	else if (!strcmp(str, ts_enum_str(TS_PARSE_ERROR)))
+		return TS_PARSE_ERROR;
 	return TS_SUCCESS;
 }
 

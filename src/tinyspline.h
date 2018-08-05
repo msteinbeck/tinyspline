@@ -79,7 +79,10 @@ typedef enum
 	TS_LCTRLP_DIM_MISMATCH = -10,
 
 	/* An error occurred while reading/writing a file. */
-	TS_IO_ERROR
+	TS_IO_ERROR = -11,
+
+	/* An error occurred while parsing a serialized spline. */
+	TS_PARSE_ERROR = -12
 } tsError;
 
 /**

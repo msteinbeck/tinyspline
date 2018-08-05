@@ -217,7 +217,7 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp)
 tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp)
 {
 	const size_t size = ts_bspline_sof_control_points(spline);
-	memcpy(ts_internal_bspline_access_ctrlp(spline), ctrlp, size);
+	memmove(ts_internal_bspline_access_ctrlp(spline), ctrlp, size);
 	return TS_SUCCESS;
 }
 
@@ -266,7 +266,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots)
 		lst_knot = knot;
 	}
 	size = ts_bspline_sof_knots(spline);
-	memcpy(ts_internal_bspline_access_knots(spline), knots, size);
+	memmove(ts_internal_bspline_access_knots(spline), knots, size);
 	return TS_SUCCESS;
 }
 
@@ -1464,6 +1464,97 @@ JSON_Value * ts_internal_bspline_to_json(const tsBSpline * spline, jmp_buf buf)
 	return spline_value;
 }
 
+void ts_internal_bspline_from_json(const JSON_Value *spline_value,
+	tsBSpline *_spline_, jmp_buf buf)
+{
+	size_t deg, dim, len_ctrlp, num_knots;
+	tsReal *ctrlp, *knots;
+
+	JSON_Object *spline_object;
+	JSON_Value *deg_value;
+	JSON_Value *dim_value;
+	JSON_Value *ctrlp_value;
+	JSON_Array *ctrlp_array;
+	JSON_Value *knots_value;
+	JSON_Array *knots_array;
+	JSON_Value *real_value;
+	size_t i;
+	tsError err;
+	jmp_buf b;
+
+	/* Read spline object. */
+	if (json_value_get_type(spline_value) != JSONObject)
+		longjmp(buf, TS_PARSE_ERROR);
+	spline_object = json_value_get_object(spline_value);
+	if (!spline_object)
+		longjmp(buf, TS_MALLOC);
+
+	/* Read degree. */
+	deg_value = json_object_get_value(spline_object, "degree");
+	if (json_value_get_type(deg_value) != JSONNumber)
+		longjmp(buf, TS_PARSE_ERROR);
+	deg = (size_t) json_value_get_number(deg_value);
+
+	/* Read dimension. */
+	dim_value = json_object_get_value(spline_object, "dimension");
+	if (json_value_get_type(dim_value) != JSONNumber)
+		longjmp(buf, TS_PARSE_ERROR);
+	dim = (size_t) json_value_get_number(dim_value);
+	if (dim == 0)
+		longjmp(buf, TS_DIM_ZERO);
+
+	/* Read length of control point vector. */
+	ctrlp_value = json_object_get_value(spline_object, "control_points");
+	if (json_value_get_type(ctrlp_value) != JSONArray)
+		longjmp(buf, TS_PARSE_ERROR);
+	ctrlp_array = json_value_get_array(ctrlp_value);
+	len_ctrlp = json_array_get_count(ctrlp_array);
+	if (len_ctrlp % dim != 0)
+		longjmp(buf, TS_LCTRLP_DIM_MISMATCH);
+
+	/* Read number of knots. */
+	knots_value = json_object_get_value(spline_object, "knots");
+	if (json_value_get_type(knots_value) != JSONArray)
+		longjmp(buf, TS_PARSE_ERROR);
+	knots_array = json_value_get_array(knots_value);
+	num_knots = json_array_get_count(knots_array);
+
+	/* Create spline. */
+	ts_internal_bspline_new(
+		len_ctrlp/dim, dim, deg, TS_CLAMPED, _spline_, buf);
+	TRY(b, err)
+		if (num_knots != ts_bspline_num_knots(_spline_))
+			longjmp(b, TS_NUM_KNOTS);
+
+		/* Set control points. */
+		ctrlp = ts_internal_bspline_access_ctrlp(_spline_);
+		for (i = 0; i < len_ctrlp; i++) {
+			real_value = json_array_get_value(ctrlp_array, i);
+			if (json_value_get_type(real_value) != JSONNumber)
+				longjmp(b, TS_PARSE_ERROR);
+			ctrlp[i] = (tsReal) json_value_get_number(real_value);
+		}
+		err = ts_bspline_set_control_points(_spline_, ctrlp);
+		if (err)
+			longjmp(b, err);
+
+		/* Set knots. */
+		knots = ts_internal_bspline_access_knots(_spline_);
+		for (i = 0; i < num_knots; i++) {
+			real_value = json_array_get_value(knots_array, i);
+			if (json_value_get_type(real_value) != JSONNumber)
+				longjmp(b, TS_PARSE_ERROR);
+			knots[i] = (tsReal) json_value_get_number(real_value);
+		}
+		err = ts_bspline_set_knots(_spline_, knots);
+		if (err)
+			longjmp(b, err);
+	CATCH
+		ts_bspline_free(_spline_);
+		longjmp(buf, err);
+	ETRY
+}
+
 tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 {
 	tsError err;
@@ -1480,6 +1571,23 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_)
 	if (!*_json_)
 		return TS_MALLOC;
 	return TS_SUCCESS;
+}
+
+tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_)
+{
+	tsError err;
+	jmp_buf buf;
+	JSON_Value *value = NULL;
+	ts_internal_bspline_init(_spline_);
+	TRY(buf, err)
+		value = json_parse_string(json);
+		if (!value)
+			longjmp(buf, TS_PARSE_ERROR);
+		ts_internal_bspline_from_json(value, _spline_, buf);
+	ETRY
+	if (value)
+		json_value_free(value);
+	return err;
 }
 
 tsError ts_bspline_save_json(const tsBSpline *spline, const char *path)

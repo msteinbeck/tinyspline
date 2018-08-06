@@ -63,6 +63,12 @@ public:
 	/* Query */
 	DeBoorNet eval(real u) const;
 
+	/* Serialization */
+	std::string toJSON();
+	void fromJSON(std::string json);
+	void save(std::string path);
+	void load(std::string path);
+
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
 	void setKnots(const std::vector<real> &knots);

@@ -213,6 +213,44 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return deBoorNet;
 }
 
+std::string tinyspline::BSpline::toJSON()
+{
+	char *json;
+	tsError err = ts_bspline_to_json(&spline, &json);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+	std::string string(json);
+	delete json;
+	return string;
+}
+
+void tinyspline::BSpline::fromJSON(std::string json)
+{
+	tsBSpline s;
+	tsError err = ts_bspline_from_json(json.c_str(), &s);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+	ts_bspline_free(&spline);
+	ts_bspline_move(&s, &spline);
+}
+
+void tinyspline::BSpline::save(std::string path)
+{
+	tsError err = ts_bspline_save_json(&spline, path.c_str());
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+}
+
+void tinyspline::BSpline::load(std::string path)
+{
+	tsBSpline s;
+	tsError err = ts_bspline_load_json(path.c_str(), &s);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+	ts_bspline_free(&spline);
+	ts_bspline_move(&s, &spline);
+}
+
 void tinyspline::BSpline::setControlPoints(
 	const std::vector<tinyspline::real> &ctrlp)
 {

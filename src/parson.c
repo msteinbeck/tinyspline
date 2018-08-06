@@ -53,6 +53,12 @@
 #undef malloc
 #undef free
 
+#if defined(isnan) && defined(isinf)
+#define IS_NUMBER_INVALID(x) (isnan((x)) || isinf((x)))
+#else
+#define IS_NUMBER_INVALID(x) (((x) * 0.0) != 0.0)
+#endif
+
 static JSON_Malloc_Function parson_malloc = malloc;
 static JSON_Free_Function parson_free = free;
 
@@ -1364,7 +1370,14 @@ JSON_Value * json_value_init_string(const char *string) {
 
 JSON_Value * json_value_init_number(double number) {
     JSON_Value *new_value = NULL;
-    if ((number * 0.0) != 0.0) { /* nan and inf test */
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
+    if (IS_NUMBER_INVALID(number)) {
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
         return NULL;
     }
     new_value = (JSON_Value*)parson_malloc(sizeof(JSON_Value));

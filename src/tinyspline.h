@@ -78,11 +78,8 @@ typedef enum
 	/* len_control_points % dim != 0 */
 	TS_LCTRLP_DIM_MISMATCH = -10,
 
-	/* An error occurred while reading/writing a file. */
-	TS_IO_ERROR = -11,
-
-	/* An error occurred while parsing a serialized spline. */
-	TS_PARSE_ERROR = -12
+	/* An error occurred while serializing/deserializing an object. */
+	TS_SERIALIZATION = -11
 } tsError;
 
 /**
@@ -1051,8 +1048,8 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_);
  * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_PARSE_ERROR
- * 	If an error occurred while parsing \p json.
+ * @return TS_SERIALIZATION
+ * 	If an error occurred while deserializing \p json.
  * @return TS_DIM_ZERO
  * 	If the dimension is 0.
  * @return TS_LCTRLP_DIM_MISMATCH
@@ -1080,12 +1077,41 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_);
  * 	Path of the JSON file.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_IO_ERROR
- * 	If an error occurred while saving \p spline.
+ * @return TS_SERIALIZATION
+ * 	If an error occurred while serializing \p spline.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
 tsError ts_bspline_save_json(const tsBSpline *spline, const char *path);
+
+/**
+ * Loads the contents of \p path and stores the result in \p \_spline\_.
+ *
+ * @param path
+ * 	Path of the JSON file.
+ * @param _spline_
+ * 	The output parameter.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_SERIALIZATION
+ * 	If an error occurred while deserializing the contents of \p path.
+ * @return TS_DIM_ZERO
+ * 	If the dimension is 0.
+ * @return TS_LCTRLP_DIM_MISMATCH
+ * 	If the length of the control point vector modulo dimension is not 0.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If the degree is greater or equals to the number of control points.
+ * @return TS_NUM_KNOTS
+ * 	If the number of knots stored in \p json does not match to the number
+ * 	of control points and the degree of the spline.
+ * @return TS_KNOTS_DECR
+ * 	If the knot vector is decreasing.
+ * @return TS_MULTIPLICITY
+ * 	If there is a knot with multiplicity greater than order.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_);
 
 
 

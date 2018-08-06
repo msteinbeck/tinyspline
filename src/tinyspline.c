@@ -1484,7 +1484,7 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 
 	/* Read spline object. */
 	if (json_value_get_type(spline_value) != JSONObject)
-		longjmp(buf, TS_PARSE_ERROR);
+		longjmp(buf, TS_SERIALIZATION);
 	spline_object = json_value_get_object(spline_value);
 	if (!spline_object)
 		longjmp(buf, TS_MALLOC);
@@ -1492,13 +1492,13 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	/* Read degree. */
 	deg_value = json_object_get_value(spline_object, "degree");
 	if (json_value_get_type(deg_value) != JSONNumber)
-		longjmp(buf, TS_PARSE_ERROR);
+		longjmp(buf, TS_SERIALIZATION);
 	deg = (size_t) json_value_get_number(deg_value);
 
 	/* Read dimension. */
 	dim_value = json_object_get_value(spline_object, "dimension");
 	if (json_value_get_type(dim_value) != JSONNumber)
-		longjmp(buf, TS_PARSE_ERROR);
+		longjmp(buf, TS_SERIALIZATION);
 	dim = (size_t) json_value_get_number(dim_value);
 	if (dim == 0)
 		longjmp(buf, TS_DIM_ZERO);
@@ -1506,7 +1506,7 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	/* Read length of control point vector. */
 	ctrlp_value = json_object_get_value(spline_object, "control_points");
 	if (json_value_get_type(ctrlp_value) != JSONArray)
-		longjmp(buf, TS_PARSE_ERROR);
+		longjmp(buf, TS_SERIALIZATION);
 	ctrlp_array = json_value_get_array(ctrlp_value);
 	len_ctrlp = json_array_get_count(ctrlp_array);
 	if (len_ctrlp % dim != 0)
@@ -1515,7 +1515,7 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	/* Read number of knots. */
 	knots_value = json_object_get_value(spline_object, "knots");
 	if (json_value_get_type(knots_value) != JSONArray)
-		longjmp(buf, TS_PARSE_ERROR);
+		longjmp(buf, TS_SERIALIZATION);
 	knots_array = json_value_get_array(knots_value);
 	num_knots = json_array_get_count(knots_array);
 
@@ -1531,7 +1531,7 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 		for (i = 0; i < len_ctrlp; i++) {
 			real_value = json_array_get_value(ctrlp_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
-				longjmp(b, TS_PARSE_ERROR);
+				longjmp(b, TS_SERIALIZATION);
 			ctrlp[i] = (tsReal) json_value_get_number(real_value);
 		}
 		err = ts_bspline_set_control_points(_spline_, ctrlp);
@@ -1543,7 +1543,7 @@ void ts_internal_bspline_from_json(const JSON_Value *spline_value,
 		for (i = 0; i < num_knots; i++) {
 			real_value = json_array_get_value(knots_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
-				longjmp(b, TS_PARSE_ERROR);
+				longjmp(b, TS_SERIALIZATION);
 			knots[i] = (tsReal) json_value_get_number(real_value);
 		}
 		err = ts_bspline_set_knots(_spline_, knots);
@@ -1582,7 +1582,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_)
 	TRY(buf, err)
 		value = json_parse_string(json);
 		if (!value)
-			longjmp(buf, TS_PARSE_ERROR);
+			longjmp(buf, TS_SERIALIZATION);
 		ts_internal_bspline_from_json(value, _spline_, buf);
 	ETRY
 	if (value)
@@ -1604,8 +1604,26 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path)
 	status = json_serialize_to_file_pretty(value, path);
 	json_value_free(value);
 	if (status != JSONSuccess)
-		return TS_IO_ERROR;
+		return TS_SERIALIZATION;
 	return TS_SUCCESS;
+}
+
+tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_)
+{
+	tsError err;
+	jmp_buf buf;
+	JSON_Value *value = NULL;
+	TRY(buf, err)
+		value = json_parse_file(path);
+		if (!value)
+			longjmp(buf, TS_SERIALIZATION);
+		ts_internal_bspline_from_json(value, _spline_, buf);
+	CATCH
+		return err;
+	ETRY
+	if (value)
+		json_value_free(value);
+	return err;
 }
 
 
@@ -1644,10 +1662,8 @@ const char* ts_enum_str(tsError err)
 		return "unexpected number of knots";
 	else if (err == TS_UNDERIVABLE)
 		return "spline is not derivable";
-	else if (err == TS_IO_ERROR)
-		return "io error";
-	else if (err == TS_PARSE_ERROR)
-		return "parse error";
+	else if (err == TS_SERIALIZATION)
+		return "serialization error";
 	return "unknown error";
 }
 
@@ -1669,10 +1685,8 @@ tsError ts_str_enum(const char *str)
 		return TS_NUM_KNOTS;
 	else if (!strcmp(str, ts_enum_str(TS_UNDERIVABLE)))
 		return TS_UNDERIVABLE;
-	else if (!strcmp(str, ts_enum_str(TS_IO_ERROR)))
-		return TS_IO_ERROR;
-	else if (!strcmp(str, ts_enum_str(TS_PARSE_ERROR)))
-		return TS_PARSE_ERROR;
+	else if (!strcmp(str, ts_enum_str(TS_SERIALIZATION)))
+		return TS_SERIALIZATION;
 	return TS_SUCCESS;
 }
 

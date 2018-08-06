@@ -78,8 +78,11 @@ typedef enum
 	/* len_control_points % dim != 0 */
 	TS_LCTRLP_DIM_MISMATCH = -10,
 
-	/* An error occurred while serializing/deserializing an object. */
-	TS_SERIALIZATION = -11
+	/* An error occurred while reading/writing a file. */
+	TS_IO_ERROR = -11,
+
+	/* An error occurred while parsing a serialized spline. */
+	TS_PARSE_ERROR = -12
 } tsError;
 
 /**
@@ -1048,8 +1051,8 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_);
  * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_SERIALIZATION
- * 	If an error occurred while deserializing \p json.
+ * @return TS_PARSE_ERROR
+ * 	If an error occurred while parsing \p json.
  * @return TS_DIM_ZERO
  * 	If the dimension is 0.
  * @return TS_LCTRLP_DIM_MISMATCH
@@ -1077,8 +1080,8 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_);
  * 	Path of the JSON file.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_SERIALIZATION
- * 	If an error occurred while serializing \p spline.
+ * @return TS_IO_ERROR
+ * 	If an error occurred while saving \p spline.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
@@ -1093,8 +1096,10 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path);
  * 	The output parameter.
  * @return TS_SUCCESS
  * 	On success.
- * @return TS_SERIALIZATION
- * 	If an error occurred while deserializing the contents of \p path.
+ * @return TS_IO_ERROR
+ * 	If \p path does not exist.
+ * @return TS_PARSE_ERROR
+ * 	If an error occurred while parsing the contents of \p path.
  * @return TS_DIM_ZERO
  * 	If the dimension is 0.
  * @return TS_LCTRLP_DIM_MISMATCH

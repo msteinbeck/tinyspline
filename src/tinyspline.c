@@ -1658,7 +1658,7 @@ const char* ts_enum_str(tsError err)
 	else if (err == TS_DIM_ZERO)
 		return "dim == 0";
 	else if (err == TS_DEG_GE_NCTRLP)
-		return "deg >= #ctrlp";
+		return "deg >= num(control_points)";
 	else if (err == TS_U_UNDEFINED)
 		return "spline is undefined at given u";
 	else if (err == TS_MULTIPLICITY)
@@ -1669,6 +1669,8 @@ const char* ts_enum_str(tsError err)
 		return "unexpected number of knots";
 	else if (err == TS_UNDERIVABLE)
 		return "spline is not derivable";
+	else if (err == TS_LCTRLP_DIM_MISMATCH)
+		return "len(control_points) % dim != 0";
 	else if (err == TS_IO_ERROR)
 		return "io error";
 	else if (err == TS_PARSE_ERROR)

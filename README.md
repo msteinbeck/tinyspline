@@ -4,6 +4,7 @@ TinySpline
 [![Build Status](https://travis-ci.org/msteinbeck/tinyspline.svg?branch=master)](https://travis-ci.org/msteinbeck/tinyspline)
 [![Build status](https://ci.appveyor.com/api/projects/status/mu9qlojuff4rvea3/branch/master?svg=true)](https://ci.appveyor.com/project/msteinbeck/tinyspline/branch/master)
 [![CircleCI](https://circleci.com/gh/msteinbeck/tinyspline.svg?style=svg)](https://circleci.com/gh/msteinbeck/tinyspline)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/msteinbeck/tinyspline.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/msteinbeck/tinyspline/context:cpp)
 
 TinySpline is library for NURBS, B-Splines, and Bézier curves, allowing you to
 handle splines with ease. The library has been implemented in ANSI C (C89) and

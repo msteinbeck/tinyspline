@@ -35,10 +35,11 @@
 #include <math.h>
 #include <errno.h>
 
-/* Suppress warning C5045 (Spectre mitigation). */
+/* Suppress some MSVC warnings. */
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:C5045)
+/* Spectre mitigation */
+#pragma warning(disable:5045)
 #endif
 
 /* Apparently sscanf is not implemented in some "standard" libraries, so don't use it, if you

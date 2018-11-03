@@ -7,7 +7,12 @@
 #include <setjmp.h> /* setjmp, longjmp */
 #include <stdio.h>  /* FILE, fopen */
 
-
+/* Suppress some MSVC warnings. */
+#ifdef _MSC_VER
+#pragma warning(push)
+/* Spectre mitigation */
+#pragma warning(disable:5045)
+#endif
 
 /******************************************************************************
 *                                                                             *
@@ -1718,3 +1723,7 @@ tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, size_t dim)
 		sum += (x[i] - y[i]) * (x[i] - y[i]);
 	return (tsReal) sqrt(sum);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

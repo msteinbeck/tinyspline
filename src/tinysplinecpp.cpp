@@ -2,10 +2,13 @@
 #include <stdexcept>
 #include <cstdio>
 
-// Suppress warning C4996 (sprintf_s).
+/* Suppress some MSVC warnings. */
 #ifdef _MSC_VER
 #pragma warning(push)
+/* sprintf_s */
 #pragma warning(disable:4996)
+/* Spectre mitigation */
+#pragma warning(disable:5045)
 #endif
 
 /******************************************************************************

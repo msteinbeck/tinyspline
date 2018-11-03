@@ -35,8 +35,9 @@
 #include <math.h>
 #include <errno.h>
 
-// Suppress warning C5045 (Spectre mitigation).
+/* Suppress warning C5045 (Spectre mitigation). */
 #ifdef _MSC_VER
+#pragma warning(push)
 #pragma warning(disable:C5045)
 #endif
 
@@ -2056,3 +2057,7 @@ void json_set_allocation_functions(JSON_Malloc_Function malloc_fun, JSON_Free_Fu
     parson_malloc = malloc_fun;
     parson_free = free_fun;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

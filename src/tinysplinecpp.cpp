@@ -4,6 +4,7 @@
 
 // Suppress warning C4996 (sprintf_s).
 #ifdef _MSC_VER
+#pragma warning(push)
 #pragma warning(disable:4996)
 #endif
 
@@ -392,3 +393,7 @@ tsError tinyspline::Utils::str_enum(std::string str)
 {
 	return ts_str_enum(str.c_str());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

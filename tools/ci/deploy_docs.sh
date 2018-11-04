@@ -112,10 +112,10 @@ fi
 git clone -b $BUILD_BRANCH $SSH_REPO $BUILD_BRANCH_DIR
 pushd "$BUILD_BRANCH_DIR"
 	# Copy libs.
-	cp -a "$LIB_DIR/." ./
+	cp -R "$LIB_DIR" ./
 
 	# Copy binaries.
-	cp -a "$BIN_DIR/." ./
+	cp -R "$BIN_DIR" ./
 
 	# Copy CircleCI config directory.
 	cp -R "$CIRCLECI_CONFIG_DIR" ./

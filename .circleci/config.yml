@@ -1,13 +1,13 @@
 version: 2
 
-# Ignore branches testing third-party CI environments and storing build
-# artifacts.
 general:
   branches:
     ignore:
       - appveyor
       - travisci
       - gh-pages
+      - build_linux_64
+      - build_osx_64
 
 jobs:
   build:

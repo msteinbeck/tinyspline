@@ -1,8 +1,10 @@
-# Ignore branches testing third-party CI environments.
 branches:
   except:
     - appveyor
     - circleci
+    - gh-pages
+    - build_linux_64
+    - build_osx_64
 
 # Travis CI tests only Clang. GCC is tested elsewhere.
 language: cpp

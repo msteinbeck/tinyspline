@@ -83,6 +83,54 @@ ssh-add "$DEPLOY_KEY_PATH"
 ###############################################################################
 ### Deploy build.
 ###############################################################################
+# Path to the libs that will be deployed.
+LIB_DIR="$BUILD_DIR_FIXED/lib"
+# Verify that libs have been created.
+if [ ! -d "$LIB_DIR" ]; then
+	echo "Directory 'lib' is not available; aborting."
+	exit -1
+fi
+
+# Path to the binaries that will be deployed.
+BIN_DIR="$BUILD_DIR_FIXED/bin"
+# Verify that binaries have been created.
+if [ ! -d "$BIN_DIR" ]; then
+	echo "Directory 'bin' is not available; aborting."
+	exit -1
+fi
+
+# Directory where BUILD_BRANCH is cloned to.
+BUILD_BRANCH_DIR="$SCRIPT_DIR/$BUILD_BRANCH"
+# Verify that BUILD_BRANCH_DIR does not exist.
+if [ -d "$BUILD_BRANCH_DIR" ]        \
+	|| [ -f "$BUILD_BRANCH_DIR" ]; then
+	echo "'$BUILD_BRANCH_DIR' already exists; aborting."
+	exit -1
+fi
+
+# Clone BUILD_BRANCH to BUILD_BRANCH_DIR.
+git clone -b $BUILD_BRANCH $SSH_REPO $BUILD_BRANCH_DIR
+pushd "$BUILD_BRANCH_DIR"
+	# Copy libs.
+	cp -a "$LIB_DIR/." ./
+
+	# Copy binaries.
+	cp -a "$BIN_DIR/." ./
+
+	# Copy CircleCI config directory.
+	cp -R "$CIRCLECI_CONFIG_DIR" ./
+
+	# Set user name and email for commit.
+	git config user.name "Travis CI"
+	git config user.email "travis@tinyspline.org"
+
+	# Commit all changes.
+	git add --all
+	git commit -m "Deploy build for: ${SHA}"
+
+	# Now that we're all set up, we can push.
+	git push --force
+popd
 
 
 

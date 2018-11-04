@@ -44,6 +44,8 @@
 #pragma warning(disable:4710)
 /* byte padding */
 #pragma warning(disable:4820)
+/* meaningless deprecation */
+#pragma warning(disable:4996)
 /* Spectre mitigation */
 #pragma warning(disable:5045)
 #endif

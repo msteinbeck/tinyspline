@@ -35,9 +35,15 @@
 #include <math.h>
 #include <errno.h>
 
-/* Suppress some MSVC warnings. */
+/* Suppress some useless MSVC warnings. */
 #ifdef _MSC_VER
 #pragma warning(push)
+/* address of dllimport */
+#pragma warning(disable:4232)
+/* function not inlined */
+#pragma warning(disable:4710)
+/* byte padding */
+#pragma warning(disable:4820)
 /* Spectre mitigation */
 #pragma warning(disable:5045)
 #endif

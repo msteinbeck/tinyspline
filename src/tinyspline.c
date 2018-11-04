@@ -12,10 +12,6 @@
 #pragma warning(push)
 /* address of dllimport */
 #pragma warning(disable:4232)
-/* binding rvalues to non-const references */
-#pragma warning(disable:4350)
-/* unreferenced inline function */
-#pragma warning(disable:4514)
 /* function not inlined */
 #pragma warning(disable:4710)
 /* byte padding */

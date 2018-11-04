@@ -2,10 +2,16 @@
 #include <stdexcept>
 #include <cstdio>
 
-/* Suppress some MSVC warnings. */
+/* Suppress some useless MSVC warnings. */
 #ifdef _MSC_VER
 #pragma warning(push)
-/* sprintf_s */
+/* address of dllimport */
+#pragma warning(disable:4232)
+/* function not inlined */
+#pragma warning(disable:4710)
+/* byte padding */
+#pragma warning(disable:4820)
+/* meaningless deprecation */
 #pragma warning(disable:4996)
 /* Spectre mitigation */
 #pragma warning(disable:5045)

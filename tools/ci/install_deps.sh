@@ -4,7 +4,7 @@ set -e
 # Directory where this script is located.
 SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
 
-# Directory where external dependencies will be handled.
+# Directory where external dependencies are handled.
 DEPS_DIR="$SCRIPT_DIR/deps"
 mkdir -p "$DEPS_DIR"
 

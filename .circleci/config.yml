@@ -1,6 +1,7 @@
 version: 2
 
-# Ignore branches testing third-party CI environments.
+# Ignore branches testing third-party CI environments and storing build
+# artifacts.
 general:
   branches:
     ignore:

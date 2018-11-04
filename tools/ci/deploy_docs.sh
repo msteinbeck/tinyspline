@@ -1,27 +1,30 @@
 #!/bin/bash
 set -e
 
-# Create docs from 'master' and push them to 'gh-pages'.
-SOURCE_BRANCH="master"
-TARGET_BRANCH="gh-pages"
+# Directory where this script is located.
+SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
 
-# Prevent multiple or unwanted deployments.
+###############################################################################
+### Sanity checks and initial setup.
+###############################################################################
+# Configure branches.
+SOURCE_BRANCH="master"
+if [ -z "$TRAVIS_OS_NAME" ]; then
+	exit 0
+fi
+if [ "$(getconf LONG_BIT)" = "64" ]; then
+	BUILD_BRANCH="build_${TRAVIS_OS_NAME}_64"
+else
+	BUILD_BRANCH="build_${TRAVIS_OS_NAME}_32"
+fi
+DOCS_BRANCH="gh-pages"
+
+# Avoid unwanted deployments.
 if [ "$TRAVIS" != "true" ]                         \
-	|| [ "$DEPLOY_DOCS" != "true" ]            \
-	|| [ "$TRAVIS_OS_NAME" != "linux" ]        \
-	|| [ "$CC" != "clang" ]                    \
 	|| [ "$TRAVIS_PULL_REQUEST" != "false" ]   \
 	|| [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
 	exit 0
 fi
-
-# Store some useful information.
-REPO=`git config remote.origin.url`
-SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
-SHA=`git rev-parse --verify HEAD`
-
-# Directory where this script is located.
-SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
 
 # Verify that this script is located next to 'compile.sh'.
 if [ ! -f "$SCRIPT_DIR/compile.sh" ]; then
@@ -29,7 +32,68 @@ if [ ! -f "$SCRIPT_DIR/compile.sh" ]; then
     exit -1
 fi
 # See 'compile.sh'.
+if [ -z "$BUILD_DIR" ]; then
+	echo "BUILD_DIR has not been set or is empty; aborting."
+	exit -1
+fi
 BUILD_DIR_FIXED="$SCRIPT_DIR/$BUILD_DIR"
+
+# Path to the CircleCI config directory. This directory will be copied to
+# DOCS_BRANCH and BUILD_BRANCH to prevent that these branches are tested by
+# CircleCI, which fails due to missing tests.
+CIRCLECI_CONFIG_DIR="$SCRIPT_DIR/../../.circleci"
+if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
+	echo "CircleCI config directory is not available; aborting."
+	exit -1
+fi
+
+# Store some git-related information.
+REPO=`git config remote.origin.url`
+SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
+SHA=`git rev-parse --verify HEAD`
+
+
+
+###############################################################################
+### Decrypt and install deploy key.
+###############################################################################
+# Path to the unencrypted deploy key.
+DEPLOY_KEY_PATH="$SCRIPT_DIR/deploy_key"
+# Path to the encrypted deploy key.
+ENC_DEPLOY_KEY_PATH="$DEPLOY_KEY_PATH.enc"
+# Verify that the encrypted deploy key is available.
+if [ ! -f "$ENC_DEPLOY_KEY_PATH" ]; then
+    echo "Unable to find encrypted deploy key; aborting."
+    exit -1
+fi
+openssl aes-256-cbc \
+	-K $encrypted_6b814194a991_key \
+	-iv $encrypted_6b814194a991_iv \
+	-in "$ENC_DEPLOY_KEY_PATH"     \
+	-out "$DEPLOY_KEY_PATH"        \
+	-d
+# Remove decrypted deploy key at the end of this script.
+trap "{ rm $DEPLOY_KEY_PATH; }" EXIT
+chmod 600 "$DEPLOY_KEY_PATH"
+eval `ssh-agent -s`
+ssh-add "$DEPLOY_KEY_PATH"
+
+
+
+###############################################################################
+### Deploy build.
+###############################################################################
+
+
+
+###############################################################################
+### Deploy docs.
+###############################################################################
+# Only one environment may deploy docs.
+if [ "$DEPLOY_DOCS" != "true" ]            \
+	|| [ "$TRAVIS_OS_NAME" != "linux" ]; then
+	exit 0
+fi
 
 # Path to the docs that will be deployed.
 DOXYGEN_HTML_DIR="$BUILD_DIR_FIXED/docs/doxygen/html"
@@ -39,46 +103,18 @@ if [ ! -d "$DOXYGEN_HTML_DIR" ]; then
 	exit -1
 fi
 
-# Path to the CircleCI config directory. It is required to prevent
-# TARGET_BRANCH from being tested by CircleCI (which fails due to missing
-# tests).
-CIRCLECI_CONFIG_DIR="$SCRIPT_DIR/../../.circleci"
-if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
-	echo "CircleCI config directory is not available; aborting."
+# Directory where DOCS_BRANCH is cloned to.
+DOCS_BRANCH_DIR="$SCRIPT_DIR/$DOCS_BRANCH"
+# Verify that DOCS_BRANCH_DIR does not exist.
+if [ -d "$DOCS_BRANCH_DIR" ]        \
+	|| [ -f "$DOCS_BRANCH_DIR" ]; then
+	echo "'$DOCS_BRANCH_DIR' already exists; aborting."
 	exit -1
 fi
 
-# Path to unencrypted deploy key.
-DEPLOY_KEY_PATH="$SCRIPT_DIR/deploy_key"
-# Path to encrypted deploy key.
-ENC_DEPLOY_KEY_PATH="$DEPLOY_KEY_PATH.enc"
-# Verify that encrypted deploy key is available.
-if [ ! -f "$ENC_DEPLOY_KEY_PATH" ]; then
-    echo "Unable to find encrypted deploy key; aborting."
-    exit -1
-fi
-# Decrypt and install deploy key.
-openssl aes-256-cbc \
-	-K $encrypted_6b814194a991_key \
-	-iv $encrypted_6b814194a991_iv \
-	-in "$ENC_DEPLOY_KEY_PATH"     \
-	-out "$DEPLOY_KEY_PATH"        \
-	-d
-chmod 600 "$DEPLOY_KEY_PATH"
-eval `ssh-agent -s`
-ssh-add "$DEPLOY_KEY_PATH"
-
-# Directory where TARGET_BRANCH is cloned to.
-TARGET_DIR="$SCRIPT_DIR/$TARGET_BRANCH"
-# Verify that TARGET_DIR does not exist.
-if [ -d "$TARGET_DIR" ]        \
-	|| [ -f "$TARGET_DIR" ]; then
-	echo "'$TARGET_DIR' already exists; aborting."
-	exit -1
-fi
-# Clone TARGET_BRANCH to TARGET_DIR.
-git clone -b $TARGET_BRANCH $SSH_REPO $TARGET_DIR
-pushd "$TARGET_DIR"
+# Clone DOCS_BRANCH to DOCS_BRANCH_DIR.
+git clone -b $DOCS_BRANCH $SSH_REPO $DOCS_BRANCH_DIR
+pushd "$DOCS_BRANCH_DIR"
 	# Copy docs.
 	cp -a "$DOXYGEN_HTML_DIR/." ./
 
@@ -96,6 +132,3 @@ pushd "$TARGET_DIR"
 	# Now that we're all set up, we can push.
 	git push --force
 popd
-
-# Remove decrypted deploy key.
-rm "$DEPLOY_KEY_PATH"

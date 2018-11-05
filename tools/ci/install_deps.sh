@@ -27,22 +27,22 @@ pushd "$DEPS_DIR"
 	fi
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 		brew update
-		brew install \
-			lua
+		brew install                \
+			lua                 \
 			python
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
-	sudo apt-get -qq update
-	sudo apt-get install --no-install-recommends \
-		doxygen             \
-		graphviz            \
-		python-dev          \
-		php5-dev            \
-		liblua5.2-dev       \
-		octave-pkg-dev      \
-		r-base              \
-		r-cran-rcpp         \
-		-y;
+		sudo apt-get -qq update
+		sudo apt-get install --no-install-recommends \
+			doxygen             \
+			graphviz            \
+			python-dev          \
+			php5-dev            \
+			liblua5.2-dev       \
+			octave-pkg-dev      \
+			r-base              \
+			r-cran-rcpp         \
+			-y;
 	fi
 
 	# Install CMake-3.11.0 from binary package.

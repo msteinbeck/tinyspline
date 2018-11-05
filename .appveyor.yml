@@ -8,7 +8,6 @@ branches:
 
 install:
   - ps: choco install -y -r swig --version 3.0.9
-  - ps: choco install -y -r ruby2.devkit
   - ps: choco install -y -r lua
   - ps: refreshenv
 

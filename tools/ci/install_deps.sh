@@ -33,7 +33,6 @@ pushd "$DEPS_DIR"
 			lua
 		brew cask install           \
 			mono-mdk
-		exec bash -l
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
 		sudo apt-get -qq update

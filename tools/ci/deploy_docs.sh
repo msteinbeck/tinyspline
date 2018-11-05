@@ -38,9 +38,19 @@ if [ -z "$BUILD_DIR" ]; then
 fi
 BUILD_DIR_FIXED="$SCRIPT_DIR/$BUILD_DIR"
 
-# Path to the CircleCI config directory. This directory will be copied to
-# DOCS_BRANCH and BUILD_BRANCH to prevent that these branches are tested by
-# CircleCI, which fails due to missing tests.
+# The following CI configuration files and directories will be copied to
+# DOCS_BRANCH and BUILD_BRANCH to prevent that these branches are tested (which
+# fails due to missing tests).
+APPVEYOR_CONFIG_PATH="$SCRIPT_DIR/../../.appveyor.yml"
+if [ ! -f "$APPVEYOR_CONFIG_PATH" ]; then
+	echo "AppVeyor config file is not available; aborting."
+	exit -1
+fi
+TRAVISCI_CONFIG_PATH="$SCRIPT_DIR/../../.travis.yml"
+if [ ! -f "$TRAVISCI_CONFIG_PATH" ]; then
+	echo "TravisCI config file is not available; aborting."
+	exit -1
+fi
 CIRCLECI_CONFIG_DIR="$SCRIPT_DIR/../../.circleci"
 if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
 	echo "CircleCI config directory is not available; aborting."
@@ -117,6 +127,12 @@ pushd "$BUILD_BRANCH_DIR"
 	# Copy binaries.
 	cp -R "$BIN_DIR" ./
 
+	# Copy AppVeyor config file.
+	cp "$APPVEYOR_CONFIG_PATH" ./
+
+	# Copy TravisCI config file.
+	cp "$TRAVISCI_CONFIG_PATH" ./
+
 	# Copy CircleCI config directory.
 	cp -R "$CIRCLECI_CONFIG_DIR" ./
 
@@ -165,6 +181,12 @@ git clone -b $DOCS_BRANCH $SSH_REPO $DOCS_BRANCH_DIR
 pushd "$DOCS_BRANCH_DIR"
 	# Copy docs.
 	cp -a "$DOXYGEN_HTML_DIR/." ./
+
+	# Copy AppVeyor config file.
+	cp "$APPVEYOR_CONFIG_PATH" ./
+
+	# Copy TravisCI config file.
+	cp "$TRAVISCI_CONFIG_PATH" ./
 
 	# Copy CircleCI config directory.
 	cp -R "$CIRCLECI_CONFIG_DIR" ./

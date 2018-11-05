@@ -31,7 +31,8 @@ pushd "$DEPS_DIR"
 			python
 		brew install                \
 			lua                 \
-			mono
+			mono                \
+			octave
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
 		sudo apt-get -qq update

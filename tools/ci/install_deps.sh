@@ -29,6 +29,7 @@ pushd "$DEPS_DIR"
 		brew update
 		brew install \
 			lua
+			python
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
 	sudo apt-get -qq update

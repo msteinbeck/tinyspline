@@ -27,9 +27,10 @@ pushd "$DEPS_DIR"
 	fi
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 		brew update
-		brew install                \
-			lua                 \
+		brew upgrade                \
 			python
+		brew install                \
+			lua
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
 		sudo apt-get -qq update

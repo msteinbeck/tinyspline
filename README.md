@@ -187,7 +187,7 @@ Python, for instance, uses Distutils/Setuptools to install files to
 Python-specific directories that CMake is not aware of. Thus, TinySpline
 ships further, language-related distribution tools.
 
-###3 Install the Bindings
+#### Install the Bindings
 Depending on your configuration, binding-related distribution files are
 generated within the root of your build directory. That is, for instance, the
 file `setup.py` is generated if support for Python was detected. Currently, the

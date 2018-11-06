@@ -81,6 +81,13 @@ int main(int argc, char **argv)
 
 ### Installation
 
+#### Prebuilt Binaries
+
+Snapshot binaries are available at:
+
+- macOS: https://github.com/msteinbeck/tinyspline/tree/build_osx_64
+- Linux (Ubuntu 16.04): https://github.com/msteinbeck/tinyspline/tree/build_linux_64
+
 #### Compiling From Source
 TinySpline uses the CMake build system to compile and package its interfaces.
 The C interface is implemented in ANSI C (C89) and, thus, should be compatible
@@ -180,7 +187,7 @@ Python, for instance, uses Distutils/Setuptools to install files to
 Python-specific directories that CMake is not aware of. Thus, TinySpline
 ships further, language-related distribution tools.
 
-### Install the Bindings
+###3 Install the Bindings
 Depending on your configuration, binding-related distribution files are
 generated within the root of your build directory. That is, for instance, the
 file `setup.py` is generated if support for Python was detected. Currently, the

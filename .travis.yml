@@ -18,7 +18,7 @@ os:
 dist: xenial
 sudo: true
 
-osx_image: xcode9.2
+osx_image: xcode10.1
 
 install:
   - pushd tools/ci
@@ -29,7 +29,7 @@ before_script:
   - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - export BUILD_DIR="build"
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true" CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE -DTINYSPLINE_DISABLE_RUBY=TRUE"; fi;
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE"; fi;
 
 script:
   - pushd tools/ci

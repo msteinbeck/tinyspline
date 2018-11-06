@@ -27,11 +27,12 @@ pushd "$DEPS_DIR"
 	fi
 	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 		brew update
-		brew upgrade                \
-			python
 		brew install                \
 			lua                 \
-			mono
+			mono                \
+			r                   \
+			ruby                \
+			swig
 	fi
 	if [ "$CIRCLECI" == "true" ]; then
 		sudo apt-get -qq update
@@ -47,22 +48,20 @@ pushd "$DEPS_DIR"
 			-y;
 	fi
 
-	# Install CMake-3.11.0 from binary package.
-	if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-		wget https://cmake.org/files/v3.11/cmake-3.11.0-Darwin-x86_64.tar.gz
-		sudo tar xf cmake-3.11.0-Darwin-x86_64.tar.gz --strip 3 -C /usr/local
-	else
+
+	if [ "$TRAVIS_OS_NAME" != "osx" ]; then
+		# Install CMake-3.11.0 from binary package.
 		wget https://cmake.org/files/v3.11/cmake-3.11.0-Linux-x86_64.tar.gz
 		sudo tar xf cmake-3.11.0-Linux-x86_64.tar.gz --strip 1 -C /usr/local
-	fi
 
-	# Compile and install Swig-3.0.12 from source.
-	wget https://github.com/swig/swig/archive/rel-3.0.12.tar.gz
-	tar xf rel-3.0.12.tar.gz
-	pushd swig-rel-3.0.12
-		./autogen.sh
-		./configure
-		make
-		sudo make install
-	popd
+		# Compile and install Swig-3.0.12 from source.
+		wget https://github.com/swig/swig/archive/rel-3.0.12.tar.gz
+		tar xf rel-3.0.12.tar.gz
+		pushd swig-rel-3.0.12
+			./autogen.sh
+			./configure
+			make
+			sudo make install
+		popd
+	fi
 popd

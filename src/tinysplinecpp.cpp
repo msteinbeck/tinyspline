@@ -90,7 +90,7 @@ std::vector<tinyspline::real> tinyspline::DeBoorNet::points() const
 	tinyspline::real *end = begin + num_points * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	delete points;
+	free(points);
 	return vec;
 }
 
@@ -105,7 +105,7 @@ std::vector<tinyspline::real> tinyspline::DeBoorNet::result() const
 	tinyspline::real *end = begin + num_result * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	delete result;
+	free(result);
 	return vec;
 }
 
@@ -194,7 +194,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	tinyspline::real *end = begin + num_ctrlp * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	delete ctrlp;
+	free(ctrlp);
 	return vec;
 }
 
@@ -209,7 +209,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 	tinyspline::real *end = begin + num_knots;
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	delete knots;
+	free(knots);
 	return vec;
 }
 
@@ -234,7 +234,7 @@ std::string tinyspline::BSpline::toJSON()
 	if (err < 0)
 		throw std::runtime_error(ts_enum_str(err));
 	std::string string(json);
-	delete json;
+	free(json);
 	return string;
 }
 

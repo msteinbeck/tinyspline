@@ -1,4 +1,5 @@
 #include "tinysplinecpp.h"
+#include <stdlib.h>
 #include <stdexcept>
 #include <cstdio>
 

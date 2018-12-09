@@ -62,6 +62,8 @@ public:
 
 	/* Query */
 	DeBoorNet eval(real u) const;
+	real domainMin() const;
+	real domainMax() const;
 
 	/* Serialization */
 	std::string toJSON();

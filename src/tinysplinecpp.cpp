@@ -228,6 +228,16 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return deBoorNet;
 }
 
+tinyspline::real tinyspline::BSpline::domainMin() const
+{
+	return ts_bspline_domain_min(&spline);
+}
+
+tinyspline::real tinyspline::BSpline::domainMax() const
+{
+	return ts_bspline_domain_max(&spline);
+}
+
 std::string tinyspline::BSpline::toJSON()
 {
 	char *json;

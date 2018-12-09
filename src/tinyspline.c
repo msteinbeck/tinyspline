@@ -855,6 +855,18 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	return err;
 }
 
+tsReal ts_bspline_domain_min(const tsBSpline *spline)
+{
+	return ts_internal_bspline_access_knots(spline)
+		[ts_bspline_degree(spline)];
+}
+
+tsReal ts_bspline_domain_max(const tsBSpline *spline)
+{
+	return ts_internal_bspline_access_knots(spline)
+		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
+}
+
 
 
 /******************************************************************************

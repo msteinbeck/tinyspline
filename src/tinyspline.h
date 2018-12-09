@@ -767,6 +767,26 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	tsDeBoorNet *_deBoorNet_);
 
+/**
+ * Returns the lower bound (minimum value) of the domain of \p spline.
+ *
+ * @param spline
+ * 	The spline to query.
+ * @return
+ * 	The lower bound (minimum value) of the domain of \p spline.
+ */
+tsReal ts_bspline_domain_min(const tsBSpline *spline);
+
+/**
+ * Returns the upper bound (maximum value) of the domain of \p spline.
+ *
+ * @param spline
+ * 	The spline to query.
+ * @return
+ * 	The upper bound (maximum value) of the domain of \p spline.
+ */
+tsReal ts_bspline_domain_max(const tsBSpline *spline);
+
 
 
 /******************************************************************************

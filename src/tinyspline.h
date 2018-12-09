@@ -820,6 +820,8 @@ tsReal ts_bspline_domain_max(const tsBSpline *spline);
  * @return 1
  * 	If the distance of the first and last control point of \p spline is
  * 	less than or equal to \p epsilon.
+ * @return 0
+ * 	Otherwise.
  */
 int ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon);
 

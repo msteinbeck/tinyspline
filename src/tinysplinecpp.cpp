@@ -264,7 +264,7 @@ tinyspline::real tinyspline::BSpline::domainMax() const
 
 bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 {
-	return ts_bspline_is_closed(&spline, epsilon);
+	return ts_bspline_is_closed(&spline, epsilon) == 1;
 }
 
 std::string tinyspline::BSpline::toJSON()

@@ -82,7 +82,10 @@ typedef enum
 	TS_IO_ERROR = -11,
 
 	/* An error occurred while parsing a serialized spline. */
-	TS_PARSE_ERROR = -12
+	TS_PARSE_ERROR = -12,
+
+	/* The given index does not exist. */
+	TS_INDEX_ERROR = -13
 } tsError;
 
 /**
@@ -365,6 +368,24 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
  * 	If allocating memory failed.
  */
 tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp);
+
+/**
+ * Returns a deep copy of the control point of \p spline at \p index (index 0
+ * is the first control points, index 1 is the second control point, and so on).
+ *
+ * @param spline
+ * 	The spline whose control point is read.
+ * @param index
+ * 	The zero based index of the requested control point.
+ * @param ctrlp
+ * 	The output array.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_INDEX_ERROR
+ * 	If there is no control point at \p index.
+ */
+tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
+	tsReal **ctrlp);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.

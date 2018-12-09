@@ -199,6 +199,30 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	return vec;
 }
 
+#ifdef SWIG
+std::vector<tinyspline::real> *
+#else
+std::vector<tinyspline::real>
+#endif
+tinyspline::BSpline::controlPointAt(size_t index) const
+{
+	tsReal *ctrlp;
+	tsError err = ts_bspline_control_point_at(&spline, index, &ctrlp);
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+	tinyspline::real *begin  = ctrlp;
+	tinyspline::real *end = begin + dimension();
+#ifdef SWIG
+	std::vector<tinyspline::real> * vec =
+		new std::vector<tinyspline::real>(begin, end);
+#else
+	std::vector<tinyspline::real> vec =
+		std::vector<tinyspline::real>(begin, end);
+#endif
+	free(ctrlp);
+	return vec;
+}
+
 std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 {
 	tsReal *knots;

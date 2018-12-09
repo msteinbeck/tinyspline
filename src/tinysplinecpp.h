@@ -57,6 +57,12 @@ public:
 	size_t order() const;
 	size_t dimension() const;
 	std::vector<real> controlPoints() const;
+#ifdef SWIG
+	std::vector<real> *
+#else
+	std::vector<real>
+#endif
+	controlPointAt(size_t index) const;
 	std::vector<real> knots() const;
 	tsBSpline * data();
 

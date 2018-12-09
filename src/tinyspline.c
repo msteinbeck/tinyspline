@@ -153,6 +153,15 @@ void ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	(*k)--; /* k+1 - 1 will never underflow */
 }
 
+tsReal * ts_internal_bspline_access_ctrlp_at(const tsBSpline *spline,
+	size_t index, jmp_buf buf)
+{
+	if (index >= ts_bspline_num_control_points(spline))
+		longjmp(buf, TS_INDEX_ERROR);
+	return ts_internal_bspline_access_ctrlp(spline) +
+	       index * ts_bspline_dimension(spline);
+}
+
 
 
 /******************************************************************************
@@ -226,6 +235,27 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp)
 		       size);
 		return TS_SUCCESS;
 	}
+}
+
+tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
+	tsReal **ctrlp)
+{
+
+	const size_t size = ts_bspline_dimension(spline) * sizeof(tsReal);
+	tsReal * to_copy;
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		to_copy = ts_internal_bspline_access_ctrlp_at(
+			spline, index, buf);
+		*ctrlp = (tsReal*) malloc(size);
+		if (!*ctrlp)
+			longjmp(buf, TS_MALLOC);
+		memcpy(*ctrlp, to_copy, size);
+	CATCH
+		*ctrlp = NULL;
+	ETRY
+	return err;
 }
 
 tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp)
@@ -1700,6 +1730,8 @@ const char* ts_enum_str(tsError err)
 		return "io error";
 	else if (err == TS_PARSE_ERROR)
 		return "parse error";
+	else if (err == TS_INDEX_ERROR)
+		return "index does not exist";
 	return "unknown error";
 }
 
@@ -1725,6 +1757,8 @@ tsError ts_str_enum(const char *str)
 		return TS_IO_ERROR;
 	else if (!strcmp(str, ts_enum_str(TS_PARSE_ERROR)))
 		return TS_PARSE_ERROR;
+	else if (!strcmp(str, ts_enum_str(TS_INDEX_ERROR)))
+		return TS_INDEX_ERROR;
 	return TS_SUCCESS;
 }
 

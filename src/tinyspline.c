@@ -897,6 +897,23 @@ tsReal ts_bspline_domain_max(const tsBSpline *spline)
 		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
 }
 
+int ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon)
+{
+	const size_t lidx = ts_bspline_num_control_points(spline) - 1;
+	const size_t dim = ts_bspline_dimension(spline);
+	tsReal *first, *last;
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		first = ts_internal_bspline_access_ctrlp_at(spline, 0, buf);
+		last = ts_internal_bspline_access_ctrlp_at(spline, lidx, buf);
+		return ts_fequals(ts_ctrlp_dist2(first, last, dim), epsilon);
+	CATCH
+		/* impossible */
+		return 0;
+	ETRY
+}
+
 
 
 /******************************************************************************

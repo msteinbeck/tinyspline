@@ -808,6 +808,21 @@ tsReal ts_bspline_domain_min(const tsBSpline *spline);
  */
 tsReal ts_bspline_domain_max(const tsBSpline *spline);
 
+/**
+ * Returns whether the distance of the first and last control point of
+ * \p spline is less than or equal to \p epsilon. The distance of possible
+ * inner gaps is not considered.
+ *
+ * @param spline
+ * 	The spline to query.
+ * @param epsilon
+ * 	The maximum distance.
+ * @return 1
+ * 	If the distance of the first and last control point of \p spline is
+ * 	less than or equal to \p epsilon.
+ */
+int ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon);
+
 
 
 /******************************************************************************
@@ -1170,8 +1185,8 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_);
 *                                                                             *
 ******************************************************************************/
 /**
- * Compares the tsReal values \p x and \p y using an absolute and relative
- * epsilon environment.
+ * Compares the values \p x and \p y using an absolute and relative epsilon
+ * environment.
  *
  * @param x
  * 	The x value to compare.

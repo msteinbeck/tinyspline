@@ -70,6 +70,7 @@ public:
 	DeBoorNet eval(real u) const;
 	real domainMin() const;
 	real domainMax() const;
+	bool isClosed(real epsilon = FLT_MAX_ABS_ERROR) const;
 
 	/* Serialization */
 	std::string toJSON();

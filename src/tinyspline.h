@@ -809,21 +809,25 @@ tsReal ts_bspline_domain_min(const tsBSpline *spline);
 tsReal ts_bspline_domain_max(const tsBSpline *spline);
 
 /**
- * Returns whether the distance of the first and last control point of
- * \p spline is less than or equal to \p epsilon. The distance of possible
- * inner gaps is not considered.
+ * Returns whether the distance of the first and the last point (not
+ * necessarily the control points) of \p spline is less than or equal to
+ * \p epsilon. The distance of possible inner gaps is not considered.
  *
  * @param spline
  * 	The spline to query.
  * @param epsilon
  * 	The maximum distance.
- * @return 1
- * 	If the distance of the first and last control point of \p spline is
- * 	less than or equal to \p epsilon.
- * @return 0
- * 	Otherwise.
+ * @param closed
+ * 	The output parameter. Is set to 1 if the distance of the first and the
+ * 	last point (not necessarily the control points) of \p spline is less
+ * 	than or equal to \p epsilon. Is set to 0 otherwise.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
-int ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon);
+tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
+	int *closed);
 
 
 

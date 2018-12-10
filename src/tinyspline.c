@@ -897,21 +897,29 @@ tsReal ts_bspline_domain_max(const tsBSpline *spline)
 		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
 }
 
-int ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon)
+tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
+	int *closed)
 {
-	const size_t lidx = ts_bspline_num_control_points(spline) - 1;
+	const tsReal min = ts_bspline_domain_min(spline);
+	const tsReal max = ts_bspline_domain_max(spline);
 	const size_t dim = ts_bspline_dimension(spline);
-	tsReal *first, *last;
+	tsDeBoorNet first, last;
 	tsError err;
 	jmp_buf buf;
 	TRY(buf, err)
-		first = ts_internal_bspline_access_ctrlp_at(spline, 0, buf);
-		last = ts_internal_bspline_access_ctrlp_at(spline, lidx, buf);
-		return ts_fequals(ts_ctrlp_dist2(first, last, dim), epsilon);
+		ts_internal_deboornet_init(&first);
+		ts_internal_deboornet_init(&last);
+		ts_internal_bspline_eval(spline, min, &first, buf);
+		ts_internal_bspline_eval(spline, max, &last, buf);
+		*closed = ts_ctrlp_dist2(
+			ts_internal_deboornet_access_result(&first),
+			ts_internal_deboornet_access_result(&last),
+			dim) <= epsilon ? 1 : 0;
 	CATCH
-		/* impossible */
-		return 0;
 	ETRY
+	ts_deboornet_free(&first);
+	ts_deboornet_free(&last);
+	return err;
 }
 
 

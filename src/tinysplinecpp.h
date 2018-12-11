@@ -80,6 +80,12 @@ public:
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
+	void setControlPointAt(size_t index,
+#ifdef SWIG
+	const std::vector<real> *ctrlp);
+#else
+	const std::vector<real> &ctrlp);
+#endif
 	void setKnots(const std::vector<real> &knots);
 
 	/* Transformations */

@@ -265,6 +265,21 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp)
 	return TS_SUCCESS;
 }
 
+tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
+	const tsReal *ctrlp)
+{
+	const size_t size = ts_bspline_dimension(spline) * sizeof(tsReal);
+	tsReal * target;
+	tsError err;
+	jmp_buf buf;
+	TRY(buf, err)
+		target = ts_internal_bspline_access_ctrlp_at(
+			spline, index, buf);
+		memcpy(target, ctrlp, size);
+	ETRY
+	return err;
+}
+
 size_t ts_bspline_num_knots(const tsBSpline *spline)
 {
 	return spline->pImpl->n_knots;

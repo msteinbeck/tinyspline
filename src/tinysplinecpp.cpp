@@ -326,6 +326,37 @@ void tinyspline::BSpline::setControlPoints(
 		throw std::runtime_error(ts_enum_str(err));
 }
 
+void tinyspline::BSpline::setControlPointAt(size_t index,
+#ifdef SWIG
+	const std::vector<tinyspline::real> *ctrlp)
+{
+	size_t actual = ctrlp->size();
+#else
+	const std::vector<tinyspline::real> &ctrlp)
+{
+	size_t actual = ctrlp.size();
+#endif
+	size_t expected = dimension();
+	if (expected != actual) {
+		char expected_str[32];
+		char actual_str[32];
+		sprintf(expected_str, "%zu", expected);
+		sprintf(actual_str, "%zu", actual);
+		throw std::runtime_error(
+			"Expected size: " + std::string(expected_str) +
+			", Actual size: " + std::string(actual_str));
+	}
+#ifdef SWIG
+	tsError err = ts_bspline_set_control_point_at(
+		&spline, index, ctrlp->data());
+#else
+	tsError err = ts_bspline_set_control_point_at(
+		&spline, index, ctrlp.data());
+#endif
+	if (err < 0)
+		throw std::runtime_error(ts_enum_str(err));
+}
+
 void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
 {
 	size_t expected = ts_bspline_num_knots(&spline);

@@ -383,6 +383,8 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp);
  * 	On success.
  * @return TS_INDEX_ERROR
  * 	If there is no control point at \p index.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
  */
 tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
 	tsReal **ctrlp);
@@ -398,6 +400,24 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
  * 	On success.
  */
 tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp);
+
+/**
+ * Sets the control point of \p spline at \p index. Creates a deep copy of
+ * \p ctrlp.
+ *
+ * @param spline
+ * 	The spline whose control point is set.
+ * @param index
+ * 	The zero based index of the control point to set.
+ * @param ctrlp
+ * 	The values to deep copy.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_INDEX_ERROR
+ * 	If there is no control point at \p index.
+ */
+tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
+	const tsReal *ctrlp);
 
 /**
  * Returns the number of knots of \p spline.
@@ -635,7 +655,7 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result);
  * 	If allocating memory failed.
  */
 tsError ts_bspline_new(size_t num_control_points, size_t dimension,
-       size_t degree, tsBSplineType type, tsBSpline *_spline_);
+	size_t degree, tsBSplineType type, tsBSpline *_spline_);
 
 /**
  * Creates a deep copy of \p original and stores the copied values in

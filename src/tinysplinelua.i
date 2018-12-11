@@ -3,6 +3,9 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 
+%rename("%(undercase)s", %$isfunction) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+
 // Map std::vector<tinyspline::real> to Lua table.
 %typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();

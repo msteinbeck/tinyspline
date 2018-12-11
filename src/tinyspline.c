@@ -1161,8 +1161,6 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
-	const tsReal *ctrlp_spline = ts_internal_bspline_access_ctrlp(spline);
-	const tsReal *knots_spline = ts_internal_bspline_access_knots(spline);
 	const size_t k = ts_deboornet_index(deBoorNet);
 	const size_t s = ts_deboornet_multiplicity(deBoorNet);
 	const size_t sof_real = sizeof(tsReal);
@@ -1174,8 +1172,8 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	int stride;   /**< Stride of the next pointer to copy. */
 	size_t i;     /**< Used in for loops. */
 
-	tsReal *ctrlp_result;
-	tsReal *knots_result;
+	tsReal *ctrlp_spline, *ctrlp_result;
+	tsReal *knots_spline, *knots_result;
 	size_t num_ctrlp_result;
 	size_t num_knots_result;
 
@@ -1188,6 +1186,8 @@ void ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	ts_internal_bspline_resize(spline, (int)n, 1, _result_, buf);
 	if (n == 0) /* Nothing to insert. */
 		return;
+	ctrlp_spline = ts_internal_bspline_access_ctrlp(spline);
+	knots_spline = ts_internal_bspline_access_knots(spline);
 	ctrlp_result = ts_internal_bspline_access_ctrlp(_result_);
 	knots_result = ts_internal_bspline_access_knots(_result_);
 	num_ctrlp_result = ts_bspline_num_control_points(_result_);

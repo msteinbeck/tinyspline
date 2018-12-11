@@ -3,6 +3,9 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 
+%rename("%(undercase)s", %$isfunction) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+
 // Map std::vector<tinyspline::real> to Octave vector.
 %typemap(out) std::vector<tinyspline::real> * {
 	const size_t size = $1->size();

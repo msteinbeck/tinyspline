@@ -3,6 +3,9 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 
+%rename("%(undercase)s", %$isfunction) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+
 // Map std::vector<tinyspline::real> to Python list.
 %typemap(out) std::vector<tinyspline::real> * (int size, PyObject *data) {
 	size = $1->size();

@@ -26,14 +26,14 @@ void main()
 	ctrlp[13] =  0.0;  // y6
 	spline.setControlPoints(ctrlp);
 
-	// Evaluate `spline` at u = 0.4 using 'evaluate'.
+	// Evaluate `spline` at u = 0.4 using 'eval'.
 	Vector result = spline.eval(0.4).result();
 	writefln("x = %f, y = %f", result[0], result[1]);
 
 	// Derive `spline` and subdivide it into a sequence of Bezier curves.
 	BSpline beziers = spline.derive().toBeziers();
 
-	// Evaluate `beziers` at u = 0.3 using '()' instead of 'evaluate'.
+	// Evaluate `beziers` at u = 0.3 using '()' instead of 'eval'.
 	result = beziers(0.3).result();
 	writefln("x = %f, y = %f", result[0], result[1]);
 }

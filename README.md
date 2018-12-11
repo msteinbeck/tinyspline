@@ -61,17 +61,14 @@ int main(int argc, char **argv)
 	ctrlp[13] =  0.0;  // y6
 	spline.setControlPoints(ctrlp);
 
-	// Stores our evaluation results.
-	std::vector<tinyspline::real> result;
-
-	// Evaluate `spline` at u = 0.4 using 'evaluate'.
-	result = spline.eval(0.4).result();
+	// Evaluate `spline` at u = 0.4 using 'eval'.
+	std::vector<tinyspline::real> result = spline.eval(0.4).result();
 	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
 
 	// Derive `spline` and subdivide it into a sequence of Bezier curves.
 	tinyspline::BSpline beziers = spline.derive().toBeziers();
 
-	// Evaluate `beziers` at u = 0.3 using '()' instead of 'evaluate'.
+	// Evaluate `beziers` at u = 0.3 using '()' instead of 'eval'.
 	result = beziers(0.3).result();
 	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
 

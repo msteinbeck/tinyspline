@@ -630,6 +630,14 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result);
 *                                                                             *
 ******************************************************************************/
 /**
+ * Creates a new spline whose data points to NULL.
+ * 
+ * @return
+ * 	A new spline whose data points to NULL.
+ */
+tsBSpline ts_bspline_init();
+
+/**
  * Creates a new spline and stores the result in \p \_spline\_.
  *
  * @param num_control_points
@@ -674,7 +682,8 @@ tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_);
 
 /**
  * Moves the ownership of the data of \p from to \p \_to\_. After calling this
- * function, \p from points to NULL. Does nothing, if \p from == \p \_to\_.
+ * function, the data of \p from points to NULL. Does not free the data of
+ * \p \_to\_. Does nothing, if \p from == \p \_to\_.
  * 
  * @param from
  * 	The spline whose values are moved to \p \_to\_.
@@ -684,8 +693,8 @@ tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_);
 void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
 
 /**
- * Frees the dynamically allocated memory of \p \_spline\_. After calling this
- * function, \p \_spline\_ points to NULL.
+ * Frees the data of \p \_spline\_. After calling this function, the data of
+ * \p \_spline\_ points to NULL.
  * 
  * @param \_spline\_
  * 	The spline to free.
@@ -693,6 +702,14 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
 void ts_bspline_free(tsBSpline *_spline_);
 
 /* ------------------------------------------------------------------------- */
+
+/**
+ * Creates a new net whose data points to NULL.
+ * 
+ * @return
+ * 	A new net whose data points to NULL.
+ */
+tsDeBoorNet ts_deboornet_init();
 
 /**
  * Creates a deep copy of \p original and stores the copied values in
@@ -711,7 +728,8 @@ tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_);
 
 /**
  * Moves the ownership of the data of \p from to \p \_to\_. After calling this
- * function, \p from points to NULL. Does nothing, if \p from == \p \_to\_.
+ * function, the data of \p from points to NULL. Does not free the data of
+ * \p \_to\_. Does nothing, if \p from == \p \_to\_.
  * 
  * @param from
  * 	The net whose values are moved to \p \_to\_.
@@ -721,8 +739,8 @@ tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_);
 void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_);
 
 /**
- * Frees the dynamically allocated memory of \p \_net\_. After calling this
- * function, \p \_net\_ points to NULL.
+ * Frees the data of \p \_net\_. After calling this function, the data of
+ * \p \_net\_ points to NULL.
  * 
  * @param \_net\_
  * 	The net to free.

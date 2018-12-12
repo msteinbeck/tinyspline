@@ -421,6 +421,13 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result)
 * :: Constructors, Destructors, Copy, and Move Functions                      *
 *                                                                             *
 ******************************************************************************/
+tsBSpline ts_bspline_init()
+{
+	tsBSpline spline;
+	spline.pImpl = NULL;
+	return spline;
+}
+
 void ts_internal_bspline_new(size_t num_control_points, size_t dimension,
 	size_t degree, tsBSplineType type, tsBSpline *_spline_, jmp_buf buf)
 {
@@ -517,6 +524,13 @@ void ts_bspline_free(tsBSpline *_spline_)
 }
 
 /* ------------------------------------------------------------------------- */
+
+tsDeBoorNet ts_deboornet_init()
+{
+	tsDeBoorNet net;
+	net.pImpl = NULL;
+	return net;
+}
 
 void ts_internal_deboornet_new(const tsBSpline *spline,
 	tsDeBoorNet *_deBoorNet_, jmp_buf buf)

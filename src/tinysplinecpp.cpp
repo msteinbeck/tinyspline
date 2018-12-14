@@ -375,17 +375,6 @@ void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
 		throw std::runtime_error(ts_enum_str(err));
 }
 
-tinyspline::BSpline tinyspline::BSpline::fillKnots(tsBSplineType type,
-	tinyspline::real min, tinyspline::real max) const
-{
-	tinyspline::BSpline bs;
-	tsError err = ts_bspline_fill_knots(
-		&spline, type, min, max, &bs.spline);
-	if (err < 0)
-		throw std::runtime_error(ts_enum_str(err));
-	return bs;
-}
-
 tinyspline::BSpline tinyspline::BSpline::insertKnot(tinyspline::real u,
 	size_t n) const
 {

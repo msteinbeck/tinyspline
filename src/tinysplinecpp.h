@@ -70,7 +70,7 @@ public:
 	DeBoorNet eval(real u) const;
 	real domainMin() const;
 	real domainMax() const;
-	bool isClosed(real epsilon = FLT_MAX_ABS_ERROR) const;
+	bool isClosed(real epsilon = TS_EPSILON) const;
 
 	/* Serialization */
 	std::string toJSON();
@@ -89,7 +89,6 @@ public:
 	void setKnots(const std::vector<real> &knots);
 
 	/* Transformations */
-	BSpline fillKnots(tsBSplineType type, real min, real max) const;
 	BSpline insertKnot(real u, size_t n) const;
 	BSpline resize(int n, int back) const;
 	BSpline split(real u) const;

@@ -24,8 +24,10 @@ typedef float tsReal;
 typedef double tsReal;
 #endif
 
-#define FLT_MAX_ABS_ERROR 1e-5
-#define FLT_MAX_REL_ERROR 1e-8
+#define TS_MAX_NUM_KNOTS 10000
+#define TS_MIN_KNOT_VALUE 0.0f
+#define TS_MAX_KNOT_VALUE 1.0f
+#define TS_EPSILON 1e-4
 
 
 
@@ -976,37 +978,6 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsBSpline *_derivative_);
 
 /**
- * Fills the knot vector of \p spline according to \p type with minimum knot
- * value \p min to maximum knot value \p max and stores the result in
- * \p \_result\_. Creates a deep copy of \p spline, if
- * \p spline != \p \_result\_.
- *
- * @param spline
- * 	The spline whose knot vector is filled according to \p type with
- * 	minimum knot value \p min and maximum knot value \p max.
- * @param type
- * 	How to fill the knot vector.
- * @param min
- * 	The minimum value of the knot vector.
- * @param max
- * 	The maximum value of the knot vector.
- * @param \_result\_
- * 	The output parameter.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_NUM_KNOTS
- * 	If \p type == TS_BEZIERS and
- * 	\p spline->n_knots % \p spline->order != 0.
- * @return TS_KNOTS_DECR
- * 	If \p min >= \p max. (::ts_fequals is used to determine whether
- * 	\p min == \p max).
- * @return TS_MALLOC
- * 	If allocating memory failed.
- */
-tsError ts_bspline_fill_knots(const tsBSpline *spline, tsBSplineType type,
-	tsReal min, tsReal max, tsBSpline *_result_);
-
-/**
  * Inserts the knot value \p u \p n times into \p spline and stores the result
  * in \p \_result\_. Creates a deep copy of \p spline, if
  * \p spline != \p \_result\_.
@@ -1229,15 +1200,14 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_);
 *                                                                             *
 ******************************************************************************/
 /**
- * Compares the values \p x and \p y using an absolute and relative epsilon
- * environment.
+ * Compares the values \p x and \p y using TS_EPSILON.
  *
  * @param x
  * 	The x value to compare.
  * @param y
  * 	The y value to compare.
  * @return 1
- * 	If \p x is equals to \p y.
+ * 	If \p x is equals to \p y according to TS_EPSILON.
  * @return 0
  * 	Otherwise.
  */

@@ -24,5 +24,5 @@ if(DOXYGEN_FOUND)
 			"${TINYSPLINE_DOXYGEN_INPUT_FILE}"
 		VERBATIM
 	) # COMMENT "Generating API documentation with Doxygen"
-	add_custom_target(docs ALL DEPENDS "${TINYSPLINE_DOXYGEN_OUTPUT_DIR}")
+	add_custom_target(docs DEPENDS "${TINYSPLINE_DOXYGEN_OUTPUT_DIR}")
 endif()

@@ -11,6 +11,22 @@ extern "C" {
 
 /******************************************************************************
 *                                                                             *
+* :: Constants                                                                *
+*                                                                             *
+* The following constants are used by this library and should not be modified *
+* (or at least with caution). Otherwise, the internal consistency can not be  *
+* guaranteed.                                                                 *
+*                                                                             *
+******************************************************************************/
+#define TS_MAX_NUM_KNOTS 10000
+#define TS_MIN_KNOT_VALUE 0.0f
+#define TS_MAX_KNOT_VALUE 1.0f
+#define TS_EPSILON 1e-4
+
+
+
+/******************************************************************************
+*                                                                             *
 * :: System Dependent Configuration                                           *
 *                                                                             *
 * The following configuration values must be adapted to your system. Some of  *
@@ -24,18 +40,13 @@ typedef float tsReal;
 typedef double tsReal;
 #endif
 
-#define TS_MAX_NUM_KNOTS 10000
-#define TS_MIN_KNOT_VALUE 0.0f
-#define TS_MAX_KNOT_VALUE 1.0f
-#define TS_EPSILON 1e-4
-
 
 
 /******************************************************************************
 *                                                                             *
 * :: Data Types                                                               *
 *                                                                             *
-* The following section defines all data types available in TinySpline.       *
+* The following section defines all available data types.                     *
 *                                                                             *
 ******************************************************************************/
 /**

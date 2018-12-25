@@ -457,12 +457,13 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
 tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots);
 
 /**
- * Sets the knots of \p spline. Creates a deep copy of \p knots.
+ * Sets the knots of \p spline. Creates a deep copy of \p knots and scales it's
+ * values to [TS_MIN_KNOT_VALUE, TS_MAX_KNOT_VALUE].
  *
  * @param spline
  * 	The spline whose knots are set.
  * @param knots
- * 	The values to deep copy.
+ * 	The values to deep copy and scale.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_KNOTS_DECR

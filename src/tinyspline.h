@@ -109,17 +109,14 @@ typedef enum
  */
 typedef enum
 {
-	/* Not available/Undefined. */
-	TS_NONE = 0,
-
 	/* Uniformly spaced knot vector. */
-	TS_OPENED = 1,
+	TS_OPENED = 0,
 
 	/* Uniformly spaced knot vector with clamped end knots. */
-	TS_CLAMPED = 2,
+	TS_CLAMPED = 1,
 
 	/* Uniformly spaced knot vector with s(u) = order of spline. */
-	TS_BEZIERS = 3
+	TS_BEZIERS = 2
 } tsBSplineType;
 
 /**

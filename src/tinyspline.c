@@ -1059,7 +1059,8 @@ void ts_internal_bspline_derive(const tsBSpline *spline, size_t n,
 	}
 
 	TRY(b, err)
-		ts_internal_bspline_new(num_ctrlp, dim, deg, TS_NONE, &swap, b);
+		ts_internal_bspline_new(
+			num_ctrlp, dim, deg, TS_OPENED, &swap, b);
 	CATCH
 		ts_bspline_free(&worker);
 		longjmp(buf, err);
@@ -1117,7 +1118,7 @@ void ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 		return;
 	}
 
-	ts_internal_bspline_new(nnum_ctrlp, dim, deg, TS_NONE, &tmp, buf);
+	ts_internal_bspline_new(nnum_ctrlp, dim, deg, TS_OPENED, &tmp, buf);
 	to_ctrlp = ts_internal_bspline_access_ctrlp(&tmp);
 	to_knots = ts_internal_bspline_access_knots(&tmp);
 

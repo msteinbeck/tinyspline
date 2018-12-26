@@ -89,7 +89,6 @@
 %rename(OPENED) TS_OPENED;
 %rename(CLAMPED) TS_CLAMPED;
 %rename(BEZIERS) TS_BEZIERS;
-%rename(NONE) TS_NONE;
 
 %{
 	#include "tinyspline.h"

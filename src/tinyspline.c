@@ -429,7 +429,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 		if (ts_fequals(lst_knot, knot)) {
 			mult++;
 		} else if (lst_knot > knot) {
-			TS_THROW_1(status, TS_KNOTS_DECR,
+			TS_RETURN_1(status, TS_KNOTS_DECR,
 				   "decreasing knot vector at index: %lu", idx)
 		} else {
 			mult = 0;
@@ -796,7 +796,7 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points,
 	if (dim == 0)
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n <= 1) {
-		TS_THROW_1(status, TS_DEG_GE_NCTRLP,
+		TS_RETURN_1(status, TS_DEG_GE_NCTRLP,
 			   "num(points) (%lu) <= 1", n)
 	}
 	/* in the following n >= 2 applies */
@@ -1472,7 +1472,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	if (json_value_get_type(deg_value) != JSONNumber)
 		TS_RETURN_0(status, TS_PARSE_ERROR, "degree is not a number")
 	if (json_value_get_number(deg_value) < -0.01f) {
-		TS_THROW_1(status, TS_PARSE_ERROR, "degree (%f) < 0",
+		TS_RETURN_1(status, TS_PARSE_ERROR, "degree (%f) < 0",
 			   json_value_get_number(deg_value))
 	}
 	deg = (size_t) json_value_get_number(deg_value);
@@ -1484,7 +1484,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 			    "dimension is not a number")
 	}
 	if (json_value_get_number(dim_value) < 0.99f) {
-		TS_THROW_1(status, TS_PARSE_ERROR, "dimension (%f) < 1",
+		TS_RETURN_1(status, TS_PARSE_ERROR, "dimension (%f) < 1",
 			   json_value_get_number(deg_value))
 	}
 	dim = (size_t) json_value_get_number(dim_value);

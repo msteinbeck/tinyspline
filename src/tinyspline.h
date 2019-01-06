@@ -130,7 +130,7 @@ typedef struct {
 	return err;                              \
 }
 
-#define TS_THROW_1(status, err, msg, arg1)             \
+#define TS_RETURN_1(status, err, msg, arg1)            \
 {                                                      \
 	if ((status) != NULL) {                        \
 		(status)->code = err;                  \

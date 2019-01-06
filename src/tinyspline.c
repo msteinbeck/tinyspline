@@ -136,19 +136,19 @@ tsError ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u,
 	/* keep in mind that currently k is k+1 */
 	if (*k <= deg) {
 		/* u < u_min */
-		TS_THROW_2(status, TS_U_UNDEFINED,
+		TS_RETURN_2(status, TS_U_UNDEFINED,
 			   "knot (%f) < min(domain) (%f)",
 			   u, ts_bspline_domain_min(spline))
 	}
 	if (*k == num_knots && *s == 0) {
 		/* u > u_last */
-		TS_THROW_2(status, TS_U_UNDEFINED,
+		TS_RETURN_2(status, TS_U_UNDEFINED,
 			   "knot (%f) > max(domain) (%f)",
 			   u, ts_bspline_domain_max(spline))
 	}
 	if (*k > num_knots-deg + *s-1)  {
 		/* u > u_max */
-		TS_THROW_2(status, TS_U_UNDEFINED,
+		TS_RETURN_2(status, TS_U_UNDEFINED,
 			   "knot (%f) > max(domain) (%f)",
 			   u, ts_bspline_domain_max(spline))
 	}
@@ -160,7 +160,7 @@ tsError ts_internal_bspline_access_ctrlp_at(const tsBSpline *spline,
 	size_t index, tsReal **ctrlp, tsStatus *status)
 {
 	if (index >= ts_bspline_num_control_points(spline)) {
-		TS_THROW_2(status, TS_INDEX_ERROR,
+		TS_RETURN_2(status, TS_INDEX_ERROR,
 			   "index (%lu) >= num(control_points) (%lu)",
 			   index, ts_bspline_num_control_points(spline))
 	}
@@ -181,7 +181,7 @@ tsError ts_internal_bspline_generate_knots(const tsBSpline *spline,
 
 	/* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
 	if (type == TS_BEZIERS && n_knots % order != 0) {
-		TS_THROW_2(status, TS_NUM_KNOTS,
+		TS_RETURN_2(status, TS_NUM_KNOTS,
 			   "num(knots) (%lu) %% order (%lu) != 0",
 			   n_knots, order)
 	}
@@ -284,7 +284,7 @@ size_t ts_bspline_degree(const tsBSpline *spline)
 tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status)
 {
 	if (deg >= ts_bspline_num_control_points(spline)) {
-		TS_THROW_2(status, TS_DEG_GE_NCTRLP,
+		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
 			   "degree (%lu) >= num(control_points) (%lu)",
 			   deg, ts_bspline_num_control_points(spline))
 	}
@@ -300,7 +300,7 @@ size_t ts_bspline_order(const tsBSpline *spline)
 tsError ts_bspline_set_order(tsBSpline *spline, size_t order, tsStatus *status)
 {
 	if (order == 0 || order > ts_bspline_num_control_points(spline)) {
-		TS_THROW_2(status, TS_DEG_GE_NCTRLP,
+		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
 			   "order (%lu) > num(control_points) (%lu)",
 			   order, ts_bspline_num_control_points(spline))
 	}
@@ -318,7 +318,7 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 	if (dim == 0)
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (ts_bspline_len_control_points(spline) % dim != 0) {
-		TS_THROW_2(status, TS_LCTRLP_DIM_MISMATCH,
+		TS_RETURN_2(status, TS_LCTRLP_DIM_MISMATCH,
 			   "len(control_points) (%lu) %% dimension (%lu) != 0",
 			   ts_bspline_len_control_points(spline), dim)
 	}
@@ -570,12 +570,12 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	}
 	if (num_knots > TS_MAX_NUM_KNOTS) {
-		TS_THROW_2(status, TS_NUM_KNOTS,
+		TS_RETURN_2(status, TS_NUM_KNOTS,
 			   "unsupported number of knots: %lu > %i", num_knots,
 			   TS_MAX_NUM_KNOTS)
 	}
 	if (degree >= num_control_points) {
-		TS_THROW_2(status, TS_DEG_GE_NCTRLP,
+		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
 			   "degree (%lu) >= num(control_points) (%lu)",
 			   degree, num_control_points)
 	}
@@ -1498,7 +1498,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	ctrlp_array = json_value_get_array(ctrlp_value);
 	len_ctrlp = json_array_get_count(ctrlp_array);
 	if (len_ctrlp % dim != 0) {
-		TS_THROW_2(status, TS_PARSE_ERROR,
+		TS_RETURN_2(status, TS_PARSE_ERROR,
 			   "len(control_points) (%lu) %% dimension (%lu) != 0",
 			   len_ctrlp, dim)
 	}

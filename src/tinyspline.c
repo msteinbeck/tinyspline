@@ -435,7 +435,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 			mult = 0;
 		}
 		if (mult > order) {
-			TS_THROW_3(status, TS_MULTIPLICITY,
+			TS_RETURN_3(status, TS_MULTIPLICITY,
 				   "mult(%f) (%lu) > order (%lu)",
 				   knot, mult, order)
 		}

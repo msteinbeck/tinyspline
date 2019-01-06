@@ -148,7 +148,7 @@ typedef struct {
 	return err;                                          \
 }
 
-#define TS_THROW_3(status, err, msg, arg1, arg2, arg3)             \
+#define TS_RETURN_3(status, err, msg, arg1, arg2, arg3)            \
 {                                                                  \
 	if ((status) != NULL) {                                    \
 		(status)->code = err;                              \

@@ -47,11 +47,11 @@ void setup()
 		3,      /* dimension of each point */
 		2,      /* degree of spline */
 		TS_CLAMPED, /* used to hit first and last control point */
-		&spline /* the spline to setup */
-	);
+		&spline, /* the spline to setup */
+		NULL);
 	
 	/* Setup control points. */
-	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -61,19 +61,19 @@ void setup()
 	ctrlp[6] =  1.0f;
 	ctrlp[7] = -1.0f;
 	ctrlp[8] =  0.0f;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 
 	for (i = 0; i < 3; i++)
 		B[i] = ctrlp[i+3];
 
-	ts_bspline_knots(&spline, &knots);
+	ts_bspline_knots(&spline, &knots, NULL);
 	mid = (knots[ts_bspline_num_knots(&spline)- 1] - knots[0]) /2;
 	free(knots);
 
-	ts_bspline_insert_knot(&spline, mid, 1, &spline, &k);
-	ts_bspline_control_points(&spline, &ctrlp);
-	ts_bspline_knots(&spline, &knots);
+	ts_bspline_insert_knot(&spline, mid, 1, &spline, &k, NULL);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
+	ts_bspline_knots(&spline, &knots, NULL);
 
 	A = ctrlp;
 	D = ctrlp + 3;
@@ -114,7 +114,7 @@ void display(void)
 		D[i] = A[i] + t*v[i];
 		E[i] = C[i] + t*w[i];
 	}
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 
 	/* draw spline */
 	glColor3f(1.0, 1.0, 1.0);

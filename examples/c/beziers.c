@@ -34,11 +34,11 @@ void setup()
 		3,      /* dimension of each point */
 		3,      /* degree of spline */
 		TS_CLAMPED, /* used to hit first and last control point */
-		&spline /* the spline to setup */
-	);
+		&spline, /* the spline to setup */
+		NULL);
 	
 	/* Setup control points. */
-	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  =  0.0f;
@@ -60,7 +60,7 @@ void setup()
 	ctrlp[18] =  0.5f;
 	ctrlp[19] =  0.0f;
 	ctrlp[20] =  0.0f;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 }
 
@@ -79,13 +79,13 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (drawBeziers)
-		ts_bspline_to_beziers(&spline, &draw);
+		ts_bspline_to_beziers(&spline, &draw, NULL);
 	else
-		ts_bspline_copy(&spline, &draw);
+		ts_bspline_copy(&spline, &draw, NULL);
 
 	/* draw 'draw' */
-	ts_bspline_control_points(&draw, &ctrlp_draw);
-	ts_bspline_knots(&draw, &knots_draw);
+	ts_bspline_control_points(&draw, &ctrlp_draw, NULL);
+	ts_bspline_knots(&draw, &knots_draw, NULL);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -102,7 +102,7 @@ void display(void)
 	ts_bspline_free(&draw);
 
 	/* draw control points */
-	ts_bspline_control_points(&spline, &ctrlp_spline);
+	ts_bspline_control_points(&spline, &ctrlp_spline, NULL);
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);

@@ -1373,8 +1373,7 @@ tsError ts_internal_bspline_to_json(const tsBSpline * spline,
 	JSON_Array  *ctrlp_array;
 	JSON_Array  *knots_array;
 
-	ctrlp_value   = NULL;
-	knots_value   = NULL;
+	*value = ctrlp_value = knots_value = NULL;
 	TS_TRY(values, err, status)
 		/* Init memory. */
 		*value = json_value_init_object();
@@ -1432,11 +1431,13 @@ tsError ts_internal_bspline_to_json(const tsBSpline * spline,
 				   "out of memory");
 		}
 	TS_CATCH(err)
-		json_value_free(*value);
+		if (*value)
+			json_value_free(*value);
+		if (ctrlp_value && !json_value_get_parent(ctrlp_value))
+			json_value_free(ctrlp_value);
+		if (knots_value && !json_value_get_parent(knots_value))
+			json_value_free(knots_value);
 		*value = NULL;
-	TS_FINALLY
-		json_value_free(ctrlp_value);
-		json_value_free(knots_value);
 	TS_END_TRY_RETURN(err)
 }
 

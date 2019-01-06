@@ -37,11 +37,11 @@ void setup()
 		3,      /* dimension of each point */
 		3,      /* degree of spline */
 		TS_CLAMPED, /* used to hit first and last control point */
-		&spline /* the spline to setup */
-	);
+		&spline, /* the spline to setup */
+		NULL);
 	
 	/* Setup control points. */
-	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
 	ctrlp[0]  = -1.75f;
 	ctrlp[1]  = -1.0f;
 	ctrlp[2]  =  0.0f;
@@ -63,10 +63,10 @@ void setup()
 	ctrlp[18] =  0.5f;
 	ctrlp[19] =  0.0f;
 	ctrlp[20] =  0.0f;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 
-	ts_bspline_derive(&spline, 1, &derivative);
+	ts_bspline_derive(&spline, 1, &derivative, NULL);
 }
 
 void tear_down()
@@ -85,8 +85,8 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
-	ts_bspline_control_points(&spline, &ctrlp);
-	ts_bspline_knots(&spline, &knots);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
+	ts_bspline_knots(&spline, &knots, NULL);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -112,12 +112,12 @@ void display(void)
 	/* draw derivative */
 	glColor3f(0.0, 0.0, 1.0);
 	glPointSize(5.0);
-	ts_bspline_eval(&spline, u, &net1);
-	ts_deboornet_result(&net1, &result1);
-	ts_bspline_eval(&derivative, u, &net2);
-	ts_deboornet_result(&net2, &result2);
-	ts_bspline_eval(&derivative, u, &net3);
-	ts_deboornet_result(&net3, &result3);
+	ts_bspline_eval(&spline, u, &net1, NULL);
+	ts_deboornet_result(&net1, &result1, NULL);
+	ts_bspline_eval(&derivative, u, &net2, NULL);
+	ts_deboornet_result(&net2, &result2, NULL);
+	ts_bspline_eval(&derivative, u, &net3, NULL);
+	ts_deboornet_result(&net3, &result3, NULL);
 	for (i = 0; i < ts_deboornet_dimension(&net2); i++) {
 		/* subdivided by 6 just to avoid the
 		 * tangent to exit from the window */

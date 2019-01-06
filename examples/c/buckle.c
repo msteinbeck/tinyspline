@@ -36,11 +36,11 @@ void setup()
 		3,      /* dimension of each point */
 		2,      /* degree of spline */
 		TS_CLAMPED, /* used to hit first and last control point */
-		&spline /* the spline to setup */
-	);
+		&spline, /* the spline to setup */
+		NULL);
 	
 	/* Setup control points. */
-	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -50,7 +50,7 @@ void setup()
 	ctrlp[6] =  1.0f;
 	ctrlp[7] = -1.0f;
 	ctrlp[8] =  0.0f;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 }
 
@@ -67,11 +67,11 @@ void display(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ts_bspline_buckle(&spline, b, &buckled);
+	ts_bspline_buckle(&spline, b, &buckled, NULL);
 
 	/* draw buckled */
-	ts_bspline_control_points(&buckled, &ctrlp);
-	ts_bspline_knots(&buckled, &knots);
+	ts_bspline_control_points(&buckled, &ctrlp, NULL);
+	ts_bspline_knots(&buckled, &knots, NULL);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);

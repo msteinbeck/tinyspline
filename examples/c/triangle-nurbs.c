@@ -42,11 +42,11 @@ void setup()
 		4,      /* dimension of each point */
 		2,      /* degree of spline */
 		TS_CLAMPED, /* used to hit first and last control point */
-		&spline /* the spline to setup */
-	);
+		&spline, /* the spline to setup */
+		NULL);
 	
 	/* Setup control points. */
-	ts_bspline_control_points(&spline, &ctrlp);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
 	ctrlp[0] = -1.0f;
 	ctrlp[1] =  1.0f;
 	ctrlp[2] =  0.0f;
@@ -59,7 +59,7 @@ void setup()
 	ctrlp[9]  = -1.0f;
 	ctrlp[10] =  0.0f;
 	ctrlp[11] =  1.0f;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 }
 
@@ -81,8 +81,8 @@ void displayText( float x, float y, float r, float g, float b, const char *strin
 void display(void)
 {
 	tsReal *ctrlp, *knots;
-	ts_bspline_control_points(&spline, &ctrlp);
-	ts_bspline_knots(&spline, &knots);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
+	ts_bspline_knots(&spline, &knots, NULL);
 
 	char buffer[256];
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,7 +94,7 @@ void display(void)
 	ctrlp[5] = B[1] * w;
 	ctrlp[6] = B[2] * w;
 	ctrlp[7] = w;
-	ts_bspline_set_control_points(&spline, ctrlp);
+	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	
 	/* draw spline */
 	glColor3f(1.0, 1.0, 1.0);

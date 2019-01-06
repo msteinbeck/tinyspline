@@ -44,7 +44,7 @@ void setup()
 	points[13] =  5;
 	points[14] =  0;
 
-	ts_bspline_interpolate_cubic(points, 5, 3, &spline);
+	ts_bspline_interpolate_cubic(points, 5, 3, &spline, NULL);
 	ts_bspline_print(&spline);
 }
 
@@ -64,8 +64,8 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	/* draw spline */
-	ts_bspline_control_points(&spline, &ctrlp);
-	ts_bspline_knots(&spline, &knots);
+	ts_bspline_control_points(&spline, &ctrlp, NULL);
+	ts_bspline_knots(&spline, &knots, NULL);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
@@ -89,8 +89,8 @@ void display(void)
 	glEnd();
 
 	/* eval spline */
-	ts_bspline_eval(&spline, 0.5f, &net);
-	ts_deboornet_result(&net, &result);
+	ts_bspline_eval(&spline, 0.5f, &net, NULL);
+	ts_deboornet_result(&net, &result, NULL);
 	
 	/* draw evaluation */
 	glColor3f(0.0, 0.0, 1.0);

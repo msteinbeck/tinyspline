@@ -90,7 +90,6 @@ public:
 
 	/* Transformations */
 	BSpline insertKnot(real u, size_t n) const;
-	BSpline resize(int n, int back) const;
 	BSpline split(real u) const;
 	BSpline buckle(real b) const;
 	BSpline toBeziers() const;

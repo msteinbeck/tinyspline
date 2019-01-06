@@ -79,6 +79,7 @@
 
 // Ignore wrapped structs and data fields.
 %ignore tsError;
+%ignore tsStatus;
 %ignore tsDeBoorNet;
 %ignore tinyspline::DeBoorNet::data;
 %ignore tsBSpline;

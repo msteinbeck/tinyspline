@@ -184,6 +184,17 @@ typedef struct {
 	goto __ ## label ## __;                               \
 }
 
+#define TS_THROW_3(label, status, err, msg, arg1, arg2, arg3)       \
+{                                                                   \
+	if ((status) != NULL) {                                     \
+		(status)->code = err;                               \
+		sprintf((status)->message, msg, arg1, arg2, arg3);  \
+	}                                                           \
+	goto __ ## label ## __;                                     \
+}
+
+
+
 /******************************************************************************
 *                                                                             *
 * :: Data Types                                                               *

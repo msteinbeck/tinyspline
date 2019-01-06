@@ -4,7 +4,6 @@
 #include <stdlib.h> /* malloc, free */
 #include <math.h>   /* fabs, sqrt */
 #include <string.h> /* memcpy, memmove, strcmp */
-#include <setjmp.h> /* setjmp, longjmp */
 #include <stdio.h>  /* FILE, fopen */
 
 /* Suppress some useless MSVC warnings. */

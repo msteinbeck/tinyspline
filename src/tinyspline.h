@@ -389,6 +389,9 @@ size_t ts_bspline_order(const tsBSpline *spline);
  * 	The spline whose order is set.
  * @param order
  * 	The order to be set.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
@@ -427,6 +430,9 @@ size_t ts_bspline_dimension(const tsBSpline *spline);
  * 	The spline whose dimension is set.
  * @param dim
  * 	The dimension to be set.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
@@ -475,6 +481,9 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
  * 	The spline whose control points are read.
  * @param ctrlp
  * 	The output array.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -493,6 +502,9 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
  * 	The zero based index of the requested control point.
  * @param ctrlp
  * 	The output array.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
@@ -510,6 +522,9 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
  * 	The spline whose control points are set.
  * @param ctrlp
  * 	The values to deep copy.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  */
@@ -526,6 +541,9 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
  * 	The zero based index of the control point to set.
  * @param ctrlp
  * 	The values to deep copy.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
@@ -562,6 +580,9 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
  * 	The spline whose knots are read.
  * @param knots
  * 	The output array.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -578,6 +599,9 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
  * 	The spline whose knots are set.
  * @param knots
  * 	The values to deep copy and scale.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_KNOTS_DECR
@@ -683,6 +707,9 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
  * 	The net whose points is read.
  * @param points
  * 	The output array.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -730,6 +757,9 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
  * 	The net whose result is read.
  * @param result
  * 	The output array.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -768,6 +798,9 @@ tsBSpline ts_bspline_init();
  * 	The degree of \p \_spline\_.
  * @param type
  * 	How to setup the knot vector of \p \_spline\_.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @param \_spline\_
  * 	The output parameter.
  * @return TS_SUCCESS
@@ -794,6 +827,9 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
  * 	The spline to deep copy.
  * @param \_copy\_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -841,6 +877,9 @@ tsDeBoorNet ts_deboornet_init();
  * 	The net to deep copy.
  * @param \_copy\_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -908,6 +947,9 @@ void ts_deboornet_free(tsDeBoorNet *_net_);
  * 	The dimension of each control point in \p \_spline\_.
  * @param \_spline\_
  * 	The output parameter storing the result of this function.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
@@ -939,6 +981,9 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  * 	The knot value to evaluate.
  * @param \_deBoorNet\_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
@@ -982,6 +1027,9 @@ tsReal ts_bspline_domain_max(const tsBSpline *spline);
  * 	The output parameter. Is set to 1 if the distance of the first and the
  * 	last point (not necessarily the control points) of \p spline is less
  * 	than or equal to \p epsilon. Is set to 0 otherwise.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1087,6 +1135,9 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * 	The spline to derive.
  * @param \_derivative\_
  *	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_UNDERIVABLE
@@ -1099,8 +1150,8 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsBSpline *_derivative_, tsStatus *status);
 
 /**
- * Inserts the knot value \p u \p n times into \p spline and stores the result
- * in \p \_result\_. Creates a deep copy of \p spline, if
+ * Inserts the knot value \p u up to \p n times into \p spline and stores the
+ * result in \p \_result\_. Creates a deep copy of \p spline, if
  * \p spline != \p \_result\_.
  * 
  * @param spline
@@ -1113,6 +1164,9 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
  * 	The output parameter.
  * @param \_k\_
  * 	Stores the last index of \p u in \p \_result\_.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1134,7 +1188,10 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
  * @param \_split\_
  * 	The output parameter.
  * @param \_k\_
- * 	Stores the last index of \p u in \p \_split\_.
+ * 	Output parameter. Stores the last index of \p u in \p \_split\_.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
@@ -1168,6 +1225,9 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * 	The buckle factor (usually 0.0 <= \p b <= 1.0).
  * @param \_buckled\_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1185,6 +1245,9 @@ tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
  * 	The spline to subdivide.
  * @param \_beziers\_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1211,6 +1274,9 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
  * 	The spline to serialize.
  * @param json
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1226,6 +1292,9 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
  * 	The JSON string to parse.
  * @param _spline_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_PARSE_ERROR
@@ -1256,6 +1325,9 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_,
  * 	The spline to save.
  * @param path
  * 	Path of the JSON file.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_IO_ERROR
@@ -1273,6 +1345,9 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
  * 	Path of the JSON file.
  * @param _spline_
  * 	The output parameter.
+ * @param status
+ * 	Output parameter. Store the returned error code and a descriptive error
+ * 	message. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_IO_ERROR

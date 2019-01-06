@@ -245,7 +245,7 @@ tsError ts_internal_bspline_resize(const tsBSpline *spline, int n, int back,
 		return ts_bspline_copy(spline, _resized_, status);
 
 	INIT_OUT_BSPLINE(spline, _resized_)
-	TS_TRY_CALL_ROE(err, ts_bspline_new(
+	TS_CALL_ROE(err, ts_bspline_new(
 		nnum_ctrlp, dim, deg, TS_OPENED, &tmp, status))
 	to_ctrlp = ts_internal_bspline_access_ctrlp(&tmp);
 	to_knots = ts_internal_bspline_access_knots(&tmp);
@@ -1053,7 +1053,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsError err;
 
 	INIT_OUT_BSPLINE(spline, _derivative_)
-	TS_TRY_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
+	TS_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
 	ctrlp = ts_internal_bspline_access_ctrlp(&worker);
 	knots = ts_internal_bspline_access_knots(&worker);
 
@@ -1125,7 +1125,7 @@ tsError ts_internal_bspline_insert_knot(const tsBSpline *spline,
 	if (n == 0 || s+n > ts_bspline_order(spline))
 		return ts_bspline_copy(spline, _result_, status);
 
-	TS_TRY_CALL_ROE(err, ts_internal_bspline_resize(
+	TS_CALL_ROE(err, ts_internal_bspline_resize(
 		spline, (int)n, 1, _result_, status));
 	ctrlp_spline = ts_internal_bspline_access_ctrlp(spline);
 	knots_spline = ts_internal_bspline_access_knots(spline);
@@ -1266,7 +1266,7 @@ tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
 	size_t i, d; /**< Used in for loops. */
 	tsError err;
 
-	TS_TRY_CALL_ROE(err, ts_bspline_copy(spline, _buckled_, status))
+	TS_CALL_ROE(err, ts_bspline_copy(spline, _buckled_, status))
 	ctrlp = ts_internal_bspline_access_ctrlp(_buckled_);
 
 	for (i = 0; i < N; i++) {
@@ -1297,7 +1297,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 	tsError err;
 
 	INIT_OUT_BSPLINE(spline, _beziers_)
-	TS_TRY_CALL_ROE(err, ts_bspline_copy(spline, &tmp, status))
+	TS_CALL_ROE(err, ts_bspline_copy(spline, &tmp, status))
 	knots = ts_internal_bspline_access_knots(&tmp);
 	num_knots = ts_bspline_num_knots(&tmp);
 
@@ -1555,8 +1555,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
 	tsError err;
 	JSON_Value *value = NULL;
 	*_json_ = NULL;
-	TS_TRY_CALL_ROE(err, ts_internal_bspline_to_json(
-		spline, &value, status))
+	TS_CALL_ROE(err, ts_internal_bspline_to_json(spline, &value, status))
 	*_json_ = json_serialize_to_string_pretty(value);
 	json_value_free(value);
 	if (!*_json_)
@@ -1590,8 +1589,7 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
 	tsError err;
 	JSON_Status json_status;
 	JSON_Value *value = NULL;
-	TS_TRY_CALL_ROE(err, ts_internal_bspline_to_json(
-		spline, &value, status))
+	TS_CALL_ROE(err, ts_internal_bspline_to_json(spline, &value, status))
 	json_status = json_serialize_to_file_pretty(value, path);
 	json_value_free(value);
 	if (json_status != JSONSuccess)

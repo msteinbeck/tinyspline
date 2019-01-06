@@ -105,10 +105,10 @@ typedef struct {
 	TS_END_TRY return (err);
 
 
-#define TS_TRY_CALL_ROE(err, call) \
-{                                  \
-	(err) = (call);            \
-	if ((err)) return err;     \
+#define TS_CALL_ROE(err, call) \
+{                              \
+	(err) = (call);        \
+	if ((err)) return err; \
 }
 
 

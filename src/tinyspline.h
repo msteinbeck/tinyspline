@@ -77,22 +77,22 @@ typedef struct {
     char message[100]; /**< The corresponding error message. */
 } tsStatus;
 
-#define TS_TRY(label, err, status)           \
+#define TS_TRY(label, error, status)         \
 {                                            \
-	(err) = TS_SUCCESS;                  \
+	(error) = TS_SUCCESS;                \
 	if ((status) != NULL) {              \
 		(status)->code = TS_SUCCESS; \
 		(status)->message[0] = '\0'; \
 	}                                    \
 	__ ## label ## __:                   \
-	if (!(err)) {
+	if (!(error)) {
 
-#define TS_CALL(label, err, call)                   \
-		(err) = (call);                     \
-		if ((err)) goto __ ## label ## __;
+#define TS_CALL(label, error, call)                  \
+		(error) = (call);                    \
+		if ((error)) goto __ ## label ## __;
 
-#define TS_CATCH(err) \
-	} if ((err)) {
+#define TS_CATCH(error) \
+	} if ((error)) {
 
 #define TS_FINALLY \
 	} {
@@ -101,14 +101,14 @@ typedef struct {
 	}          \
 }
 
-#define TS_END_TRY_RETURN(err)   \
-	TS_END_TRY return (err);
+#define TS_END_TRY_RETURN(error)   \
+	TS_END_TRY return (error);
 
 
-#define TS_CALL_ROE(err, call) \
-{                              \
-	(err) = (call);        \
-	if ((err)) return err; \
+#define TS_CALL_ROE(error, call)   \
+{                                  \
+	(error) = (call);          \
+	if ((error)) return error; \
 }
 
 
@@ -121,73 +121,73 @@ typedef struct {
 	return TS_SUCCESS;                   \
 }
 
-#define TS_RETURN_0(status, err, msg)            \
+#define TS_RETURN_0(status, error, msg)          \
 {                                                \
 	if ((status) != NULL) {                  \
-		(status)->code = err;            \
+		(status)->code = error;          \
 		sprintf((status)->message, msg); \
 	}                                        \
-	return err;                              \
+	return error;                            \
 }
 
-#define TS_RETURN_1(status, err, msg, arg1)            \
+#define TS_RETURN_1(status, error, msg, arg1)          \
 {                                                      \
 	if ((status) != NULL) {                        \
-		(status)->code = err;                  \
+		(status)->code = error;                \
 		sprintf((status)->message, msg, arg1); \
 	}                                              \
-	return err;                                    \
+	return error;                                  \
 }
 
-#define TS_RETURN_2(status, err, msg, arg1, arg2)            \
+#define TS_RETURN_2(status, error, msg, arg1, arg2)          \
 {                                                            \
 	if ((status) != NULL) {                              \
-		(status)->code = err;                        \
+		(status)->code = error;                      \
 		sprintf((status)->message, msg, arg1, arg2); \
 	}                                                    \
-	return err;                                          \
+	return error;                                        \
 }
 
-#define TS_RETURN_3(status, err, msg, arg1, arg2, arg3)            \
+#define TS_RETURN_3(status, error, msg, arg1, arg2, arg3)          \
 {                                                                  \
 	if ((status) != NULL) {                                    \
-		(status)->code = err;                              \
+		(status)->code = error;                            \
 		sprintf((status)->message, msg, arg1, arg2, arg3); \
 	}                                                          \
-	return err;                                                \
+	return error;                                              \
 }
 
-#define TS_THROW_0(label, status, err, msg)      \
+#define TS_THROW_0(label, status, error, msg)    \
 {                                                \
 	if ((status) != NULL) {                  \
-		(status)->code = err;            \
+		(status)->code = error;          \
 		sprintf((status)->message, msg); \
 	}                                        \
 	goto __ ## label ## __;                  \
 }
 
-#define TS_THROW_1(label, status, err, msg, arg1)       \
+#define TS_THROW_1(label, status, error, msg, arg1)     \
 {                                                       \
 	if ((status) != NULL) {                         \
-		(status)->code = err;                   \
+		(status)->code = error;                 \
 		sprintf((status)->message, msg, arg1);  \
 	}                                               \
 	goto __ ## label ## __;                         \
 }
 
-#define TS_THROW_2(label, status, err, msg, arg1, arg2)       \
+#define TS_THROW_2(label, status, error, msg, arg1, arg2)     \
 {                                                             \
 	if ((status) != NULL) {                               \
-		(status)->code = err;                         \
+		(status)->code = error;                       \
 		sprintf((status)->message, msg, arg1, arg2);  \
 	}                                                     \
 	goto __ ## label ## __;                               \
 }
 
-#define TS_THROW_3(label, status, err, msg, arg1, arg2, arg3)       \
+#define TS_THROW_3(label, status, error, msg, arg1, arg2, arg3)     \
 {                                                                   \
 	if ((status) != NULL) {                                     \
-		(status)->code = err;                               \
+		(status)->code = error;                             \
 		sprintf((status)->message, msg, arg1, arg2, arg3);  \
 	}                                                           \
 	goto __ ## label ## __;                                     \

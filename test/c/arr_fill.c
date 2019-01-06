@@ -1,7 +1,7 @@
 #include "tinyspline.h"
 #include "CuTest.h"
 
-const double fill_tests_delta = 0.000001;
+#define EPSILON 0.0001
 
 void arr_fill_test_standard_case(CuTest *tc)
 {
@@ -13,11 +13,11 @@ void arr_fill_test_standard_case(CuTest *tc)
 
 	ts_arr_fill(arr, 10, (tsReal) -3.0);
 	for (i = 0; i < 10; i++)
-		CuAssertDblEquals(tc, -3.0, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, -3.0, arr[i], EPSILON);
 
 	ts_arr_fill(arr, 10, (tsReal) 10.586);
 	for (i = 0; i < 10; i++)
-		CuAssertDblEquals(tc, 10.586, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, 10.586, arr[i], EPSILON);
 }
 
 void arr_fill_test_subset(CuTest *tc)
@@ -30,15 +30,15 @@ void arr_fill_test_subset(CuTest *tc)
 
 	ts_arr_fill(arr, 5, (tsReal) -15.0);
 	for (i = 0; i < 5; i++)
-		CuAssertDblEquals(tc, -15.0, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, -15.0, arr[i], EPSILON);
 	for (i = 5; i < 10; i++)
-		CuAssertDblEquals(tc, i, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, i, arr[i], EPSILON);
 	ts_arr_fill(arr, 1, (tsReal) -20);
-	CuAssertDblEquals(tc, -20, arr[0], fill_tests_delta);
+	CuAssertDblEquals(tc, -20, arr[0], EPSILON);
 	for (i = 1; i < 5; i++)
-		CuAssertDblEquals(tc, -15.0, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, -15.0, arr[i], EPSILON);
 	for (i = 5; i < 10; i++)
-		CuAssertDblEquals(tc, i, arr[i], fill_tests_delta);
+		CuAssertDblEquals(tc, i, arr[i], EPSILON);
 }
 
 CuSuite* get_arr_fill_suite()

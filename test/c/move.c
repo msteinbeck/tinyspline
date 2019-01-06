@@ -6,7 +6,7 @@ void move_test_bspline_different_ptr(CuTest* tc)
 {
 	tsBSpline spline, moved;
 
-	ts_bspline_new(6, 3, 3, TS_OPENED, &spline);
+	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, NULL);
 	CuAssertPtrNotNull(tc, spline.pImpl);
 	moved.pImpl = NULL;
 

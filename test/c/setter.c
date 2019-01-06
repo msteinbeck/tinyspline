@@ -10,10 +10,10 @@ void setter_knots_default_interval(CuTest *tc)
 	tsReal *knots = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	knots[0]  = 0.f;
 	knots[1]  = 0.f;
@@ -26,11 +26,11 @@ void setter_knots_default_interval(CuTest *tc)
 	knots[8]  = 1.f;
 	knots[9]  = 1.f;
 	knots[10] = 1.f;
-	err = ts_bspline_set_knots(&spline, knots);
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 	free(knots);
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, 0.f,   knots[0],  EPSILON);
 	CuAssertDblEquals(tc, 0.f,   knots[1],  EPSILON);
@@ -54,10 +54,10 @@ void setter_knots_scaled_interval_1_2(CuTest *tc)
 	tsReal *knots = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	knots[0]  = 1.f;
 	knots[1]  = 1.f;
@@ -70,11 +70,11 @@ void setter_knots_scaled_interval_1_2(CuTest *tc)
 	knots[8]  = 2.f;
 	knots[9]  = 2.f;
 	knots[10] = 2.f;
-	err = ts_bspline_set_knots(&spline, knots);
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 	free(knots);
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, 0.f,   knots[0],  EPSILON);
 	CuAssertDblEquals(tc, 0.f,   knots[1],  EPSILON);
@@ -98,10 +98,10 @@ void setter_knots_scaled_interval_5_9(CuTest *tc)
 	tsReal *knots = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	knots[0]  = 5.f;
 	knots[1]  = 5.f;
@@ -114,11 +114,11 @@ void setter_knots_scaled_interval_5_9(CuTest *tc)
 	knots[8]  = 9.f;
 	knots[9]  = 9.f;
 	knots[10] = 9.f;
-	err = ts_bspline_set_knots(&spline, knots);
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 	free(knots);
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, 0.f,   knots[0],  EPSILON);
 	CuAssertDblEquals(tc, 0.f,   knots[1],  EPSILON);
@@ -142,10 +142,10 @@ void setter_knots_scaled_interval_negative_9_5(CuTest *tc)
 	tsReal *knots = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_OPENED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	knots[0]  = -9.f;
 	knots[1]  = -9.f;
@@ -158,11 +158,11 @@ void setter_knots_scaled_interval_negative_9_5(CuTest *tc)
 	knots[8]  = -5.f;
 	knots[9]  = -5.f;
 	knots[10] = -5.f;
-	err = ts_bspline_set_knots(&spline, knots);
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 	free(knots);
-	err = ts_bspline_knots(&spline, &knots);
+	err = ts_bspline_knots(&spline, &knots, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, 0.f,   knots[0],  EPSILON);
 	CuAssertDblEquals(tc, 0.f,   knots[1],  EPSILON);

@@ -11,9 +11,9 @@ void eval_domain_min(CuTest *tc)
 	tsReal *ctrlp = NULL, *result = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
-	err = ts_bspline_control_points(&spline, &ctrlp);
+	err = ts_bspline_control_points(&spline, &ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
@@ -29,15 +29,16 @@ void eval_domain_min(CuTest *tc)
 	ctrlp[11] =  0.5f;  /* y5 */
 	ctrlp[12] =  0.5f;  /* x6 */
 	ctrlp[13] =  0.0f;  /* y6 */
-	err = ts_bspline_set_control_points(&spline, ctrlp);
+	err = ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-	err = ts_bspline_eval(&spline, ts_bspline_domain_min(&spline), &net);
+	err = ts_bspline_eval(&spline,
+		ts_bspline_domain_min(&spline), &net, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 	CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
-	err = ts_deboornet_result(&net, &result);
+	err = ts_deboornet_result(&net, &result, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, -1.75f, result[0], EPSILON);
 	CuAssertDblEquals(tc, -1.0f, result[1], EPSILON);
@@ -55,9 +56,9 @@ void eval_domain_max(CuTest *tc)
 	tsReal *ctrlp = NULL, *result = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
-	err = ts_bspline_control_points(&spline, &ctrlp);
+	err = ts_bspline_control_points(&spline, &ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
@@ -73,15 +74,16 @@ void eval_domain_max(CuTest *tc)
 	ctrlp[11] =  0.5f;  /* y5 */
 	ctrlp[12] =  0.5f;  /* x6 */
 	ctrlp[13] =  0.0f;  /* y6 */
-	err = ts_bspline_set_control_points(&spline, ctrlp);
+	err = ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-	err = ts_bspline_eval(&spline, ts_bspline_domain_max(&spline), &net);
+	err = ts_bspline_eval(&spline,
+		ts_bspline_domain_max(&spline), &net, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 	CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
-	err = ts_deboornet_result(&net, &result);
+	err = ts_deboornet_result(&net, &result, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, 0.5f, result[0], EPSILON);
 	CuAssertDblEquals(tc, 0.0f, result[1], EPSILON);
@@ -99,9 +101,9 @@ void eval_001(CuTest *tc)
 	tsReal *ctrlp = NULL, *result = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
-	err = ts_bspline_control_points(&spline, &ctrlp);
+	err = ts_bspline_control_points(&spline, &ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
@@ -117,15 +119,15 @@ void eval_001(CuTest *tc)
 	ctrlp[11] =  0.5f;  /* y5 */
 	ctrlp[12] =  0.5f;  /* x6 */
 	ctrlp[13] =  0.0f;  /* y6 */
-	err = ts_bspline_set_control_points(&spline, ctrlp);
+	err = ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-	err = ts_bspline_eval(&spline, 0.4f, &net);
+	err = ts_bspline_eval(&spline, 0.4f, &net, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 	CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
-	err = ts_deboornet_result(&net, &result);
+	err = ts_deboornet_result(&net, &result, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, -1.338333f, result[0], EPSILON);
 	CuAssertDblEquals(tc,  0.288333f, result[1], EPSILON);
@@ -143,9 +145,9 @@ void eval_002(CuTest *tc)
 	tsReal *ctrlp = NULL, *result = NULL;
 	tsError err;
 
-	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline);
+	err = ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
-	err = ts_bspline_control_points(&spline, &ctrlp);
+	err = ts_bspline_control_points(&spline, &ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
@@ -161,15 +163,15 @@ void eval_002(CuTest *tc)
 	ctrlp[11] =  0.5f;  /* y5 */
 	ctrlp[12] =  0.5f;  /* x6 */
 	ctrlp[13] =  0.0f;  /* y6 */
-	err = ts_bspline_set_control_points(&spline, ctrlp);
+	err = ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-	err = ts_bspline_eval(&spline, 0.8f, &net);
+	err = ts_bspline_eval(&spline, 0.8f, &net, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 	CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
-	err = ts_deboornet_result(&net, &result);
+	err = ts_deboornet_result(&net, &result, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, -0.470667f, result[0], EPSILON);
 	CuAssertDblEquals(tc,  0.618667f, result[1], EPSILON);
@@ -187,9 +189,9 @@ void eval_003(CuTest *tc)
 	tsReal *ctrlp = NULL, *result = NULL;
 	tsError err;
 
-	err = ts_bspline_new(8, 2, 3, TS_BEZIERS, &spline);
+	err = ts_bspline_new(8, 2, 3, TS_BEZIERS, &spline, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
-	err = ts_bspline_control_points(&spline, &ctrlp);
+	err = ts_bspline_control_points(&spline, &ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	ctrlp[0]  = -1.75f; /* x0 */
 	ctrlp[1]  = -1.0f;  /* y0 */
@@ -207,15 +209,15 @@ void eval_003(CuTest *tc)
 	ctrlp[13] =  0.0f;  /* y6 */
 	ctrlp[14] = -0.3f;  /* x7 */
 	ctrlp[15] = -1.0f;  /* y7 */
-	err = ts_bspline_set_control_points(&spline, ctrlp);
+	err = ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-	err = ts_bspline_eval(&spline, 0.5f, &net);
+	err = ts_bspline_eval(&spline, 0.5f, &net, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertTrue(tc, ts_deboornet_num_result(&net) == 2);
 	CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
-	err = ts_deboornet_result(&net, &result);
+	err = ts_deboornet_result(&net, &result, NULL);
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 	CuAssertDblEquals(tc, -1.25, result[0], EPSILON);
 	CuAssertDblEquals(tc,  0.5f, result[1], EPSILON);

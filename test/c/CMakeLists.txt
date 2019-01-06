@@ -9,7 +9,8 @@ endif()
 ###############################################################################
 ### Create unit tests.
 ###############################################################################
-file(GLOB TINYSPLINE_TESTS_SOURCE_FILES "*.c")
+file(GLOB_RECURSE TINYSPLINE_TESTS_SOURCE_FILES "*.c")
+include_directories(cutest)
 add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
 	LINK_PUBLIC tinyspline_static

@@ -365,7 +365,7 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
 		size = ts_bspline_dimension(spline) * sizeof(tsReal);
 		*ctrlp = (tsReal*) malloc(size);
 		if (!*ctrlp)
-			TS_BREAK_0(try, status, TS_MALLOC, "out of memory")
+			TS_THROW_0(try, status, TS_MALLOC, "out of memory")
 		memcpy(*ctrlp, from, size);
 	TS_CATCH(err)
 		*ctrlp = NULL;
@@ -812,7 +812,7 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points,
 
 		s = (tsReal*) malloc(n * sof_ctrlp);
 		if (!s)
-			TS_BREAK_0(try, status, TS_MALLOC, "out of memory")
+			TS_THROW_0(try, status, TS_MALLOC, "out of memory")
 
 		/* set s_0 to b_0 and s_n = b_n */
 		memcpy(s, b, sof_ctrlp);
@@ -860,7 +860,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 	TS_TRY(try, err, status)
 		thomas = (tsReal*) malloc(n*dim*sizeof(tsReal));
 		if (!thomas)
-			TS_BREAK_0(try, status, TS_MALLOC, "out of memory")
+			TS_THROW_0(try, status, TS_MALLOC, "out of memory")
 		TS_CALL(try, err, ts_internal_bspline_thomas_algorithm(
 			points, n, dim, thomas, status))
 		TS_CALL(try, err, ts_internal_relaxed_uniform_cubic_bspline(
@@ -1066,7 +1066,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 				for (i = 0; i < num_ctrlp-1; i++) {
 					for (j = 0; j < dim; j++) {
 						if (ts_fequals(knots[i+deg+1], knots[i+1])) {
-							TS_BREAK_0(try, status,
+							TS_THROW_0(try, status,
 								   TS_UNDERIVABLE,
 								   "unable to derive spline")
 						} else {
@@ -1378,13 +1378,13 @@ tsError ts_internal_bspline_to_json(const tsBSpline * spline,
 		/* Init memory. */
 		*value = json_value_init_object();
 		if (!*value)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		ctrlp_value = json_value_init_array();
 		if (!ctrlp_value)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		knots_value = json_value_init_array();
 		if (!knots_value)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 
 		/* Although the following functions can't fail, that is, they
 		 * won't return NULL or JSONFailure, we nevertheless handle
@@ -1393,41 +1393,41 @@ tsError ts_internal_bspline_to_json(const tsBSpline * spline,
 		/* Init output. */
 		spline_object = json_value_get_object(*value);
 		if (!spline_object)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 
 		/* Set degree and dimension. */
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "degree", (double) deg))
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "dimension", (double) dim))
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 
 		/* Set control points. */
 		if (JSONSuccess != json_object_set_value(
 				spline_object, "control_points", ctrlp_value))
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		ctrlp_array = json_array(ctrlp_value);
 		if (!ctrlp_array)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		for (i = 0; i < len_ctrlp; i++) {
 			if (JSONSuccess != json_array_append_number(
 					ctrlp_array, (double) ctrlp[i]))
-				TS_BREAK_0(values, status, TS_MALLOC,
+				TS_THROW_0(values, status, TS_MALLOC,
 					   "out of memory");
 		}
 
 		/* Set knots. */
 		if (JSONSuccess != json_object_set_value(
 				spline_object, "knots", knots_value))
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		knots_array = json_array(knots_value);
 		if (!knots_array)
-			TS_BREAK_0(values, status, TS_MALLOC, "out of memory");
+			TS_THROW_0(values, status, TS_MALLOC, "out of memory");
 		for (i = 0; i < len_knots; i++) {
 			if (JSONSuccess != json_array_append_number(
 					knots_array, (double) knots[i]))
-				TS_BREAK_0(values, status, TS_MALLOC,
+				TS_THROW_0(values, status, TS_MALLOC,
 				   "out of memory");
 		}
 	TS_CATCH(err)
@@ -1517,7 +1517,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 		TS_CALL(try, err, ts_bspline_new(len_ctrlp/dim,
 				dim, deg, TS_CLAMPED, _spline_, status))
 		if (num_knots != ts_bspline_num_knots(_spline_))
-			TS_BREAK_2(try, status, TS_NUM_KNOTS,
+			TS_THROW_2(try, status, TS_NUM_KNOTS,
 				   "unexpected num(knots): (%lu) != (%lu)",
 				   num_knots, ts_bspline_num_knots(_spline_))
 
@@ -1526,7 +1526,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 		for (i = 0; i < len_ctrlp; i++) {
 			real_value = json_array_get_value(ctrlp_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
-				TS_BREAK_1(try, status, TS_PARSE_ERROR,
+				TS_THROW_1(try, status, TS_PARSE_ERROR,
 					   "control_points: value at index %lu is not a number",
 					   i)
 			ctrlp[i] = (tsReal) json_value_get_number(real_value);
@@ -1539,7 +1539,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 		for (i = 0; i < num_knots; i++) {
 			real_value = json_array_get_value(knots_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
-			TS_BREAK_1(try, status, TS_PARSE_ERROR,
+			TS_THROW_1(try, status, TS_PARSE_ERROR,
 				   "knots: value at index %lu is not a number",
 				   i)
 			knots[i] = (tsReal) json_value_get_number(real_value);
@@ -1609,7 +1609,7 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 	TS_TRY(try, err, status)
 		file = fopen(path, "r");
 		if (!file) {
-			TS_BREAK_0(try, status, TS_IO_ERROR,
+			TS_THROW_0(try, status, TS_IO_ERROR,
 				   "unable to open file")
 		}
 		value = json_parse_file(path);

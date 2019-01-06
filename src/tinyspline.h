@@ -157,7 +157,7 @@ typedef struct {
 	return err;                                                \
 }
 
-#define TS_BREAK_0(label, status, err, msg)      \
+#define TS_THROW_0(label, status, err, msg)      \
 {                                                \
 	if ((status) != NULL) {                  \
 		(status)->code = err;            \
@@ -166,7 +166,7 @@ typedef struct {
 	goto __ ## label ## __;                  \
 }
 
-#define TS_BREAK_1(label, status, err, msg, arg1)       \
+#define TS_THROW_1(label, status, err, msg, arg1)       \
 {                                                       \
 	if ((status) != NULL) {                         \
 		(status)->code = err;                   \
@@ -175,7 +175,7 @@ typedef struct {
 	goto __ ## label ## __;                         \
 }
 
-#define TS_BREAK_2(label, status, err, msg, arg1, arg2)       \
+#define TS_THROW_2(label, status, err, msg, arg1, arg2)       \
 {                                                             \
 	if ((status) != NULL) {                               \
 		(status)->code = err;                         \

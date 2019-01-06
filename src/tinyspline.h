@@ -1323,20 +1323,6 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 int ts_fequals(tsReal x, tsReal y);
 
 /**
- * Returns the error message associated to \p err. Returns "unknown error" if
- * \p err is no associated (indicating a bug) or is TS_SUCCESS (which is not
- * an actual error).
- */
-const char* ts_enum_str(tsError err);
-
-/**
- * Returns the error code associated to \p str or TS_SUCCESS if \p str is not
- * associated. Keep in mind that by concept "unknown error" is not associated,
- * though, TS_SUCCESS is returned.
- */
-tsError ts_str_enum(const char *str);
-
-/**
  * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num
  * (exclusive).
  */

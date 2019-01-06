@@ -104,8 +104,6 @@ public:
 	static BSpline interpolateCubic(
 		const std::vector<real> *points, size_t dim);
 	static bool fequals(real x, real y);
-	static std::string enum_str(tsError err);
-	static tsError str_enum(std::string str);
 
 private:
 	Utils() {}

@@ -436,7 +436,7 @@ tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 	const std::vector<tinyspline::real> *points, size_t dim)
 {
 	if (dim == 0)
-		throw std::runtime_error(ts_enum_str(TS_DIM_ZERO));
+		throw std::runtime_error("unsupported dimension: 0");
 	if (points->size() % dim != 0)
 		throw std::runtime_error("#points % dim == 0 failed");
 	tinyspline::BSpline bspline;
@@ -450,16 +450,6 @@ tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 bool tinyspline::Utils::fequals(tinyspline::real x, tinyspline::real y)
 {
 	return ts_fequals(x, y) == 1;
-}
-
-std::string tinyspline::Utils::enum_str(tsError err)
-{
-	return std::string(ts_enum_str(err));
-}
-
-tsError tinyspline::Utils::str_enum(std::string str)
-{
-	return ts_str_enum(str.c_str());
 }
 
 #ifdef _MSC_VER

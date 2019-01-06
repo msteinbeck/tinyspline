@@ -1641,62 +1641,6 @@ int ts_fequals(tsReal x, tsReal y)
 	return fabs(x-y) <= TS_EPSILON ? 1 : 0;
 }
 
-const char* ts_enum_str(tsError err)
-{
-	if (err == TS_MALLOC)
-		return "malloc failed";
-	else if (err == TS_DIM_ZERO)
-		return "dim == 0";
-	else if (err == TS_DEG_GE_NCTRLP)
-		return "deg >= num(control_points)";
-	else if (err == TS_U_UNDEFINED)
-		return "spline is undefined at given u";
-	else if (err == TS_MULTIPLICITY)
-		return "s > order";
-	else if (err == TS_KNOTS_DECR)
-		return "decreasing knot vector";
-	else if (err == TS_NUM_KNOTS)
-		return "unexpected number of knots";
-	else if (err == TS_UNDERIVABLE)
-		return "spline is not derivable";
-	else if (err == TS_LCTRLP_DIM_MISMATCH)
-		return "len(control_points) % dim != 0";
-	else if (err == TS_IO_ERROR)
-		return "io error";
-	else if (err == TS_PARSE_ERROR)
-		return "parse error";
-	else if (err == TS_INDEX_ERROR)
-		return "index does not exist";
-	return "unknown error";
-}
-
-tsError ts_str_enum(const char *str)
-{
-	if (!strcmp(str, ts_enum_str(TS_MALLOC)))
-		return TS_MALLOC;
-	else if (!strcmp(str, ts_enum_str(TS_DIM_ZERO)))
-		return TS_DIM_ZERO;
-	else if (!strcmp(str, ts_enum_str(TS_DEG_GE_NCTRLP)))
-		return TS_DEG_GE_NCTRLP;
-	else if (!strcmp(str, ts_enum_str(TS_U_UNDEFINED)))
-		return TS_U_UNDEFINED;
-	else if (!strcmp(str, ts_enum_str(TS_MULTIPLICITY)))
-		return TS_MULTIPLICITY;
-	else if (!strcmp(str, ts_enum_str(TS_KNOTS_DECR)))
-		return TS_KNOTS_DECR;
-	else if (!strcmp(str, ts_enum_str(TS_NUM_KNOTS)))
-		return TS_NUM_KNOTS;
-	else if (!strcmp(str, ts_enum_str(TS_UNDERIVABLE)))
-		return TS_UNDERIVABLE;
-	else if (!strcmp(str, ts_enum_str(TS_IO_ERROR)))
-		return TS_IO_ERROR;
-	else if (!strcmp(str, ts_enum_str(TS_PARSE_ERROR)))
-		return TS_PARSE_ERROR;
-	else if (!strcmp(str, ts_enum_str(TS_INDEX_ERROR)))
-		return TS_INDEX_ERROR;
-	return TS_SUCCESS;
-}
-
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 {
 	size_t i;

@@ -121,7 +121,7 @@ typedef struct {
 	return TS_SUCCESS;                   \
 }
 
-#define TS_THROW_0(status, err, msg)             \
+#define TS_RETURN_0(status, err, msg)            \
 {                                                \
 	if ((status) != NULL) {                  \
 		(status)->code = err;            \

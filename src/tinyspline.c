@@ -316,7 +316,7 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 	tsStatus *status)
 {
 	if (dim == 0)
-		TS_THROW_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (ts_bspline_len_control_points(spline) % dim != 0) {
 		TS_THROW_2(status, TS_LCTRLP_DIM_MISMATCH,
 			   "len(control_points) (%lu) %% dimension (%lu) != 0",
@@ -348,7 +348,7 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
 	const size_t size = ts_bspline_sof_control_points(spline);
 	*ctrlp = (tsReal*) malloc(size);
 	if (!*ctrlp)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*ctrlp, ts_internal_bspline_access_ctrlp(spline), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -410,7 +410,7 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 	const size_t size = ts_bspline_sof_knots(spline);
 	*knots = (tsReal*) malloc(size);
 	if (!*knots)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*knots, ts_internal_bspline_access_knots(spline), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -504,7 +504,7 @@ tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points,
 	const size_t size = ts_deboornet_sof_points(net);
 	*points = (tsReal*) malloc(size);
 	if (!*points)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*points, ts_internal_deboornet_access_points(net), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -530,7 +530,7 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
 	const size_t size = ts_deboornet_sof_result(net);
 	*result = (tsReal*) malloc(size);
 	if (!*result)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*result, ts_internal_deboornet_access_result(net), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -567,7 +567,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 	ts_internal_bspline_init(_spline_);
 
 	if (dimension < 1) {
-		TS_THROW_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	}
 	if (num_knots > TS_MAX_NUM_KNOTS) {
 		TS_THROW_2(status, TS_NUM_KNOTS,
@@ -582,7 +582,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 
 	_spline_->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
 	if (!_spline_->pImpl)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	_spline_->pImpl->deg = degree;
 	_spline_->pImpl->dim = dimension;
@@ -607,7 +607,7 @@ tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
 	size = ts_internal_bspline_sof_state(original);
 	_copy_->pImpl = (struct tsBSplineImpl *) malloc(size);
 	if (!_copy_->pImpl)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(_copy_->pImpl, original->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -653,7 +653,7 @@ tsError ts_internal_deboornet_new(const tsBSpline *spline,
 
 	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
 	if (!_deBoorNet_->pImpl)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	_deBoorNet_->pImpl->u = 0.f;
 	_deBoorNet_->pImpl->k = 0;
@@ -681,7 +681,7 @@ tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_,
 	size = ts_internal_deboornet_sof_state(original);
 	_copy_->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
 	if (!_copy_->pImpl)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(_copy_->pImpl, original->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -714,9 +714,9 @@ tsError ts_internal_bspline_thomas_algorithm(const tsReal *points, size_t n,
 
 	/* input validation */
 	if (dim == 0)
-		TS_THROW_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n == 0)
-		TS_THROW_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
+		TS_RETURN_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
 	if (n <= 2) {
 		memcpy(_result_, points, n * sof_ctrlp);
 		TS_RETURN_SUCCESS(status)
@@ -729,7 +729,7 @@ tsError ts_internal_bspline_thomas_algorithm(const tsReal *points, size_t n,
 	/* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
 	m = (tsReal*) malloc(len_m * sof_real);
 	if (m == NULL)
-		TS_THROW_0(status, TS_MALLOC, "out of memory")
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	m[0] = 0.25f;
 	for (i = 1; i < len_m; i++)
 		m[i] = 1.f/(4 - m[i-1]);
@@ -794,7 +794,7 @@ tsError ts_internal_relaxed_uniform_cubic_bspline(const tsReal *points,
 
 	/* input validation */
 	if (dim == 0)
-		TS_THROW_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n <= 1) {
 		TS_THROW_1(status, TS_DEG_GE_NCTRLP,
 			   "num(points) (%lu) <= 1", n)
@@ -1462,15 +1462,15 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 
 	/* Read spline object. */
 	if (json_value_get_type(spline_value) != JSONObject)
-		TS_THROW_0(status, TS_PARSE_ERROR, "invalid json input")
+		TS_RETURN_0(status, TS_PARSE_ERROR, "invalid json input")
 	spline_object = json_value_get_object(spline_value);
 	if (!spline_object)
-		TS_THROW_0(status, TS_PARSE_ERROR, "invalid json input")
+		TS_RETURN_0(status, TS_PARSE_ERROR, "invalid json input")
 
 	/* Read degree. */
 	deg_value = json_object_get_value(spline_object, "degree");
 	if (json_value_get_type(deg_value) != JSONNumber)
-		TS_THROW_0(status, TS_PARSE_ERROR, "degree is not a number")
+		TS_RETURN_0(status, TS_PARSE_ERROR, "degree is not a number")
 	if (json_value_get_number(deg_value) < -0.01f) {
 		TS_THROW_1(status, TS_PARSE_ERROR, "degree (%f) < 0",
 			   json_value_get_number(deg_value))
@@ -1479,8 +1479,10 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 
 	/* Read dimension. */
 	dim_value = json_object_get_value(spline_object, "dimension");
-	if (json_value_get_type(dim_value) != JSONNumber)
-		TS_THROW_0(status, TS_PARSE_ERROR, "dimension is not a number")
+	if (json_value_get_type(dim_value) != JSONNumber) {
+		TS_RETURN_0(status, TS_PARSE_ERROR,
+			    "dimension is not a number")
+	}
 	if (json_value_get_number(dim_value) < 0.99f) {
 		TS_THROW_1(status, TS_PARSE_ERROR, "dimension (%f) < 1",
 			   json_value_get_number(deg_value))
@@ -1490,7 +1492,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	/* Read length of control point vector. */
 	ctrlp_value = json_object_get_value(spline_object, "control_points");
 	if (json_value_get_type(ctrlp_value) != JSONArray) {
-		TS_THROW_0(status, TS_PARSE_ERROR,
+		TS_RETURN_0(status, TS_PARSE_ERROR,
 			   "control_points is not an array")
 	}
 	ctrlp_array = json_value_get_array(ctrlp_value);
@@ -1504,7 +1506,7 @@ tsError ts_internal_bspline_from_json(const JSON_Value *spline_value,
 	/* Read number of knots. */
 	knots_value = json_object_get_value(spline_object, "knots");
 	if (json_value_get_type(knots_value) != JSONArray) {
-		TS_THROW_0(status, TS_PARSE_ERROR,
+		TS_RETURN_0(status, TS_PARSE_ERROR,
 			   "knots is not an array")
 	}
 	knots_array = json_value_get_array(knots_value);
@@ -1559,7 +1561,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
 	*_json_ = json_serialize_to_string_pretty(value);
 	json_value_free(value);
 	if (!*_json_)
-		TS_THROW_0(status, TS_MALLOC, "out of memory");
+		TS_RETURN_0(status, TS_MALLOC, "out of memory");
 	TS_RETURN_SUCCESS(status);
 }
 
@@ -1572,7 +1574,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_,
 	TS_TRY(try, err, status)
 		value = json_parse_string(json);
 		if (!value) {
-			TS_THROW_0(status, TS_PARSE_ERROR,
+			TS_RETURN_0(status, TS_PARSE_ERROR,
 				   "invalid json input")
 		}
 		TS_CALL(try, err, ts_internal_bspline_from_json(
@@ -1593,7 +1595,7 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
 	json_status = json_serialize_to_file_pretty(value, path);
 	json_value_free(value);
 	if (json_status != JSONSuccess)
-		TS_THROW_0(status, TS_IO_ERROR, "unexpected io error")
+		TS_RETURN_0(status, TS_IO_ERROR, "unexpected io error")
 	TS_RETURN_SUCCESS(status)
 }
 
@@ -1612,7 +1614,7 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 		}
 		value = json_parse_file(path);
 		if (!value) {
-			TS_THROW_0(status, TS_PARSE_ERROR,
+			TS_RETURN_0(status, TS_PARSE_ERROR,
 				   "invalid json input")
 		}
 		TS_CALL(try, err, ts_internal_bspline_from_json(

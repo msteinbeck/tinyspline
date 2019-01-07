@@ -5,8 +5,7 @@
 
 int main(int argc, char **argv)
 {
-	tsError  error;    /**< Used for error handling. */
-	tsStatus status;   /**< Stores the error message. */
+	tsStatus status;   /**< Used for error handling. */
 
 	tsBSpline spline;  /**< The spline to setup. */
 	tsReal *ctrlp;     /**< Pointer to the control points of `spline`. */
@@ -19,21 +18,22 @@ int main(int argc, char **argv)
 /* ------------------------------------------------------------------------- */
 /* TinySpline provides a powerful, system-independent, and thread-safe error
  * handling system in the form of easy-to-use macros. All you need to do is to
- * embed your code in TS_TRY/TS_END_TRY and use TS_CALL when calling functions
- * from TinySpline. You may use TS_THROW if any of your external functions
- * fails. Errors can be handled in TS_CATCH. TS_FINALLY contains code which is
- * executed in any case, therefore being perfectly suitable to clean up
- * resources. Yet, error handling is entirely optional. You may omit TS_TRY,
- * TS_CALL, and TS_THROW and pass NULL instead of a pointer to a tsStatus
- * object. */
+ * embed your code into TS_TRY/TS_END_TRY and use TS_CALL when calling
+ * functions of this library. Likewise, you can use any of the TS_THROW macros
+ * to raise an error if an external functions failed.
+ *
+ * Errors can be handled in TS_CATCH. TS_FINALLY contains code that is executed
+ * in any case, therefore being perfectly suitable for cleaning up resources.
+ * Yet, error handling is entirely optional. You may omit TS_TRY, TS_CALL, and
+ * TS_THROW and pass NULL instead of a pointer to a tsStatus object. */
 
 	spline = ts_bspline_init();
 	beziers = ts_bspline_init();
 	net = ts_deboornet_init();
 	ctrlp = result = NULL;
-	TS_TRY(try, error, &status)
+	TS_TRY(try, status.code, &status)
 		/* Create a spline... */
-		TS_CALL(try, error, ts_bspline_new(
+		TS_CALL(try, status.code, ts_bspline_new(
 			7, /* ... consisting of 7 control points... */
 			2, /* ... in 2D... */
 			3, /* ... of degree 3... */
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 			&spline, &status))
 
 		/* Setup control points of `spline`. */
-		TS_CALL(try, error, ts_bspline_control_points(
+		TS_CALL(try, status.code, ts_bspline_control_points(
 			&spline, &ctrlp, &status))
 		ctrlp[0]  = -1.75f; /* x0 */
 		ctrlp[1]  = -1.0f;  /* y0 */
@@ -57,32 +57,32 @@ int main(int argc, char **argv)
 		ctrlp[11] =  0.5f;  /* y5 */
 		ctrlp[12] =  0.5f;  /* x6 */
 		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, error, ts_bspline_set_control_points(
+		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
 		/* Evaluate `spline` at u = 0.4. */
-		TS_CALL(try, error, ts_bspline_eval(
+		TS_CALL(try, status.code, ts_bspline_eval(
 			&spline, 0.4f, &net, &status))
-		TS_CALL(try, error, ts_deboornet_result(
+		TS_CALL(try, status.code, ts_deboornet_result(
 			&net, &result, &status))
 		printf("x = %f, y = %f\n", result[0], result[1]);
 
 		/* Derive `spline` ... */
-		TS_CALL(try, error, ts_bspline_derive(
+		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, &beziers, &status))
 		/* ... and subdivide it into a sequence of Bezier curves. */
-		TS_CALL(try, error, ts_bspline_to_beziers(
+		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&beziers, &beziers, &status))
 
 		ts_deboornet_free(&net);
 		free(result);
 		/* Evaluate `beziers` at u = 0.3. */
-		TS_CALL(try, error, ts_bspline_eval(
+		TS_CALL(try, status.code, ts_bspline_eval(
 			&beziers, 0.3f, &net, &status))
-		TS_CALL(try, error, ts_deboornet_result(
+		TS_CALL(try, status.code, ts_deboornet_result(
 			&net, &result, &status))
 		printf("x = %f, y = %f\n", result[0], result[1]);
-	TS_CATCH(error)
+	TS_CATCH(status.code)
 		printf(status.message);
 	TS_FINALLY
 		ts_bspline_free(&spline);
@@ -94,5 +94,5 @@ int main(int argc, char **argv)
 			free(result);
 	TS_END_TRY
 
-	return error? 1 : 0;
+	return status.code? 1 : 0;
 }

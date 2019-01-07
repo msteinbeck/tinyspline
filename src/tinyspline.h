@@ -14,14 +14,29 @@ extern "C" {
 * :: Predefined Constants                                                     *
 *                                                                             *
 * The following constants should only be changed with caution. Otherwise, the *
-* internal consistency can not be guaranteed anymore. The given values should *
-* be fine for most environments.                                              *
+* internal consistency can not be guaranteed anymore. The predefined values   *
+* should be suitable for almost all environments, though.                     *
 *                                                                             *
 ******************************************************************************/
+/**
+ * The maximum number of knots of a spline.
+ */
 #define TS_MAX_NUM_KNOTS 10000
+
+/**
+ * The minimum knot value of a spline.
+ */
 #define TS_MIN_KNOT_VALUE 0.0f
+
+/**
+ * The maximum knot value of a spline.
+ */
 #define TS_MAX_KNOT_VALUE 1.0f
-#define TS_EPSILON 1e-4
+
+/**
+ * Used to check whether two knots are equal.
+ */
+#define TS_KNOT_EPSILON 1e-4
 
 
 
@@ -47,7 +62,33 @@ typedef double tsReal;
 * :: Error Handling                                                           *
 *                                                                             *
 * The following section defines enums, structs, and macros that are used to   *
-* handle different types of errors.                                           *
+* handle different types of errors. The following listing shows an example:   *
+*                                                                             *
+*     tsStatus status;                                                        *
+*     TS_TRY(any_label, status.code, &status)                                 *
+*         // Use TS_CALL when calling functions of this library.              *
+*         TS_CALL(ts_bspline_to_beziers(&spline, &beziers, &status))          *
+*         if (...)                                                            *
+*             // Use one of the TS_THROW macros to raise an error.            *
+*             TS_THROW_0(any_label, &status, TS_MALLOC, "out of memory")      *
+*     TS_CATCH(status.code)                                                   *
+*         // Executed on error.                                               *
+*         printf(status.message);                                             *
+*     TS_FINALLY                                                              *
+*         // Executed in any case.                                            *
+*     TS_END_TRY                                                              *
+*                                                                             *
+* Although it is always advisable to properly handle errors, embedding your   *
+* code into TS_TRY/TS_END_TRY as well as passing a pointer to a tsStatus      *
+* object is entirely optional, as shown by the following example:             *
+*                                                                             *
+*     ts_bspline_to_beziers(&spline, &beziers, NULL);                         *
+*                                                                             *
+* Yet, you may check if a particular function failed, albeit you don't have   *
+* access to the error message:                                                *
+*                                                                             *
+*     if (ts_bspline_to_beziers(&spline, &beziers, NULL))                     *
+*         // an error occurred                                                *
 *                                                                             *
 ******************************************************************************/
 /**
@@ -70,7 +111,7 @@ typedef enum {
 } tsError;
 
 /**
- * Stores an error code and a corresponding error message.
+ * Stores an error code (::tsError) as well as a corresponding error message.
  */
 typedef struct {
     tsError code; /**< The error code. */

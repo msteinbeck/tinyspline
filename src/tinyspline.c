@@ -1645,7 +1645,7 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 ******************************************************************************/
 int ts_fequals(tsReal x, tsReal y)
 {
-	return fabs(x-y) <= TS_EPSILON ? 1 : 0;
+	return fabs(x-y) <= TS_KNOT_EPSILON ? 1 : 0;
 }
 
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val)

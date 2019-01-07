@@ -555,8 +555,7 @@ tsBSpline ts_bspline_init()
 }
 
 tsError ts_bspline_new(size_t num_control_points, size_t dimension,
-	size_t degree, tsBSplineType type, tsBSpline *_spline_,
-	tsStatus *status)
+	size_t degree, tsBSplineType type, tsBSpline *spline, tsStatus *status)
 {
 	const size_t order = degree + 1;
 	const size_t num_knots = num_control_points + order;
@@ -569,7 +568,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 	const size_t sof_spline = sof_impl + sof_ctrlp_vec + sof_knots_vec;
 	tsError err;
 
-	ts_internal_bspline_init(_spline_);
+	ts_internal_bspline_init(spline);
 
 	if (dimension < 1) {
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
@@ -586,51 +585,51 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 			    (unsigned long) num_control_points)
 	}
 
-	_spline_->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
-	if (!_spline_->pImpl)
+	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
+	if (!spline->pImpl)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
-	_spline_->pImpl->deg = degree;
-	_spline_->pImpl->dim = dimension;
-	_spline_->pImpl->n_ctrlp = num_control_points;
-	_spline_->pImpl->n_knots = num_knots;
+	spline->pImpl->deg = degree;
+	spline->pImpl->dim = dimension;
+	spline->pImpl->n_ctrlp = num_control_points;
+	spline->pImpl->n_knots = num_knots;
 
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_internal_bspline_generate_knots(
-			_spline_, type, status))
+			spline, type, status))
 	TS_CATCH(err)
-		ts_bspline_free(_spline_);
+		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
+tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
 	tsStatus *status)
 {
 	size_t size;
-	if (original == _copy_)
+	if (src == dest)
 		TS_RETURN_SUCCESS(status)
-	ts_internal_bspline_init(_copy_);
-	size = ts_internal_bspline_sof_state(original);
-	_copy_->pImpl = (struct tsBSplineImpl *) malloc(size);
-	if (!_copy_->pImpl)
+	ts_internal_bspline_init(dest);
+	size = ts_internal_bspline_sof_state(src);
+	dest->pImpl = (struct tsBSplineImpl *) malloc(size);
+	if (!dest->pImpl)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory")
-	memcpy(_copy_->pImpl, original->pImpl, size);
+	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_bspline_move(tsBSpline *from, tsBSpline *_to_)
+void ts_bspline_move(tsBSpline *src, tsBSpline *dest)
 {
-	if (from == _to_)
+	if (src == dest)
 		return;
-	_to_->pImpl = from->pImpl;
-	ts_internal_bspline_init(from);
+	dest->pImpl = src->pImpl;
+	ts_internal_bspline_init(src);
 }
 
-void ts_bspline_free(tsBSpline *_spline_)
+void ts_bspline_free(tsBSpline *spline)
 {
-	if (_spline_->pImpl)
-		free(_spline_->pImpl);
-	ts_internal_bspline_init(_spline_);
+	if (spline->pImpl)
+		free(spline->pImpl);
+	ts_internal_bspline_init(spline);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -670,34 +669,34 @@ tsError ts_internal_deboornet_new(const tsBSpline *spline,
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_deboornet_free(tsDeBoorNet *_net_)
+void ts_deboornet_free(tsDeBoorNet *net)
 {
-	if (_net_->pImpl)
-		free(_net_->pImpl);
-	ts_internal_deboornet_init(_net_);
+	if (net->pImpl)
+		free(net->pImpl);
+	ts_internal_deboornet_init(net);
 }
 
-tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_,
+tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
 	tsStatus *status)
 {
 	size_t size;
-	if (original == _copy_)
+	if (src == dest)
 		TS_RETURN_SUCCESS(status)
-	ts_internal_deboornet_init(_copy_);
-	size = ts_internal_deboornet_sof_state(original);
-	_copy_->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
-	if (!_copy_->pImpl)
+	ts_internal_deboornet_init(dest);
+	size = ts_internal_deboornet_sof_state(src);
+	dest->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
+	if (!dest->pImpl)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory")
-	memcpy(_copy_->pImpl, original->pImpl, size);
+	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_)
+void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
 {
-	if (from == _to_)
+	if (src == dest)
 		return;
-	_to_->pImpl = from->pImpl;
-	ts_internal_deboornet_init(from);
+	dest->pImpl = src->pImpl;
+	ts_internal_deboornet_init(src);
 }
 
 

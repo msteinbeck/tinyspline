@@ -67,7 +67,8 @@ typedef double tsReal;
 *     tsStatus status;                                                        *
 *     TS_TRY(any_label, status.code, &status)                                 *
 *         // Use TS_CALL when calling functions of this library.              *
-*         TS_CALL(ts_bspline_to_beziers(&spline, &beziers, &status))          *
+*         TS_CALL(any_label, status.code, ts_bspline_to_beziers(              *
+*             &spline, &beziers, &status))                                    *
 *         if (...)                                                            *
 *             // Use one of the TS_THROW macros to raise an error.            *
 *             TS_THROW_0(any_label, &status, TS_MALLOC, "out of memory")      *
@@ -392,7 +393,7 @@ typedef struct
 /**
  * Returns the degree of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose degree is read.
  * @return
  * 	The degree of \p spline.
@@ -402,10 +403,12 @@ size_t ts_bspline_degree(const tsBSpline *spline);
 /**
  * Sets the degree of \p spline.
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose degree is set.
- * @param deg
+ * @param[in] deg
  * 	The degree to be set.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
@@ -416,7 +419,7 @@ tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status);
 /**
  * Returns the order (degree + 1) of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose order is read.
  * @return
  * 	The order of \p spline.
@@ -426,13 +429,12 @@ size_t ts_bspline_order(const tsBSpline *spline);
 /**
  * Sets the order (degree + 1) of \p spline.
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose order is set.
- * @param order
+ * @param[in] order
  * 	The order to be set.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DEG_GE_NCTRLP
@@ -449,7 +451,7 @@ tsError ts_bspline_set_order(tsBSpline *spline, size_t order,
  * One-dimensional splines are possible, albeit their benefit might be
  * questionable.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose dimension is read.
  * @return
  * 	The dimension of \p spline.
@@ -467,13 +469,12 @@ size_t ts_bspline_dimension(const tsBSpline *spline);
  * each point in ts_bspline_get_control_points(spline). One-dimensional splines
  * are possible, albeit their benefit might be questionable.
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose dimension is set.
- * @param dim
+ * @param[in] dim
  * 	The dimension to be set.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
@@ -487,7 +488,7 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 /**
  * Returns the length of the control point array of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline with its control point array whose length is read.
  * @return
  * 	The length of the control point array of \p spline.
@@ -497,7 +498,7 @@ size_t ts_bspline_len_control_points(const tsBSpline *spline);
 /**
  * Returns the number of control points of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose number of control points is read.
  * @return
  * 	The number of control points of \p spline.
@@ -508,7 +509,7 @@ size_t ts_bspline_num_control_points(const tsBSpline *spline);
  * Returns the size of the control point array of \p spline. This function may
  * be useful when copying control points using memcpy or memmove.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline with its control point array whose size is read.
  * @return
  * 	The size of the control point array of \p spline.
@@ -518,13 +519,12 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
 /**
  * Returns a deep copy of the control points of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose control points are read.
- * @param ctrlp
+ * @param[out] ctrlp
  * 	The output array.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -537,15 +537,14 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
  * Returns a deep copy of the control point of \p spline at \p index (index 0
  * is the first control points, index 1 is the second control point, and so on).
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose control point is read.
- * @param index
+ * @param[in] index
  * 	The zero based index of the requested control point.
- * @param ctrlp
+ * @param[out] ctrlp
  * 	The output array.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
@@ -559,13 +558,12 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose control points are set.
- * @param ctrlp
+ * @param[in] ctrlp
  * 	The values to deep copy.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  */
@@ -576,15 +574,14 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
  * Sets the control point of \p spline at \p index. Creates a deep copy of
  * \p ctrlp.
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose control point is set.
- * @param index
+ * @param[in] index
  * 	The zero based index of the control point to set.
- * @param ctrlp
+ * @param[in] ctrlp
  * 	The values to deep copy.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
@@ -596,7 +593,7 @@ tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
 /**
  * Returns the number of knots of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose number of knots is read.
  * @return
  * 	The number of knots of \p spline.
@@ -607,7 +604,7 @@ size_t ts_bspline_num_knots(const tsBSpline *spline);
  * Returns the size of the knot array of \p spline. This function may be useful
  * when copying knots using memcpy or memmove.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline with its knot array whose size is read.
  * @return TS_SUCCESS
  * 	The size of the knot array of \p spline.
@@ -617,13 +614,12 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
 /**
  * Returns a deep copy of the knots of \p spline.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline whose knots are read.
- * @param knots
+ * @param[out] knots
  * 	The output array.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -636,13 +632,12 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
  * Sets the knots of \p spline. Creates a deep copy of \p knots and scales it's
  * values to [TS_MIN_KNOT_VALUE, TS_MAX_KNOT_VALUE].
  *
- * @param spline
+ * @param[out] spline
  * 	The spline whose knots are set.
- * @param knots
+ * @param[in] knots
  * 	The values to deep copy and scale.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_KNOTS_DECR
@@ -658,7 +653,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 /**
  * Returns the knot (sometimes also called 'u' or 't') of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose knot is read.
  * @return
  * 	The knot of \p net.
@@ -668,7 +663,7 @@ tsReal ts_deboornet_knot(const tsDeBoorNet *net);
 /**
  * Returns the index [u_k, u_k+1) with u being the knot of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose index is read.
  * @return
  * 	The index [u_k, u_k+1) with u being the knot of \p net.
@@ -678,7 +673,7 @@ size_t ts_deboornet_index(const tsDeBoorNet *net);
 /**
  * Returns the multiplicity of the knot of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose multiplicity is read.
  * @return
  * 	The multiplicity of the knot of \p net.
@@ -689,7 +684,7 @@ size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
  * Returns the number of insertion that were necessary to evaluate the knot of
  * \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net with its knot whose number of insertions is read.
  * @return
  * 	The number of insertions that were necessary to evaluate the knot of \p
@@ -703,7 +698,7 @@ size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
  * One-dimensional nets are possible, albeit their benefit might be
  * questionable.
  *
- * @param net
+ * @param[in] net
  * 	The net whose dimension is read.
  * @return
  * 	The dimension of \p net.
@@ -713,7 +708,7 @@ size_t ts_deboornet_dimension(const tsDeBoorNet *net);
 /**
  * Returns the length of the point array of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net with its point array whose length is read.
  * @return
  * 	The length of the point array of \p net.
@@ -723,7 +718,7 @@ size_t ts_deboornet_len_points(const tsDeBoorNet *net);
 /**
  * Returns the number of points of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose number of points is read.
  * @return
  * 	The number of points of \p net.
@@ -734,7 +729,7 @@ size_t ts_deboornet_num_points(const tsDeBoorNet *net);
  * Returns the size of the point array of \p net. This function may be useful
  * when copying points using memcpy or memmove.
  *
- * @param net
+ * @param[in] net
  * 	The net with its point array whose size is read.
  * @return
  * 	The size of the point array of \p net.
@@ -744,13 +739,12 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
 /**
  * Returns a deep copy of the points of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose points is read.
- * @param points
+ * @param[out] points
  * 	The output array.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -762,7 +756,7 @@ tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points,
 /**
  * Returns the length of the result array of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net with its result array whose length is read.
  * @return
  * 	The length of the result array of \p net.
@@ -773,7 +767,7 @@ size_t ts_deboornet_len_result(const tsDeBoorNet *net);
  * Returns the number of points in the result array of \p net
  * (1 <= num_result <= 2).
  *
- * @param net
+ * @param[in] net
  * 	The net with its result array whose number of points is read.
  * @return
  * 	The number of points in the result array of \p net.
@@ -784,7 +778,7 @@ size_t ts_deboornet_num_result(const tsDeBoorNet *net);
  * Returns the size of the result array of \p net. This function may be useful
  * when copying results using memcpy or memmove.
  *
- * @param net
+ * @param[in] net
  * 	The net with its result array whose size is read.
  * @return TS_SUCCESS
  * 	The size of the result array of \p net.
@@ -794,13 +788,12 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
 /**
  * Returns a deep copy of the result of \p net.
  *
- * @param net
+ * @param[in] net
  * 	The net whose result is read.
- * @param result
+ * @param[out] result
  * 	The output array.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -829,21 +822,20 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
 tsBSpline ts_bspline_init();
 
 /**
- * Creates a new spline and stores the result in \p \_spline\_.
+ * Creates a new spline and stores the result in \p spline.
  *
- * @param num_control_points
- * 	The number of control points of \p \_spline\_.
- * @param dimension
- * 	The dimension of each control point of \p \_spline\_.
- * @param degree
- * 	The degree of \p \_spline\_.
- * @param type
- * 	How to setup the knot vector of \p \_spline\_.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
- * @param \_spline\_
- * 	The output parameter.
+ * @param[in] num_control_points
+ * 	The number of control points of \p spline.
+ * @param[in] dimension
+ * 	The dimension of each control point of \p spline.
+ * @param[in] degree
+ * 	The degree of \p spline.
+ * @param[in] type
+ * 	How to setup the knot vector of \p spline.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
@@ -857,48 +849,47 @@ tsBSpline ts_bspline_init();
  * 	If allocating memory failed.
  */
 tsError ts_bspline_new(size_t num_control_points, size_t dimension,
-	size_t degree, tsBSplineType type, tsBSpline *_spline_,
+	size_t degree, tsBSplineType type, tsBSpline *spline,
 	tsStatus *status);
 
 /**
- * Creates a deep copy of \p original and stores the copied values in
- * \p \_copy\_. Does nothing, if \p original == \p \_copy\_.
+ * Creates a deep copy of \p src and stores the copied values in \p dest. Does
+ * nothing, if \p src == \p dest.
  *
- * @param original
+ * @param[in] src
  * 	The spline to deep copy.
- * @param \_copy\_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] dest
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_copy(const tsBSpline *original, tsBSpline *_copy_,
+tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
 	tsStatus *status);
 
 /**
- * Moves the ownership of the data of \p from to \p \_to\_. After calling this
- * function, the data of \p from points to NULL. Does not free the data of
- * \p \_to\_. Does nothing, if \p from == \p \_to\_.
+ * Moves the ownership of the data of \p src to \p dest. After calling this
+ * function, the data of \p src points to NULL. Does not free the data of
+ * \p dest. Does nothing, if \p src == \p dest.
  * 
- * @param from
- * 	The spline whose values are moved to \p \_to\_.
- * @param \_to\_
- * 	The output parameter.
+ * @param[out] src
+ * 	The spline whose values are moved to \p dest.
+ * @param[out] \_to\_
+ * 	The spline that receives the values of \p src.
  */
-void ts_bspline_move(tsBSpline *from, tsBSpline *_to_);
+void ts_bspline_move(tsBSpline *src, tsBSpline *dest);
 
 /**
- * Frees the data of \p \_spline\_. After calling this function, the data of
- * \p \_spline\_ points to NULL.
+ * Frees the data of \p spline. After calling this function, the data of
+ * \p spline points to NULL.
  * 
- * @param \_spline\_
+ * @param[out] spline
  * 	The spline to free.
  */
-void ts_bspline_free(tsBSpline *_spline_);
+void ts_bspline_free(tsBSpline *spline);
 
 /* ------------------------------------------------------------------------- */
 
@@ -911,44 +902,43 @@ void ts_bspline_free(tsBSpline *_spline_);
 tsDeBoorNet ts_deboornet_init();
 
 /**
- * Creates a deep copy of \p original and stores the copied values in
- * \p \_copy\_. Does nothing, if \p original == \p \_copy\_.
+ * Creates a deep copy of \p src and stores the copied values in \p dest. Does
+ * nothing, if \p src == \p dest.
  *
- * @param original
+ * @param[in] src
  * 	The net to deep copy.
- * @param \_copy\_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] dest
+ * 	The output net.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_copy(const tsDeBoorNet *original, tsDeBoorNet *_copy_,
+tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
 	tsStatus *status);
 
 /**
- * Moves the ownership of the data of \p from to \p \_to\_. After calling this
- * function, the data of \p from points to NULL. Does not free the data of
- * \p \_to\_. Does nothing, if \p from == \p \_to\_.
+ * Moves the ownership of the data of \p src to \p dest. After calling this
+ * function, the data of \p src points to NULL. Does not free the data of
+ * \p dest. Does nothing, if \p src == \p dest.
  * 
- * @param from
- * 	The net whose values are moved to \p \_to\_.
- * @param \_to\_
- * 	The output parameter.
+ * @param[out] src
+ * 	The net whose values are moved to \p dest.
+ * @param[out] dest
+ * 	The net that receives the values of \p src.
  */
-void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *_to_);
+void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
 
 /**
- * Frees the data of \p \_net\_. After calling this function, the data of
- * \p \_net\_ points to NULL.
+ * Frees the data of \p net. After calling this function, the data of \p net
+ * points to NULL.
  * 
- * @param \_net\_
+ * @param[out] net
  * 	The net to free.
  */
-void ts_deboornet_free(tsDeBoorNet *_net_);
+void ts_deboornet_free(tsDeBoorNet *net);
 
 
 

@@ -877,7 +877,7 @@ tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
  * 
  * @param[out] src
  * 	The spline whose values are moved to \p dest.
- * @param[out] \_to\_
+ * @param[out] dest
  * 	The spline that receives the values of \p src.
  */
 void ts_bspline_move(tsBSpline *src, tsBSpline *dest);

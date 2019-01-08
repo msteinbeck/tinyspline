@@ -1,7 +1,6 @@
 #include "tinyspline.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <tinyspline.h>
 
 int main(int argc, char **argv)
 {
@@ -83,7 +82,7 @@ int main(int argc, char **argv)
 			&net, &result, &status))
 		printf("x = %f, y = %f\n", result[0], result[1]);
 	TS_CATCH(status.code)
-		printf(status.message);
+		puts(status.message);
 	TS_FINALLY
 		ts_bspline_free(&spline);
 		ts_bspline_free(&beziers);

@@ -121,6 +121,9 @@ fi
 # Clone BUILD_BRANCH to BUILD_BRANCH_DIR.
 git clone -b $BUILD_BRANCH $SSH_REPO $BUILD_BRANCH_DIR
 pushd "$BUILD_BRANCH_DIR"
+	# Reset this branch to it's first commit.
+	git reset $(git rev-list --max-parents=0 HEAD) --hard
+
 	# Copy libs.
 	cp -R "$LIB_DIR" ./
 

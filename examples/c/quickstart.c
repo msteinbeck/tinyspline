@@ -20,7 +20,7 @@ int main(int argc, char **argv)
  * handling system in the form of easy-to-use macros. All you need to do is to
  * embed your code into TS_TRY/TS_END_TRY and use TS_CALL when calling
  * functions of this library. Likewise, you can use any of the TS_THROW macros
- * to raise an error if an external functions failed.
+ * to raise an error if an external function failed.
  *
  * Errors can be handled in TS_CATCH. TS_FINALLY contains code that is executed
  * in any case, therefore being perfectly suitable for cleaning up resources.

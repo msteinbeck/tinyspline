@@ -56,7 +56,7 @@ set(TINYSPLINE_VERSION "0.2.0" CACHE INTERNAL "")
 
 set(TINYSPLINE_SUMMARY "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 
-set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. It is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby." CACHE INTERNAL "")
+set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Java, Lua, Octave, PHP, Python, R, and Ruby." CACHE INTERNAL "")
 
 
 
@@ -151,9 +151,11 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
 #
-# TINYSPLINE_DISABLE_*** - default: OFF
-#   These options allow to deliberately disable certain interfaces even if all
-#   requirements are met. Accourdingly, the default value is OFF.
+# TINYSPLINE_ENABLE_*** - default: TRUE for CXX, FALSE otherwise
+#   These options allow to enable certain interfaces.
+#
+# TINYSPLINE_ENABLE_ALL_INTERFACES
+#   If set, all interfaces are enabled automatically.
 ###############################################################################
 # TINYSPLINE_FLOAT_PRECISION
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precision." OFF)
@@ -161,18 +163,32 @@ option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precisio
 # TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
-# TINYSPLINE_DISABLE_***
-option(TINYSPLINE_DISABLE_CXX "Deliberately disable the C++ interface." OFF)
-option(TINYSPLINE_DISABLE_CSHARP "Deliberately disable the C# interface." OFF)
-option(TINYSPLINE_DISABLE_D "Deliberately disable the D interface." OFF)
-option(TINYSPLINE_DISABLE_GOLANG "Deliberately disable the Go interface. (Not supported)" OFF)
-option(TINYSPLINE_DISABLE_JAVA "Deliberately disable the Java interface." OFF)
-option(TINYSPLINE_DISABLE_LUA "Deliberately disable the Lua interface." OFF)
-option(TINYSPLINE_DISABLE_OCTAVE "Deliberately disable the Octave interface." OFF)
-option(TINYSPLINE_DISABLE_PHP "Deliberately disable the PHP interface." OFF)
-option(TINYSPLINE_DISABLE_PYTHON "Deliberately disable the Python interface." OFF)
-option(TINYSPLINE_DISABLE_R "Deliberately disable the R interface." OFF)
-option(TINYSPLINE_DISABLE_RUBY "Deliberately disable the Ruby interface." OFF)
+# TINYSPLINE_ENABLE_***
+option(TINYSPLINE_ENABLE_CXX "Enable the C++ interface." TRUE)
+option(TINYSPLINE_ENABLE_CSHARP "Enable the C# interface." FALSE)
+option(TINYSPLINE_ENABLE_D "Enable the D interface." FALSE)
+option(TINYSPLINE_ENABLE_GOLANG "Enable the Go interface. (Not supported yet)" FALSE)
+option(TINYSPLINE_ENABLE_JAVA "Enable the Java interface." FALSE)
+option(TINYSPLINE_ENABLE_LUA "Enable the Lua interface." FALSE)
+option(TINYSPLINE_ENABLE_OCTAVE "Enable the Octave interface." FALSE)
+option(TINYSPLINE_ENABLE_PHP "Enable the PHP interface." FALSE)
+option(TINYSPLINE_ENABLE_PYTHON "Enable the Python interface." FALSE)
+option(TINYSPLINE_ENABLE_R "Enable the R interface." FALSE)
+option(TINYSPLINE_ENABLE_RUBY "Enable the Ruby interface." FALSE)
+
+option(TINYSPLINE_ENABLE_ALL_INTERFACES "Enable all interfaces." FALSE)
+if (TINYSPLINE_ENABLE_ALL_INTERFACES)
+	set(TINYSPLINE_ENABLE_CSHARP TRUE)
+	set(TINYSPLINE_ENABLE_D TRUE)
+	#set(TINYSPLINE_ENABLE_GOLANG TRUE)
+	set(TINYSPLINE_ENABLE_JAVA TRUE)
+	set(TINYSPLINE_ENABLE_LUA TRUE)
+	set(TINYSPLINE_ENABLE_OCTAVE TRUE)
+	set(TINYSPLINE_ENABLE_PHP TRUE)
+	set(TINYSPLINE_ENABLE_PYTHON TRUE)
+	set(TINYSPLINE_ENABLE_R TRUE)
+	set(TINYSPLINE_ENABLE_RUBY TRUE)
+endif()
 
 
 
@@ -445,7 +461,7 @@ target_include_directories(tinyspline_static
 )
 
 # C++ library
-if(NOT TINYSPLINE_DISABLE_CXX)
+if(TINYSPLINE_ENABLE_CXX)
 	add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_shared PROPERTIES
 		OUTPUT_NAME "tinysplinecpp"
@@ -512,7 +528,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Python
-	if(NOT TINYSPLINE_DISABLE_PYTHON)
+	if(TINYSPLINE_ENABLE_PYTHON)
 		if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
 			set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
 		elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
@@ -552,7 +568,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Java
-	if(NOT TINYSPLINE_DISABLE_JAVA)
+	if(TINYSPLINE_ENABLE_JAVA)
 		find_package(JNI)
 		if(JNI_FOUND)
 			include_directories(${JNI_INCLUDE_DIRS})
@@ -620,7 +636,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Ruby
-	if(NOT TINYSPLINE_DISABLE_RUBY)
+	if(TINYSPLINE_ENABLE_RUBY)
 		find_package(Ruby)
 		if(RUBY_FOUND)
 			include_directories(${RUBY_INCLUDE_DIRS})
@@ -641,7 +657,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# C#
-	if(NOT TINYSPLINE_DISABLE_CSHARP)
+	if(TINYSPLINE_ENABLE_CSHARP)
 		set_source_files_properties("${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
 		set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 		set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_SOURCE_DIRECTORY})
@@ -684,7 +700,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Go (not fully supported yet)
-	if(NOT TINYSPLINE_DISABLE_GOLANG)
+	if(TINYSPLINE_ENABLE_GOLANG)
 		#set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
 		#set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
 		#set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
@@ -696,7 +712,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# PHP
-	if(NOT TINYSPLINE_DISABLE_PHP)
+	if(TINYSPLINE_ENABLE_PHP)
 		find_package(PHP COMPONENTS Zend)
 		if(PHP_FOUND)
 			set(TINYSPLINE_PHP_VERSION "php5")
@@ -739,7 +755,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Lua
-	if(NOT TINYSPLINE_DISABLE_LUA)
+	if(TINYSPLINE_ENABLE_LUA)
 		find_package(Lua)
 		if(LUA_FOUND)
 			include_directories(${LUA_INCLUDE_DIR})
@@ -760,7 +776,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# D
-	if(NOT TINYSPLINE_DISABLE_D)
+	if(TINYSPLINE_ENABLE_D)
 		set_source_files_properties("${TINYSPLINE_DLANG_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
 		set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET} -module ${TINYSPLINE_PACKAGE_NAME})
 		set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_SOURCE_DIRECTORY})
@@ -788,7 +804,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# Octave
-	if(NOT TINYSPLINE_DISABLE_OCTAVE)
+	if(TINYSPLINE_ENABLE_OCTAVE)
 		find_package(Octave)
 		if(OCTAVE_FOUND)
 			if((${OCTAVE_VERSION_STRING} VERSION_GREATER 4.2 OR ${OCTAVE_VERSION_STRING} VERSION_EQUAL 4.2)
@@ -830,7 +846,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# R
-	if(NOT TINYSPLINE_DISABLE_R)
+	if(TINYSPLINE_ENABLE_R)
 		find_package(R COMPONENTS Rcpp)
 		if(R_FOUND)
 			include_directories(${R_INCLUDE_DIRS})
@@ -874,16 +890,16 @@ function (tinyspline_set_on_off varName varValue)
 		set(${varName} OFF CACHE INTERNAL "")
 	endif()
 endfunction()
-function (tinyspline_invert_on_off varName varValue)
-	if(NOT ${varValue})
+function (tinyspline_set_on_off_swig varName varValue)
+	if(SWIG_FOUND AND ${varValue})
 		set(${varName} ON CACHE INTERNAL "")
 	else()
 		set(${varName} OFF CACHE INTERNAL "")
 	endif()
 endfunction()
-tinyspline_invert_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_DISABLE_CXX)
-tinyspline_invert_on_off(TINYSPLINE_WITH_CSHARP TINYSPLINE_DISABLE_CSHARP)
-tinyspline_invert_on_off(TINYSPLINE_WITH_D TINYSPLINE_DISABLE_D)
+tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_ENABLE_CXX)
+tinyspline_set_on_off_swig(TINYSPLINE_WITH_CSHARP TINYSPLINE_ENABLE_CSHARP)
+tinyspline_set_on_off_swig(TINYSPLINE_WITH_D TINYSPLINE_ENABLE_D)
 tinyspline_set_on_off(TINYSPLINE_WITH_GOLANG FALSE)
 tinyspline_set_on_off(TINYSPLINE_WITH_JAVA JNI_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_LUA LUA_FOUND)

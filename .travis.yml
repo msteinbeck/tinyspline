@@ -28,8 +28,15 @@ install:
 before_script:
   - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - export BUILD_DIR="build"
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true" CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_DISABLE_PHP=TRUE"; fi;
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_LUA=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_OCTAVE=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_PYTHON=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_R=TRUE"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_RUBY=TRUE"
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
 
 script:
   - pushd tools/ci

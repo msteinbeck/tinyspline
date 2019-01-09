@@ -173,14 +173,10 @@ Snapshot binaries are available at:
 
 #### Compiling From Source
 TinySpline uses the CMake build system to compile and package its interfaces.
-The C interface is implemented in ANSI C (C89) and, thus, should be compatible
-with almost every compiler. All other features of TinySpline are optional and
-will be disabled if CMake does not find the corresponding dependencies;
-however, CMake and an appropriate C/C++ compiler must be available, regardless
-of the interface you want to build. The following compiler suites are tested:
-GCC, Clang, and MSVC. In order to create the bindings, Swig (3.0.1 or above)
-must be available. Each binding may have further dependencies to generate the
-source code of the target language. The following table gives an overview:
+The following compiler suites are tested: GCC, Clang, and MSVC. In order to
+create the bindings, Swig (3.0.1 or later) must be available. Each binding may
+have further dependencies to generate the source code of the target language.
+The following table gives an overview:
 
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
@@ -229,6 +225,22 @@ cmake ..
 cmake --build .
 ```
 
+If you want to build a specific binding, use `-DTINYSPLINE_ENABLE_LANGUAGE`
+(where `LANGUAGE` is interface you want to build) when setting up cmake. For
+example:
+
+```bash
+cmake -DTINYSPLINE_ENABLE_PYTHON=True ..
+build --build .
+```
+
+To enable all interfaces, use `-DTINYSPLINE_ENABLE_ALL_INTERFACES`:
+
+```bash
+cmake -DTINYSPLINE_ENABLE_ALL_INTERFACES=True ..
+build --build .
+```
+
 You will find the resulting libraries and packages in `tinyspline/build/lib`.
 
 #### Python 2 vs. Python 3
@@ -246,15 +258,6 @@ Python 3:
 
 ```bash
 TINYSPLINE_PYTHON_VERSION=2 cmake ..
-```
-
-#### Disabling Bindings
-For one reason or another, you may have the required packages to build a
-binding, but you don't want to compile it. You can pass additional arguments to
-prevent particular bindings from being compiled and packaged:
-
-```bash
-cmake -DTINYSPLINE_DISABLE_CSHARP=YES ..
 ```
 
 #### Install the C and C++ Libraries

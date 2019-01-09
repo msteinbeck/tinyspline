@@ -21,13 +21,4 @@ jobs:
           command: pushd tools/ci && ./install_deps.sh && popd
       - run:
           name: Compiling Code
-          command: export BUILD_DIR="build"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_LUA=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_OCTAVE=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_PYTHON=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_R=TRUE"
-          command: export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_RUBY=TRUE"
-          command: pushd tools/ci && ./compile.sh && popd
+          command: pushd tools/ci && BUILD_DIR=build ./compile.sh && popd

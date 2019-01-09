@@ -41,5 +41,5 @@ before_script:
 script:
   - pushd tools/ci
   - ./compile.sh
-  - ./deploy_docs.sh
+  - ./deploy.sh
   - popd

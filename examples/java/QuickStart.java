@@ -5,8 +5,6 @@ import java.util.List;
 
 public class QuickStart {
 	public static void main(final String[] args) {
-		System.loadLibrary("tinysplinejava");
-
 		// Create a cubic spline with 7 control points in 2D using
 		// a clamped knot vector. This call is equivalent to:
 		// BSpline spline = new BSpline(7, 2, 3, BSplineType.CLAMPED);

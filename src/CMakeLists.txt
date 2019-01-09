@@ -553,7 +553,7 @@ if (SWIG_FOUND)
 				swig_add_library(${TINYSPLINE_PYTHON_CMAKE_TARGET} LANGUAGE python SOURCES "${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
 			endif()
 			swig_link_libraries(${TINYSPLINE_PYTHON_CMAKE_TARGET} ${PYTHON_LIBRARIES})
-			# for some reason the generated make target for python starts with '_'
+			# For some reason the make target for python starts with '_'.
 			add_custom_command(TARGET _${TINYSPLINE_PYTHON_CMAKE_TARGET} POST_BUILD
 				COMMAND
 					${CMAKE_COMMAND} -E copy
@@ -572,6 +572,25 @@ if (SWIG_FOUND)
 		find_package(JNI)
 		if(JNI_FOUND)
 			include_directories(${JNI_INCLUDE_DIRS})
+			set(TINYSPLINE_JAVA_LIB_NAME_OSX "libtinysplinejava.jnilib")
+			set(TINYSPLINE_JAVA_LIB_NAME_LINUX_64 "libtinysplinejava_64.so")
+			set(TINYSPLINE_JAVA_LIB_NAME_LINUX_32 "libtinysplinejava_32.so")
+			set(TINYSPLINE_JAVA_LIB_NAME_WINDOWS_64 "tinysplinejava_64.dll")
+			set(TINYSPLINE_JAVA_LIB_NAME_WINDOWS_32 "tinysplinejava_32.dll")
+			set(TINYSPLINE_JAVA_LIB_NAME_GENERIC "libtinysplinejava_generic.so")
+			if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_OSX})
+			elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_LINUX_64})
+			elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_LINUX_32})
+			elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_WINDOWS_64})
+			elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_WINDOWS_64})
+			else()
+				set(TINYSPLINE_JAVA_LIB_NAME ${TINYSPLINE_JAVA_LIB_NAME_GENERIC})
+			endif()
 			set_source_files_properties("${TINYSPLINE_JAVA_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
 			set(CMAKE_SWIG_FLAGS -package "org.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
 			set(CMAKE_SWIG_OUTDIR "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/org/tinyspline")
@@ -586,27 +605,6 @@ if (SWIG_FOUND)
 			find_package(Java COMPONENTS Development)
 			if(Java_Development_FOUND)
 				include(UseJava)
-				# Generate name of library which will be included into the jar.
-				set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_gen")
-				if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
-					set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_osx")
-				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-					set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_lin")
-				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-					set(TINYSPLINE_JAVA_LIB_NAME "tinysplinejava_win")
-				endif()
-				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}64")
-				elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}32")
-				endif()
-				if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
-					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dylib")
-				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.so")
-				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dll")
-				endif()
 				add_custom_command(TARGET ${TINYSPLINE_JAVA_CMAKE_TARGET} POST_BUILD
 					COMMAND
 						${CMAKE_COMMAND}
@@ -627,7 +625,6 @@ if (SWIG_FOUND)
 						-C "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes" .
 				)
 			endif()
-
 			set_target_properties(${TINYSPLINE_JAVA_CMAKE_TARGET} PROPERTIES
 				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"

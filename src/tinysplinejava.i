@@ -4,6 +4,60 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 
+// Automatically load native library.
+%pragma(java) jniclasscode=%{
+	static {
+		// Determine platform.
+		final String os = System.getProperty("os.name").toLowerCase();
+		final String arch = System.getProperty("sun.arch.data.model");
+		final String library;
+		if (os.startsWith("mac")) {
+			library = "libtinysplinejava.jnilib";
+		} else if (os.startsWith("linux") && arch.equals("64")) {
+			library = "libtinysplinejava_64.so";
+		} else if (os.startsWith("linux") && arch.equals("32")) {
+			library = "libtinysplinejava_32.so";
+		} else if (os.startsWith("windows") && arch.equals("64")) {
+			library = "tinysplinejava_64.dll";
+		} else if (os.startsWith("windows") && arch.equals("32")) {
+			library = "tinysplinejava_32.dll";
+		} else {
+			library = "libtinysplinejava_generic.so";
+		}
+
+		// Copy native library to a temporary file.
+		java.io.InputStream in = null;
+		java.io.FileOutputStream out = null;
+		java.io.File tmp;
+		try {
+			in = tinysplinejavaJNI.class.getResourceAsStream("/" + library);
+			tmp = java.io.File.createTempFile("tinyspline", null);
+			tmp.deleteOnExit();
+			out = new java.io.FileOutputStream(tmp);
+
+			final byte[] buffer = new byte[1024];
+			int read = -1;
+			while((read = in.read(buffer)) != -1) {
+				out.write(buffer, 0, read);
+			}
+		} catch (final Throwable e) {
+			throw new Error("Error while copying native library", e);
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.close();
+				}
+			} catch (final java.io.IOException e) { /* ignored */ }
+		}
+
+		// Load native library.
+		System.load(tmp.getAbsolutePath());
+	}
+%}
+
 // Change the signature of the JNI file and signature of the Java interface files from
 // std::vector<tinyspline::real> to List<Float/Double>.
 #ifdef TINYSPLINE_FLOAT_PRECISION

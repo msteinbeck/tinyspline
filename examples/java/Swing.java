@@ -142,7 +142,6 @@ public class Swing extends JPanel implements
 	public void mouseExited(final MouseEvent mouseEvent) {}
 
 	public static void main(final String[] args) {
-		System.loadLibrary("tinysplinejava");
 		SwingUtilities.invokeLater(Swing::new);
 	}
 }

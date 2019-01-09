@@ -224,12 +224,6 @@ endif()
 ### remainder of this file. CMake variables labeled with (exported) will be set
 ### in parent scope and should be used accordingly after including this file.
 #
-# CMAKE_SYSTEM_PROCESSOR
-#   Name of the target system.
-#
-# TARGET_SUPPORTS_SHARED_LIBS
-#   Does the target support shared libraries?
-#
 # TINYSPLINE_DEBUG_POSTFIX
 #   Postfix of debug builds.
 #
@@ -237,17 +231,8 @@ endif()
 #   Preprocessor definitions that should be added to parent file with
 #   'add_definitions("${TINYSPLINE_DEFINITIONS}")'.
 #
-# TINYSPLINE_CXX_AVAILABLE
-#   Is an appropriate C++ compiler available?
-#
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
-#
-# CMAKE_C_FLAGS (exported)
-#   Common C flags.
-#
-# CMAKE_CXX_FLAGS (exported)
-#   Common C++ flags.
 #
 # TINYSPLINE_LIBRARIES (exported)
 #   Additional libraries to link against.
@@ -261,14 +246,6 @@ endif()
 # TINYSPLINE_BINDING_CXX_FLAGS
 #   C++ binding specific flags.
 ###############################################################################
-# TARGET_SUPPORTS_SHARED_LIBS
-if(NOT TARGET_SUPPORTS_SHARED_LIBS)
-	set(TARGET_SUPPORTS_SHARED_LIBS TRUE)
-endif()
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
-	set(TARGET_SUPPORTS_SHARED_LIBS FALSE)
-endif()
-
 # TINYSPLINE_DEBUG_POSTFIX
 # TINYSPLINE_DEFINITIONS
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -289,19 +266,12 @@ string(STRIP "${TINYSPLINE_DEFINITIONS}" TINYSPLINE_DEFINITIONS)
 set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}" PARENT_SCOPE)
 add_definitions("${TINYSPLINE_DEFINITIONS}")
 
-# TINYSPLINE_CXX_AVAILABLE
 # TINYSPLINE_CXX11_COMPLIANT
-# CMAKE_C_FLAGS
-# CMAKE_CXX_FLAGS
 # TINYSPLINE_LIBRARIES
 # TINYSPLINE_LIBRARY_C_FLAGS
 # TINYSPLINE_LIBRARY_CXX_FLAGS
 # TINYSPLINE_BINDING_CXX_FLAGS
-set(TINYSPLINE_CXX_AVAILABLE FALSE)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-	# TINYSPLINE_CXX_AVAILABLE
-	set(TINYSPLINE_CXX_AVAILABLE TRUE)
-
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR
@@ -312,14 +282,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	endif()
 
 	# CMAKE_C_FLAGS
-	if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
-		# avr uses the 'inline' keyword in some header files which is not
-		# supported by c89.
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-	else()
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
-	endif()
-	
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
+
 	# TINYSPLINE_LIBRARIES
 	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES} -lm")
 
@@ -330,7 +294,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wfloat-equal")
 	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -pedantic")
 
-	# TINYSPLINE_LIBRARY_CXX_FLAGS 
+	# TINYSPLINE_LIBRARY_CXX_FLAGS
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall")
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wextra")
@@ -340,9 +304,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	# TINYSPLINE_CXX_AVAILABLE
-	set(TINYSPLINE_CXX_AVAILABLE TRUE)
-
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10408849/how-can-i-use-c-11-features-in-clang
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.3 OR
@@ -354,7 +315,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	# CMAKE_C_FLAGS
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
-	
+
 	# TINYSPLINE_LIBRARIES
 	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES} -lm")
 
@@ -365,7 +326,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wfloat-equal")
 	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -pedantic")
 
-	# TINYSPLINE_LIBRARY_CXX_FLAGS 
+	# TINYSPLINE_LIBRARY_CXX_FLAGS
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall")
 	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wextra")
@@ -375,13 +336,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# TINYSPLINE_CXX_AVAILABLE
-	set(TINYSPLINE_CXX_AVAILABLE TRUE)
-
 	# TINYSPLINE_CXX11_COMPLIANT
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
 			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
-		set(TINYSPLINE_CXX_AVAILABLE TRUE)
+		set(TINYSPLINE_CXX11_COMPLIANT TRUE)
 	else()
 		set(TINYSPLINE_CXX11_COMPLIANT FALSE)
 	endif()
@@ -404,16 +362,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	# TODO: Find appropriate settings for intel
 
-	# TINYSPLINE_CXX_AVAILABLE
-	set(TINYSPLINE_CXX_AVAILABLE TRUE)
-
 	# TINYSPLINE_CXX11_COMPLIANT
 	set(TINYSPLINE_CXX11_COMPLIANT TRUE)
-endif()
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "avr")
-	# avr is missing some required headers
-	set(TINYSPLINE_CXX_AVAILABLE FALSE)
-	set(TINYSPLINE_CXX11_COMPLIANT FALSE)
 endif()
 # Remove leading and trailing spaces
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
@@ -423,8 +373,6 @@ string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
 # Export variables to parent file
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" PARENT_SCOPE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
 set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 
 
@@ -446,7 +394,7 @@ set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 #
 # TINYSPLINE_CXX_SOURCE_FILES (exported)
 #   List of source files (absolute paths) that are required to build the C++
-#   library. Does not contain header files but all source files listed in
+#   library. Does not contain header files, but all source files listed in
 #   TINYSPLINE_C_SOURCE_FILES.
 ###############################################################################
 # TINYSPLINE_INCLUDE_DIRS
@@ -467,19 +415,17 @@ list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
 
 # C library
-if(TARGET_SUPPORTS_SHARED_LIBS)
-	add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
-	set_target_properties(tinyspline_shared PROPERTIES
-		OUTPUT_NAME "tinyspline"
-		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
-	)
-	install(TARGETS tinyspline_shared
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION bin
-	)
-endif()
+add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
+set_target_properties(tinyspline_shared PROPERTIES
+	OUTPUT_NAME "tinyspline"
+	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
+	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
+)
+install(TARGETS tinyspline_shared
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin
+)
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_static PROPERTIES
 	OUTPUT_NAME "tinyspline"
@@ -499,20 +445,18 @@ target_include_directories(tinyspline_static
 )
 
 # C++ library
-if(NOT TINYSPLINE_DISABLE_CXX AND TINYSPLINE_CXX_AVAILABLE)
-	if(TARGET_SUPPORTS_SHARED_LIBS)
-		add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
-		set_target_properties(tinysplinecpp_shared PROPERTIES
-			OUTPUT_NAME "tinysplinecpp"
-			DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-			COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-		)
-		install(TARGETS tinysplinecpp_shared
-			LIBRARY DESTINATION lib
-			ARCHIVE DESTINATION lib
-			RUNTIME DESTINATION bin
-		)
-	endif()
+if(NOT TINYSPLINE_DISABLE_CXX)
+	add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
+	set_target_properties(tinysplinecpp_shared PROPERTIES
+		OUTPUT_NAME "tinysplinecpp"
+		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
+		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
+	)
+	install(TARGETS tinysplinecpp_shared
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		RUNTIME DESTINATION bin
+	)
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_static PROPERTIES
 		OUTPUT_NAME "tinysplinecpp"
@@ -553,369 +497,366 @@ endif()
 #   The used C# compiler. Indicates that the C# DLL of the C# binding is
 #   available.
 ###############################################################################
-if(TINYSPLINE_CXX_AVAILABLE AND TARGET_SUPPORTS_SHARED_LIBS)
-	# Swig
-	find_package(SWIG 3.0.1)
-	if (SWIG_FOUND)
-		include(${SWIG_USE_FILE})
-		include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+find_package(SWIG 3.0.1)
+if (SWIG_FOUND)
+	include(${SWIG_USE_FILE})
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-		# TINYSPLINE_BINDINGS_FOLDER_NAME
-		set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")
+	# TINYSPLINE_BINDINGS_FOLDER_NAME
+	set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")
 
-		# Simplifies definition handling with SWIG by reducing the number of
-		# required if statements.
-		if(TINYSPLINE_FLOAT_PRECISION)
-			list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_FLOAT_PRECISION)
+	# Simplifies definition handling with SWIG by reducing the number of
+	# required if statements.
+	if(TINYSPLINE_FLOAT_PRECISION)
+		list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_FLOAT_PRECISION)
+	endif()
+
+	# Python
+	if(NOT TINYSPLINE_DISABLE_PYTHON)
+		if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
+			set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+		elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
+			set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
 		endif()
+		find_package(PythonLibs)
+		if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^2."
+				OR ${TINYSPLINE_PYTHON_VERSION} STREQUAL "3" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+			message(FATAL_ERROR "Unable to find requested Python version")
+		endif()
+		if(PYTHONLIBS_FOUND)
+			include_directories(${PYTHON_INCLUDE_DIRS})
+			set_source_files_properties("${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+			if(${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+				set(TINYSPLINE_PYTHON_DEFINES "-py3")
+			endif()
+			set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINES} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PYTHON_SOURCE_DIRECTORY})
+			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+				swig_add_module(${TINYSPLINE_PYTHON_CMAKE_TARGET} python "${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			else()
+				swig_add_library(${TINYSPLINE_PYTHON_CMAKE_TARGET} LANGUAGE python SOURCES "${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			endif()
+			swig_link_libraries(${TINYSPLINE_PYTHON_CMAKE_TARGET} ${PYTHON_LIBRARIES})
+			# for some reason the generated make target for python starts with '_'
+			add_custom_command(TARGET _${TINYSPLINE_PYTHON_CMAKE_TARGET} POST_BUILD
+				COMMAND
+					${CMAKE_COMMAND} -E copy
+					"${TINYSPLINE_PYTHON_SOURCE_DIRECTORY}/${TINYSPLINE_PYTHON_CMAKE_TARGET}.py"
+					"${TINYSPLINE_PYTHON_INTERFACE_FILE}"
+			)
+			set_target_properties(_${TINYSPLINE_PYTHON_CMAKE_TARGET} PROPERTIES
+				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			)
+		endif()
+	endif()
 
-		# Python
-		if(NOT TINYSPLINE_DISABLE_PYTHON)
-			if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
-				set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
-			elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
-				set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+	# Java
+	if(NOT TINYSPLINE_DISABLE_JAVA)
+		find_package(JNI)
+		if(JNI_FOUND)
+			include_directories(${JNI_INCLUDE_DIRS})
+			set_source_files_properties("${TINYSPLINE_JAVA_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+			set(CMAKE_SWIG_FLAGS -package "org.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+			set(CMAKE_SWIG_OUTDIR "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/org/tinyspline")
+			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+				swig_add_module(${TINYSPLINE_JAVA_CMAKE_TARGET} java "${TINYSPLINE_JAVA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			else()
+				swig_add_library(${TINYSPLINE_JAVA_CMAKE_TARGET} LANGUAGE java SOURCES "${TINYSPLINE_JAVA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
 			endif()
-			find_package(PythonLibs)
-			if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^2."
-					OR ${TINYSPLINE_PYTHON_VERSION} STREQUAL "3" AND NOT ${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
-				message(FATAL_ERROR "Unable to find requested Python version")
-			endif()
-			if(PYTHONLIBS_FOUND)
-				include_directories(${PYTHON_INCLUDE_DIRS})
-				set_source_files_properties("${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-				if(${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
-					set(TINYSPLINE_PYTHON_DEFINES "-py3")
+			swig_link_libraries(${TINYSPLINE_JAVA_CMAKE_TARGET} ${JNI_LIBRARIES})
+
+			# Jar archive
+			find_package(Java COMPONENTS Development)
+			if(Java_Development_FOUND)
+				include(UseJava)
+				# Generate name of library which will be included into the jar.
+				set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_gen")
+				if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
+					set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_osx")
+				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+					set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_lin")
+				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+					set(TINYSPLINE_JAVA_LIB_NAME "tinysplinejava_win")
 				endif()
-				set(CMAKE_SWIG_FLAGS ${TINYSPLINE_PYTHON_DEFINES} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PYTHON_SOURCE_DIRECTORY})
-				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(${TINYSPLINE_PYTHON_CMAKE_TARGET} python "${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				else()
-					swig_add_library(${TINYSPLINE_PYTHON_CMAKE_TARGET} LANGUAGE python SOURCES "${TINYSPLINE_PYTHON_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}64")
+				elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}32")
 				endif()
-				swig_link_libraries(${TINYSPLINE_PYTHON_CMAKE_TARGET} ${PYTHON_LIBRARIES})
-				# for some reason the generated make target for python starts with '_'
-				add_custom_command(TARGET _${TINYSPLINE_PYTHON_CMAKE_TARGET} POST_BUILD
+				if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
+					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dylib")
+				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.so")
+				elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+					set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dll")
+				endif()
+				add_custom_command(TARGET ${TINYSPLINE_JAVA_CMAKE_TARGET} POST_BUILD
 					COMMAND
-						${CMAKE_COMMAND} -E copy
-						"${TINYSPLINE_PYTHON_SOURCE_DIRECTORY}/${TINYSPLINE_PYTHON_CMAKE_TARGET}.py"
-						"${TINYSPLINE_PYTHON_INTERFACE_FILE}"
-				)
-				set_target_properties(_${TINYSPLINE_PYTHON_CMAKE_TARGET} PROPERTIES
-					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-				)
-			endif()
-		endif()
-		
-		# Java
-		if(NOT TINYSPLINE_DISABLE_JAVA)
-			find_package(JNI)
-			if(JNI_FOUND)
-				include_directories(${JNI_INCLUDE_DIRS})
-				set_source_files_properties("${TINYSPLINE_JAVA_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-				set(CMAKE_SWIG_FLAGS -package "org.tinyspline" -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-				set(CMAKE_SWIG_OUTDIR "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/org/tinyspline")
-				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(${TINYSPLINE_JAVA_CMAKE_TARGET} java "${TINYSPLINE_JAVA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				else()
-					swig_add_library(${TINYSPLINE_JAVA_CMAKE_TARGET} LANGUAGE java SOURCES "${TINYSPLINE_JAVA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				endif()
-				swig_link_libraries(${TINYSPLINE_JAVA_CMAKE_TARGET} ${JNI_LIBRARIES})
-				
-				# Jar archive
-				find_package(Java COMPONENTS Development)
-				if(Java_Development_FOUND)
-					include(UseJava)
-					# Generate name of library which will be included into the jar.
-					set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_gen")
-					if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
-						set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_osx")
-					elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-						set(TINYSPLINE_JAVA_LIB_NAME "libtinysplinejava_lin")
-					elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-						set(TINYSPLINE_JAVA_LIB_NAME "tinysplinejava_win")
-					endif()
-					if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}64")
-					elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}32")
-					endif()
-					if(${CMAKE_SYSTEM_NAME} STREQUAL "Darvin")
-						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dylib")
-					elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.so")
-					elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-						set(TINYSPLINE_JAVA_LIB_NAME "${TINYSPLINE_JAVA_LIB_NAME}.dll")
-					endif()
-					add_custom_command(TARGET ${TINYSPLINE_JAVA_CMAKE_TARGET} POST_BUILD
-						COMMAND
-							${CMAKE_COMMAND}
-							-E make_directory
-							"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes"
-						COMMAND
-							${CMAKE_COMMAND}
-							-E copy
-							"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
-							"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes/${TINYSPLINE_JAVA_LIB_NAME}"
-						COMMAND
-							"${Java_JAVAC_EXECUTABLE}"
-							-d "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes"
-							"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/org/tinyspline/*.java"
-						COMMAND
-							"${Java_JAR_EXECUTABLE}"
-							-cfM "${TINYSPLINE_JAVA_INTERFACE_FILE}"
-							-C "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes" .
-					)
-				endif()
-
-				set_target_properties(${TINYSPLINE_JAVA_CMAKE_TARGET} PROPERTIES
-					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-				)
-			endif()
-		endif()
-
-		# Ruby
-		if(NOT TINYSPLINE_DISABLE_RUBY)
-			find_package(Ruby)
-			if(RUBY_FOUND)
-				include_directories(${RUBY_INCLUDE_DIRS})
-				set_source_files_properties("${TINYSPLINE_RUBY_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_RUBY_SOURCE_DIRECTORY})
-				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(${TINYSPLINE_RUBY_CMAKE_TARGET} ruby "${TINYSPLINE_RUBY_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				else()
-					swig_add_library(${TINYSPLINE_RUBY_CMAKE_TARGET} LANGUAGE ruby SOURCES "${TINYSPLINE_RUBY_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				endif()
-				swig_link_libraries(${TINYSPLINE_RUBY_CMAKE_TARGET} ${RUBY_LIBRARY})
-				set_target_properties(${TINYSPLINE_RUBY_CMAKE_TARGET} PROPERTIES
-					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-				)
-			endif()
-		endif()
-		
-		# C#
-		if(NOT TINYSPLINE_DISABLE_CSHARP)
-			set_source_files_properties("${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-			set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_SOURCE_DIRECTORY})
-			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-				swig_add_module(${TINYSPLINE_CSHARP_CMAKE_TARGET} csharp "${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-			else()
-				swig_add_library(${TINYSPLINE_CSHARP_CMAKE_TARGET} LANGUAGE csharp SOURCES "${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-			endif()
-			set_target_properties(${TINYSPLINE_CSHARP_CMAKE_TARGET} PROPERTIES
-				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-			)
-			
-			# C# DLL
-			find_program(TINYSPLINE_CSHARP_COMPILER
-				NAMES csc mcs dmcs gmcs
-				PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"
-			)
-			if(TINYSPLINE_CSHARP_COMPILER)
-				if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
-					# csc neither supports the 'sdk' flag nor '/' in 'recursive'
-					add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
-						COMMAND
-							${TINYSPLINE_CSHARP_COMPILER}
-							/target:library
-							/out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
-							/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs"
-					)
-				else()
-					add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
-						COMMAND
-							${TINYSPLINE_CSHARP_COMPILER}
-							-sdk:2
-							-target:library
-							-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
-							-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
-					)
-				endif()
-			endif()
-		endif()
-		
-		# Go (not fully supported yet)
-		if(NOT TINYSPLINE_DISABLE_GOLANG)
-			#set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
-			#set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
-			#set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
-			#swig_add_module(tinysplinego go tinysplinego.i ${TINYSPLINE_CXX_SOURCE_FILES})
-			#add_custom_command(TARGET tinysplinego POST_BUILD
-			#  COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
-			#  "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE}"
-			#)
-		endif()
-
-		# PHP
-		if(NOT TINYSPLINE_DISABLE_PHP)
-			find_package(PHP COMPONENTS Zend)
-			if(PHP_FOUND)
-				set(TINYSPLINE_PHP_VERSION "php5")
-				if(${PHP_VERSION_NUMBER} MATCHES "^7")
-					set(TINYSPLINE_PHP_VERSION "php7")
-				endif()
-				if(${TINYSPLINE_PHP_VERSION} STREQUAL "php7" AND ${SWIG_VERSION} VERSION_LESS 3.0.11)
-					message(STATUS "PHP 7 requires Swig 3.0.11 or later")
-					# Clear PHP related variables used in summary.
-					set(PHP_FOUND FALSE)
-					unset(PHP_VERSION_STRING)
-					unset(PHP_INCLUDE_DIRS)
-				else()
-					include_directories(${PHP_INCLUDE_DIRS})
-					set_source_files_properties("${TINYSPLINE_PHP_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-					set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-					set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_SOURCE_DIRECTORY})
-					if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-						swig_add_module(${TINYSPLINE_PHP_CMAKE_TARGET} ${TINYSPLINE_PHP_VERSION} "${TINYSPLINE_PHP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-					else()
-						swig_add_library(${TINYSPLINE_PHP_CMAKE_TARGET} LANGUAGE ${TINYSPLINE_PHP_VERSION} SOURCES "${TINYSPLINE_PHP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-					endif()
-					add_custom_command(TARGET ${TINYSPLINE_PHP_CMAKE_TARGET} POST_BUILD
-						COMMAND
-							${CMAKE_COMMAND}
-							-E copy
-							"${TINYSPLINE_PHP_SOURCE_DIRECTORY}/${TINYSPLINE_PHP_CMAKE_TARGET}.php"
-							"${TINYSPLINE_PHP_INTERFACE_FILE}"
-					)
-					set_target_properties(${TINYSPLINE_PHP_CMAKE_TARGET} PROPERTIES
-						FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-						COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
-					)
-				endif()
-			else()
-				if(APPLE)
-					message(STATUS "Note: The PHP version that comes with macOS does bundle Zend by default.")
-				endif()
-			endif()
-		endif()
-
-		# Lua
-		if(NOT TINYSPLINE_DISABLE_LUA)
-			find_package(Lua)
-			if(LUA_FOUND)
-				include_directories(${LUA_INCLUDE_DIR})
-				set_source_files_properties("${TINYSPLINE_LUA_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_LUA_SOURCE_DIRECTORY})
-				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(${TINYSPLINE_LUA_CMAKE_TARGET} lua "${TINYSPLINE_LUA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				else()
-					swig_add_library(${TINYSPLINE_LUA_CMAKE_TARGET} LANGUAGE lua SOURCES "${TINYSPLINE_LUA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				endif()
-				swig_link_libraries(${TINYSPLINE_LUA_CMAKE_TARGET} ${LUA_LIBRARIES})
-				set_target_properties(${TINYSPLINE_LUA_CMAKE_TARGET} PROPERTIES
-					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-				)
-			endif()
-		endif()
-
-		# D
-		if(NOT TINYSPLINE_DISABLE_D)
-			set_source_files_properties("${TINYSPLINE_DLANG_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET} -module ${TINYSPLINE_PACKAGE_NAME})
-			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_SOURCE_DIRECTORY})
-			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-				swig_add_module(${TINYSPLINE_DLANG_CMAKE_TARGET} d "${TINYSPLINE_DLANG_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-			else()
-				swig_add_library(${TINYSPLINE_DLANG_CMAKE_TARGET} LANGUAGE d SOURCES "${TINYSPLINE_DLANG_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-			endif()
-			add_custom_command(TARGET ${TINYSPLINE_DLANG_CMAKE_TARGET} POST_BUILD
-				COMMAND
-					${CMAKE_COMMAND}
-					-E copy
-					"${TINYSPLINE_DLANG_SOURCE_DIRECTORY}/${TINYSPLINE_PACKAGE_NAME}.d"
-					"${TINYSPLINE_DLANG_INTERFACE_FILE}"
-				COMMAND
-					${CMAKE_COMMAND}
-					-E copy
-					"${TINYSPLINE_DLANG_SOURCE_DIRECTORY}/${TINYSPLINE_PACKAGE_NAME}_im.d"
-					"${TINYSPLINE_DLANG_INTERMEDIATE_FILE}"
-			)
-			set_target_properties(${TINYSPLINE_DLANG_CMAKE_TARGET} PROPERTIES
-				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-			)
-		endif()
-
-		# Octave
-		if(NOT TINYSPLINE_DISABLE_OCTAVE)
-			find_package(Octave)
-			if(OCTAVE_FOUND)
-				if((${OCTAVE_VERSION_STRING} VERSION_GREATER 4.2 OR ${OCTAVE_VERSION_STRING} VERSION_EQUAL 4.2)
-						AND ${SWIG_VERSION} VERSION_LESS 3.0.12)
-					message(STATUS "Octave 4.2 requires Swig 3.0.12 or later")
-					# Clear Octave related variables used in summary.
-					set(OCTAVE_FOUND FALSE)
-					unset(OCTAVE_VERSION_STRING)
-					unset(OCTAVE_INCLUDE_DIRS)
-					unset(OCTAVE_LIBRARIES)
-				elseif(NOT TINYSPLINE_CXX11_COMPLIANT)
-					message(STATUS "Octave requires C++11")
-					# Clear Octave related variables used in summary.
-					set(OCTAVE_FOUND FALSE)
-					unset(OCTAVE_VERSION_STRING)
-					unset(OCTAVE_INCLUDE_DIRS)
-					unset(OCTAVE_LIBRARIES)
-				else()
-					include_directories(${OCTAVE_INCLUDE_DIRS})
-					set_source_files_properties("${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-					set(CMAKE_SWIG_FLAGS -module ${TINYSPLINE_PACKAGE_NAME} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-					set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY})
-					if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-						swig_add_module(${TINYSPLINE_OCTAVE_CMAKE_TARGET} octave "${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-					else()
-						swig_add_library(${TINYSPLINE_OCTAVE_CMAKE_TARGET} LANGUAGE octave SOURCES "${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-					endif()
-					swig_link_libraries(${TINYSPLINE_OCTAVE_CMAKE_TARGET} ${OCTAVE_LIBRARIES})
-					set_target_properties(${TINYSPLINE_OCTAVE_CMAKE_TARGET} PROPERTIES
-						FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-						COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
-						CXX_STANDARD 11
-						CXX_STANDARD_REQUIRED ON
-						CXX_EXTENSIONS OFF
-						OUTPUT_NAME "${TINYSPLINE_PACKAGE_NAME}"
-					)
-				endif()
-			endif()
-		endif()
-
-		# R
-		if(NOT TINYSPLINE_DISABLE_R)
-			find_package(R COMPONENTS Rcpp)
-			if(R_FOUND)
-				include_directories(${R_INCLUDE_DIRS})
-				set_source_files_properties("${TINYSPLINE_R_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
-				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
-				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_R_SOURCE_DIRECTORY})
-				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-					swig_add_module(${TINYSPLINE_R_CMAKE_TARGET} r "${TINYSPLINE_R_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				else()
-					swig_add_library(${TINYSPLINE_R_CMAKE_TARGET} LANGUAGE r SOURCES "${TINYSPLINE_R_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
-				endif()
-				swig_link_libraries(${TINYSPLINE_R_CMAKE_TARGET} ${R_LIBRARIES})
-				add_custom_command(TARGET ${TINYSPLINE_R_CMAKE_TARGET} POST_BUILD
+						${CMAKE_COMMAND}
+						-E make_directory
+						"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes"
 					COMMAND
 						${CMAKE_COMMAND}
 						-E copy
-						"${TINYSPLINE_R_SOURCE_DIRECTORY}/${TINYSPLINE_R_CMAKE_TARGET}.R"
-						"${TINYSPLINE_R_INTERFACE_FILE}"
+						"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
+						"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes/${TINYSPLINE_JAVA_LIB_NAME}"
+					COMMAND
+						"${Java_JAVAC_EXECUTABLE}"
+						-d "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes"
+						"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/org/tinyspline/*.java"
+					COMMAND
+						"${Java_JAR_EXECUTABLE}"
+						-cfM "${TINYSPLINE_JAVA_INTERFACE_FILE}"
+						-C "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes" .
 				)
-				set_target_properties(${TINYSPLINE_R_CMAKE_TARGET} PROPERTIES
-					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
-					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			endif()
+
+			set_target_properties(${TINYSPLINE_JAVA_CMAKE_TARGET} PROPERTIES
+				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			)
+		endif()
+	endif()
+
+	# Ruby
+	if(NOT TINYSPLINE_DISABLE_RUBY)
+		find_package(Ruby)
+		if(RUBY_FOUND)
+			include_directories(${RUBY_INCLUDE_DIRS})
+			set_source_files_properties("${TINYSPLINE_RUBY_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_RUBY_SOURCE_DIRECTORY})
+			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+				swig_add_module(${TINYSPLINE_RUBY_CMAKE_TARGET} ruby "${TINYSPLINE_RUBY_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			else()
+				swig_add_library(${TINYSPLINE_RUBY_CMAKE_TARGET} LANGUAGE ruby SOURCES "${TINYSPLINE_RUBY_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			endif()
+			swig_link_libraries(${TINYSPLINE_RUBY_CMAKE_TARGET} ${RUBY_LIBRARY})
+			set_target_properties(${TINYSPLINE_RUBY_CMAKE_TARGET} PROPERTIES
+				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			)
+		endif()
+	endif()
+
+	# C#
+	if(NOT TINYSPLINE_DISABLE_CSHARP)
+		set_source_files_properties("${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+		set(CMAKE_SWIG_FLAGS -namespace TinySpline -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+		set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_CSHARP_SOURCE_DIRECTORY})
+		if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+			swig_add_module(${TINYSPLINE_CSHARP_CMAKE_TARGET} csharp "${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+		else()
+			swig_add_library(${TINYSPLINE_CSHARP_CMAKE_TARGET} LANGUAGE csharp SOURCES "${TINYSPLINE_CSHARP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+		endif()
+		set_target_properties(${TINYSPLINE_CSHARP_CMAKE_TARGET} PROPERTIES
+			FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+			COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+		)
+
+		# C# DLL
+		find_program(TINYSPLINE_CSHARP_COMPILER
+			NAMES csc mcs dmcs gmcs
+			PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"
+		)
+		if(TINYSPLINE_CSHARP_COMPILER)
+			if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
+				# csc neither supports the 'sdk' flag nor '/' in 'recursive'
+				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
+					COMMAND
+						${TINYSPLINE_CSHARP_COMPILER}
+						/target:library
+						/out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
+						/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs"
+				)
+			else()
+				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
+					COMMAND
+						${TINYSPLINE_CSHARP_COMPILER}
+						-sdk:2
+						-target:library
+						-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
+						-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
 				)
 			endif()
 		endif()
-	endif(SWIG_FOUND)
-endif()
+	endif()
+
+	# Go (not fully supported yet)
+	if(NOT TINYSPLINE_DISABLE_GOLANG)
+		#set_source_files_properties(tinysplinego.i PROPERTIES CPLUSPLUS ON)
+		#set(CMAKE_SWIG_FLAGS -intgosize 32 -package tinyspline -O)
+		#set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_GO_DIR})
+		#swig_add_module(tinysplinego go tinysplinego.i ${TINYSPLINE_CXX_SOURCE_FILES})
+		#add_custom_command(TARGET tinysplinego POST_BUILD
+		#  COMMAND ${CMAKE_COMMAND} -E copy "${TINYSPLINE_GO_DIR}/tinysplinego.go"
+		#  "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/${TINYSPLINE_GO_INTERFACE_FILE}"
+		#)
+	endif()
+
+	# PHP
+	if(NOT TINYSPLINE_DISABLE_PHP)
+		find_package(PHP COMPONENTS Zend)
+		if(PHP_FOUND)
+			set(TINYSPLINE_PHP_VERSION "php5")
+			if(${PHP_VERSION_NUMBER} MATCHES "^7")
+				set(TINYSPLINE_PHP_VERSION "php7")
+			endif()
+			if(${TINYSPLINE_PHP_VERSION} STREQUAL "php7" AND ${SWIG_VERSION} VERSION_LESS 3.0.11)
+				message(STATUS "PHP 7 requires Swig 3.0.11 or later")
+				# Clear PHP related variables used in summary.
+				set(PHP_FOUND FALSE)
+				unset(PHP_VERSION_STRING)
+				unset(PHP_INCLUDE_DIRS)
+			else()
+				include_directories(${PHP_INCLUDE_DIRS})
+				set_source_files_properties("${TINYSPLINE_PHP_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+				set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_PHP_SOURCE_DIRECTORY})
+				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+					swig_add_module(${TINYSPLINE_PHP_CMAKE_TARGET} ${TINYSPLINE_PHP_VERSION} "${TINYSPLINE_PHP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+				else()
+					swig_add_library(${TINYSPLINE_PHP_CMAKE_TARGET} LANGUAGE ${TINYSPLINE_PHP_VERSION} SOURCES "${TINYSPLINE_PHP_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+				endif()
+				add_custom_command(TARGET ${TINYSPLINE_PHP_CMAKE_TARGET} POST_BUILD
+					COMMAND
+						${CMAKE_COMMAND}
+						-E copy
+						"${TINYSPLINE_PHP_SOURCE_DIRECTORY}/${TINYSPLINE_PHP_CMAKE_TARGET}.php"
+						"${TINYSPLINE_PHP_INTERFACE_FILE}"
+				)
+				set_target_properties(${TINYSPLINE_PHP_CMAKE_TARGET} PROPERTIES
+					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${PHP_INCLUDE_DIRS}"
+				)
+			endif()
+		else()
+			if(APPLE)
+				message(STATUS "Note: The PHP version that comes with macOS does bundle Zend by default.")
+			endif()
+		endif()
+	endif()
+
+	# Lua
+	if(NOT TINYSPLINE_DISABLE_LUA)
+		find_package(Lua)
+		if(LUA_FOUND)
+			include_directories(${LUA_INCLUDE_DIR})
+			set_source_files_properties("${TINYSPLINE_LUA_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_LUA_SOURCE_DIRECTORY})
+			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+				swig_add_module(${TINYSPLINE_LUA_CMAKE_TARGET} lua "${TINYSPLINE_LUA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			else()
+				swig_add_library(${TINYSPLINE_LUA_CMAKE_TARGET} LANGUAGE lua SOURCES "${TINYSPLINE_LUA_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			endif()
+			swig_link_libraries(${TINYSPLINE_LUA_CMAKE_TARGET} ${LUA_LIBRARIES})
+			set_target_properties(${TINYSPLINE_LUA_CMAKE_TARGET} PROPERTIES
+				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			)
+		endif()
+	endif()
+
+	# D
+	if(NOT TINYSPLINE_DISABLE_D)
+		set_source_files_properties("${TINYSPLINE_DLANG_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+		set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET} -module ${TINYSPLINE_PACKAGE_NAME})
+		set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_SOURCE_DIRECTORY})
+		if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+			swig_add_module(${TINYSPLINE_DLANG_CMAKE_TARGET} d "${TINYSPLINE_DLANG_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+		else()
+			swig_add_library(${TINYSPLINE_DLANG_CMAKE_TARGET} LANGUAGE d SOURCES "${TINYSPLINE_DLANG_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+		endif()
+		add_custom_command(TARGET ${TINYSPLINE_DLANG_CMAKE_TARGET} POST_BUILD
+			COMMAND
+				${CMAKE_COMMAND}
+				-E copy
+				"${TINYSPLINE_DLANG_SOURCE_DIRECTORY}/${TINYSPLINE_PACKAGE_NAME}.d"
+				"${TINYSPLINE_DLANG_INTERFACE_FILE}"
+			COMMAND
+				${CMAKE_COMMAND}
+				-E copy
+				"${TINYSPLINE_DLANG_SOURCE_DIRECTORY}/${TINYSPLINE_PACKAGE_NAME}_im.d"
+				"${TINYSPLINE_DLANG_INTERMEDIATE_FILE}"
+		)
+		set_target_properties(${TINYSPLINE_DLANG_CMAKE_TARGET} PROPERTIES
+			FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+			COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+		)
+	endif()
+
+	# Octave
+	if(NOT TINYSPLINE_DISABLE_OCTAVE)
+		find_package(Octave)
+		if(OCTAVE_FOUND)
+			if((${OCTAVE_VERSION_STRING} VERSION_GREATER 4.2 OR ${OCTAVE_VERSION_STRING} VERSION_EQUAL 4.2)
+					AND ${SWIG_VERSION} VERSION_LESS 3.0.12)
+				message(STATUS "Octave 4.2 requires Swig 3.0.12 or later")
+				# Clear Octave related variables used in summary.
+				set(OCTAVE_FOUND FALSE)
+				unset(OCTAVE_VERSION_STRING)
+				unset(OCTAVE_INCLUDE_DIRS)
+				unset(OCTAVE_LIBRARIES)
+			elseif(NOT TINYSPLINE_CXX11_COMPLIANT)
+				message(STATUS "Octave requires C++11")
+				# Clear Octave related variables used in summary.
+				set(OCTAVE_FOUND FALSE)
+				unset(OCTAVE_VERSION_STRING)
+				unset(OCTAVE_INCLUDE_DIRS)
+				unset(OCTAVE_LIBRARIES)
+			else()
+				include_directories(${OCTAVE_INCLUDE_DIRS})
+				set_source_files_properties("${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+				set(CMAKE_SWIG_FLAGS -module ${TINYSPLINE_PACKAGE_NAME} -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+				set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY})
+				if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+					swig_add_module(${TINYSPLINE_OCTAVE_CMAKE_TARGET} octave "${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+				else()
+					swig_add_library(${TINYSPLINE_OCTAVE_CMAKE_TARGET} LANGUAGE octave SOURCES "${TINYSPLINE_OCTAVE_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+				endif()
+				swig_link_libraries(${TINYSPLINE_OCTAVE_CMAKE_TARGET} ${OCTAVE_LIBRARIES})
+				set_target_properties(${TINYSPLINE_OCTAVE_CMAKE_TARGET} PROPERTIES
+					FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+					COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+					CXX_STANDARD 11
+					CXX_STANDARD_REQUIRED ON
+					CXX_EXTENSIONS OFF
+					OUTPUT_NAME "${TINYSPLINE_PACKAGE_NAME}"
+				)
+			endif()
+		endif()
+	endif()
+
+	# R
+	if(NOT TINYSPLINE_DISABLE_R)
+		find_package(R COMPONENTS Rcpp)
+		if(R_FOUND)
+			include_directories(${R_INCLUDE_DIRS})
+			set_source_files_properties("${TINYSPLINE_R_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+			set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES})
+			set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_R_SOURCE_DIRECTORY})
+			if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+				swig_add_module(${TINYSPLINE_R_CMAKE_TARGET} r "${TINYSPLINE_R_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			else()
+				swig_add_library(${TINYSPLINE_R_CMAKE_TARGET} LANGUAGE r SOURCES "${TINYSPLINE_R_CMAKE_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+			endif()
+			swig_link_libraries(${TINYSPLINE_R_CMAKE_TARGET} ${R_LIBRARIES})
+			add_custom_command(TARGET ${TINYSPLINE_R_CMAKE_TARGET} POST_BUILD
+				COMMAND
+					${CMAKE_COMMAND}
+					-E copy
+					"${TINYSPLINE_R_SOURCE_DIRECTORY}/${TINYSPLINE_R_CMAKE_TARGET}.R"
+					"${TINYSPLINE_R_INTERFACE_FILE}"
+			)
+			set_target_properties(${TINYSPLINE_R_CMAKE_TARGET} PROPERTIES
+				FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
+				COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS}"
+			)
+		endif()
+	endif()
+endif(SWIG_FOUND)
 
 
 
@@ -940,7 +881,7 @@ function (tinyspline_invert_on_off varName varValue)
 		set(${varName} OFF CACHE INTERNAL "")
 	endif()
 endfunction()
-tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_CXX_AVAILABLE)
+tinyspline_invert_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_DISABLE_CXX)
 tinyspline_invert_on_off(TINYSPLINE_WITH_CSHARP TINYSPLINE_DISABLE_CSHARP)
 tinyspline_invert_on_off(TINYSPLINE_WITH_D TINYSPLINE_DISABLE_D)
 tinyspline_set_on_off(TINYSPLINE_WITH_GOLANG FALSE)

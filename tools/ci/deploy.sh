@@ -118,7 +118,7 @@ if [ ! -d "$PYTHON_DIR" ]; then
 fi
 
 # Path to the Lua package that will be deployed.
-LUAROCKS_FILE=find $BUILD_DIR_FIXED -maxdepth 1 -name '*.rock'
+LUAROCKS_FILE=$(find $BUILD_DIR_FIXED -maxdepth 1 -name '*.rock')
 # Verify that the Lua package has been created.
 if [ ! -f "$LUAROCKS_FILE" ]; then
 	echo "Lua package is not available; aborting."

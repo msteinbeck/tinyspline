@@ -28,6 +28,7 @@ install:
 before_script:
   - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - export BUILD_DIR="build"
+  - export CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
   - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=TRUE"
   - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=TRUE"
   - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=TRUE"

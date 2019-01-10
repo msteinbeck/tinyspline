@@ -19,4 +19,5 @@ pushd "$BUILD_DIR_FIXED"
 	cmake "$SCRIPT_DIR/../.." $CMAKE_FLAGS
 	cmake --build .
 	cmake --build . --target docs
+	python3 setup.py bdist
 popd

@@ -109,6 +109,14 @@ if [ ! -d "$BIN_DIR" ]; then
 	exit -1
 fi
 
+# Path to the Python package that will be deployed.
+PYTHON_DIR="$BUILD_DIR_FIXED/dist"
+# Verify that the Python package has been created.
+if [ ! -d "$PYTHON_DIR" ]; then
+	echo "Directory 'dist' is not available; aborting."
+	exit -1
+fi
+
 # Directory where BUILD_BRANCH is cloned to.
 BUILD_BRANCH_DIR="$SCRIPT_DIR/$BUILD_BRANCH"
 # Verify that BUILD_BRANCH_DIR does not exist.
@@ -131,7 +139,8 @@ pushd "$BUILD_BRANCH_DIR"
 	cp -R "$BIN_DIR" ./
 
 	# Copy packages.
-	cp -a "$BUILD_DIR_FIXED/dist/." ./
+	mkdir dist
+	cp -a "$PYTHON_DIR/." ./dist
 
 	# Copy AppVeyor config file.
 	cp "$APPVEYOR_CONFIG_PATH" ./

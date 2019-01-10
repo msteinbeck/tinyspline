@@ -118,10 +118,18 @@ if [ ! -d "$PYTHON_DIR" ]; then
 fi
 
 # Path to the Lua package that will be deployed.
-LUAROCKS_FILE=$(find $BUILD_DIR_FIXED -maxdepth 1 -name '*.rock')
+LUAROCKS_FILE=$(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.rock')
 # Verify that the Lua package has been created.
 if [ ! -f "$LUAROCKS_FILE" ]; then
 	echo "Lua package is not available; aborting."
+	exit -1
+fi
+
+# Path to the Java package that will be deployed.
+JAVA_FILE=$(find "$BUILD_DIR_FIXED/target" -maxdepth 1 -name '*.jar')
+# Verify that the Java package has been created.
+if [ ! -f "$JAVA_FILE" ]; then
+	echo "Java package is not available; aborting."
 	exit -1
 fi
 
@@ -150,6 +158,7 @@ pushd "$BUILD_BRANCH_DIR"
 	mkdir dist
 	cp -a "$PYTHON_DIR/." ./dist
 	cp "$LUAROCKS_FILE" ./dist
+	cp "$JAVA_FILE" ./dist
 
 	# Copy AppVeyor config file.
 	cp "$APPVEYOR_CONFIG_PATH" ./

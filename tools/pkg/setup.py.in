@@ -38,13 +38,14 @@ class build_py(_build_py):
 
 
 setup(name="@TINYSPLINE_PACKAGE_NAME@",
-	  version="@TINYSPLINE_VERSION@",
+	  version="@TINYSPLINE_VERSION@-1",
 	  description="@TINYSPLINE_SUMMARY@",
 	  long_description="@TINYSPLINE_DESCRIPTION@",
 	  author="@TINYSPLINE_AUTHOR@",
 	  author_email="@TINYSPLINE_MAIL@",
 	  license="@TINYSPLINE_LICENSE@",
 	  url="@TINYSPLINE_URL@",
+	  platforms="@CMAKE_SYSTEM_NAME@",
 	  classifiers=[
 		  "Topic :: Scientific/Engineering :: Mathematics",
 		  "Topic :: Software Development :: Libraries :: Python Modules",

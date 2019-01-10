@@ -52,7 +52,7 @@ set(TINYSPLINE_URL "https://github.com/msteinbeck/tinyspline" CACHE INTERNAL "")
 
 set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
 
-set(TINYSPLINE_VERSION "0.2.0" CACHE INTERNAL "")
+set(TINYSPLINE_VERSION "0.3.0" CACHE INTERNAL "")
 
 set(TINYSPLINE_SUMMARY "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 

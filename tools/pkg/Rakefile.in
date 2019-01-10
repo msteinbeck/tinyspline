@@ -1,4 +1,0 @@
-task :default do
-	puts(`@CMAKE_COMMAND@ --build . --target @TINYSPLINE_RUBY_CMAKE_TARGET@`)
-	puts(`gem build tinyspline.gem`)
-end

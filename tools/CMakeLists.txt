@@ -14,8 +14,6 @@ if(${TINYSPLINE_WITH_LUA})
 endif()
 
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gem")
-file(REMOVE "${CMAKE_BINARY_DIR}/Rakefile")
 if(${TINYSPLINE_WITH_RUBY})
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gem.in" "${CMAKE_BINARY_DIR}/tinyspline.gem" @ONLY)
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/Rakefile.in" "${CMAKE_BINARY_DIR}/Rakefile" @ONLY)
 endif()

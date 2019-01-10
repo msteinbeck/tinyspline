@@ -1,0 +1,11 @@
+Gem::Specification.new do |spec|
+  spec.name        = '@TINYSPLINE_PACKAGE_NAME@'
+  spec.version     = '@TINYSPLINE_VERSION@-1'
+  spec.authors     = ["@TINYSPLINE_AUTHOR@"]
+  spec.email       = '@TINYSPLINE_MAIL@'
+  spec.summary     = "@TINYSPLINE_SUMMARY@"
+  spec.description = "@TINYSPLINE_DESCRIPTION@"
+  spec.files       = ["lib/tinysplineruby.so"]
+  spec.homepage    = '@TINYSPLINE_URL@'
+  spec.license     = '@TINYSPLINE_LICENSE@'
+end

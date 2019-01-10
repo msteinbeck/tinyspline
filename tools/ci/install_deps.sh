@@ -39,7 +39,7 @@ pushd "$DEPS_DIR"
 		sudo apt-get install --no-install-recommends \
 			doxygen             \
 			graphviz            \
-			python-dev          \
+			python3-dev         \
 			php5-dev            \
 			liblua5.2-dev       \
 			octave-pkg-dev      \

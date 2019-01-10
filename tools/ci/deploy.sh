@@ -130,6 +130,9 @@ pushd "$BUILD_BRANCH_DIR"
 	# Copy binaries.
 	cp -R "$BIN_DIR" ./
 
+	# Copy packages.
+	cp -a "$BUILD_DIR_FIXED/dist/." ./
+
 	# Copy AppVeyor config file.
 	cp "$APPVEYOR_CONFIG_PATH" ./
 

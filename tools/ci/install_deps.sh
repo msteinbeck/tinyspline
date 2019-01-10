@@ -19,6 +19,7 @@ pushd "$DEPS_DIR"
 			ruby-dev            \
 			php-dev             \
 			liblua5.3-dev       \
+			luarocks            \
 			octave-pkg-dev      \
 			openjdk-8-jdk       \
 			r-base              \
@@ -29,6 +30,7 @@ pushd "$DEPS_DIR"
 		brew update
 		brew install                \
 			lua                 \
+			luarocks            \
 			mono                \
 			r                   \
 			ruby                \

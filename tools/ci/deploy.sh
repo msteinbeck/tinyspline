@@ -117,6 +117,14 @@ if [ ! -d "$PYTHON_DIR" ]; then
 	exit -1
 fi
 
+# Path to the Lua package that will be deployed.
+LUAROCKS_FILE="$BUILD_DIR_FIXED/$(find -maxdepth 1 -name '*.rock')"
+# Verify that the Lua package has been created.
+if [ ! -f "$LUAROCKS_FILE" ]; then
+	echo "Lua package is not available; aborting."
+	exit -1
+fi
+
 # Directory where BUILD_BRANCH is cloned to.
 BUILD_BRANCH_DIR="$SCRIPT_DIR/$BUILD_BRANCH"
 # Verify that BUILD_BRANCH_DIR does not exist.
@@ -141,6 +149,7 @@ pushd "$BUILD_BRANCH_DIR"
 	# Copy packages.
 	mkdir dist
 	cp -a "$PYTHON_DIR/." ./dist
+	cp "$LUAROCKS_FILE" ./dist
 
 	# Copy AppVeyor config file.
 	cp "$APPVEYOR_CONFIG_PATH" ./

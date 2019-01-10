@@ -21,5 +21,7 @@ pushd "$BUILD_DIR_FIXED"
 	cmake --build . --target docs
 	if [ -n "$TRAVIS_OS_NAME" ]; then
 		python3 setup.py bdist
+		luarocks --local make $(find -maxdepth 1 -name '*.rockspec')
+		luarocks --local pack tinyspline
 	fi
 popd

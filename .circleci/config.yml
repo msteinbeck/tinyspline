@@ -21,4 +21,4 @@ jobs:
           command: pushd tools/ci && ./install_deps.sh && popd
       - run:
           name: Compiling Code
-          command: pushd tools/ci && BUILD_DIR=build ./compile.sh && popd
+          command: pushd tools/ci && BUILD_DIR=build CMAKE_FLAGS="-DTINYSPLINE_ENABLE_PYTHON=TRUE" ./compile.sh && popd

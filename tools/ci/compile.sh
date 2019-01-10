@@ -23,5 +23,6 @@ pushd "$BUILD_DIR_FIXED"
 		python3 setup.py bdist
 		luarocks --local make $(find -maxdepth 1 -name '*.rockspec')
 		luarocks --local pack tinyspline
+		mvn clean package
 	fi
 popd

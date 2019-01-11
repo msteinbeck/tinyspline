@@ -10,19 +10,21 @@
 		// Determine platform.
 		final String os = System.getProperty("os.name").toLowerCase();
 		final String arch = System.getProperty("sun.arch.data.model");
-		final String library;
-		if (os.startsWith("mac")) {
-			library = "libtinysplinejava.jnilib";
-		} else if (os.startsWith("linux") && arch.equals("64")) {
-			library = "libtinysplinejava_64.so";
-		} else if (os.startsWith("linux") && arch.equals("32")) {
-			library = "libtinysplinejava_32.so";
-		} else if (os.startsWith("windows") && arch.equals("64")) {
-			library = "tinysplinejava_64.dll";
-		} else if (os.startsWith("windows") && arch.equals("32")) {
-			library = "tinysplinejava_32.dll";
+		String library = ""; // < name of the native library to copy
+		if (os.startsWith("linux")) {
+			library = "linux";
+		} else if (os.startsWith("mac")) {
+			library = "macosx";
+		} else if (os.startsWith("windows")) {
+			library = "windows";
 		} else {
-			library = "libtinysplinejava_generic.so";
+			library = "generic";
+		}
+		if (!library.equals("generic")) {
+			library += "-x86";
+			if (arch.equals("64")) {
+				library += "_64";
+			}
 		}
 
 		// Copy native library to a temporary file.
@@ -31,6 +33,10 @@
 		java.io.File tmp;
 		try {
 			in = tinysplinejavaJNI.class.getResourceAsStream("/" + library);
+			if (in == null) {
+				throw new java.io.FileNotFoundException(
+					"Native library is not available");
+			}
 			tmp = java.io.File.createTempFile("tinyspline", null);
 			tmp.deleteOnExit();
 			out = new java.io.FileOutputStream(tmp);

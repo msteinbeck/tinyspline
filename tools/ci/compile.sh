@@ -20,10 +20,10 @@ pushd "$BUILD_DIR_FIXED"
 	cmake --build .
 	cmake --build . --target docs
 	if [ -n "$TRAVIS_OS_NAME" ]; then
-		luarocks --local make $(find -maxdepth 1 -name '*.rockspec')
+		luarocks --local make $(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.rockspec')
 		luarocks --local pack tinyspline
 		mvn clean package
 		python3 setup.py bdist
-		gem build $(find -maxdepth 1 -name '*.gemspec')
+		gem build $(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.gemspec')
 	fi
 popd

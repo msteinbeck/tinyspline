@@ -670,14 +670,25 @@ if (SWIG_FOUND)
 			PATHS "C:/Windows/Microsoft.NET/Framework/v4.5"
 		)
 		if(TINYSPLINE_CSHARP_COMPILER)
-			add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
-				COMMAND
-					${TINYSPLINE_CSHARP_COMPILER}
-					-sdk:4.5
-					-target:library
-					-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
-					-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
-			)
+			if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
+				# csc neither supports the 'sdk' flag nor '/' in 'recursive'
+				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
+					COMMAND
+						${TINYSPLINE_CSHARP_COMPILER}
+						/target:library
+						/out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
+						/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs"
+				)
+			else()
+				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
+					COMMAND
+						${TINYSPLINE_CSHARP_COMPILER}
+						-sdk:4.5
+						-target:library
+						-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
+						-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
+				)
+			endif()
 		endif()
 	endif()
 

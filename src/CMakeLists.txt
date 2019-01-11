@@ -666,29 +666,18 @@ if (SWIG_FOUND)
 
 		# C# DLL
 		find_program(TINYSPLINE_CSHARP_COMPILER
-			NAMES csc mcs dmcs gmcs
-			PATHS "C:/Windows/Microsoft.NET/Framework/v3.5"
+			NAMES csc mcs
+			PATHS "C:/Windows/Microsoft.NET/Framework/v4.5"
 		)
 		if(TINYSPLINE_CSHARP_COMPILER)
-			if(TINYSPLINE_CSHARP_COMPILER MATCHES "csc$|csc.exe$")
-				# csc neither supports the 'sdk' flag nor '/' in 'recursive'
-				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
-					COMMAND
-						${TINYSPLINE_CSHARP_COMPILER}
-						/target:library
-						/out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
-						/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs"
-				)
-			else()
-				add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
-					COMMAND
-						${TINYSPLINE_CSHARP_COMPILER}
-						-sdk:2
-						-target:library
-						-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
-						-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
-				)
-			endif()
+			add_custom_command(TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET} POST_BUILD
+				COMMAND
+					${TINYSPLINE_CSHARP_COMPILER}
+					-sdk:4.5
+					-target:library
+					-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
+					-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
+			)
 		endif()
 	endif()
 

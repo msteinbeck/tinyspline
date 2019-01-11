@@ -109,14 +109,6 @@ if [ ! -d "$BIN_DIR" ]; then
 	exit -1
 fi
 
-# Path to the Python package that will be deployed.
-PYTHON_DIR="$BUILD_DIR_FIXED/dist"
-# Verify that the Python package has been created.
-if [ ! -d "$PYTHON_DIR" ]; then
-	echo "Directory 'dist' is not available; aborting."
-	exit -1
-fi
-
 # Path to the Lua package that will be deployed.
 LUAROCKS_FILE=$(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.rock')
 # Verify that the Lua package has been created.
@@ -130,6 +122,22 @@ JAVA_FILE=$(find "$BUILD_DIR_FIXED/target" -maxdepth 1 -name '*.jar')
 # Verify that the Java package has been created.
 if [ ! -f "$JAVA_FILE" ]; then
 	echo "Java package is not available; aborting."
+	exit -1
+fi
+
+# Path to the Python package that will be deployed.
+PYTHON_DIR="$BUILD_DIR_FIXED/dist"
+# Verify that the Python package has been created.
+if [ ! -d "$PYTHON_DIR" ]; then
+	echo "Directory 'dist' is not available; aborting."
+	exit -1
+fi
+
+# Path to the Ruby package that will be deployed.
+RUBY_FILE=$(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.gem')
+# Verify that the Ruby package has been created.
+if [ ! -f "$RUBY_FILE" ]; then
+	echo "Ruby package is not available; aborting."
 	exit -1
 fi
 
@@ -156,9 +164,10 @@ pushd "$BUILD_BRANCH_DIR"
 
 	# Copy packages.
 	mkdir dist
-	cp -a "$PYTHON_DIR/." ./dist
 	cp "$LUAROCKS_FILE" ./dist
 	cp "$JAVA_FILE" ./dist
+	cp -a "$PYTHON_DIR/." ./dist
+	cp "$RUBY_FILE" ./dist
 
 	# Copy AppVeyor config file.
 	cp "$APPVEYOR_CONFIG_PATH" ./

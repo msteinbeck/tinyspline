@@ -15,5 +15,5 @@ endif()
 
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gemspec.in" "${CMAKE_BINARY_DIR}/tinyspline.gemspec" @ONLY)
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gemspec.in" "${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec" @ONLY)
 endif()

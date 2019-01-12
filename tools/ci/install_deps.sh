@@ -20,6 +20,7 @@ pushd "$DEPS_DIR"
 			php-dev             \
 			liblua5.3-dev       \
 			luarocks            \
+			mono-devel          \
 			nuget               \
 			octave-pkg-dev      \
 			openjdk-8-jdk       \

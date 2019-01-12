@@ -870,24 +870,25 @@ endif(SWIG_FOUND)
 
 
 ###############################################################################
-### Setup constants that may be used to determine whether a certain interface
-### is available or not. The constants will be set with 'CACHE INTERNAL'.
+### Setup constants that are used to determine whether a certain interface is
+### available, that is, the corresponding TINYSPLINE_ENABLE_*** option is true
+### and all requirements to build interface *** are met.
 #
 # TINYSPLINE_WITH_***
 #   Is 'ON' if interface *** is available, 'OFF' otherwise.
 ###############################################################################
 function (tinyspline_set_on_off varName varValue)
 	if(${varValue})
-		set(${varName} ON CACHE INTERNAL "")
+		set(${varName} ON PARENT_SCOPE)
 	else()
-		set(${varName} OFF CACHE INTERNAL "")
+		set(${varName} OFF PARENT_SCOPE)
 	endif()
 endfunction()
 function (tinyspline_set_on_off_swig varName varValue)
 	if(SWIG_FOUND AND ${varValue})
-		set(${varName} ON CACHE INTERNAL "")
+		set(${varName} ON PARENT_SCOPE)
 	else()
-		set(${varName} OFF CACHE INTERNAL "")
+		set(${varName} OFF PARENT_SCOPE)
 	endif()
 endfunction()
 tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_ENABLE_CXX)
@@ -901,6 +902,61 @@ tinyspline_set_on_off(TINYSPLINE_WITH_PHP PHP_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_PYTHON PYTHONLIBS_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_RUBY RUBY_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
+
+
+
+###############################################################################
+### Configure language-specific build systems.
+###############################################################################
+# Luarocks
+file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec")
+if(${TINYSPLINE_WITH_LUA})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.rockspec.in"
+		"${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec"
+		@ONLY
+	)
+endif()
+
+# Nuget
+file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
+if(${TINYSPLINE_WITH_CSHARP})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/.nuspec.in"
+		"${CMAKE_BINARY_DIR}/.nuspec"
+		@ONLY
+	)
+endif()
+
+# Maven
+file(REMOVE "${CMAKE_BINARY_DIR}/pom.xml")
+if(${TINYSPLINE_WITH_JAVA})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/pom.xml.in"
+		"${CMAKE_BINARY_DIR}/pom.xml"
+		@ONLY
+	)
+endif()
+
+# Distutils
+file(REMOVE "${CMAKE_BINARY_DIR}/setup.py")
+if(${TINYSPLINE_WITH_PYTHON})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in"
+		"${CMAKE_BINARY_DIR}/setup.py"
+		@ONLY
+	)
+endif()
+
+# Gem
+file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
+if(${TINYSPLINE_WITH_RUBY})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.gemspec.in"
+		"${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec"
+		@ONLY
+	)
+endif()
 
 
 

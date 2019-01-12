@@ -40,6 +40,7 @@ before_script:
   - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_R=TRUE"
   - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_RUBY=TRUE"
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"; fi;
 
 script:
   - pushd tools/ci

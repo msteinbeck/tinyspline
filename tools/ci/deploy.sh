@@ -109,6 +109,14 @@ if [ ! -d "$BIN_DIR" ]; then
 	exit -1
 fi
 
+# Path to the C# package that will be deployed.
+CSHARP_FILE=$(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.nupkg')
+# Verify that the C# package has been created.
+if [ ! -f "$CSHARP_FILE" ]; then
+	echo "C# package is not available; aborting."
+	exit -1
+fi
+
 # Path to the Lua package that will be deployed.
 LUAROCKS_FILE=$(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.rock')
 # Verify that the Lua package has been created.
@@ -164,6 +172,7 @@ pushd "$BUILD_BRANCH_DIR"
 
 	# Copy packages.
 	mkdir dist
+	cp "$CSHARP_FILE" ./dist
 	cp "$LUAROCKS_FILE" ./dist
 	cp "$JAVA_FILE" ./dist
 	cp -a "$PYTHON_DIR/." ./dist

@@ -20,6 +20,11 @@ pushd "$BUILD_DIR_FIXED"
 	cmake --build .
 	cmake --build . --target docs
 	if [ -n "$TRAVIS_OS_NAME" ]; then
+		if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+			mono nuget pack
+		else
+			nuget pack
+		fi
 		luarocks --local make $(find "$BUILD_DIR_FIXED" -maxdepth 1 -name '*.rockspec')
 		luarocks --local pack tinyspline
 		mvn clean package

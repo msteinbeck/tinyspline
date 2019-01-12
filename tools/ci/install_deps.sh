@@ -20,6 +20,7 @@ pushd "$DEPS_DIR"
 			php-dev             \
 			liblua5.3-dev       \
 			luarocks            \
+			nuget               \
 			octave-pkg-dev      \
 			openjdk-8-jdk       \
 			r-base              \
@@ -32,6 +33,7 @@ pushd "$DEPS_DIR"
 			lua                 \
 			luarocks            \
 			mono                \
+			nuget               \
 			r                   \
 			ruby                \
 			swig

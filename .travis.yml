@@ -20,6 +20,8 @@ sudo: true
 
 osx_image: xcode10.1
 
+jdk: openjdk8
+
 install:
   - pushd tools/ci
   - ./install_deps.sh

@@ -12,7 +12,7 @@ pushd "$DEPS_DIR"
 	# Install dependencies from package manager.
 	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 		sudo apt-get -qq update
-		sudo apt-get install --no-install-recommends \
+		sudo apt-get install --no-install-recommends --no-upgrade \
 			doxygen             \
 			graphviz            \
 			python-dev          \

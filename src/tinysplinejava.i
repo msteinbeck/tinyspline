@@ -7,6 +7,10 @@
 // Automatically load native library.
 %pragma(java) jniclasscode=%{
 	static {
+		// Load dependencies
+		System.loadLibrary("jvm");
+		System.loadLibrary("awt");
+
 		// Determine platform.
 		final String os = System.getProperty("os.name").toLowerCase();
 		final String arch = System.getProperty("sun.arch.data.model");
@@ -34,8 +38,8 @@
 		try {
 			in = tinysplinejavaJNI.class.getResourceAsStream("/" + library);
 			if (in == null) {
-				throw new java.io.FileNotFoundException(
-					"Native library is not available");
+				throw new java.io.FileNotFoundException(String.format(
+					"Native library '%s' is not available", library));
 			}
 			tmp = java.io.File.createTempFile("tinyspline", null);
 			tmp.deleteOnExit();
@@ -46,8 +50,9 @@
 			while((read = in.read(buffer)) != -1) {
 				out.write(buffer, 0, read);
 			}
-		} catch (final Throwable e) {
-			throw new Error("Error while copying native library", e);
+		} catch (final Exception e) {
+			throw new Error(String.format(
+				"Error while copying native library '%s'", library), e);
 		} finally {
 			try {
 				if (in != null) {

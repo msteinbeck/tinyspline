@@ -7,9 +7,9 @@
 // Automatically load native library.
 %pragma(java) jniclasscode=%{
 	static {
-		// Load dependencies, ignore exceptions.
-		try { System.loadLibrary("jvm"); } catch(final Exception e) {}
-		try { System.loadLibrary("awt"); } catch(final Exception e) {}
+		// Load dependencies, ignore errors.
+		try { System.loadLibrary("jvm"); } catch(final Throwable e) {}
+		try { System.loadLibrary("awt"); } catch(final Throwable e) {}
 
 		// Determine platform.
 		final String os = System.getProperty("os.name").toLowerCase();

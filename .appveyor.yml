@@ -6,13 +6,35 @@ branches:
     - build_linux_64
     - build_osx_64
 
+environment:
+  matrix:
+    - COMPILER: mingw
+      GENERATOR: MinGW Makefiles
+      PLATFORM: Win32
+
+    - COMPILER: mingw-w64
+      GENERATOR: MinGW Makefiles
+      PLATFORM: x64
+
+    - COMPILER: msvc
+      GENERATOR: Visual Studio 15 2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PLATFORM: Win32
+
+    - COMPILER: msvc
+      GENERATOR: Visual Studio 15 2017 Win64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PLATFORM: x64
+
 install:
+  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
   - ps: choco install -y -r swig --version 3.0.9
   - ps: choco install -y -r lua
   - ps: refreshenv
 
-before_build:
-  - cmake -G "Visual Studio 14 2015 Win64" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE.
-
-build:
-  project: tinyspline.sln
+build_script:
+  - mkdir build
+  - cd build
+  - cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
+  - cmake --build .

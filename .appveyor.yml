@@ -32,13 +32,14 @@ install:
   - ps: refreshenv
 
 before_build:
-  - if "%COMPILER%"=="mingw"     set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
   - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
+  # sh.exe must not be in PATH when compiling with MinGW.
+  - if "%COMPILER%"=="mingw" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+  - if "%COMPILER%"=="mingw-w64" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
 
 build_script:
   - mkdir build
   - cd build
-  - if "%COMPILER%"=="mingw"     cmake -G "%GENERATOR%" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
-  - if "%COMPILER%"=="mingw-w64" cmake -G "%GENERATOR%" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
-  - if "%COMPILER%"=="msvc"      cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
+  - cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
   - cmake --build .

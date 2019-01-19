@@ -27,11 +27,15 @@ environment:
       PLATFORM: x64
 
 install:
-  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
-  - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
   - ps: choco install -y -r swig --version 3.0.9
   - ps: choco install -y -r lua
   - ps: refreshenv
+
+before_build:
+  # sh.exe must not be in PATH when using CMake with MinGW.
+  - if "%COMPILER%"=="mingw" set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
 
 build_script:
   - mkdir build

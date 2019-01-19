@@ -33,7 +33,7 @@ install:
 
 before_build:
   - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
-  - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw-w64" set PATH=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\bin;%PATH%
   # sh.exe must not be in PATH when compiling with MinGW.
   - if "%COMPILER%"=="mingw" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
   - if "%COMPILER%"=="mingw-w64" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"

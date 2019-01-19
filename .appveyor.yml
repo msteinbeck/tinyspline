@@ -32,13 +32,13 @@ install:
   - ps: refreshenv
 
 before_build:
-  # sh.exe must not be in PATH when using CMake with MinGW.
-  - if "%COMPILER%"=="mingw" set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw"     set PATH=C:\MinGW\bin;%PATH%
   - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
 
 build_script:
   - mkdir build
   - cd build
-  - cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
+  - if "%COMPILER%"=="mingw"     cmake -G "%GENERATOR%" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
+  - if "%COMPILER%"=="mingw-w64" cmake -G "%GENERATOR%" -DCMAKE_SH="CMAKE_SH-NOTFOUND" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
+  - if "%COMPILER%"=="msvc"      cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
   - cmake --build .

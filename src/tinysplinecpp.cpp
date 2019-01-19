@@ -316,8 +316,8 @@ void tinyspline::BSpline::setControlPoints(
 	if (expected != actual) {
 		char expected_str[32];
 		char actual_str[32];
-		sprintf(expected_str, "%zu", expected);
-		sprintf(actual_str, "%zu", actual);
+		sprintf(expected_str, "%lu", (unsigned long) expected);
+		sprintf(actual_str, "%lu", (unsigned long) actual);
 		throw std::runtime_error(
 			"Expected size: " + std::string(expected_str) +
 			", Actual size: " + std::string(actual_str));
@@ -341,8 +341,8 @@ void tinyspline::BSpline::setControlPointAt(size_t index,
 	if (expected != actual) {
 		char expected_str[32];
 		char actual_str[32];
-		sprintf(expected_str, "%zu", expected);
-		sprintf(actual_str, "%zu", actual);
+		sprintf(expected_str, "%lu", (unsigned long) expected);
+		sprintf(actual_str, "%lu", (unsigned long) actual);
 		throw std::runtime_error(
 			"Expected size: " + std::string(expected_str) +
 			", Actual size: " + std::string(actual_str));
@@ -366,8 +366,8 @@ void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
 	if (expected != actual) {
 		char expected_str[32];
 		char actual_str[32];
-		sprintf(expected_str, "%zu", expected);
-		sprintf(actual_str, "%zu", actual);
+		sprintf(expected_str, "%lu", (unsigned long) expected);
+		sprintf(actual_str, "%lu", (unsigned long) actual);
 		throw std::runtime_error(
 			"Expected size: " + std::string(expected_str) +
 			", Actual size: " + std::string(actual_str));

@@ -12,9 +12,9 @@ environment:
       GENERATOR: MinGW Makefiles
       PLATFORM: Win32
 
-    - COMPILER: mingw-w64
-      GENERATOR: MinGW Makefiles
-      PLATFORM: x64
+    #- COMPILER: mingw-w64
+      #GENERATOR: MinGW Makefiles
+      #PLATFORM: x64
 
     - COMPILER: msvc
       GENERATOR: Visual Studio 15 2017

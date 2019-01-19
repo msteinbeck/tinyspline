@@ -29,7 +29,7 @@ environment:
 install:
   - ps: choco install -y -r swig --version 3.0.9
   - ps: choco install -y -r lua
-  - ps: if ($Env:COMPILER -eq "mingw-w64") choco install -y -r mingw
+  - ps: if ($Env:COMPILER -eq "mingw-w64") { choco install -y -r mingw }
   - ps: refreshenv
 
 before_build:

@@ -37,9 +37,9 @@ int main(int argc, char **argv)
 /* ------------------------------------------------------------------------- */
 /* TinySpline includes a powerful, system-independent, and thread-safe error
  * handling system in the form of easy-to-use macros. All you need to do is to
- * embed your code into TS_TRY/TS_END_TRY and use TS_CALL when calling
- * functions of TinySpline's API. Likewise, you can use any of the TS_THROW
- * macros to raise an error if an external function (e.g. malloc) failed.
+ * embed your code into TS_TRY/TS_END_TRY and use TS_CALL when calling a
+ * TinySpline function. Likewise, you can use any of the TS_THROW macros to
+ * raise an error if an external function (e.g. malloc) failed.
  *
  * Errors can be handled in TS_CATCH. TS_FINALLY contains code that is executed
  * in any case, therefore being perfectly suitable for cleaning up resources.

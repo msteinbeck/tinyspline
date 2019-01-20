@@ -9,37 +9,20 @@ branches:
 environment:
   matrix:
     - COMPILER: mingw
-      GENERATOR: MinGW Makefiles
       PLATFORM: Win32
 
     #- COMPILER: mingw-w64
       #GENERATOR: MinGW Makefiles
-      #PLATFORM: x64
+      #PLATFORM: Win64
 
     - COMPILER: msvc
-      GENERATOR: Visual Studio 15 2017
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       PLATFORM: Win32
 
     - COMPILER: msvc
-      GENERATOR: Visual Studio 15 2017 Win64
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      PLATFORM: x64
-
-install:
-  - ps: choco install -y -r swig --version 3.0.9
-  - ps: choco install -y -r lua
-  - ps: if ($Env:COMPILER -eq "mingw-w64") { choco install -y -r mingw }
-  - ps: refreshenv
-
-before_build:
-  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
-  # sh.exe must not be in PATH when compiling with MinGW.
-  - if "%COMPILER%"=="mingw" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
-  - if "%COMPILER%"=="mingw-w64" rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+      PLATFORM: Win64
 
 build_script:
-  - mkdir build
-  - cd build
-  - cmake -G "%GENERATOR%" -DTINYSPLINE_ENABLE_CSHARP=TRUE -DTINYSPLINE_ENABLE_D=TRUE -DTINYSPLINE_ENABLE_JAVA=TRUE ..
-  - cmake --build .
+  - ps: $Env:BUILD_DIR = 'build'
+  - ps: tools/ci/build.ps1

@@ -58,10 +58,15 @@ refreshenv
 
 
 ###############################################################################
-### Compile all targets.
+### Compile targets.
 ###############################################################################
+$CMAKE_FLAGS  = '-DCMAKE_BUILD_TYPE=Release'
+$CMAKE_FLAGS += '-DTINYSPLINE_ENABLE_CSHARP=True'
+$CMAKE_FLAGS += '-DTINYSPLINE_ENABLE_D=True'
+$CMAKE_FLAGS += '-DTINYSPLINE_ENABLE_JAVA=True'
+
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED
-	cmake -G "$GENERATOR" "$Env:CMAKE_FLAGS" "$PSScriptRoot\..\.."
+	cmake -G "$GENERATOR" "$CMAKE_FLAGS" "$PSScriptRoot\..\.."
 	cmake --build .
 popd

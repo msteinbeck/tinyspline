@@ -27,10 +27,9 @@ if ($Env:PLATFORM -ne "Win32" -and $Env:PLATFORM -ne "Win64") {
 # Make BUILD_DIR next to this script.
 $BUILD_DIR_FIXED = "$PSScriptRoot\$Env:BUILD_DIR"
 
-# Setup CMake generator.
+# Setup CMAKE_FLAGS.
+$CMAKE_FLAGS = "$Env:CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
 if ($Env:COMPILER -eq "mingw") {
-	# sh.exe must not be in PATH when compiling with MinGW.
-	Rename-Item -Path "C:\Program Files\Git\usr\bin\sh.exe" -NewName "sh2.exe"
 	$GENERATOR = "MinGW Makefiles"
 } else {
 	$GENERATOR = "Visual Studio 15 2017"
@@ -38,6 +37,7 @@ if ($Env:COMPILER -eq "mingw") {
 		$GENERATOR = "$GENERATOR Win64"
 	}
 }
+$CMAKE_FLAGS = "$CMAKE_FLAGS -G ""$GENERATOR"""
 
 
 
@@ -47,6 +47,8 @@ if ($Env:COMPILER -eq "mingw") {
 choco install -y -r swig --version 3.0.9
 choco install -y -r lua53
 if ($Env:COMPILER -eq "mingw") {
+	sh.exe must not be in PATH when compiling with MinGW.
+	Rename-Item -Path "C:\Program Files\Git\usr\bin\sh.exe" -NewName "sh2.exe"
 	if ($Env:PLATFORM -eq "Win64") {
 		choco install -y -r mingw
 	} else {
@@ -55,18 +57,23 @@ if ($Env:COMPILER -eq "mingw") {
 }
 refreshenv
 
+# Enable installed and supported interfaces.
+$CMAKE_FLAGS = "$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
+$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=True"
+$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=True"
+$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=True"
+
 
 
 ###############################################################################
 ### Compile targets.
 ###############################################################################
-$CMAKE_FLAGS = '-DCMAKE_BUILD_TYPE=Release'
-$CMAKE_FLAGS = '$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=True'
-$CMAKE_FLAGS = '$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=True'
-$CMAKE_FLAGS = '$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=True'
-
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED
-	cmake -G "$GENERATOR" $CMAKE_FLAGS "$PSScriptRoot\..\.."
-	cmake --build .
+	Start-Process cmake `
+		-ArgumentList "$CMAKE_FLAGS $PSScriptRoot\..\.." `
+		-NoNewWindow -Wait
+	Start-Process cmake `
+		-ArgumentList "--build ." `
+		-NoNewWindow -Wait
 popd

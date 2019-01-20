@@ -68,12 +68,25 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=True"
 ###############################################################################
 ### Compile.
 ###############################################################################
+$OUT_LOG = "out.log"
+$ERR_LOG = "err.log"
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED
-	Start-Process cmake `
-		-ArgumentList "$CMAKE_FLAGS $PSScriptRoot\..\.." `
-		-NoNewWindow -Wait
-	Start-Process cmake `
-		-ArgumentList "--build ." `
-		-NoNewWindow -Wait
+	$PROCESS = Start-Process cmake `
+		-ArgumentList "$CMAKE_FLAGS $PSScriptRoot\..\.." -Wait -PassThru `
+		-RedirectStandardOutput "$OUT_LOG" -RedirectStandardError "$ERR_LOG"
+	Get-Content -Path "$OUT_LOG"
+	Get-Content -Path "$ERR_LOG"
+	if ($PROCESS.ExitCode -ne 0) {
+		exit $PROCESS.ExitCode
+	}
+
+	$PROCESS = Start-Process cmake `
+		-ArgumentList "--build ." -Wait -PassThru `
+		-RedirectStandardOutput "$OUT_LOG" -RedirectStandardError "$ERR_LOG"
+	Get-Content -Path "$OUT_LOG"
+	Get-Content -Path "$ERR_LOG"
+	if ($PROCESS.ExitCode -ne 0) {
+		exit $PROCESS.ExitCode
+	}
 popd

@@ -42,18 +42,18 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -G ""$GENERATOR"""
 
 
 ###############################################################################
-### Install dependencies.
+### Install dependencies and setup system.
 ###############################################################################
 choco install -y -r swig --version 3.0.9
 choco install -y -r lua53
 if ($Env:COMPILER -eq "mingw") {
-	sh.exe must not be in PATH when compiling with MinGW.
-	Rename-Item -Path "C:\Program Files\Git\usr\bin\sh.exe" -NewName "sh2.exe"
 	if ($Env:PLATFORM -eq "Win64") {
 		choco install -y -r mingw
 	} else {
 		$Env:Path += ";C:\MinGW\bin"
 	}
+	# sh.exe must not be in PATH when compiling with MinGW.
+	Rename-Item -Path "C:\Program Files\Git\usr\bin\sh.exe" -NewName "sh2.exe"
 }
 refreshenv
 
@@ -66,7 +66,7 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=True"
 
 
 ###############################################################################
-### Compile targets.
+### Compile.
 ###############################################################################
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED

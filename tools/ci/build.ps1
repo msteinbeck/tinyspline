@@ -62,6 +62,6 @@ refreshenv
 ###############################################################################
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED
-	cmake "$PSScriptRoot\..\.." -G "$GENERATOR" "$Env:CMAKE_FLAGS"
+	cmake -G "$GENERATOR" "$Env:CMAKE_FLAGS" "$PSScriptRoot\..\.."
 	cmake --build .
 popd

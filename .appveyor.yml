@@ -27,6 +27,6 @@ build_script:
   - ps: $Env:BUILD_DIR = "build"
   - ps: $Env:CMAKE_FLAGS += " -DCMAKE_BUILD_TYPE=Release"
   - ps: $Env:CMAKE_FLAGS += " -DTINYSPLINE_ENABLE_CSHARP=True"
-  - ps: $Env:CMAKE_FLAGS += " -DTINYSPLINE_ENABLE_DLANG=True"
+  - ps: $Env:CMAKE_FLAGS += " -DTINYSPLINE_ENABLE_D=True"
   - ps: $Env:CMAKE_FLAGS += " -DTINYSPLINE_ENABLE_JAVA=True"
   - ps: tools/ci/build.ps1

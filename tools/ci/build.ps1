@@ -73,8 +73,11 @@ $ERR_LOG = "err.log"
 mkdir $BUILD_DIR_FIXED
 pushd $BUILD_DIR_FIXED
 	$PROCESS = Start-Process cmake `
-		-ArgumentList "$CMAKE_FLAGS $PSScriptRoot\..\.." -Wait -PassThru `
-		-RedirectStandardOutput "$OUT_LOG" -RedirectStandardError "$ERR_LOG"
+		-ArgumentList "$CMAKE_FLAGS $PSScriptRoot\..\.." `
+		-PassThru `
+		-RedirectStandardOutput "$OUT_LOG" `
+		-RedirectStandardError "$ERR_LOG"
+	$PROCESS | Wait-Process
 	Get-Content -Path "$OUT_LOG"
 	Get-Content -Path "$ERR_LOG"
 	if ($PROCESS.ExitCode -ne 0) {
@@ -82,8 +85,11 @@ pushd $BUILD_DIR_FIXED
 	}
 
 	$PROCESS = Start-Process cmake `
-		-ArgumentList "--build ." -Wait -PassThru `
-		-RedirectStandardOutput "$OUT_LOG" -RedirectStandardError "$ERR_LOG"
+		-ArgumentList "--build ." `
+		-PassThru `
+		-RedirectStandardOutput "$OUT_LOG" `
+		-RedirectStandardError "$ERR_LOG"
+	$PROCESS | Wait-Process
 	Get-Content -Path "$OUT_LOG"
 	Get-Content -Path "$ERR_LOG"
 	if ($PROCESS.ExitCode -ne 0) {

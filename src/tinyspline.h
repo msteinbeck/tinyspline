@@ -199,40 +199,44 @@ typedef struct {
 	return error;                                              \
 }
 
-#define TS_THROW_0(label, status, error, msg)    \
-{                                                \
-	if ((status) != NULL) {                  \
-		(status)->code = error;          \
-		sprintf((status)->message, msg); \
-	}                                        \
-	goto __ ## label ## __;                  \
+#define TS_THROW_0(label, error, status, val, msg) \
+{                                                  \
+	(error) = val;                             \
+	if ((status) != NULL) {                    \
+		(status)->code = val;              \
+		sprintf((status)->message, msg);   \
+	}                                          \
+	goto __ ## label ## __;                    \
 }
 
-#define TS_THROW_1(label, status, error, msg, arg1)     \
-{                                                       \
-	if ((status) != NULL) {                         \
-		(status)->code = error;                 \
-		sprintf((status)->message, msg, arg1);  \
-	}                                               \
-	goto __ ## label ## __;                         \
+#define TS_THROW_1(label, error, status, val, msg, arg1) \
+{                                                        \
+	(error) = val;                                   \
+	if ((status) != NULL) {                          \
+		(status)->code = val;                    \
+		sprintf((status)->message, msg, arg1);   \
+	}                                                \
+	goto __ ## label ## __;                          \
 }
 
-#define TS_THROW_2(label, status, error, msg, arg1, arg2)     \
-{                                                             \
-	if ((status) != NULL) {                               \
-		(status)->code = error;                       \
-		sprintf((status)->message, msg, arg1, arg2);  \
-	}                                                     \
-	goto __ ## label ## __;                               \
+#define TS_THROW_2(label, error, status, val, msg, arg1, arg2) \
+{                                                              \
+	(error) = val;                                         \
+	if ((status) != NULL) {                                \
+		(status)->code = val;                          \
+		sprintf((status)->message, msg, arg1, arg2);   \
+	}                                                      \
+	goto __ ## label ## __;                                \
 }
 
-#define TS_THROW_3(label, status, error, msg, arg1, arg2, arg3)     \
-{                                                                   \
-	if ((status) != NULL) {                                     \
-		(status)->code = error;                             \
-		sprintf((status)->message, msg, arg1, arg2, arg3);  \
-	}                                                           \
-	goto __ ## label ## __;                                     \
+#define TS_THROW_3(label, error, status, val, msg, arg1, arg2, arg3) \
+{                                                                    \
+	(error) = val;                                               \
+	if ((status) != NULL) {                                      \
+		(status)->code = val;                                \
+		sprintf((status)->message, msg, arg1, arg2, arg3);   \
+	}                                                            \
+	goto __ ## label ## __;                                      \
 }
 
 

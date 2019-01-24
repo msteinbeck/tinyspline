@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "tinyspline.h"
+#include <tinyspline.h>
 #include "CuTest.h"
 
 #define EPSILON 0.0001
@@ -202,7 +202,7 @@ void eval_002(CuTest *tc)
 	TS_END_TRY
 }
 
-void eval_003(CuTest *tc)
+void eval_two_points(CuTest *tc)
 {
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
@@ -254,6 +254,18 @@ void eval_003(CuTest *tc)
 	TS_END_TRY
 }
 
+void eval_undefined_knot(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsStatus status;
+
+	CuAssertIntEquals(tc, TS_SUCCESS, ts_bspline_new(
+		7, 3, 3, TS_OPENED, &spline, &status));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
+		&spline, 0.f, &net, &status));
+}
+
 CuSuite* get_eval_suite()
 {
 	CuSuite* suite = CuSuiteNew();
@@ -261,6 +273,7 @@ CuSuite* get_eval_suite()
 	SUITE_ADD_TEST(suite, eval_domain_max);
 	SUITE_ADD_TEST(suite, eval_001);
 	SUITE_ADD_TEST(suite, eval_002);
-	SUITE_ADD_TEST(suite, eval_003);
+	SUITE_ADD_TEST(suite, eval_two_points);
+	SUITE_ADD_TEST(suite, eval_undefined_knot);
 	return suite;
 }

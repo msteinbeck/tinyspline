@@ -34,23 +34,26 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 		${TINYSPLINE_LIBRARIES}
 		${TINYSPLINE_COVERAGE_C_LIBRARIES}
 	)
-
-	foreach(TINYSPLINE_C_SOURCE_FILE ${TINYSPLINE_C_SOURCE_FILES})
-		set(TINYSPLINE_COVERAGE_FILE_PATTERN
-			"${TINYSPLINE_COVERAGE_FILE_PATTERN} '${TINYSPLINE_C_SOURCE_FILES}'"
-		)
-	endforeach()
-	string(STRIP "${TINYSPLINE_COVERAGE_FILE_PATTERN}"
-		TINYSPLINE_COVERAGE_FILE_PATTERN
-	)
 	set(TINYSPLINE_COVERAGE_INFO_FILE coverage.info)
 	add_custom_target(tinyspline_coverage
-		COMMAND ${TINYSPLINE_LCOV} --directory . --zerocounters
+		COMMAND ${TINYSPLINE_LCOV}
+			--directory .
+			--zerocounters
 		COMMAND tinyspline_tests_coverage
-		COMMAND ${TINYSPLINE_LCOV} --rc lcov_branch_coverage=1 --directory . --capture --output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
-		COMMAND ${TINYSPLINE_LCOV} --rc lcov_branch_coverage=1 --extract coverage.info ${TINYSPLINE_COVERAGE_FILE_PATTERN} --output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
-		COMMAND ${TINYSPLINE_GENHTML} -o ${TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY}/c ${TINYSPLINE_COVERAGE_INFO_FILE}
-		COMMAND ${CMAKE_COMMAND} -E remove ${TINYSPLINE_COVERAGE_INFO_FILE}
+		COMMAND ${TINYSPLINE_LCOV}
+			--rc lcov_branch_coverage=1
+			--directory .
+			--capture
+			--output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
+		COMMAND ${TINYSPLINE_LCOV}
+			--rc lcov_branch_coverage=1
+			--extract ${TINYSPLINE_COVERAGE_INFO_FILE} '*tinyspline.c'
+			--output-file ${TINYSPLINE_COVERAGE_INFO_FILE}
+		COMMAND ${TINYSPLINE_GENHTML}
+			-o ${TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY}/c
+			${TINYSPLINE_COVERAGE_INFO_FILE}
+		COMMAND ${CMAKE_COMMAND}
+			-E remove ${TINYSPLINE_COVERAGE_INFO_FILE}
 		DEPENDS tinyspline_tests_coverage
 	)
 endif()

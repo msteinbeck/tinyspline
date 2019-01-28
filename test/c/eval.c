@@ -9,6 +9,7 @@ void eval_domain_min(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal *ctrlp = NULL, *result = NULL;
+	tsReal min, max;
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
@@ -34,9 +35,9 @@ void eval_domain_min(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status));
 
+		ts_bspline_domain(&spline, &min, &max);
 		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, ts_bspline_domain_min(
-				&spline), &net, &status))
+			&spline, min, &net, &status))
 		CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 		CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 
@@ -59,6 +60,7 @@ void eval_domain_max(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal *ctrlp = NULL, *result = NULL;
+	tsReal min, max;
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
@@ -84,9 +86,9 @@ void eval_domain_max(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
+		ts_bspline_domain(&spline, &min, &max);
 		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, ts_bspline_domain_max(
-				&spline), &net, &status))
+			&spline, max, &net, &status))
 		CuAssertTrue(tc, ts_deboornet_num_result(&net) == 1);
 		CuAssertTrue(tc, ts_deboornet_dimension(&net) == 2);
 

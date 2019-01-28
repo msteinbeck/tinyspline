@@ -37,6 +37,18 @@ private:
 	friend class BSpline;
 };
 
+class Domain {
+public:
+    Domain(tsReal min, tsReal max);
+    Domain(const Domain &other);
+
+    real min() const;
+    real max() const;
+private:
+    real _min;
+    real _max;
+};
+
 class BSpline {
 public:
 	typedef tsBSplineType type;
@@ -68,8 +80,7 @@ public:
 
 	/* Query */
 	DeBoorNet eval(real u) const;
-	real domainMin() const;
-	real domainMax() const;
+	Domain domain() const;
 	bool isClosed(real epsilon = 0.00001) const;
 
 	/* Serialization */

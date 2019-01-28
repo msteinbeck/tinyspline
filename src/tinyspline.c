@@ -121,6 +121,7 @@ tsError ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u,
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
 	const tsReal *knots = ts_internal_bspline_access_knots(spline);
+	tsReal min, max;
 
 	*k = *s = 0;
 	for (; *k < num_knots; (*k)++) {
@@ -133,23 +134,21 @@ tsError ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u,
 	}
 
 	/* keep in mind that currently k is k+1 */
+	ts_bspline_domain(spline, &min, &max);
 	if (*k <= deg) {
 		/* u < u_min */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			   "knot (%f) < min(domain) (%f)",
-			   u, ts_bspline_domain_min(spline))
+			   "knot (%f) < min(domain) (%f)", u, min)
 	}
 	if (*k == num_knots && *s == 0) {
 		/* u > u_last */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			   "knot (%f) > max(domain) (%f)",
-			   u, ts_bspline_domain_max(spline))
+			   "knot (%f) > max(domain) (%f)", u, max)
 	}
 	if (*k > num_knots-deg + *s-1)  {
 		/* u > u_max */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			   "knot (%f) > max(domain) (%f)",
-			   u, ts_bspline_domain_max(spline))
+			   "knot (%f) > max(domain) (%f)", u, max)
 	}
 	(*k)--; /* k+1 - 1 will never underflow */
 	TS_RETURN_SUCCESS(status)
@@ -1003,26 +1002,21 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsReal ts_bspline_domain_min(const tsBSpline *spline)
+void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)
 {
-	return ts_internal_bspline_access_knots(spline)
+	*min = ts_internal_bspline_access_knots(spline)
 		[ts_bspline_degree(spline)];
-}
-
-tsReal ts_bspline_domain_max(const tsBSpline *spline)
-{
-	return ts_internal_bspline_access_knots(spline)
+	*max = ts_internal_bspline_access_knots(spline)
 		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
 }
 
 tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	int *closed, tsStatus *status)
 {
-	const tsReal min = ts_bspline_domain_min(spline);
-	const tsReal max = ts_bspline_domain_max(spline);
-	const size_t dim = ts_bspline_dimension(spline);
+	tsReal min, max;
 	tsDeBoorNet first, last;
 	tsError err;
+	ts_bspline_domain(spline, &min, &max);
 	ts_internal_deboornet_init(&first);
 	ts_internal_deboornet_init(&last);
 	TS_TRY(try, err, status)
@@ -1031,7 +1025,7 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 		*closed = ts_ctrlp_dist2(
 			ts_internal_deboornet_access_result(&first),
 			ts_internal_deboornet_access_result(&last),
-			dim) <= epsilon ? 1 : 0;
+			ts_bspline_dimension(spline)) <= epsilon ? 1 : 0;
 	TS_FINALLY
 		ts_deboornet_free(&first);
 		ts_deboornet_free(&last);

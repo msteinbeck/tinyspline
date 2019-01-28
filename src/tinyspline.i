@@ -35,6 +35,10 @@
 	dimension,
 	dimension);
 %attributeval(tinyspline::BSpline,
+	tinyspline::Domain,
+	domain,
+	domain);
+%attributeval(tinyspline::BSpline,
 	std::vector<tinyspline::real>,
 	controlPoints,
 	controlPoints,
@@ -44,6 +48,14 @@
 	knots,
 	knots,
 	setKnots);
+%attribute(tinyspline::Domain,
+	tinyspline::real,
+	min,
+	min);
+%attribute(tinyspline::Domain,
+	tinyspline::real,
+	max,
+	max);
 %attribute(tinyspline::DeBoorNet,
 	tinyspline::real,
 	knot,

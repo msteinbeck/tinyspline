@@ -119,6 +119,36 @@ tsDeBoorNet * tinyspline::DeBoorNet::data()
 
 /******************************************************************************
 *                                                                             *
+* Domain                                                                      *
+*                                                                             *
+******************************************************************************/
+tinyspline::Domain::Domain(tinyspline::real min, tinyspline::real max)
+{
+	_min = min;
+	_max = max;
+}
+
+tinyspline::Domain::Domain(const tinyspline::Domain &other)
+{
+	_min = other._min;
+	_max = other._max;
+}
+
+tinyspline::real tinyspline::Domain::min() const
+{
+	return _min;
+}
+
+tinyspline::real tinyspline::Domain::max() const
+{
+	return _max;
+}
+
+
+
+
+/******************************************************************************
+*                                                                             *
 * BSpline                                                                     *
 *                                                                             *
 ******************************************************************************/
@@ -251,14 +281,11 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return deBoorNet;
 }
 
-tinyspline::real tinyspline::BSpline::domainMin() const
+tinyspline::Domain tinyspline::BSpline::domain() const
 {
-	return ts_bspline_domain_min(&spline);
-}
-
-tinyspline::real tinyspline::BSpline::domainMax() const
-{
-	return ts_bspline_domain_max(&spline);
+	real min, max;
+	ts_bspline_domain(&spline, &min, &max);
+	return Domain(min, max);
 }
 
 bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const

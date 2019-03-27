@@ -15,7 +15,7 @@ pushd "$DEPS_DIR"
 		sudo apt-get install --no-install-recommends \
 			doxygen             \
 			graphviz            \
-			python-dev          \
+			python3.7-dev       \
 			ruby-dev            \
 			php-dev             \
 			liblua5.3-dev       \

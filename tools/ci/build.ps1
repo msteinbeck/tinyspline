@@ -45,7 +45,7 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -G ""$GENERATOR"""
 ### Install dependencies and setup system.
 ###############################################################################
 choco install -y -r swig --version 3.0.9
-choco install -y -r lua53
+choco install -y -r lua
 choco install -y -r python3
 if ($Env:COMPILER -eq "mingw") {
 	if ($Env:PLATFORM -eq "Win64") {

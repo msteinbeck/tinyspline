@@ -85,7 +85,7 @@ pushd $BUILD_DIR_FIXED
 	}
 
 	$PROCESS = Start-Process cmake `
-		-ArgumentList "--build ." `
+		-ArgumentList "--build . --config Release" `
 		-PassThru `
 		-RedirectStandardOutput "$OUT_LOG" `
 		-RedirectStandardError "$ERR_LOG"

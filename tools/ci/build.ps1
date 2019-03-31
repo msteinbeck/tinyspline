@@ -67,6 +67,8 @@ if ($Env:COMPILER -eq "msvc") {
 	if ($Env:PLATFORM -eq "Win64") {
 		$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_PYTHON=True"
 	}
+} else {
+	$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_LUA=True"
 }
 
 

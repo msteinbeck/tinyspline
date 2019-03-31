@@ -46,6 +46,7 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -G ""$GENERATOR"""
 ###############################################################################
 choco install -y -r swig --version 3.0.9
 choco install -y -r lua53
+choco install -y -r python3
 if ($Env:COMPILER -eq "mingw") {
 	if ($Env:PLATFORM -eq "Win64") {
 		choco install -y -r mingw
@@ -62,6 +63,7 @@ $CMAKE_FLAGS = "$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
 $CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=True"
 $CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=True"
 $CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=True"
+$CMAKE_FLAGS = "$CMAKE_FLAGS -DTINYSPLINE_ENABLE_PYTHON=True"
 
 
 

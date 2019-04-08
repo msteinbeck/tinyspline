@@ -114,7 +114,7 @@ class Utils {
 public:
 	static BSpline interpolateCubic(
 		const std::vector<real> *points, size_t dim);
-	static bool fequals(real x, real y);
+	static bool knotsEqual(real x, real y);
 
 private:
 	Utils() {}

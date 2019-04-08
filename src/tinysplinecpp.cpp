@@ -474,9 +474,9 @@ tinyspline::BSpline tinyspline::Utils::interpolateCubic(
 	return bspline;
 }
 
-bool tinyspline::Utils::fequals(tinyspline::real x, tinyspline::real y)
+bool tinyspline::Utils::knotsEqual(tinyspline::real x, tinyspline::real y)
 {
-	return ts_fequals(x, y) == 1;
+	return ts_knots_equal(x, y) == 1;
 }
 
 #ifdef _MSC_VER

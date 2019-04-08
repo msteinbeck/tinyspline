@@ -1411,18 +1411,20 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 *                                                                             *
 ******************************************************************************/
 /**
- * Compares the values \p x and \p y using TS_EPSILON.
+ * Compares the knots \p x and \p y using the epsilon environment
+ * TS_KNOT_EPSILON.
  *
  * @param x
  * 	The x value to compare.
  * @param y
  * 	The y value to compare.
  * @return 1
- * 	If \p x is equals to \p y according to TS_EPSILON.
+ * 	If \p x is equal to \p y with respect to the epsilon environment
+ * 	TS_KNOT_EPSILON.
  * @return 0
  * 	Otherwise.
  */
-int ts_fequals(tsReal x, tsReal y);
+int ts_knots_equal(tsReal x, tsReal y);
 
 /**
  * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num

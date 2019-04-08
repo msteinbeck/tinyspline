@@ -126,7 +126,7 @@ tsError ts_internal_bspline_find_u(const tsBSpline *spline, tsReal u,
 	*k = *s = 0;
 	for (; *k < num_knots; (*k)++) {
 		const tsReal uk = knots[*k];
-		if (ts_fequals(u, uk)) {
+		if (ts_knots_equal(u, uk)) {
 			(*s)++;
 		} else if (u < uk) {
 			break;
@@ -430,7 +430,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	mult = 1;
 	for (idx = 1; idx < num_knots; idx++) {
 		knot = knots[idx];
-		if (ts_fequals(lst_knot, knot)) {
+		if (ts_knots_equal(lst_knot, knot)) {
 			mult++;
 		} else if (lst_knot > knot) {
 			TS_RETURN_1(status, TS_KNOTS_DECR,
@@ -944,7 +944,7 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	/* 2. */
 	uk = knots[k];          /* Ensures that with any precision of  */
 	_deBoorNet_->pImpl->u = /* tsReal the knot vector stays valid. */
-		ts_fequals(u, uk) ? uk : u;
+		ts_knots_equal(u, uk) ? uk : u;
 	_deBoorNet_->pImpl->k = k;
 	_deBoorNet_->pImpl->s = s;
         _deBoorNet_->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */
@@ -1070,7 +1070,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 			} else {
 				for (i = 0; i < num_ctrlp-1; i++) {
 					for (j = 0; j < dim; j++) {
-						if (ts_fequals(knots[i+deg+1], knots[i+1])) {
+						if (ts_knots_equal(knots[i+deg+1], knots[i+1])) {
 							TS_THROW_0(try, err, status,
 								   TS_UNDERIVABLE,
 								   "unable to derive spline")
@@ -1312,7 +1312,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 
 		/* fix first control point if necessary */
 		u_min = knots[deg];
-		if (!ts_fequals(knots[0], u_min)) {
+		if (!ts_knots_equal(knots[0], u_min)) {
 			TS_CALL(try, err, ts_bspline_split(
 				&tmp, u_min, &tmp, &k, status))
 			resize = (int)(-1*deg + (deg*2 - k));
@@ -1324,7 +1324,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 
 		/* fix last control point if necessary */
 		u_max = knots[num_knots - order];
-		if (!ts_fequals(knots[num_knots - 1], u_max)) {
+		if (!ts_knots_equal(knots[num_knots - 1], u_max)) {
 			TS_CALL(try, err, ts_bspline_split(
 				&tmp, u_max, &tmp, &k, status))
 			num_knots = ts_bspline_num_knots(&tmp);
@@ -1664,7 +1664,7 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 * :: Utility Functions                                                        *
 *                                                                             *
 ******************************************************************************/
-int ts_fequals(tsReal x, tsReal y)
+int ts_knots_equal(tsReal x, tsReal y)
 {
 	return fabs(x-y) <= TS_KNOT_EPSILON ? 1 : 0;
 }

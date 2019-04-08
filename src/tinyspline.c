@@ -1022,10 +1022,10 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_eval(spline, min, &first, status))
 		TS_CALL(try, err, ts_bspline_eval(spline, max, &last, status))
-		*closed = ts_ctrlp_dist2(
-			ts_internal_deboornet_access_result(&first),
-			ts_internal_deboornet_access_result(&last),
-			ts_bspline_dimension(spline)) <= epsilon ? 1 : 0;
+		*closed = ts_distance(
+				ts_internal_deboornet_access_result(&first),
+				ts_internal_deboornet_access_result(&last),
+				ts_bspline_dimension(spline)) <= epsilon ? 1 : 0;
 	TS_FINALLY
 		ts_deboornet_free(&first);
 		ts_deboornet_free(&last);
@@ -1676,7 +1676,7 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 		arr[i] = val;
 }
 
-tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, size_t dim)
+tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dim)
 {
 	tsReal sum = 0;
 	size_t i;

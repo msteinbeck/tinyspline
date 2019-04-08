@@ -1431,8 +1431,7 @@ int ts_fequals(tsReal x, tsReal y);
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
 
 /**
- * Returns the euclidean distance of \p x and \p y consisting of \p dim
- * components, respectively.
+ * Returns the euclidean distance of the points \p x and \p y.
  *
  * @param x
  * 	The x value.
@@ -1441,9 +1440,9 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
  * @param dim
  * 	The dimension of \p x and \p y.
  * @return
- * 	The euclidean distanc of \p x and \p y.
+ * 	The euclidean distance of \p x and \p y.
  */
-tsReal ts_ctrlp_dist2(const tsReal *x, const tsReal *y, size_t dim);
+tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dim);
 
 
 

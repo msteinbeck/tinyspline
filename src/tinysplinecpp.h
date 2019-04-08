@@ -16,7 +16,7 @@ public:
 	~DeBoorNet();
 
 	/* Operators */
-	DeBoorNet& operator=(const DeBoorNet &other);
+	DeBoorNet & operator=(const DeBoorNet &other);
 
 	/* Getter */
 	real knot() const;
@@ -39,9 +39,14 @@ private:
 
 class Domain {
 public:
+	/* Constructors & Destructors */
     Domain(tsReal min, tsReal max);
     Domain(const Domain &other);
 
+	/* Operators */
+	Domain &operator=(const Domain &other);
+
+	/* Getter */
     real min() const;
     real max() const;
 private:

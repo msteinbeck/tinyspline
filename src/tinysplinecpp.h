@@ -40,15 +40,15 @@ private:
 class Domain {
 public:
 	/* Constructors & Destructors */
-    Domain(tsReal min, tsReal max);
-    Domain(const Domain &other);
+	Domain(tsReal min, tsReal max);
+	Domain(const Domain &other);
 
 	/* Operators */
 	Domain &operator=(const Domain &other);
 
 	/* Getter */
-    real min() const;
-    real max() const;
+	real min() const;
+	real max() const;
 private:
     real _min;
     real _max;

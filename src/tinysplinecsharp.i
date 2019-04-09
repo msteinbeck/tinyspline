@@ -3,6 +3,7 @@
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
 
 // Create a typemap that generalizes the types float and double to a single type accessible with
 // $typemap(cstype, tinyspline::real).

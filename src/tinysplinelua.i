@@ -2,6 +2,7 @@
 
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
 
 %rename("%(undercase)s", %$isfunction) "";
 %rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";

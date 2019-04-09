@@ -3,6 +3,7 @@
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
 
 // Automatically load native library.
 %pragma(java) jniclasscode=%{

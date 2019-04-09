@@ -7,6 +7,7 @@
 //********************************************************
 %ignore ts::BSpline::operator=;
 %ignore ts::BSpline::operator();
+%ignore tinyspline::Domain::operator=;
 
 //********************************************************
 //*                                                      *

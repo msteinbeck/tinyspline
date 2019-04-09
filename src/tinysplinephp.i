@@ -3,6 +3,7 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
 
 // Map std::vector<tinyspline::real> to PHP array.
 %typemap(out) std::vector<tinyspline::real> * {

@@ -2,6 +2,7 @@
 
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
 
 %include "tinyspline.i"
 

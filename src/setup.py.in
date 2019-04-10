@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+
+# Extend build process.
 from distutils.core import setup
 from distutils.command.build_py import build_py as _build_py
 
@@ -34,10 +37,22 @@ class build_py(_build_py):
 		init_file.writelines("from .@TINYSPLINE_PACKAGE_NAME@ import *\n")
 		init_file.close()
 
-		# distutils uses old-style classes, so no super()
+		# Distutils uses old-style classes, so no super().
 		_build_py.run(self)
 
 
+# Extend wheel creation.
+import setuptools
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+
+
+class bdist_wheel(_bdist_wheel):
+	def finalize_options(self):
+		_bdist_wheel.finalize_options(self)
+		self.root_is_pure = False
+
+
+# Create setup.
 setup(name="@TINYSPLINE_PACKAGE_NAME@",
 	  version="@TINYSPLINE_VERSION@-1",
 	  description="@TINYSPLINE_SUMMARY@",
@@ -53,7 +68,7 @@ setup(name="@TINYSPLINE_PACKAGE_NAME@",
 		  "Programming Language :: Python",
 		  "License :: OSI Approved :: MIT License"
 	  ],
-	  cmdclass={"build_py": build_py},
+	  cmdclass={"build_py": build_py, 'bdist_wheel': bdist_wheel},
 	  packages=["@TINYSPLINE_PACKAGE_NAME@"],
 	  package_dir={"@TINYSPLINE_PACKAGE_NAME@": "."}
      )

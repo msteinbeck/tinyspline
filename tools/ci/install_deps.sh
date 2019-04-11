@@ -16,6 +16,7 @@ pushd "$DEPS_DIR"
 			doxygen             \
 			graphviz            \
 			python-dev          \
+			python-setuptools   \
 			ruby-dev            \
 			php-dev             \
 			liblua5.3-dev       \

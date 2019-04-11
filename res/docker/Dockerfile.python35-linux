@@ -1,9 +1,0 @@
-FROM python:3.5-stretch
-
-RUN apt-get update && \
-apt-get install -y --no-install-recommends \
-	cmake \
-	swig
-
-COPY . /tinyspline
-WORKDIR /tinyspline

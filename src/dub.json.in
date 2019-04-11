@@ -5,7 +5,6 @@
 	"authors" : ["@TINYSPLINE_AUTHOR@"],
 	"license" : "@TINYSPLINE_LICENSE@",
 	"preGenerateCommands" : ["@CMAKE_COMMAND@ --build . --target @TINYSPLINE_DLANG_CMAKE_TARGET@"],
-	"postBuildCommands" : ["mkdir -p dist", "tar cJf dist/@TINYSPLINE_DLANG_CMAKE_TARGET@.@TINYSPLINE_PLATFORM@.tar.xz dub/*"],
 	"targetType" : "staticLibrary",
 	"sourcePaths" : ["lib"],
 	"copyFiles" : ["lib/*.d", "lib/*@TINYSPLINE_DLANG_CMAKE_TARGET@*"],

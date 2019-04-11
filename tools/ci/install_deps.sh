@@ -17,6 +17,7 @@ pushd "$DEPS_DIR"
 			graphviz            \
 			python-dev          \
 			python3-setuptools  \
+			python3-wheel       \
 			ruby-dev            \
 			php-dev             \
 			liblua5.3-dev       \

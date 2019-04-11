@@ -908,6 +908,16 @@ tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
 ###############################################################################
 ### Configure language-specific build systems.
 ###############################################################################
+# Dub
+file(REMOVE "${CMAKE_BINARY_DIR}/dub.json")
+if(${TINYSPLINE_WITH_DLANG})
+	configure_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/dub.json.in"
+		"${CMAKE_BINARY_DIR}/dub.json"
+		@ONLY
+	)
+endif()
+
 # Luarocks
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec")
 if(${TINYSPLINE_WITH_LUA})

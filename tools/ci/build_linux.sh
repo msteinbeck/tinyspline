@@ -13,18 +13,35 @@ WORKDIR /tinyspline
 END
 )
 
+##################################### C# ######################################
+docker build -t "tinyspline:mono" -f - ${ROOT_DIR} <<-END
+	FROM gcc:7
+	${STRETCH_SETUP_CMDS}
+	RUN apt-get install -y --no-install-recommends mono-mcs nuget
+	END
+docker run --name "mono" "tinyspline:mono" \
+	/bin/bash -c "cmake -DTINYSPLINE_ENABLE_CSHARP=True . && \
+	cmake --build . --target tinysplinecsharp && \
+	nuget pack && mkdir dist && mv ./*.nupkg dist/"
+CONTAINER_ID=$(docker ps -aqf "name=mono")
+docker cp "${CONTAINER_ID}":/tinyspline/dist/. ${DIST_DIR}
+docker rm "${CONTAINER_ID}"
+docker rmi "tinyspline:mono"
+
 ################################### Python ####################################
 BUILD_PYTHON() {
-	docker build -t "tinyspline:python${1}-linux" -f - ${ROOT_DIR} <<-END
+	NAME="python${1}"
+	docker build -t "tinyspline:${NAME}" -f - ${ROOT_DIR} <<-END
 		FROM python:${1}-stretch
 		${STRETCH_SETUP_CMDS}
 		END
-	docker run --name "python${1}-linux" "tinyspline:python${1}-linux" \
-		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && python setup.py bdist_wheel"
-	CONTAINER_ID=$(docker ps -aqf "name=python${1}-linux")
+	docker run --name "${NAME}" "tinyspline:${NAME}" \
+		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \
+		python setup.py bdist_wheel"
+	CONTAINER_ID=$(docker ps -aqf "name=${NAME}")
 	docker cp "${CONTAINER_ID}":/tinyspline/dist/. ${DIST_DIR}
 	docker rm "${CONTAINER_ID}"
-	docker rmi "tinyspline:python${1}-linux"
+	docker rmi "tinyspline:${NAME}"
 }
 
 BUILD_PYTHON 2.7

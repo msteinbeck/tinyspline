@@ -29,7 +29,10 @@ NAME="misc"
 docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
 	FROM buildpack-deps:stretch
 	${STRETCH_SETUP_CMDS}
-	RUN apt-get install -y --no-install-recommends mono-mcs nuget dub default-jdk maven
+	RUN apt-get install -y --no-install-recommends 	\
+		mono-mcs nuget \
+		dub \
+		default-jdk maven
 	END
 docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
 	/bin/bash -c "mkdir -p dist && cmake \

@@ -181,7 +181,7 @@ set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supporte
 # TINYSPLINE_ENABLE_***
 option(TINYSPLINE_ENABLE_CXX "Enable the C++ interface." TRUE)
 option(TINYSPLINE_ENABLE_CSHARP "Enable the C# interface." FALSE)
-option(TINYSPLINE_ENABLE_D "Enable the D interface." FALSE)
+option(TINYSPLINE_ENABLE_DLANG "Enable the D interface." FALSE)
 option(TINYSPLINE_ENABLE_GOLANG "Enable the Go interface. (Not supported yet)" FALSE)
 option(TINYSPLINE_ENABLE_JAVA "Enable the Java interface." FALSE)
 option(TINYSPLINE_ENABLE_LUA "Enable the Lua interface." FALSE)
@@ -194,7 +194,7 @@ option(TINYSPLINE_ENABLE_RUBY "Enable the Ruby interface." FALSE)
 option(TINYSPLINE_ENABLE_ALL_INTERFACES "Enable all interfaces." FALSE)
 if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 	set(TINYSPLINE_ENABLE_CSHARP TRUE)
-	set(TINYSPLINE_ENABLE_D TRUE)
+	set(TINYSPLINE_ENABLE_DLANG TRUE)
 	#set(TINYSPLINE_ENABLE_GOLANG TRUE)
 	set(TINYSPLINE_ENABLE_JAVA TRUE)
 	set(TINYSPLINE_ENABLE_LUA TRUE)
@@ -769,7 +769,7 @@ if (SWIG_FOUND)
 	endif()
 
 	# D
-	if(TINYSPLINE_ENABLE_D)
+	if(TINYSPLINE_ENABLE_DLANG)
 		set_source_files_properties("${TINYSPLINE_DLANG_CMAKE_TARGET}.i" PROPERTIES CPLUSPLUS ON)
 		set(CMAKE_SWIG_FLAGS -O ${TINYSPLINE_ADDITIONAL_SWIG_DEFINES} -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET} -module ${TINYSPLINE_PACKAGE_NAME})
 		set(CMAKE_SWIG_OUTDIR ${TINYSPLINE_DLANG_SOURCE_DIRECTORY})
@@ -893,7 +893,7 @@ function (tinyspline_set_on_off_swig varName varValue)
 endfunction()
 tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_ENABLE_CXX)
 tinyspline_set_on_off_swig(TINYSPLINE_WITH_CSHARP TINYSPLINE_ENABLE_CSHARP)
-tinyspline_set_on_off_swig(TINYSPLINE_WITH_D TINYSPLINE_ENABLE_D)
+tinyspline_set_on_off_swig(TINYSPLINE_WITH_DLANG TINYSPLINE_ENABLE_DLANG)
 tinyspline_set_on_off(TINYSPLINE_WITH_GOLANG FALSE)
 tinyspline_set_on_off(TINYSPLINE_WITH_JAVA JNI_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_LUA LUA_FOUND)
@@ -987,7 +987,7 @@ Available Interfaces:
   C\#:           ${TINYSPLINE_WITH_CSHARP}
     Compiler: ${TINYSPLINE_CSHARP_COMPILER}
 
-  D:            ${TINYSPLINE_WITH_D}
+  D:            ${TINYSPLINE_WITH_DLANG}
 
   Go:           ${TINYSPLINE_WITH_GOLANG}
     (Not supported yet)

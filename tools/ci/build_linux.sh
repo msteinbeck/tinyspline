@@ -45,6 +45,30 @@ docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
 	mvn package && mv ./target/*.jar dist/"
 	COPY_ARTIFACTS_AND_DELETE ${NAME}
 
+##################################### Lua #####################################
+BUILD_LUA() {
+	NAME="lua${1}"
+	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
+		FROM buildpack-deps:stretch
+		${STRETCH_SETUP_CMDS}
+		RUN apt-get install -y --no-install-recommends \
+		luarocks liblua${1}-dev
+		END
+	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
+		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_LUA=True . && \
+		luarocks make --local && luarocks pack --local tinyspline && \
+		mkdir -p dist && mv ./*.rock dist"
+	COPY_ARTIFACTS_AND_DELETE ${NAME}
+	for file in "${DIST_DIR}/"*.rock
+	do
+		mv "${file}" "${file}.${NAME}"
+	done
+}
+
+BUILD_LUA 5.1
+BUILD_LUA 5.2
+BUILD_LUA 5.3
+
 ################################### Python ####################################
 BUILD_PYTHON() {
 	NAME="python${1}"

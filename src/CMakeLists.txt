@@ -130,6 +130,10 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 # TINYSPLINE_***_CMAKE_TARGET
 #   The CMake buid target for binding ***.
 #
+# TINYSPLINE_PLATFORM_NAME
+#   Name of the platform in lowercase. Supported values are: 'linux', 'macosx',
+#   'windows', and 'generic'.
+#
 # TINYSPLINE_PLATFORM
 #   Platform specific identifier, e. g. 'linux-x86_64'.
 ###############################################################################
@@ -144,14 +148,19 @@ set(TINYSPLINE_R_CMAKE_TARGET "tinyspliner" CACHE INTERNAL "")
 set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-		set(TINYSPLINE_PLATFORM "linux-${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM "linux-${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-		set(TINYSPLINE_PLATFORM "macosx-${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_NAME "macosx" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM "macosx-${CMAKE_SYSTEM_PROCESSOR}" CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(TINYSPLINE_PLATFORM "windows-x86_64" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM "windows-x86_64" CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-		set(TINYSPLINE_PLATFORM "windows-x86" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM "windows-x86" CACHE INTERNAL "")
 else()
+	set(TINYSPLINE_PLATFORM_NAME "generic" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM "generic" CACHE INTERNAL "")
 endif()
 

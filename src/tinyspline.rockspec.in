@@ -3,6 +3,9 @@ version = "@TINYSPLINE_VERSION@-1"
 source = {
 	url = "@TINYSPLINE_URL@",
 }
+supported_platforms = {
+	"@TINYSPLINE_PLATFORM_NAME@"
+}
 description = {
 	summary = "@TINYSPLINE_SUMMARY@",
 	detailed = [[

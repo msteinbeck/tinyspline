@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
@@ -9,7 +9,7 @@ mkdir -p ${DIST_DIR}
 # Docker image repository.
 REPOSITORY="tinyspline"
 
-STRETCH_SETUP_CMDS=$(cat << END
+APT_GET_CMDS=$(cat << END
 RUN apt-get update && apt-get install -y --no-install-recommends cmake swig
 COPY . /tinyspline
 WORKDIR /tinyspline
@@ -28,7 +28,7 @@ COPY_ARTIFACTS_AND_DELETE() {
 NAME="misc"
 docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
 	FROM buildpack-deps:stretch
-	${STRETCH_SETUP_CMDS}
+	${APT_GET_CMDS}
 	RUN apt-get install -y --no-install-recommends 	\
 		mono-mcs nuget \
 		dub \
@@ -40,9 +40,9 @@ docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
 	-DTINYSPLINE_ENABLE_DLANG=True \
 	-DTINYSPLINE_ENABLE_JAVA=True . && \
 	cmake --build . --target tinysplinecsharp && \
-		nuget pack && mv ./*.nupkg dist/ && \
-	dub build && tar cJf dist/tinysplinedlang.linux-x86_64.tar.xz dub && \
-	mvn package && mv ./target/*.jar dist/"
+		nuget pack && mv ./*.nupkg dist && \
+	dub build && tar cJf dist/tinysplinedlang.tar.xz dub && \
+	mvn package && mv ./target/*.jar dist"
 	COPY_ARTIFACTS_AND_DELETE ${NAME}
 
 ##################################### Lua #####################################
@@ -50,7 +50,7 @@ BUILD_LUA() {
 	NAME="lua${1}"
 	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
 		FROM buildpack-deps:stretch
-		${STRETCH_SETUP_CMDS}
+		${APT_GET_CMDS}
 		RUN apt-get install -y --no-install-recommends \
 		luarocks liblua${1}-dev
 		END
@@ -61,7 +61,9 @@ BUILD_LUA() {
 	COPY_ARTIFACTS_AND_DELETE ${NAME}
 	for file in "${DIST_DIR}/"*.rock
 	do
-		mv "${file}" "${file}.${NAME}"
+		if [[ "${file}" != *"lua"* ]];then
+			mv $file ${file/.rock/.${NAME}.rock}
+		fi
 	done
 }
 
@@ -74,7 +76,7 @@ BUILD_PYTHON() {
 	NAME="python${1}"
 	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
 		FROM python:${1}-stretch
-		${STRETCH_SETUP_CMDS}
+		${APT_GET_CMDS}
 		END
 	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
 		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \

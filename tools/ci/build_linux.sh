@@ -13,7 +13,7 @@ STORAGE="/dist"
 
 SETUP_CMDS=$(cat << END
 RUN apt-get update && apt-get install -y --no-install-recommends cmake swig
-COPY . /tinyspline
+COPY src/. /tinyspline
 WORKDIR /tinyspline
 END
 )

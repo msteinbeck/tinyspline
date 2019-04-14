@@ -25,13 +25,13 @@ $ctrlp[13] =  0.0;  // y6
 $spline->controlPoints = $ctrlp;
 
 // Evaluate `spline` at u = 0.4.
-$result = $spline->eval(0.4)->result;
+$result = $spline->c_eval(0.4)->result;
 echo "x = $result[0], y = $result[1]\n";
 
 // Derive `spline` and subdivide it into a sequence of Bezier curves.
 $beziers = $spline->derive()->toBeziers();
 
 // Evaluate `beziers` at u = 0.3.
-$result = $beziers->eval(0.3)->result;
+$result = $beziers->c_eval(0.3)->result;
 echo "x = $result[0], y = $result[1]\n";
 ?>

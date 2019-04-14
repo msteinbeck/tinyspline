@@ -6,8 +6,9 @@ ROOT_DIR="${SCRIPT_DIR}/../.."
 DIST_DIR="${SCRIPT_DIR}/dist"
 mkdir -p ${DIST_DIR}
 
-# Docker image repository name.
 REPOSITORY="tinyspline"
+TAG="build.linux-x86_64"
+IMAGE_NAME="${REPOSITORY}:${TAG}"
 
 # Initial setup commands. Expects that 'apt-get' is present.
 SETUP_CMDS=$(cat << END
@@ -19,16 +20,15 @@ END
 
 # Expects that the artifacts are located in: /tinyspline/dist/
 COPY_ARTIFACTS_AND_DELETE() {
-	CONTAINER_ID=$(docker ps -aqf "name=${1}")
-	docker cp "${CONTAINER_ID}":/tinyspline/dist/. ${DIST_DIR}
-	docker rm "${CONTAINER_ID}"
-	docker rmi "${REPOSITORY}:${1}"
+	CONTAINER_ID=$(docker ps -aqf "name=${TAG}")
+	docker cp ${CONTAINER_ID}:/tinyspline/dist/. ${DIST_DIR}
+	docker rm ${CONTAINER_ID}
+	docker rmi ${IMAGE_NAME}
 }
 
 ################################# C#, D, Java #################################
 BUILD_CSHARP_D_JAVA() {
-	NAME="csharp.d.java"
-	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
 		FROM buildpack-deps:stretch
 		${SETUP_CMDS}
 		RUN apt-get install -y --no-install-recommends 	\
@@ -36,7 +36,7 @@ BUILD_CSHARP_D_JAVA() {
 			dub \
 			default-jdk maven
 		END
-	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
+	docker run --name ${TAG} ${IMAGE_NAME} \
 		/bin/bash -c "mkdir -p dist && cmake \
 			-DTINYSPLINE_ENABLE_CSHARP=True \
 			-DTINYSPLINE_ENABLE_DLANG=True \
@@ -45,29 +45,28 @@ BUILD_CSHARP_D_JAVA() {
 			nuget pack && mv ./*.nupkg dist && \
 		dub build && tar cJf dist/tinysplinedlang.tar.xz dub && \
 		mvn package && mv ./target/*.jar dist"
-		COPY_ARTIFACTS_AND_DELETE ${NAME}
+	COPY_ARTIFACTS_AND_DELETE
 }
 
 BUILD_CSHARP_D_JAVA
 
 ##################################### Lua #####################################
 BUILD_LUA() {
-	NAME="lua${1}"
-	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
 		FROM buildpack-deps:stretch
 		${SETUP_CMDS}
 		RUN apt-get install -y --no-install-recommends \
 			luarocks liblua${1}-dev
 		END
-	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
+	docker run --name ${TAG} ${IMAGE_NAME} \
 		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_LUA=True . && \
 		luarocks make --local && luarocks pack --local tinyspline && \
 		mkdir -p dist && mv ./*.rock dist"
-	COPY_ARTIFACTS_AND_DELETE ${NAME}
+	COPY_ARTIFACTS_AND_DELETE
 	for file in "${DIST_DIR}/"*.rock
 	do
 		if [[ "${file}" != *"lua"* ]];then
-			mv $file ${file/.rock/.${NAME}.rock}
+			mv $file ${file/.rock/.lua${1}.rock}
 		fi
 	done
 }
@@ -78,15 +77,14 @@ BUILD_LUA 5.3
 
 ################################### Python ####################################
 BUILD_PYTHON() {
-	NAME="python${1}"
-	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
 		FROM python:${1}-stretch
 		${SETUP_CMDS}
 		END
-	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
+	docker run --name ${TAG} ${IMAGE_NAME} \
 		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \
 		python setup.py bdist_wheel"
-	COPY_ARTIFACTS_AND_DELETE ${NAME}
+	COPY_ARTIFACTS_AND_DELETE
 }
 
 BUILD_PYTHON 2.7
@@ -96,18 +94,16 @@ BUILD_PYTHON 3.7
 
 ################################## Octave, R ##################################
 BUILD_OCTAVE_R_UBUNTU() {
-	NAME="octave.r.ubuntu${1}"
-	docker build -t "${REPOSITORY}:${NAME}" -f - ${ROOT_DIR} <<-END
-		FROM ubuntu:${1}
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+		FROM buildpack-deps:${1}
 		RUN echo 'debconf debconf/frontend select Noninteractive' \
 			| debconf-set-selections
 		${SETUP_CMDS}
 		RUN apt-get install -y --no-install-recommends \
-			build-essential wget \
 			liboctave-dev octave \
 			r-base r-cran-rcpp
 		END
-	docker run --name "${NAME}" "${REPOSITORY}:${NAME}" \
+	docker run --name ${TAG} ${IMAGE_NAME} \
 		/bin/bash -c "mkdir -p dist && cmake \
 			-DTINYSPLINE_ENABLE_OCTAVE=True \
 			-DTINYSPLINE_ENABLE_R=True . && \
@@ -117,7 +113,7 @@ BUILD_OCTAVE_R_UBUNTU() {
 		cmake --build . --target tinyspliner && \
 			find ./lib -name 'tinyspliner*' -o -name '*.R' \
 			| tar cJf dist/tinyspliner.utnubu.tar.xz -T -"
-	COPY_ARTIFACTS_AND_DELETE ${NAME}
+	COPY_ARTIFACTS_AND_DELETE
 	for file in "${DIST_DIR}/"*utnubu.tar.xz
 	do
 		if [[ "${file}" != *"ubuntu"* ]];then

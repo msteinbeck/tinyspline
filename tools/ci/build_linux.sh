@@ -3,28 +3,20 @@ set -e
 
 SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
 ROOT_DIR="${SCRIPT_DIR}/../.."
-DIST_DIR="${SCRIPT_DIR}/dist"
-mkdir -p ${DIST_DIR}
+VOLUME="${SCRIPT_DIR}/build.linux-x86_64"
+mkdir -p ${VOLUME}
 
 REPOSITORY="tinyspline"
 TAG="build.linux-x86_64"
 IMAGE_NAME="${REPOSITORY}:${TAG}"
+STORAGE="/dist"
 
-# Initial setup commands. Expects that 'apt-get' is present.
 SETUP_CMDS=$(cat << END
 RUN apt-get update && apt-get install -y --no-install-recommends cmake swig
 COPY . /tinyspline
 WORKDIR /tinyspline
 END
 )
-
-# Expects that the artifacts are located in: /tinyspline/dist/
-COPY_ARTIFACTS_AND_DELETE() {
-	CONTAINER_ID=$(docker ps -aqf "name=${TAG}")
-	docker cp ${CONTAINER_ID}:/tinyspline/dist/. ${DIST_DIR}
-	docker rm ${CONTAINER_ID}
-	docker rmi ${IMAGE_NAME}
-}
 
 ################################# C#, D, Java #################################
 BUILD_CSHARP_D_JAVA() {
@@ -36,16 +28,17 @@ BUILD_CSHARP_D_JAVA() {
 			dub \
 			default-jdk maven
 		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "mkdir -p dist && cmake \
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
 			-DTINYSPLINE_ENABLE_CSHARP=True \
 			-DTINYSPLINE_ENABLE_DLANG=True \
 			-DTINYSPLINE_ENABLE_JAVA=True . && \
-		cmake --build . --target tinysplinecsharp && \
-			nuget pack && mv ./*.nupkg dist && \
-		dub build && tar cJf dist/tinysplinedlang.tar.xz dub && \
-		mvn package && mv ./target/*.jar dist"
-	COPY_ARTIFACTS_AND_DELETE
+		cmake --build . --target tinysplinecsharp && nuget pack && \
+			mv ./*.nupkg ${STORAGE} && \
+		dub build && tar czf ${STORAGE}/tinysplinedlang.tar.gz dub && \
+		mvn package && mv ./target/*.jar ${STORAGE}"
+	docker rmi ${IMAGE_NAME}
 }
 
 BUILD_CSHARP_D_JAVA
@@ -58,12 +51,14 @@ BUILD_LUA() {
 		RUN apt-get install -y --no-install-recommends \
 			luarocks liblua${1}-dev
 		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_LUA=True . && \
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DTINYSPLINE_ENABLE_LUA=True . && \
 		luarocks make --local && luarocks pack --local tinyspline && \
-		mkdir -p dist && mv ./*.rock dist"
-	COPY_ARTIFACTS_AND_DELETE
-	for file in "${DIST_DIR}/"*.rock
+		mv ./*.rock ${STORAGE}"
+	docker rmi ${IMAGE_NAME}
+	for file in "${VOLUME}/"*.rock
 	do
 		if [[ "${file}" != *"lua"* ]];then
 			mv $file ${file/.rock/.lua${1}.rock}
@@ -86,18 +81,20 @@ BUILD_OCTAVE_R_UBUNTU() {
 			liboctave-dev octave \
 			r-base r-cran-rcpp
 		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "mkdir -p dist && cmake \
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
 			-DTINYSPLINE_ENABLE_OCTAVE=True \
 			-DTINYSPLINE_ENABLE_R=True . && \
 		cmake --build . --target tinysplineoctave && \
 			find ./lib -name '*octave*' \
-			| tar cJf dist/tinysplineoctave.utnubu.tar.xz -T - && \
+			| tar czf ${STORAGE}/tinysplineoctave.utnubu.tar.gz \
+			-T - && \
 		cmake --build . --target tinyspliner && \
 			find ./lib -name 'tinyspliner*' -o -name '*.R' \
-			| tar cJf dist/tinyspliner.utnubu.tar.xz -T -"
-	COPY_ARTIFACTS_AND_DELETE
-	for file in "${DIST_DIR}/"*utnubu.tar.xz
+			| tar czf ${STORAGE}/tinyspliner.utnubu.tar.gz -T -"
+	docker rmi ${IMAGE_NAME}
+	for file in "${VOLUME}/"*utnubu.tar.gz
 	do
 		if [[ "${file}" != *"ubuntu"* ]];then
 			mv $file ${file/utnubu/ubuntu-${1}}
@@ -118,13 +115,14 @@ BUILD_PHP_7() {
 		RUN apt-get install -y --no-install-recommends \
 			php-dev
 		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "mkdir -p dist &&  cmake \
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
 			-DTINYSPLINE_ENABLE_PHP=True . && \
 		cmake --build . --target tinysplinephp && \
-			find ./lib -name '*php*' \
-			| tar cJf dist/tinysplinephp7.tar.xz -T -"
-	COPY_ARTIFACTS_AND_DELETE
+		find ./lib -name '*php*' \
+		| tar czf ${STORAGE}/tinysplinephp7.tar.gz -T -"
+	docker rmi ${IMAGE_NAME}
 }
 
 BUILD_PHP_7
@@ -135,10 +133,12 @@ BUILD_PYTHON() {
 		FROM python:${1}-stretch
 		${SETUP_CMDS}
 		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \
-		python setup.py bdist_wheel"
-	COPY_ARTIFACTS_AND_DELETE
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DTINYSPLINE_ENABLE_PYTHON=True . && \
+		python setup.py bdist_wheel && mv ./dist/*.whl ${STORAGE}"
+	docker rmi ${IMAGE_NAME}
 }
 
 BUILD_PYTHON 2.7

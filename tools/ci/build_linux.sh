@@ -75,23 +75,6 @@ BUILD_LUA 5.1
 BUILD_LUA 5.2
 BUILD_LUA 5.3
 
-################################### Python ####################################
-BUILD_PYTHON() {
-	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
-		FROM python:${1}-stretch
-		${SETUP_CMDS}
-		END
-	docker run --name ${TAG} ${IMAGE_NAME} \
-		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \
-		python setup.py bdist_wheel"
-	COPY_ARTIFACTS_AND_DELETE
-}
-
-BUILD_PYTHON 2.7
-BUILD_PYTHON 3.5
-BUILD_PYTHON 3.6
-BUILD_PYTHON 3.7
-
 ################################## Octave, R ##################################
 BUILD_OCTAVE_R_UBUNTU() {
 	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
@@ -124,3 +107,41 @@ BUILD_OCTAVE_R_UBUNTU() {
 
 BUILD_OCTAVE_R_UBUNTU 16.04
 BUILD_OCTAVE_R_UBUNTU 18.04
+
+##################################### PHP #####################################
+BUILD_PHP_7() {
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+		FROM buildpack-deps:18.04
+		RUN echo 'debconf debconf/frontend select Noninteractive' \
+			| debconf-set-selections
+		${SETUP_CMDS}
+		RUN apt-get install -y --no-install-recommends \
+			php-dev
+		END
+	docker run --name ${TAG} ${IMAGE_NAME} \
+		/bin/bash -c "mkdir -p dist &&  cmake \
+			-DTINYSPLINE_ENABLE_PHP=True . && \
+		cmake --build . --target tinysplinephp && \
+			find ./lib -name '*php*' \
+			| tar cJf dist/tinysplinephp7.tar.xz -T -"
+	COPY_ARTIFACTS_AND_DELETE
+}
+
+BUILD_PHP_7
+
+################################### Python ####################################
+BUILD_PYTHON() {
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+		FROM python:${1}-stretch
+		${SETUP_CMDS}
+		END
+	docker run --name ${TAG} ${IMAGE_NAME} \
+		/bin/bash -c "cmake -DTINYSPLINE_ENABLE_PYTHON=True . && \
+		python setup.py bdist_wheel"
+	COPY_ARTIFACTS_AND_DELETE
+}
+
+BUILD_PYTHON 2.7
+BUILD_PYTHON 3.5
+BUILD_PYTHON 3.6
+BUILD_PYTHON 3.7

@@ -87,7 +87,7 @@ BUILD_OCTAVE_R_UBUNTU() {
 			-DTINYSPLINE_ENABLE_OCTAVE=True \
 			-DTINYSPLINE_ENABLE_R=True . && \
 		cmake --build . --target tinysplineoctave && \
-			find ./lib -name '*octave*' \
+			find ./lib -name '*.oct' \
 			| tar czf ${STORAGE}/tinysplineoctave.utnubu.tar.gz \
 			-T - && \
 		cmake --build . --target tinyspliner && \

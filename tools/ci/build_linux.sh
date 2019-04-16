@@ -156,3 +156,25 @@ BUILD_PYTHON 2.7
 BUILD_PYTHON 3.5
 BUILD_PYTHON 3.6
 BUILD_PYTHON 3.7
+
+#################################### Ruby #####################################
+BUILD_RUBY() {
+	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+		FROM ruby:${1}-stretch
+		${SETUP_CMDS}
+		END
+	docker run --rm --name ${TAG} --volume "${VOLUME}:${STORAGE}" \
+		${IMAGE_NAME} /bin/bash -c "cmake \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DTINYSPLINE_ENABLE_RUBY=True . && \
+		gem build *.gemspec && \
+			for f in ./*.gem; \
+				do mv \$f \${f/.gem/.ruby${1}.gem}; done && \
+			chown $(id -u):$(id -g) ./*.gem && \
+			cp -a ./*.gem ${STORAGE}"
+	docker rmi ${IMAGE_NAME}
+}
+
+BUILD_RUBY 2.4
+BUILD_RUBY 2.5
+BUILD_RUBY 2.6

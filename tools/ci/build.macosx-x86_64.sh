@@ -65,7 +65,7 @@ BUILD_CSHARP_D_JAVA() {
 		cp -a target/*.jar ${STORAGE}"
 }
 
-#BUILD_CSHARP_D_JAVA
+BUILD_CSHARP_D_JAVA
 
 ##################################### Lua #####################################
 LUA51_URL="https://homebrew.bintray.com/bottles/lua@5.1-5.1.5_8.el_capitan.bottle.tar.gz"
@@ -88,7 +88,7 @@ BUILD_LUA() {
 		-DLUA_INCLUDE_DIR=/opt/lua/include/lua5.${1} \
 		-DLUA_LIBRARY=/opt/lua/lib/liblua5.${1}.dylib && \
 	sed -i '/supported_platforms/,/}/d' *.rockspec && \
-		luarocks make  --pack-binary-rock && \
+		luarocks make --pack-binary-rock && \
 		for f in ./*.rock; do mv \$f \${f/.rock/-5.${1}.rock}; done && \
 		for f in ./*.rock; do mv \$f \${f/linux/macosx}; done && \
 		chown $(id -u):$(id -g) *.rock && \

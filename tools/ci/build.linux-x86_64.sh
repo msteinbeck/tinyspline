@@ -69,8 +69,7 @@ BUILD_LUA() {
 	"cmake . \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DTINYSPLINE_ENABLE_LUA=True && \
-	luarocks make --local && \
-		luarocks pack --local tinyspline && \
+	luarocks make --pack-binary-rock && \
 		for f in ./*.rock; do mv \$f \${f/.rock/-${1}.rock}; done && \
 		chown $(id -u):$(id -g) *.rock && \
 		cp -a *.rock ${STORAGE}"

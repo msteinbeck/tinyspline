@@ -9,7 +9,7 @@ void main()
 	BSpline spline = new BSpline(7);
 
 	// Setup control points.
-	Vector ctrlp = spline.getControlPoints();
+	Vector ctrlp = spline.controlPoints();
 	ctrlp[0]  = -1.75; // x0
 	ctrlp[1]  = -1.0;  // y0
 	ctrlp[2]  = -1.5;  // x1

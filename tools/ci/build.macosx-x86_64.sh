@@ -97,3 +97,37 @@ BUILD_LUA() {
 
 BUILD_LUA 1
 BUILD_LUA 3
+
+################################### Python ####################################
+PYTHON27_URL="https://homebrew.bintray.com/bottles/python@2-2.7.16.sierra.bottle.1.tar.gz"
+PYTHON37_URL="https://homebrew.bintray.com/bottles/python-3.7.3.sierra.bottle.tar.gz"
+
+BUILD_PYTHON() {
+	url="PYTHON${1}${2}_URL"
+	if [ ${1} = "3" ]; then v="3"; else v=""; fi
+	if [ ${1} = "3" ]; then m="m"; else m=""; fi
+	basedir="/opt/python/Frameworks/Python.framework/Versions/${1}.${2}"
+	BUILD_RUN_DELETE \
+	"FROM fzwoch/osxcross:latest
+	${SETUP_CMDS}
+	RUN apt-get install -y --no-install-recommends \
+		python${v} python${v}-setuptools python${v}-wheel" \
+	"wget ${!url} -O /opt/python.tar.gz && mkdir /opt/python && \
+		tar -C /opt/python -xf /opt/python.tar.gz --strip 2 && \
+	CC=o64-clang CXX=o64-clang++ \
+		cmake . \
+		-DCMAKE_SYSTEM_NAME=Darwin \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DTINYSPLINE_ENABLE_PYTHON=True \
+		-DPYTHON_INCLUDE_DIR=${basedir}/include/python${1}.${2}${m} \
+		-DPYTHON_LIBRARY=${basedir}/lib/libpython${1}.${2}.dylib && \
+	python${v} setup.py bdist_wheel && \
+		for f in dist/*.whl; do mv \$f \${f/35/${1}${2}}; done && \
+		for f in dist/*.whl; do mv \$f \${f/35/${1}${2}}; done && \
+		for f in dist/*.whl; do mv \$f \${f/linux/macosx}; done && \
+		chown $(id -u):$(id -g) dist/*.whl && \
+		cp -a dist/*.whl ${STORAGE}"
+}
+
+#BUILD_PYTHON 2 7
+BUILD_PYTHON 3 7

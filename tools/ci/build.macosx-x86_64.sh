@@ -106,6 +106,7 @@ BUILD_PYTHON() {
 	url="PYTHON${1}${2}_URL"
 	if [ ${1} = "3" ]; then v="3"; else v=""; fi
 	if [ ${1} = "3" ]; then m="m"; else m=""; fi
+	if [ ${1} = "3" ]; then s="35"; else s="27"; fi
 	basedir="/opt/python/Frameworks/Python.framework/Versions/${1}.${2}"
 	BUILD_RUN_DELETE \
 	"FROM fzwoch/osxcross:latest
@@ -122,12 +123,14 @@ BUILD_PYTHON() {
 		-DPYTHON_INCLUDE_DIR=${basedir}/include/python${1}.${2}${m} \
 		-DPYTHON_LIBRARY=${basedir}/lib/libpython${1}.${2}.dylib && \
 	python${v} setup.py bdist_wheel && \
-		for f in dist/*.whl; do mv \$f \${f/35/${1}${2}}; done && \
-		for f in dist/*.whl; do mv \$f \${f/35/${1}${2}}; done && \
+		for f in dist/*.whl; do mv \$f \${f/${s}/${1}${2}$}; done && \
+		for f in dist/*.whl; do mv \$f \${f/${s}/${1}${2}$}; done && \
+		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
+		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
 		for f in dist/*.whl; do mv \$f \${f/linux/macosx}; done && \
 		chown $(id -u):$(id -g) dist/*.whl && \
 		cp -a dist/*.whl ${STORAGE}"
 }
 
-#BUILD_PYTHON 2 7
+BUILD_PYTHON 2 7
 BUILD_PYTHON 3 7

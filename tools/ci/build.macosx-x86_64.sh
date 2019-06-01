@@ -12,7 +12,9 @@ IMAGE_NAME="${REPOSITORY}:${TAG}"
 STORAGE="/dist"
 
 SETUP_CMDS=$(cat << END
-RUN apt-get update && apt-get install -y --no-install-recommends cmake swig
+RUN echo 'debconf debconf/frontend select Noninteractive' \
+		| debconf-set-selections && \
+apt-get update && apt-get install -y --no-install-recommends cmake swig
 COPY src/. /tinyspline
 WORKDIR /tinyspline
 END
@@ -33,9 +35,9 @@ BUILD_RUN_DELETE() {
 ################################# C#, D, Java #################################
 JDK8_URL="https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jdk_x64_mac_hotspot_8u212b03.tar.gz"
 
-BUILD_CSHARP_D_JAVA() {
+BUILD_CSHARP_JAVA() {
 	BUILD_RUN_DELETE \
-	"FROM fzwoch/osxcross:latest
+	"FROM liushuyu/osxcross:latest
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends 	\
 		mono-mcs nuget \
@@ -56,16 +58,12 @@ BUILD_CSHARP_D_JAVA() {
 		nuget pack && \
 		chown $(id -u):$(id -g) *.nupkg && \
 		cp -a *.nupkg ${STORAGE} && \
-	dub build && \
-		tar czf tinysplinedlang.tar.gz dub && \
-		chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
-		cp -a tinysplinedlang.tar.gz ${STORAGE} && \
 	mvn package && \
 		chown $(id -u):$(id -g) target/*.jar && \
 		cp -a target/*.jar ${STORAGE}"
 }
 
-BUILD_CSHARP_D_JAVA
+BUILD_CSHARP_JAVA
 
 ##################################### Lua #####################################
 LUA51_URL="https://homebrew.bintray.com/bottles/lua@5.1-5.1.5_8.el_capitan.bottle.tar.gz"
@@ -74,7 +72,7 @@ LUA53_URL="https://homebrew.bintray.com/bottles/lua-5.3.5_1.el_capitan.bottle.ta
 BUILD_LUA() {
 	url="LUA5${1}_URL"
 	BUILD_RUN_DELETE \
-	"FROM fzwoch/osxcross:latest
+	"FROM liushuyu/osxcross:latest
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends \
 		luarocks" \
@@ -106,10 +104,10 @@ BUILD_PYTHON() {
 	url="PYTHON${1}${2}_URL"
 	if [ ${1} = "3" ]; then v="3"; else v=""; fi
 	if [ ${1} = "3" ]; then m="m"; else m=""; fi
-	if [ ${1} = "3" ]; then s="35"; else s="27"; fi
+	if [ ${1} = "3" ]; then s="36"; else s="27"; fi
 	basedir="/opt/python/Frameworks/Python.framework/Versions/${1}.${2}"
 	BUILD_RUN_DELETE \
-	"FROM fzwoch/osxcross:latest
+	"FROM liushuyu/osxcross:latest
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends \
 		python${v} python${v}-setuptools python${v}-wheel" \
@@ -127,7 +125,7 @@ BUILD_PYTHON() {
 		for f in dist/*.whl; do mv \$f \${f/${s}/${1}${2}$}; done && \
 		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
 		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
-		for f in dist/*.whl; do mv \$f \${f/linux/macosx}; done && \
+		for f in dist/*.whl; do mv \$f \${f/linux/macosx-10.14}; done && \
 		chown $(id -u):$(id -g) dist/*.whl && \
 		cp -a dist/*.whl ${STORAGE}"
 }

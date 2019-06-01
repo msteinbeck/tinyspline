@@ -14,7 +14,8 @@ STORAGE="/dist"
 SETUP_CMDS=$(cat << END
 RUN echo 'debconf debconf/frontend select Noninteractive' \
 		| debconf-set-selections && \
-apt-get update && apt-get install -y --no-install-recommends cmake swig
+	apt-get update && \
+	apt-get install -y --no-install-recommends cmake swig
 COPY src/. /tinyspline
 WORKDIR /tinyspline
 END

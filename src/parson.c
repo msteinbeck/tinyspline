@@ -167,12 +167,12 @@ static char * parson_strndup(const char *string, size_t n) {
         return NULL;
     }
     output_string[n] = '\0';
-#if __GNUC__ > 8
+#if __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #endif
     strncpy(output_string, string, n);
-#if __GNUC__ > 8
+#if __GNUC__ >= 8
 #pragma GCC diagnostic pop
 #endif
     return output_string;

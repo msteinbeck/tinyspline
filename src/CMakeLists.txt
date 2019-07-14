@@ -8,15 +8,16 @@ project(tinyspline)
 # https://cmake.org/cmake/help/v3.0/prop_gbl/USE_FOLDERS.html
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Add additional CMake modules shipped with TinySpline.
+# Add additional CMake modules located in the source directory of this script.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Does this script have a parent?
+get_directory_property(TINYSPLINE_HAS_PARENT PARENT_DIRECTORY)
 
 
 
 ###############################################################################
-### The following section defines project-related constants that are used to
-### configure external tools, such as Setuptools and Doxygen. Accordingly,
-### they are set wth 'CACHE INTERNAL'.
+### Project-related constants.
 #
 # TINYSPLINE_PACKAGE_NAME
 #   The name of the package.
@@ -61,9 +62,7 @@ set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for inte
 
 
 ###############################################################################
-### The following section defines location-related constants that are used to
-### configure external tools, such as Setuptools and Doxygen. Accordingly,
-### they are set with 'CACHE INTERNAL'.
+### Location-related constants.
 #
 # TINYSPLINE_BINARY_OUTPUT_DIRECTORY
 #   Location of compiled binaries.
@@ -123,9 +122,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 
 
 ###############################################################################
-### The following section defines CMake-related constants that are used to
-### configure external tools, such as Setuptools and Doxygen. Accordingly,
-### they are set with 'CACHE INTERNAL'.
+### CMake-related/Platform-related constants.
 #
 # TINYSPLINE_***_CMAKE_TARGET
 #   The CMake buid target for binding ***.
@@ -173,7 +170,7 @@ set(TINYSPLINE_PLATFORM
 
 
 ###############################################################################
-### Add different options to this script. The following options are available.
+### Add different options to this script.
 #
 # TINYSPLINE_FLOAT_PRECISION - default: OFF
 #   Use single (float) instead of double precision.
@@ -266,21 +263,19 @@ endif()
 
 
 ###############################################################################
-### Setup compiler suite. The following CMake variables may be useful in the
-### remainder of this file. CMake variables labeled with (exported) will be set
-### in parent scope and should be used accordingly after including this file.
+### Setup compiler suite.
 #
 # TINYSPLINE_DEBUG_POSTFIX
 #   Postfix of debug builds.
 #
-# TINYSPLINE_DEFINITIONS (exported)
+# TINYSPLINE_DEFINITIONS (set in parent scope)
 #   Preprocessor definitions that should be added to parent file with
 #   'add_definitions("${TINYSPLINE_DEFINITIONS}")'.
 #
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
 #
-# TINYSPLINE_LIBRARIES (exported)
+# TINYSPLINE_LIBRARIES (set in parent scope)
 #   Additional libraries to link against.
 #
 # TINYSPLINE_LIBRARY_C_FLAGS
@@ -295,7 +290,7 @@ endif()
 # TINYSPLINE_DEBUG_POSTFIX
 # TINYSPLINE_DEFINITIONS
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# it is common practice for MSVC builds to add a debug postfix
+	# It is common practice for MSVC builds to add a debug postfix.
 	set(TINYSPLINE_DEBUG_POSTFIX "d")
 	if(TINYSPLINE_FLOAT_PRECISION)
 		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_FLOAT_PRECISION")
@@ -306,10 +301,15 @@ else()
 		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_FLOAT_PRECISION")
 	endif()
 endif()
-# Remove leading and trailing spaces from TINYSPLINE_DEFINITIONS
+# Remove leading and trailing spaces from variables.
+string(STRIP "${TINYSPLINE_DEBUG_POSTFIX}" TINYSPLINE_DEBUG_POSTFIX)
 string(STRIP "${TINYSPLINE_DEFINITIONS}" TINYSPLINE_DEFINITIONS)
-# Export TINYSPLINE_DEFINITIONS to parent CMakeLists.txt file
-set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}" PARENT_SCOPE)
+# Export relevant variables.
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}" PARENT_SCOPE)
+else()
+	set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}")
+endif()
 add_definitions("${TINYSPLINE_DEFINITIONS}")
 
 # TINYSPLINE_CXX11_COMPLIANT
@@ -405,60 +405,68 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# Used to automatically create a .def file with all the global symbols for
 	# a shared library.
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-	# TODO: Find appropriate settings for intel
-
-	# TINYSPLINE_CXX11_COMPLIANT
-	set(TINYSPLINE_CXX11_COMPLIANT TRUE)
 endif()
-# Remove leading and trailing spaces
+# Remove leading and trailing spaces from variables.
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARIES}" TINYSPLINE_LIBRARIES)
 string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
-# Export variables to parent file
-set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
+# Export relevant variables.
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
+else()
+	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}")
+endif()
 
 
 
 ###############################################################################
-### Create C/C++ libraries. We explicitly set the prefix of the static
-### libraries to 'lib' to prevent naming collisions when compiling with MSVC.
-### The following CMake variables may be useful in the remainder of this file.
-### CMake variables labeled with (exported) will be set in parent scope and
-### should be used accordingly after including this file.
+### Create the C/C++ library. We explicitly set the prefix of the static
+### library to 'lib' to prevent naming collisions when compiling with MSVC.
 #
-# TINYSPLINE_INCLUDE_DIRS (exported)
+# TINYSPLINE_INCLUDE_DIRS (set in parent scope)
 #   Include directories of the C/C++ library. The listed directories contain
 #   all header files as well as all source files (.c/.cpp files).
 #
-# TINYSPLINE_C_SOURCE_FILES (exported)
+# TINYSPLINE_C_SOURCE_FILES (set in parent scope)
 #   List of source files (absolute paths) that are required to build the C
 #   library. Does not contain header files.
 #
-# TINYSPLINE_CXX_SOURCE_FILES (exported)
+# TINYSPLINE_CXX_SOURCE_FILES (set in parent scope)
 #   List of source files (absolute paths) that are required to build the C++
 #   library. Does not contain header files, but all source files listed in
 #   TINYSPLINE_C_SOURCE_FILES.
 ###############################################################################
 # TINYSPLINE_INCLUDE_DIRS
-set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+else()
+	set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
 
 # TINYSPLINE_C_SOURCE_FILES
 list(APPEND TINYSPLINE_C_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/parson.c"
 )
-set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
+else()
+	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
+endif()
 
 # TINYSPLINE_CXX_SOURCE_FILES
 list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 	${TINYSPLINE_C_SOURCE_FILES}
 	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecpp.cpp"
 )
-set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
+else()
+	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES})
+endif()
 
 # C library
 add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
@@ -525,23 +533,14 @@ endif()
 
 
 ###############################################################################
-### Setup SWIG and create bindings. The following variables may be useful in
-### the remainder of this script. Keep in mind that the source code of the C#
-### binding will always be available.
+### Setup SWIG and create bindings.
 #
 # TINYSPLINE_BINDINGS_FOLDER_NAME
 #   Name of the IDE project folder containing the bindings.
 #   ( set_property(GLOBAL PROPERTY USE_FOLDERS ON) )
 #
-# TINYSPLINE_***_DIR
-#   Source output directory of binding ***.
-#
 # TINYSPLINE_ADDITIONAL_SWIG_DEFINES
 #   A list of defines passed to Swig.
-#
-# TINYSPLINE_CSHARP_COMPILER
-#   The used C# compiler. Indicates that the C# DLL of the C# binding is
-#   available.
 ###############################################################################
 find_package(SWIG 3.0.1)
 if (SWIG_FOUND)
@@ -551,8 +550,7 @@ if (SWIG_FOUND)
 	# TINYSPLINE_BINDINGS_FOLDER_NAME
 	set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")
 
-	# Simplifies definition handling with SWIG by reducing the number of
-	# required if statements.
+	# TINYSPLINE_ADDITIONAL_SWIG_DEFINES
 	if(TINYSPLINE_FLOAT_PRECISION)
 		list(APPEND TINYSPLINE_ADDITIONAL_SWIG_DEFINES -DTINYSPLINE_FLOAT_PRECISION)
 	endif()
@@ -1007,6 +1005,7 @@ Compiler Configuration:
   C++ flags:      ${TINYSPLINE_SUMMARY_CXX_FLAGS}
   Binding flags:  ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
   Definitions:    ${TINYSPLINE_DEFINITIONS}
+  Debug postfix:  ${TINYSPLINE_DEBUG_POSTFIX}
   Toolchain file: ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:

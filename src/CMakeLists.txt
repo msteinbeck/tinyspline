@@ -1,5 +1,8 @@
 ###############################################################################
 ### General CMake setup.
+#
+# TINYSPLINE_HAS_PARENT
+#   Does this script have a parent?
 ###############################################################################
 cmake_minimum_required(VERSION 3.4)
 project(tinyspline)

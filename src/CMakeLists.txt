@@ -652,7 +652,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			NAMES csc mcs
 			PATHS "C:/Windows/Microsoft.NET/Framework/v4.5"
 		)
-		if(${TINYSPLINE_CSHARP_COMPILER})
+		if(TINYSPLINE_CSHARP_COMPILER)
 			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc$|csc.exe$")
 				# csc neither supports the 'sdk' flag nor '/' in 'recursive'
 				add_custom_command(

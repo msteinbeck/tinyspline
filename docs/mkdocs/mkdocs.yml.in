@@ -1,6 +1,6 @@
 site_name: TinySpline
 
-pages:
+nav:
         - Home: index.md
         - Getting Started: getting-started.md
 

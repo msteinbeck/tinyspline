@@ -108,7 +108,8 @@ typedef enum {
     TS_LCTRLP_DIM_MISMATCH = -10, /**< len_control_points % dim != 0. */
     TS_IO_ERROR = -11, /**< Error while reading/writing a file. */
     TS_PARSE_ERROR = -12, /**< Error while parsing a serialized entity. */
-    TS_INDEX_ERROR = -13 /**< Index does not exist. */
+    TS_INDEX_ERROR = -13, /**< Index does not exist. */
+    TS_NO_RESULT = -14 /**< Function returns without result. */
 } tsError;
 
 /**
@@ -1028,6 +1029,56 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
  */
 tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	tsDeBoorNet *_deBoorNet_, tsStatus *status);
+
+/**
+ * Tries to find a point P on \p spline such that:
+ *
+ *     ts_distance(P[index], value, 1) <= fabs(epsilon)
+ *
+ * This function is using the bisection method to determine P. Accordingly, it
+ * is expected that the control points of \p spline are sorted at component
+ * \p index in ascending order if \p ascending != 0 and in descending order if
+ * \p ascending == 0. If the control points of \p spline are not sorted, the
+ * behaviour of this function is undefined. For the sake of fail-safeness, the
+ * distance of P[index] and \p value is compared with the absolute value of
+ * \p epsilon.
+ *
+ * The bisection method is an iterative approach, minimizing the error
+ * (\p epsilon) with each iteration step until an "optimum" was found. However,
+ * there may be no point P satisfying the distance condition. Thus, the number
+ * of iterations must be limited (\p max_iter). Depending on the domain of the
+ * control points of \p spline and \p epsilon, \p max_iter ranges from 7 to 80.
+ * In most cases \p max_iter == 20 should be fine though.
+ *
+ * @param[in] spline
+ * 	The spline to evaluate
+ * @param[in] value
+ * 	The value (point at component \p index) to find.
+ * @param[in] epsilon
+ * 	The maximum distance (inclusive).
+ * @param[in] index
+ * 	The point's component.
+ * @param[in] ascending
+ * 	Indicates whether the control points of \p spline are sorted in
+ * 	ascending (!= 0) or descending (== 0) order at component \p index.
+ * @param[in] max_iter
+ * 	The maximum number of iterations (16 is a sane default value).
+ * @param[out] net
+ * 	The output parameter.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_INDEX_ERROR
+ * 	If the dimension of the control points of \p spline <= \p index.
+ * @return TS_NO_RESULT
+ * 	If there is no point P satisfying the distance condition.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
+	tsReal epsilon, size_t index, int ascending, size_t max_iter,
+	tsDeBoorNet *net, tsStatus *status);
 
 /**
  * Returns the domain of \p spline.

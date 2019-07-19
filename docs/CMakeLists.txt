@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
 	set(TINYSPLINE_DOXYGEN_DIR          "doxygen" CACHE INTERNAL "")
@@ -25,4 +28,42 @@ if(DOXYGEN_FOUND)
 		VERBATIM
 	) # COMMENT "Generating API documentation with Doxygen"
 	add_custom_target(docs DEPENDS "${TINYSPLINE_DOXYGEN_OUTPUT_DIR}")
+endif()
+
+find_package(MkDocs)
+if(MKDOCS_FOUND)
+	set(TINYSPLINE_MKDOCS_SOURCE_DIR "mkdocs")
+	file(
+		GLOB_RECURSE
+			TINYSPLINE_MKDOCS_FILES
+		RELATIVE
+			"${CMAKE_CURRENT_SOURCE_DIR}"
+			"${CMAKE_CURRENT_SOURCE_DIR}/${MKDOCS_SOURCE_DIR}/*"
+	)
+	foreach(FROM ${TINYSPLINE_MKDOCS_FILES})
+		# Ignore vim backup files.
+		if(${FROM} MATCHES "~$"
+				# Ignore Vim swap files.
+				OR ${FROM} MATCHES ".swp$"
+				# Ignore mkdocs output dir.
+				OR ${FROM} MATCHES "^${MKDOCS_DIR}/site")
+			continue()
+		endif()
+		# Configure .in files.
+		if(${FROM} MATCHES ".in$")
+			string(REGEX REPLACE ".in$" "" TO "${FROM}")
+			configure_file(
+				"${CMAKE_CURRENT_SOURCE_DIR}/${FROM}"
+				"${CMAKE_CURRENT_BINARY_DIR}/${TO}"
+				@ONLY
+			)
+		# Copy all other files.
+		else()
+			configure_file(
+				"${CMAKE_CURRENT_SOURCE_DIR}/${FROM}"
+				"${CMAKE_CURRENT_BINARY_DIR}/${FROM}"
+				COPYONLY
+			)
+		endif()
+	endforeach()
 endif()

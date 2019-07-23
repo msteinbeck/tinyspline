@@ -85,7 +85,7 @@ public:
 
 	/* Query */
 	DeBoorNet eval(real u) const;
-	DeBoorNet bisect(real value, real epsilon = 0.0001, size_t index = 0,
+	DeBoorNet bisect(real value, real epsilon = 0.01, size_t index = 0,
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
 	bool isClosed(real epsilon = 0.00001) const;

@@ -1048,7 +1048,7 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * there may be no point P satisfying the distance condition. Thus, the number
  * of iterations must be limited (\p max_iter). Depending on the domain of the
  * control points of \p spline and \p epsilon, \p max_iter ranges from 7 to 80.
- * In most cases \p max_iter == 20 should be fine though.
+ * In most cases \p max_iter == 30 should be fine though.
  *
  * @param[in] spline
  * 	The spline to evaluate

@@ -291,6 +291,18 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return deBoorNet;
 }
 
+tinyspline::DeBoorNet tinyspline::BSpline::bisect(tinyspline::real value,
+	tinyspline::real epsilon, size_t index, bool ascending,
+	size_t maxIter) const
+{
+	tinyspline::DeBoorNet net;
+	tsStatus status;
+	if (ts_bspline_bisect(&spline, value, epsilon, index, ascending,
+			      maxIter, net.data(), &status))
+		throw std::runtime_error(status.message);
+	return net;
+}
+
 tinyspline::Domain tinyspline::BSpline::domain() const
 {
 	real min, max;

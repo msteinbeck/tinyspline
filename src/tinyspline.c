@@ -1002,6 +1002,53 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	TS_RETURN_SUCCESS(status)
 }
 
+tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
+	tsReal epsilon, size_t index, int ascending, size_t max_iter,
+	tsDeBoorNet *net, tsStatus *status)
+{
+	tsError err;
+	const size_t dim = ts_bspline_dimension(spline);
+	const tsReal eps = (tsReal) fabs(epsilon);
+	size_t i = 0;
+	tsReal dist = 0;
+	tsReal min, max, mid;
+	tsReal *P;
+
+	if (dim < index) {
+		TS_RETURN_2(status, TS_INDEX_ERROR,
+			    "dimension (%lu) <= index (%lu)",
+			    (unsigned long) dim,
+			    (unsigned long) index);
+	}
+	if(max_iter == 0)
+		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations");
+
+	ts_bspline_domain(spline, &min, &max);
+	do {
+		mid = (min + max) / 2.0;
+		TS_CALL_ROE(err, ts_bspline_eval(spline, mid, net, status));
+		P = ts_internal_deboornet_access_result(net);
+		dist = ts_distance(&P[index], &value, 1);
+		if (dist <= eps)
+			TS_RETURN_SUCCESS(status)
+		if (ascending) {
+			if (P[index] < value)
+				min = mid;
+			else
+				max = mid;
+		} else {
+			if (P[index] < value)
+				max = mid;
+			else
+				min = mid;
+		}
+		ts_deboornet_free(net);
+	} while (i++ < max_iter);
+	TS_RETURN_1(status, TS_NO_RESULT,
+		    "maximum iterations (%lu) exceeded",
+		    (unsigned long) max_iter);
+}
+
 void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)
 {
 	*min = ts_internal_bspline_access_knots(spline)

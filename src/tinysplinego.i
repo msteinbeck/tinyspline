@@ -1,24 +1,12 @@
 %module tinysplinego
 
-//********************************************************
-//*                                                      *
-//* BSpline (Go)                                         *
-//*                                                      *
-//********************************************************
-%ignore ts::BSpline::operator=;
-%ignore ts::BSpline::operator();
+%ignore tinyspline::BSpline::operator();
+%ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
-//********************************************************
-//*                                                      *
-//* DeBoorNet (Go)                                       *
-//*                                                      *
-//********************************************************
-%ignore ts::DeBoorNet::operator=;
+%insert(cgo_comment_typedefs) %{
+#cgo LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-rpath,${SRCDIR}
+%}
 
-//********************************************************
-//*                                                      *
-//* SWIG base file                                       *
-//*                                                      *
-//********************************************************
 %include "tinyspline.i"

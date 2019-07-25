@@ -80,12 +80,12 @@
 	%typemap(jstype) std::vector<tinyspline::real> * "java.util.List<Double>"
 #endif
 
-// Let Java interface files directly return JNI result.
+// Let the Java interface files directly return the JNI result.
 %typemap(javaout) std::vector<tinyspline::real> * {
 	return $jnicall;
 }
 
-// Let Java interface files redirect the input argument to JNI.
+// Let the Java interface files redirect the input argument to JNI.
 %typemap(javain) std::vector<tinyspline::real> * "$javainput"
 
 // Map std::vector<tinyspline::real> to List<Float/Double>.

@@ -5,8 +5,8 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
-// Create a typemap that generalizes the types float and double to a single type accessible with
-// $typemap(cstype, tinyspline::real).
+// Create a typemap that generalizes the types float and double to a single type, which is
+// accessible with $typemap(cstype, tinyspline::real).
 #ifdef TINYSPLINE_FLOAT_PRECISION
 	%typemap(cstype) tinyspline::real "float"
 #else

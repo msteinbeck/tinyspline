@@ -23,8 +23,8 @@
         delete $1;
 }
 
-// Swig's R module does not work very well with C typedefs. Thus, we need to
-// create custom typemaps for tinyspline::real.
+// Swig's R module does not handle C typedefs well. Thus, we need to create
+// custom typemaps for tinyspline::real.
 
 // Add Rcpp to the generated C++ file.
 %{

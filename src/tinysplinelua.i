@@ -17,6 +17,9 @@
 	}
 	return 1;
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map Lua table to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * (int idx) %{
@@ -28,8 +31,6 @@
 		lua_pop(L, 1);
 	}
 %}
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

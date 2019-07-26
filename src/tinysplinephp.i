@@ -13,6 +13,9 @@
 		add_index_double($result, i, (*$1)[i]);
 	}
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map PHP array to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * {
@@ -36,8 +39,6 @@
 		}
 	}
 }
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

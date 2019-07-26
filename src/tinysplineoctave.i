@@ -16,6 +16,9 @@
 	}
 	$result = m;
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map Octave vector to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * (size_t size) %{
@@ -26,8 +29,6 @@
 		$1->push_back($input.array_value()(i));
 	}
 %}
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

@@ -15,6 +15,9 @@
 		rb_ary_store($result, i, DBL2NUM((*$1)[i]));
 	}
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map Ruby array to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * (size_t size) %{
@@ -25,8 +28,6 @@
 		$1->push_back(NUM2DBL(rb_ary_entry($input, i)));
 	}
 %}
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

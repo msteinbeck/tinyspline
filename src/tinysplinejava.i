@@ -70,8 +70,8 @@
 	}
 %}
 
-// Change the signature of the JNI file and signature of the Java interface files from
-// std::vector<tinyspline::real> to List<Float/Double>.
+// Change the signature of the JNI file and the signature of the Java interface
+// files from std::vector<tinyspline::real> to List<Float/Double>.
 #ifdef TINYSPLINE_FLOAT_PRECISION
 	%typemap(jtype) std::vector<tinyspline::real> * "java.util.List<Float>"
 	%typemap(jstype) std::vector<tinyspline::real> * "java.util.List<Float>"
@@ -109,6 +109,9 @@
 	}
 	*(jobject*)&$result = list;
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map List<Float/Double> to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * {
@@ -140,8 +143,6 @@
 		$1->push_back(value);
 	}
 }
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

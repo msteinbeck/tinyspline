@@ -17,8 +17,6 @@
 		Rcpp::as<std::vector<tinyspline::real> >($input);
 	$1 = new std::vector<tinyspline::real>(vec);
 }
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
         delete $1;
 }

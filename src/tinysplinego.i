@@ -15,7 +15,7 @@
 	%typemap(gotype) std::vector<tinyspline::real> * "[]float64"
 #endif
 
-// Map std::vector<tinyspline::real> to Go slice.
+// Map std::vector<tinyspline::real> to Go slice (do not free $1).
 %typemap(out) std::vector<tinyspline::real> * {
 	$result = {&$1->front(), $1->size(), $1->size()};
 }
@@ -30,8 +30,6 @@
 		$1->push_back((tinyspline::real)data[i]);
 	}
 }
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

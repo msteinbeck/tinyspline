@@ -16,6 +16,9 @@
 		PyList_SetItem($result, i, data);
 	}
 }
+%typemap(newfree) std::vector<tinyspline::real> * {
+	delete $1;
+}
 
 // Map Python list to std::vector<tinyspline::real>.
 %typemap(in) std::vector<tinyspline::real> * (int size, PyObject *data) %{
@@ -27,8 +30,6 @@
 		$1->push_back(PyFloat_AsDouble(data));
 	}
 %}
-
-// Cleanup memory allocated by typemaps.
 %typemap(freearg) std::vector<tinyspline::real> * {
 	delete $1;
 }

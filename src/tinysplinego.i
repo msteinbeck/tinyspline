@@ -9,6 +9,10 @@
 #cgo LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-rpath,${SRCDIR}
 %}
 
+// Simplify API so one can call a function without explicit type cast
+// (from int to int64).
+%typemap(gotype) size_t "int"
+
 #ifdef TINYSPLINE_FLOAT_PRECISION
 	%typemap(gotype) std::vector<tinyspline::real> * "[]float32"
 #else

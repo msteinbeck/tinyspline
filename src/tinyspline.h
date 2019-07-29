@@ -1037,18 +1037,22 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  *
  * This function is using the bisection method to determine P. Accordingly, it
  * is expected that the control points of \p spline are sorted at component
- * \p index in ascending order if \p ascending != 0 and in descending order if
- * \p ascending == 0. If the control points of \p spline are not sorted, the
- * behaviour of this function is undefined. For the sake of fail-safeness, the
- * distance of P[index] and \p value is compared with the absolute value of
- * \p epsilon.
+ * \p index either in ascending order (if \p ascending != 0) or in descending
+ * order (if \p ascending == 0). If the control points of \p spline are not
+ * sorted at component \p index, the behaviour of this function is undefined.
+ * For the sake of fail-safeness, the distance of P[index] and \p value is
+ * compared with the absolute value of \p epsilon (using fabs).
  *
  * The bisection method is an iterative approach, minimizing the error
  * (\p epsilon) with each iteration step until an "optimum" was found. However,
  * there may be no point P satisfying the distance condition. Thus, the number
  * of iterations must be limited (\p max_iter). Depending on the domain of the
- * control points of \p spline and \p epsilon, \p max_iter ranges from 7 to 80.
- * In most cases \p max_iter == 30 should be fine though.
+ * control points of \p spline at component \p index and \p epsilon,
+ * \p max_iter ranges from 7 to 50. In most cases \p max_iter == 30 should be
+ * fine though. The parameter \p persnickety allows to define the behaviour of
+ * this function is case no point was found after \p max_iter iterations. If
+ * enabled (!= 0), TS_NO_RESULT is returned. If disabled (== 0), the best
+ * fitting point is returned.
  *
  * @param[in] spline
  * 	The spline to evaluate
@@ -1056,11 +1060,15 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * 	The value (point at component \p index) to find.
  * @param[in] epsilon
  * 	The maximum distance (inclusive).
+ * @param[in] persnickety
+ * 	Indicates whether TS_NO_RESULT should be returned if there is no point
+ * 	P satisfying the distance condition (!= 0 to enable, == 0 to disable).
+ * 	If disabled, the best fitting point is returned.
  * @param[in] index
  * 	The point's component.
  * @param[in] ascending
  * 	Indicates whether the control points of \p spline are sorted in
- * 	ascending (!= 0) or descending (== 0) order at component \p index.
+ * 	ascending (!= 0) or in descending (== 0) order at component \p index.
  * @param[in] max_iter
  * 	The maximum number of iterations (16 is a sane default value).
  * @param[out] net
@@ -1072,13 +1080,14 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * @return TS_INDEX_ERROR
  * 	If the dimension of the control points of \p spline <= \p index.
  * @return TS_NO_RESULT
- * 	If there is no point P satisfying the distance condition.
+ * 	If \p persnickety is enabled (!= 0) and there is no point P satisfying
+ * 	the distance condition.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
 tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, size_t index, int ascending, size_t max_iter,
-	tsDeBoorNet *net, tsStatus *status);
+	tsReal epsilon, int persnickety, size_t index, int ascending,
+	size_t max_iter,  tsDeBoorNet *net, tsStatus *status);
 
 /**
  * Returns the domain of \p spline.

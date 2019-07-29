@@ -1003,8 +1003,8 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 }
 
 tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, size_t index, int ascending, size_t max_iter,
-	tsDeBoorNet *net, tsStatus *status)
+	tsReal epsilon, int persnickety, size_t index, int ascending,
+	size_t max_iter, tsDeBoorNet *net, tsStatus *status)
 {
 	tsError err;
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1013,6 +1013,8 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 	tsReal dist = 0;
 	tsReal min, max, mid;
 	tsReal *P;
+
+	ts_internal_deboornet_init(net);
 
 	if (dim < index) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
@@ -1025,6 +1027,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 
 	ts_bspline_domain(spline, &min, &max);
 	do {
+		ts_deboornet_free(net);
 		mid = (min + max) / 2.0;
 		TS_CALL_ROE(err, ts_bspline_eval(spline, mid, net, status));
 		P = ts_internal_deboornet_access_result(net);
@@ -1042,11 +1045,15 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 			else
 				min = mid;
 		}
-		ts_deboornet_free(net);
 	} while (i++ < max_iter);
-	TS_RETURN_1(status, TS_NO_RESULT,
-		    "maximum iterations (%lu) exceeded",
-		    (unsigned long) max_iter);
+	if (persnickety) {
+		ts_deboornet_free(net);
+		TS_RETURN_1(status, TS_NO_RESULT,
+			    "maximum iterations (%lu) exceeded",
+			    (unsigned long) max_iter);
+	} else {
+		TS_RETURN_SUCCESS(status);
+	}
 }
 
 void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)

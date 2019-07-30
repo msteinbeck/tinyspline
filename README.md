@@ -232,14 +232,14 @@ example:
 
 ```bash
 cmake -DTINYSPLINE_ENABLE_PYTHON=True ..
-build --build .
+cmake --build .
 ```
 
 To enable all interfaces, use `-DTINYSPLINE_ENABLE_ALL_INTERFACES`:
 
 ```bash
 cmake -DTINYSPLINE_ENABLE_ALL_INTERFACES=True ..
-build --build .
+cmake --build .
 ```
 
 You will find the resulting libraries and packages in `tinyspline/build/lib`.

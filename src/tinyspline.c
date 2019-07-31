@@ -889,8 +889,8 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 * :: Query Functions                                                          *
 *                                                                             *
 ******************************************************************************/
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *_deBoorNet_, tsStatus *status)
+tsError ts_internal_bspline_eval_woa(const tsBSpline *spline, tsReal u,
+	tsDeBoorNet *net, tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
@@ -900,7 +900,7 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 
 	const tsReal *ctrlp = ts_internal_bspline_access_ctrlp(spline);
 	const tsReal *knots = ts_internal_bspline_access_knots(spline);
-	tsReal *points;  /**< Pointer to the points of \p _deBoorNet_. */
+	tsReal *points = NULL;  /**< Pointer to the points of \p net. */
 
 	size_t k;        /**< Index of \p u. */
 	size_t s;        /**< Multiplicity of \p u. */
@@ -921,33 +921,24 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 
 	tsError err;
 
-	/* 1. Initialize the net and find index k such that u is in between
-	 *    [u_k, u_k+1).
+	points = ts_internal_deboornet_access_points(net);
+
+	/* 1. Find index k such that u is in between [u_k, u_k+1).
 	 * 2. Setup already known values.
 	 * 3. Decide by multiplicity of u how to calculate point P(u). */
 
 	/* 1. */
-	ts_internal_deboornet_init(_deBoorNet_);
 	k = s = 0;
-	points = NULL;
-	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_internal_deboornet_new(
-			spline, _deBoorNet_, status))
-		points = ts_internal_deboornet_access_points(_deBoorNet_);
-		TS_CALL(try, err, ts_internal_bspline_find_u(
-			spline, u, &k, &s, status))
-	TS_CATCH(err)
-		ts_deboornet_free(_deBoorNet_);
- 		return err;
-	TS_END_TRY
+	TS_CALL_ROE(err, ts_internal_bspline_find_u(
+		spline, u, &k, &s, status))
 
 	/* 2. */
-	uk = knots[k];          /* Ensures that with any precision of  */
-	_deBoorNet_->pImpl->u = /* tsReal the knot vector stays valid. */
+	uk = knots[k];  /* Ensures that with any precision of  */
+	net->pImpl->u = /* tsReal the knot vector stays valid. */
 		ts_knots_equal(u, uk) ? uk : u;
-	_deBoorNet_->pImpl->k = k;
-	_deBoorNet_->pImpl->s = s;
-        _deBoorNet_->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */
+	net->pImpl->k = k;
+	net->pImpl->s = s;
+        net->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */
 
 	/* 3. (by 1. s <= order)
 	 *
@@ -960,11 +951,11 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 		if (k == deg || /* only the first */
 		    k == num_knots - 1) { /* only the last */
 			from = k == deg ? 0 : (k-s) * dim;
-			_deBoorNet_->pImpl->n_points = 1;
+			net->pImpl->n_points = 1;
 			memcpy(points, ctrlp + from, sof_ctrlp);
 		} else {
 			from = (k-s) * dim;
-			_deBoorNet_->pImpl->n_points = 2;
+			net->pImpl->n_points = 2;
 			memcpy(points, ctrlp + from, 2 * sof_ctrlp);
 		}
 	} else { /* by 3a) s <= deg (order = deg+1) */
@@ -972,7 +963,7 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 		lst = k-s; /* s <= deg <= k */
 		N = lst-fst + 1; /* lst <= fst implies N >= 1 */
 
-		_deBoorNet_->pImpl->n_points = (size_t)(N * (N+1) * 0.5f);
+		net->pImpl->n_points = (size_t)(N * (N+1) * 0.5f);
 
 		/* copy initial values to output */
 		memcpy(points, ctrlp + fst*dim, N * sof_ctrlp);
@@ -981,11 +972,11 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 		ridx = dim;
 		tidx = N*dim; /* N >= 1 implies tidx > 0 */
 		r = 1;
-		for (;r <= ts_deboornet_num_insertions(_deBoorNet_); r++) {
+		for (;r <= ts_deboornet_num_insertions(net); r++) {
 			i = fst + r;
 			for (; i <= lst; i++) {
 				ui = knots[i];
-				a = (ts_deboornet_knot(_deBoorNet_) - ui) /
+				a = (ts_deboornet_knot(net) - ui) /
 					(knots[i+deg-r+1] - ui);
 				a_hat = 1.f-a;
 
@@ -1000,6 +991,21 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 		}
 	}
 	TS_RETURN_SUCCESS(status)
+}
+
+tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
+	tsDeBoorNet *_deBoorNet_, tsStatus *status)
+{
+	tsError err;
+	ts_internal_deboornet_init(_deBoorNet_);
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_internal_deboornet_new(
+			spline, _deBoorNet_, status))
+		TS_CALL(try, err, ts_internal_bspline_eval_woa(
+			spline, u, _deBoorNet_, status))
+	TS_CATCH(err)
+		ts_deboornet_free(_deBoorNet_);
+	TS_END_TRY_RETURN(err)
 }
 
 tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
@@ -1026,34 +1032,37 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations");
 
 	ts_bspline_domain(spline, &min, &max);
-	do {
-		ts_deboornet_free(net);
-		mid = (min + max) / 2.0;
-		TS_CALL_ROE(err, ts_bspline_eval(spline, mid, net, status));
-		P = ts_internal_deboornet_access_result(net);
-		dist = ts_distance(&P[index], &value, 1);
-		if (dist <= eps)
-			TS_RETURN_SUCCESS(status)
-		if (ascending) {
-			if (P[index] < value)
-				min = mid;
-			else
-				max = mid;
-		} else {
-			if (P[index] < value)
-				max = mid;
-			else
-				min = mid;
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_internal_deboornet_new(
+			spline, net, status))
+		do {
+			mid = (min + max) / 2.0;
+			TS_CALL(try, err, ts_internal_bspline_eval_woa(
+				spline, mid, net, status));
+			P = ts_internal_deboornet_access_result(net);
+			dist = ts_distance(&P[index], &value, 1);
+			if (dist <= eps)
+				TS_RETURN_SUCCESS(status)
+			if (ascending) {
+				if (P[index] < value)
+					min = mid;
+				else
+					max = mid;
+			} else {
+				if (P[index] < value)
+					max = mid;
+				else
+					min = mid;
+			}
+		} while (i++ < max_iter);
+		if (persnickety) {
+			TS_THROW_1(try, err, status, TS_NO_RESULT,
+				    "maximum iterations (%lu) exceeded",
+				    (unsigned long) max_iter);
 		}
-	} while (i++ < max_iter);
-	if (persnickety) {
+	TS_CATCH(err)
 		ts_deboornet_free(net);
-		TS_RETURN_1(status, TS_NO_RESULT,
-			    "maximum iterations (%lu) exceeded",
-			    (unsigned long) max_iter);
-	} else {
-		TS_RETURN_SUCCESS(status);
-	}
+	TS_END_TRY_RETURN(err)
 }
 
 void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)

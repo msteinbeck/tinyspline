@@ -4,6 +4,14 @@
 #include <vector>
 #include <string>
 
+#ifdef SWIG
+#define std_real_vector_in std::vector<tinyspline::real> *
+#define std_real_vector_out std::vector<tinyspline::real> *
+#else
+#define std_real_vector_in std::vector<tinyspline::real> &
+#define std_real_vector_out std::vector<tinyspline::real>
+#endif
+
 namespace tinyspline {
 
 typedef tsReal real;
@@ -18,7 +26,7 @@ public:
 	/* Operators */
 	DeBoorNet & operator=(const DeBoorNet &other);
 
-	/* Getter */
+	/* Accessors */
 	real knot() const;
 	size_t index() const;
 	size_t multiplicity() const;
@@ -69,22 +77,18 @@ public:
 	BSpline & operator=(const BSpline &other);
 	DeBoorNet operator()(real u) const;
 
-	/* Getter */
+	/* Accessors */
 	size_t degree() const;
 	size_t order() const;
 	size_t dimension() const;
 	std::vector<real> controlPoints() const;
-#ifdef SWIG
-	std::vector<real> *
-#else
-	std::vector<real>
-#endif
-	controlPointAt(size_t index) const;
+	std_real_vector_out controlPointAt(size_t index) const;
 	std::vector<real> knots() const;
 	tsBSpline * data();
 
 	/* Query */
 	DeBoorNet eval(real u) const;
+	std_real_vector_out evalAll(const std_real_vector_in us) const;
 	DeBoorNet bisect(real value, real epsilon = 0.01,
 		bool persnickety = false, size_t index = 0,
 		bool ascending = true, size_t maxIter = 30) const;
@@ -99,12 +103,7 @@ public:
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
-	void setControlPointAt(size_t index,
-#ifdef SWIG
-	const std::vector<real> *ctrlp);
-#else
-	const std::vector<real> &ctrlp);
-#endif
+	void setControlPointAt(size_t index, const std_real_vector_in ctrlp);
 	void setKnots(const std::vector<real> &knots);
 
 	/* Transformations */

@@ -22,6 +22,14 @@
 #pragma warning(disable:5045)
 #endif
 
+#ifdef SWIG
+#define std_real_vector_init new std::vector<tinyspline::real>
+#define std_real_vector_read(var) var->
+#else
+#define std_real_vector_init std::vector<tinyspline::real>
+#define std_real_vector_read(var) var.
+#endif
+
 /******************************************************************************
 *                                                                             *
 * DeBoorNet                                                                   *
@@ -238,12 +246,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	return vec;
 }
 
-#ifdef SWIG
-std::vector<tinyspline::real> *
-#else
-std::vector<tinyspline::real>
-#endif
-tinyspline::BSpline::controlPointAt(size_t index) const
+std_real_vector_out tinyspline::BSpline::controlPointAt(size_t index) const
 {
 	tsReal *ctrlp;
 	tsStatus status;
@@ -251,13 +254,7 @@ tinyspline::BSpline::controlPointAt(size_t index) const
 		throw std::runtime_error(status.message);
 	tinyspline::real *begin  = ctrlp;
 	tinyspline::real *end = begin + dimension();
-#ifdef SWIG
-	std::vector<tinyspline::real> * vec =
-		new std::vector<tinyspline::real>(begin, end);
-#else
-	std::vector<tinyspline::real> vec =
-		std::vector<tinyspline::real>(begin, end);
-#endif
+	std_real_vector_out vec = std_real_vector_init(begin, end);
 	free(ctrlp);
 	return vec;
 }
@@ -289,6 +286,23 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	if (ts_bspline_eval(&spline, u, deBoorNet.data(), &status))
 		throw std::runtime_error(status.message);
 	return deBoorNet;
+}
+
+std_real_vector_out tinyspline::BSpline::evalAll(
+	const std_real_vector_in us) const
+{
+	tinyspline::real *points;
+	tsStatus status;
+	if (ts_bspline_eval_all(&spline, std_real_vector_read(us)data(),
+			std_real_vector_read(us)size(), &points, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	tinyspline::real *begin = points;
+	tinyspline::real *end = begin +
+		std_real_vector_read(us)size() * dimension();
+	std_real_vector_out vec = std_real_vector_init(begin, end);
+	free(points);
+	return vec;
 }
 
 tinyspline::DeBoorNet tinyspline::BSpline::bisect(tinyspline::real value,
@@ -377,15 +391,9 @@ void tinyspline::BSpline::setControlPoints(
 }
 
 void tinyspline::BSpline::setControlPointAt(size_t index,
-#ifdef SWIG
-	const std::vector<tinyspline::real> *ctrlp)
+	const std_real_vector_in ctrlp)
 {
-	size_t actual = ctrlp->size();
-#else
-	const std::vector<tinyspline::real> &ctrlp)
-{
-	size_t actual = ctrlp.size();
-#endif
+	size_t actual = std_real_vector_read(ctrlp)size();
 	size_t expected = dimension();
 	if (expected != actual) {
 		char expected_str[32];
@@ -397,13 +405,8 @@ void tinyspline::BSpline::setControlPointAt(size_t index,
 			", Actual size: " + std::string(actual_str));
 	}
 	tsStatus status;
-#ifdef SWIG
 	tsError err = ts_bspline_set_control_point_at(
-		&spline, index, ctrlp->data(), &status);
-#else
-	tsError err = ts_bspline_set_control_point_at(
-		&spline, index, ctrlp.data(), &status);
-#endif
+		&spline, index, std_real_vector_read(ctrlp)data(), &status);
 	if (err < 0)
 		throw std::runtime_error(status.message);
 }

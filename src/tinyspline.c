@@ -955,6 +955,39 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
+	size_t num, tsReal **points, tsStatus *status)
+{
+	const size_t dim = ts_bspline_dimension(spline);
+	const size_t sof_point = dim * sizeof(tsReal);
+	const size_t sof_points = num * sof_point;
+	tsDeBoorNet net = ts_deboornet_init();
+	tsReal *result;
+	size_t i;
+	tsError err;
+	TS_TRY(try, err, status)
+		*points = (tsReal *) malloc(sof_points);
+		if (!*points) {
+			TS_THROW_0(try, err, status, TS_MALLOC,
+				   "out of memory");
+		}
+		TS_CALL(try, err, ts_int_deboornet_new(
+			spline,&net, status))
+		for (i = 0; i < num; i++) {
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, us[i], &net, status));
+			result = ts_int_deboornet_access_result(&net);
+			memcpy((*points) + i * dim, result, sof_point);
+		}
+	TS_CATCH(err)
+		if (*points)
+			free(*points);
+		*points = NULL;
+	TS_FINALLY
+		ts_deboornet_free(&net);
+	TS_END_TRY_RETURN(err)
+}
+
 tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 	tsReal epsilon, int persnickety, size_t index, int ascending,
 	size_t max_iter, tsDeBoorNet *net, tsStatus *status)

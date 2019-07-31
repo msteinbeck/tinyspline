@@ -1031,6 +1031,38 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
 	tsDeBoorNet *_deBoorNet_, tsStatus *status);
 
 /**
+ * Evaluates \p spline at the given knot values \p us and stores the result
+ * points in \p points. If \p us contains one or more knot values where
+ * \p spline is discontinuous at, only the first point of the corresponding
+ * evaluation result is taken. After calling this function \p points contains
+ * exactly \p num * ts_bspline_dimension(spline) values.
+ *
+ * This function is in particular useful in cases where a multitude of knots
+ * need to be evaluated, because only a single instance of tsDeBoorNet is
+ * created and reused for all evaluation tasks (therefore the memory footprint
+ * is reduced to a minimum).
+ *
+ * @param[in] spline
+ * 	The spline to evaluate.
+ * @param[in] us
+ * 	The knot values to evaluate.
+ * @param[in] num
+ * 	The number of knots in \p us.
+ * @param[out] points
+ * 	The output parameter.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_U_UNDEFINED
+ * 	If \p spline is not defined at one of the knot values in \p us.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
+	size_t num, tsReal **points, tsStatus *status);
+
+/**
  * Tries to find a point P on \p spline such that:
  *
  *     ts_distance(P[index], value, 1) <= fabs(epsilon)

@@ -844,7 +844,7 @@ tsBSpline ts_bspline_init();
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p degree == 0.
+ * 	If \p dimension == 0.
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= \p num_control_points.
  * @return TS_NUM_KNOTS
@@ -1007,6 +1007,16 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 * The following section contains functions to query splines.                  *
 *                                                                             *
 ******************************************************************************/
+/**
+ * Returns the number of distinct knots.
+ *
+ * @param spline
+ * 	The spline to query.
+ * @return
+ *	The number of distinct knots.
+ */
+size_t ts_bspline_num_distinct_knots(const tsBSpline *spline);
+
 /**
  * Evaluates \p spline at knot value \p u and stores the result in
  * \p \_deBoorNet\_.

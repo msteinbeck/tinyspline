@@ -87,6 +87,7 @@ public:
 	tsBSpline * data();
 
 	/* Query */
+	size_t numDistinctKnots() const;
 	DeBoorNet eval(real u) const;
 	std_real_vector_out evalAll(const std_real_vector_in us) const;
 	DeBoorNet bisect(real value, real epsilon = 0.01,

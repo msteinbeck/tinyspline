@@ -279,6 +279,11 @@ tsBSpline * tinyspline::BSpline::data()
 	return &spline;
 }
 
+size_t tinyspline::BSpline::numDistinctKnots() const
+{
+	return ts_bspline_num_distinct_knots(&spline);
+}
+
 tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 {
 	tinyspline::DeBoorNet deBoorNet;

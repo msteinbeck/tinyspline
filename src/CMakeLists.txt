@@ -1001,7 +1001,7 @@ endfunction()
 tinyspline_set_on_off(TINYSPLINE_WITH_CXX TINYSPLINE_ENABLE_CXX)
 tinyspline_set_on_off_swig(TINYSPLINE_WITH_CSHARP TINYSPLINE_ENABLE_CSHARP)
 tinyspline_set_on_off_swig(TINYSPLINE_WITH_DLANG TINYSPLINE_ENABLE_DLANG)
-tinyspline_set_on_off(TINYSPLINE_WITH_GOLANG FALSE)
+tinyspline_set_on_off_swig(TINYSPLINE_WITH_GOLANG TINYSPLINE_ENABLE_GO)
 tinyspline_set_on_off(TINYSPLINE_WITH_JAVA JNI_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_LUA LUA_FOUND)
 tinyspline_set_on_off(TINYSPLINE_WITH_OCTAVE OCTAVE_FOUND)
@@ -1112,7 +1112,6 @@ Available Interfaces:
   D:            ${TINYSPLINE_WITH_DLANG}
 
   Go:           ${TINYSPLINE_WITH_GOLANG}
-    (Not supported yet)
 
   Java:         ${TINYSPLINE_WITH_JAVA}
     Version:  ${Java_VERSION_STRING}

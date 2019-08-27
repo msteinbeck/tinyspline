@@ -211,6 +211,10 @@ set(TINYSPLINE_PLATFORM
 #
 # TINYSPLINE_ENABLE_ALL_INTERFACES
 #   If set, all interfaces are enabled automatically.
+#
+# TINYSPLINE_RUNTIME_LIBRARIES
+#   List of compiler specific runtime libraries that mus be included into
+#   distribution artifacts.
 ###############################################################################
 # TINYSPLINE_FLOAT_PRECISION
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precision." OFF)
@@ -247,6 +251,9 @@ if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 	set(TINYSPLINE_ENABLE_R TRUE)
 	set(TINYSPLINE_ENABLE_RUBY TRUE)
 endif()
+
+# TINYSPLINE_RUNTIME_LIBRARIES
+set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime libraries. If empty, the necessary libraries are determined automatically.")
 
 
 

@@ -253,7 +253,7 @@ if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 endif()
 
 # TINYSPLINE_RUNTIME_LIBRARIES
-set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime libraries. If empty, the necessary libraries are determined automatically.")
+set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime libraries that must be included into distribution artifacts. If empty, the necessary files are determined automatically.")
 
 
 
@@ -324,6 +324,10 @@ endif()
 #
 # TINYSPLINE_BINDING_CXX_FLAGS
 #   C++ binding specific flags.
+#
+# TINYSPLINE_RUNTIME_LIBS
+#   Stores the names of the files that are copied from
+#   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY.
 ###############################################################################
 # TINYSPLINE_DEBUG_POSTFIX
 # TINYSPLINE_DEFINITIONS
@@ -456,6 +460,27 @@ if(TINYSPLINE_HAS_PARENT)
 	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}" PARENT_SCOPE)
 else()
 	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_LIBRARIES}")
+endif()
+# TINYSPLINE_RUNTIME_LIBS
+set(TINYSPLINE_RUNTIME_LIBS "")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND
+		TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
+	# Store determined files in CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS. This
+	# allows to conveniently reuse the InstallRequiredSystemLibraries
+	# module.
+	set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+		include(InstallRequiredSystemLibraries)
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		get_filename_component(basedir ${CMAKE_CXX_COMPILER} DIRECTORY)
+		set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "${basedir}/libstdc++-6.dll")
+	endif()
+	foreach(file ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
+		file(COPY ${file} DESTINATION ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY})
+		get_filename_component(name ${file} NAME)
+		list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
+	endforeach()
 endif()
 
 
@@ -1073,6 +1098,7 @@ Compiler Configuration:
   C flags:        ${TINYSPLINE_SUMMARY_C_FLAGS}
   C++ flags:      ${TINYSPLINE_SUMMARY_CXX_FLAGS}
   Binding flags:  ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
+  Runtime libs:   ${TINYSPLINE_RUNTIME_LIBS}
   Definitions:    ${TINYSPLINE_DEFINITIONS}
   Debug postfix:  ${TINYSPLINE_DEBUG_POSTFIX}
   Toolchain file: ${CMAKE_TOOLCHAIN_FILE}

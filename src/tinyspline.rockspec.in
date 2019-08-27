@@ -21,16 +21,7 @@ build = {
 	type = "command",
 	build_command = "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_LUA_CMAKE_TARGET@",
 	modules = {},
-	platforms = {
-		unix = {
-			install = {
-				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/@TINYSPLINE_LUA_CMAKE_TARGET@.so" }
-			}
-		},
-		windows = {
-			install = {
-				lib = { "@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@/@TINYSPLINE_LUA_CMAKE_TARGET@.dll" }
-			}
-		}
+	install = {
+		lib = { @TINYSPLINE_LUAROCKS_INSTALL_LIB@ }
 	}
 }

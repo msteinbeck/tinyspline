@@ -28,9 +28,12 @@ class build_py(_build_py):
 			raise EnvironmentError("Error running CMake")
 
 		# Copy resulting files.
-		for bin_file in glob(path.join("@TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY@", "*@TINYSPLINE_PYTHON_CMAKE_TARGET@*")):
-			copy2(bin_file, bin_dir)
-		copy2("@TINYSPLINE_PYTHON_INTERFACE_FILE@", bin_dir)
+		for bin_file in @TINYSPLINE_SETUP_FILE_ARRAY@:
+			if "*" in bin_file:
+				for bf in glob(bin_file):
+					copy2(bf, bin_dir)
+			else:
+				copy2(bin_file, bin_dir)
 
 		# Create __init__.py.
 		init_file = open(path.join(script_dir, "__init__.py"), "w+")

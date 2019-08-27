@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email       = '@TINYSPLINE_MAIL@'
   spec.summary     = "@TINYSPLINE_SUMMARY@"
   spec.description = "@TINYSPLINE_DESCRIPTION@"
-  spec.files       = Dir.glob("{lib}/@TINYSPLINE_RUBY_CMAKE_TARGET@*")
+  spec.files       = @TINYSPLINE_GEM_FILES@
   spec.homepage    = '@TINYSPLINE_URL@'
   spec.license     = '@TINYSPLINE_LICENSE@'
 end

@@ -7,7 +7,7 @@
 	"preGenerateCommands" : ["@CMAKE_COMMAND@ --build . --target @TINYSPLINE_DLANG_CMAKE_TARGET@"],
 	"targetType" : "staticLibrary",
 	"sourcePaths" : ["lib"],
-	"copyFiles" : ["lib/*.d", "lib/*@TINYSPLINE_DLANG_CMAKE_TARGET@*"],
+	"copyFiles" : [@TINYSPLINE_DUB_COPY_FILES@],
 	"buildOptions" : ["ignoreUnknownPragmas"],
 	"lflags" : ["-ldl"],
 	"targetName" : "tinysplinedlang",

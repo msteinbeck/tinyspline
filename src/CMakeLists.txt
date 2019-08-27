@@ -1014,10 +1014,20 @@ tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
 
 ###############################################################################
 ### Configure language-specific build systems.
+#
+# TINYSPLINE_LIB_DIR
+#   Name of TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY.
 ###############################################################################
+get_filename_component(TINYSPLINE_LIB_DIR
+	${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
+	NAME)
+
 # Dub
 file(REMOVE "${CMAKE_BINARY_DIR}/dub.json")
 if(${TINYSPLINE_WITH_DLANG})
+	set(TINYSPLINE_DUB_COPY_FILES "\"${TINYSPLINE_LIB_DIR}/*.d\"")
+	set(TINYSPLINE_DUB_COPY_FILES "${TINYSPLINE_DUB_COPY_FILES}\
+, \"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_DLANG_CMAKE_TARGET}*\"")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/dub.json.in"
 		"${CMAKE_BINARY_DIR}/dub.json"
@@ -1028,6 +1038,17 @@ endif()
 # Luarocks
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec")
 if(${TINYSPLINE_WITH_LUA})
+	set(TINYSPLINE_LUAROCKS_INSTALL_LIB
+		"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_LUA_CMAKE_TARGET}")
+	if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+		set(TINYSPLINE_LUAROCKS_INSTALL_LIB
+			"${TINYSPLINE_LUAROCKS_INSTALL_LIB}.dll")
+	else()
+		set(TINYSPLINE_LUAROCKS_INSTALL_LIB
+			"${TINYSPLINE_LUAROCKS_INSTALL_LIB}.so")
+	endif()
+	set(TINYSPLINE_LUAROCKS_INSTALL_LIB
+		"\"${TINYSPLINE_LUAROCKS_INSTALL_LIB}\"")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.rockspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec"
@@ -1038,6 +1059,15 @@ endif()
 # Nuget
 file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
 if(${TINYSPLINE_WITH_CSHARP})
+	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
+		${TINYSPLINE_CSHARP_INTERFACE_FILE}
+		NAME)
+	set(TINYSPLINE_NUGET_FILES "<file \
+src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
+target=\"lib/net45\" />")
+	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
+src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
+target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/.nuspec.in"
 		"${CMAKE_BINARY_DIR}/.nuspec"
@@ -1058,6 +1088,14 @@ endif()
 # Distutils
 file(REMOVE "${CMAKE_BINARY_DIR}/setup.py")
 if(${TINYSPLINE_WITH_PYTHON})
+	get_filename_component(TINYSPLINE_SETUP_INTERFACE_FILE
+		${TINYSPLINE_PYTHON_INTERFACE_FILE}
+		NAME)
+	set(TINYSPLINE_SETUP_FILE_ARRAY
+"\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_SETUP_INTERFACE_FILE}\"")
+	set(TINYSPLINE_SETUP_FILE_ARRAY "${TINYSPLINE_SETUP_FILE_ARRAY}\
+, \"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_PYTHON_CMAKE_TARGET}.*\"")
+	set(TINYSPLINE_SETUP_FILE_ARRAY "[${TINYSPLINE_SETUP_FILE_ARRAY}]")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in"
 		"${CMAKE_BINARY_DIR}/setup.py"
@@ -1068,6 +1106,8 @@ endif()
 # Gem
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
+	set(TINYSPLINE_GEM_FILES
+"Dir.glob(\"{${TINYSPLINE_LIB_DIR}}/*${TINYSPLINE_RUBY_CMAKE_TARGET}*\")")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.gemspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec"

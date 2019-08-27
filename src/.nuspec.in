@@ -12,7 +12,6 @@
 		<copyright>@TINYSPLINE_LICENSE@</copyright>
 	</metadata>
 	<files>
-		<file src="lib/TinySpline.dll" target="lib/net45" />
-		<file src="lib/*tinysplinecsharp.*" target="runtimes/@TINYSPLINE_PLATFORM@/lib/native" />
+		@TINYSPLINE_NUGET_FILES@
 	</files>
 </package>

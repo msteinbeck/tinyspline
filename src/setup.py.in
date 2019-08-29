@@ -57,7 +57,7 @@ class bdist_wheel(_bdist_wheel):
 
 # Create setup.
 setup(name="@TINYSPLINE_PACKAGE_NAME@",
-	  version="@TINYSPLINE_VERSION@-1",
+	  version="@TINYSPLINE_VERSION@.post1",
 	  description="@TINYSPLINE_SUMMARY@",
 	  long_description="@TINYSPLINE_DESCRIPTION@",
 	  author="@TINYSPLINE_AUTHOR@",

@@ -325,7 +325,7 @@ endif()
 # TINYSPLINE_BINDING_CXX_FLAGS
 #   C++ binding specific flags.
 #
-# TINYSPLINE_RUNTIME_LIBS
+# TINYSPLINE_RUNTIME_LIBS (set in parent scope)
 #   Stores the names of the files that are copied from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY.
 ###############################################################################
@@ -463,24 +463,41 @@ else()
 endif()
 # TINYSPLINE_RUNTIME_LIBS
 set(TINYSPLINE_RUNTIME_LIBS "")
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND
-		TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
-	# Store determined files in CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS. This
-	# allows to conveniently reuse the InstallRequiredSystemLibraries
-	# module.
-	set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "")
-	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-		set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
-		include(InstallRequiredSystemLibraries)
-	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-		get_filename_component(basedir ${CMAKE_CXX_COMPILER} DIRECTORY)
-		set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "${basedir}/libstdc++-6.dll")
+if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
+	if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+		# Store determined files in CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS.
+		# This allows to conveniently reuse the
+		# InstallRequiredSystemLibraries module.
+		set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS "")
+		if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+			set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+			include(InstallRequiredSystemLibraries)
+		elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+			get_filename_component(basedir
+				${CMAKE_CXX_COMPILER}
+				DIRECTORY)
+			set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+				"${basedir}/libstdc++-6.dll")
+		endif()
+		# Override cached variable.
+		set(TINYSPLINE_RUNTIME_LIBRARIES
+			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIB}
+			CACHE "Autodetected" FILEPATH FORCE)
 	endif()
-	foreach(file ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
-		file(COPY ${file} DESTINATION ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY})
-		get_filename_component(name ${file} NAME)
-		list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
-	endforeach()
+endif()
+foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
+	if(NOT EXISTS ${file})
+		message(FATAL_ERROR "'${file}' does not exist")
+	endif()
+	file(COPY ${file} DESTINATION ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY})
+	get_filename_component(name ${file} NAME)
+	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
+endforeach()
+# Export relevant variables.
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_RUNTIME_LIBS "${TINYSPLINE_RUNTIME_LIBS}" PARENT_SCOPE)
+else()
+	set(TINYSPLINE_LIBRARIES "${TINYSPLINE_RUNTIME_LIBS}")
 endif()
 
 
@@ -780,6 +797,18 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			LIBS ${JNI_LIBRARIES}
 			SWIG_ARGS -package "org.tinyspline"
 		)
+		string(REPLACE ";" ","
+			TINYSPLINE_JAVA_RUNTIME_LIBS
+			"${TINYSPLINE_RUNTIME_LIBS}"
+		)
+		set(TINYSPLINE_JAVA_RUNTIME_LIBS
+			"runtime-libs:${TINYSPLINE_JAVA_RUNTIME_LIBS}")
+		set(TINYSPLINE_JAVA_PROPERTIES_FILE
+			"${TINYSPLINE_PLATFORM}.properties")
+		file(WRITE
+			"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/${TINYSPLINE_JAVA_PROPERTIES_FILE}"
+			"${TINYSPLINE_JAVA_RUNTIME_LIBS}"
+		)
 		# Jar archive
 		find_package(Java COMPONENTS Development)
 		if(${Java_Development_FOUND})
@@ -796,6 +825,11 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 					-E copy
 					"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
 					"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes/${TINYSPLINE_PLATFORM}"
+				COMMAND
+					${CMAKE_COMMAND}
+					-E copy
+					"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/${TINYSPLINE_JAVA_PROPERTIES_FILE}"
+					"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes/${TINYSPLINE_JAVA_PROPERTIES_FILE}"
 				COMMAND
 					"${Java_JAVAC_EXECUTABLE}"
 					-d "${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes"
@@ -1028,6 +1062,10 @@ if(${TINYSPLINE_WITH_DLANG})
 	set(TINYSPLINE_DUB_COPY_FILES "\"${TINYSPLINE_LIB_DIR}/*.d\"")
 	set(TINYSPLINE_DUB_COPY_FILES "${TINYSPLINE_DUB_COPY_FILES}\
 , \"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_DLANG_CMAKE_TARGET}*\"")
+	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
+		set(TINYSPLINE_DUB_COPY_FILES "${TINYSPLINE_DUB_COPY_FILES}\
+, \"${TINYSPLINE_LIB_DIR}/${lib}\"")
+	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/dub.json.in"
 		"${CMAKE_BINARY_DIR}/dub.json"
@@ -1049,6 +1087,11 @@ if(${TINYSPLINE_WITH_LUA})
 	endif()
 	set(TINYSPLINE_LUAROCKS_INSTALL_LIB
 		"\"${TINYSPLINE_LUAROCKS_INSTALL_LIB}\"")
+	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
+		set(TINYSPLINE_LUAROCKS_INSTALL_LIB
+			"${TINYSPLINE_LUAROCKS_INSTALL_LIB}\
+, \"${TINYSPLINE_LIB_DIR}/${lib}\"")
+	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.rockspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec"
@@ -1068,6 +1111,12 @@ target=\"lib/net45\" />")
 	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
 target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
+	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
+		set(TINYSPLINE_NUGET_FILES
+			"${TINYSPLINE_NUGET_FILES}\n\t\t<file \
+src=\"${TINYSPLINE_LIB_DIR}/${lib}\" \
+target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
+	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/.nuspec.in"
 		"${CMAKE_BINARY_DIR}/.nuspec"
@@ -1095,6 +1144,10 @@ if(${TINYSPLINE_WITH_PYTHON})
 "\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_SETUP_INTERFACE_FILE}\"")
 	set(TINYSPLINE_SETUP_FILE_ARRAY "${TINYSPLINE_SETUP_FILE_ARRAY}\
 , \"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_PYTHON_CMAKE_TARGET}.*\"")
+	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
+		set(TINYSPLINE_SETUP_FILE_ARRAY "${TINYSPLINE_SETUP_FILE_ARRAY}\
+, \"${TINYSPLINE_LIB_DIR}/${lib}\"")
+	endforeach()
 	set(TINYSPLINE_SETUP_FILE_ARRAY "[${TINYSPLINE_SETUP_FILE_ARRAY}]")
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in"
@@ -1108,6 +1161,10 @@ file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
 	set(TINYSPLINE_GEM_FILES
 "Dir.glob(\"{${TINYSPLINE_LIB_DIR}}/*${TINYSPLINE_RUBY_CMAKE_TARGET}*\")")
+	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
+		set(TINYSPLINE_GEM_FILES "${TINYSPLINE_GEM_FILES} \
+<< \"${TINYSPLINE_LIB_DIR}/${lib}\"")
+	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.gemspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec"

@@ -1073,6 +1073,37 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 	size_t num, tsReal **points, tsStatus *status);
 
 /**
+ * Generates a sequence of \p num different knots (The knots are equally
+ * distributed between #TS_MIN_KNOT_VALUE and TS_MAX_KNOT_VALUE), passes this
+ * sequence to ts_bspline_eval_all, and stores the result points in \p points.
+ * If \p num is 0, the following default value is taken as fallback:
+ *
+ * 	num = ts_bspline_num_distinct_knots(spline) * 30
+ *
+ * That is, the fallback generates 30 knots per Bezier segment. For the sake
+ * of stability regarding future changes, the actual number of generated knots
+ * (which only differs from \p num if \p num is 0) is stored in \p actual_num.
+ *
+ * @param spline
+ * 	The spline to evaluate.
+ * @param num
+ * 	The number of knots to generate.
+ * @param points
+ * 	The output parameter.
+ * @param actual_num
+ * 	The actual number of generated knots. Differs from \p num ony if \p num
+ * 	is 0. Must not be NULL.
+ * @param status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
+	size_t *actual_num, tsStatus *status);
+
+/**
  * Tries to find a point P on \p spline such that:
  *
  *     ts_distance(P[index], value, 1) <= fabs(epsilon)

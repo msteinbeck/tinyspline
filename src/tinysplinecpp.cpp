@@ -310,6 +310,21 @@ std_real_vector_out tinyspline::BSpline::evalAll(
 	return vec;
 }
 
+std_real_vector_out tinyspline::BSpline::sample(size_t num) const
+{
+	tinyspline::real *points;
+	size_t actualNum;
+	tsStatus status;
+	if (ts_bspline_sample(&spline, num, &points, &actualNum, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	tinyspline::real *begin = points;
+	tinyspline::real *end = begin + actualNum * dimension();
+	std_real_vector_out vec = std_real_vector_init(begin, end);
+	free(points);
+	return vec;
+}
+
 tinyspline::DeBoorNet tinyspline::BSpline::bisect(tinyspline::real value,
 	tinyspline::real epsilon, bool persnickety, size_t index,
 	bool ascending, size_t maxIter) const

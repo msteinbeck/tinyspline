@@ -1006,6 +1006,34 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
+	size_t *actual_num, tsStatus *status)
+{
+	tsError err;
+	tsReal *knots;
+	size_t i;
+	if (num == 0)
+		num = ts_bspline_num_distinct_knots(spline) * 30;
+	*actual_num = num;
+	knots = (tsReal *) malloc(num * sizeof(tsReal));
+	if (!knots) {
+		*points = NULL;
+		TS_RETURN_0(status, TS_MALLOC, "out of memory");
+	}
+	for (i = 0; i < num; i++) {
+		knots[i] = TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE;
+		knots[i] *= (tsReal)i / num;
+		knots[i] += TS_MIN_KNOT_VALUE;
+	}
+	knots[num - 1] = TS_MAX_KNOT_VALUE;
+	TS_TRY(try, err, status)
+	       TS_CALL(try, err, ts_bspline_eval_all(
+			spline, knots, num, points, status));
+	TS_FINALLY
+		free(knots);
+	TS_END_TRY_RETURN(err)
+}
+
 tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 	tsReal epsilon, int persnickety, size_t index, int ascending,
 	size_t max_iter, tsDeBoorNet *net, tsStatus *status)

@@ -90,6 +90,7 @@ public:
 	size_t numDistinctKnots() const;
 	DeBoorNet eval(real u) const;
 	std_real_vector_out evalAll(const std_real_vector_in us) const;
+	std_real_vector_out sample(size_t num = 0) const;
 	DeBoorNet bisect(real value, real epsilon = 0.01,
 		bool persnickety = false, size_t index = 0,
 		bool ascending = true, size_t maxIter = 30) const;

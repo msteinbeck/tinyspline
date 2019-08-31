@@ -478,16 +478,29 @@ if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
 				DIRECTORY)
 			list(APPEND
 				CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-				"${basedir}/libstdc++-6.dll"
-				"${basedir}/libwinpthread-1.dll")
-			if(TINYSPLINE_PLATFORM_ARCH STREQUAL "x86")
+				"${basedir}/libstdc++-6.dll")
+			# Determining the used exception model is not quite as
+			# simple as one would suspect. Thus, we simple add all
+			# existing DLL files that are responsible for exception
+			# handling.
+			list(APPEND
+				TINYSPLINE_EXCEPTION_RUNTIME_LIBRARIES
+				"${basedir}/libgcc_s_seh-1.dll"
+				"${basedir}/libgcc_s_dw2-1.dll"
+				"${basedir}/libgcc_s_sjlj-1.dll")
+			foreach(file ${TINYSPLINE_EXCEPTION_RUNTIME_LIBRARIES})
+				if(EXISTS ${file})
+					list(APPEND
+						CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+						${file})
+				endif()
+			endforeach()
+			# Add the libwinpthread DLL if it exists, indicating
+			# that POSIX (instead of win32) threads are enabled.
+			if(EXISTS "${basedir}/libwinpthread-1.dll")
 				list(APPEND
 					CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-					"${basedir}/libgcc_s_sjlj-1.dll")
-			elseif(TINYSPLINE_PLATFORM_ARCH STREQUAL "x86_64")
-				list(APPEND
-					CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-					"${basedir}/libgcc_s_seh-1.dll")
+					"${basedir}/libwinpthread-1.dll")
 			endif()
 		endif()
 		# Override cached variable.

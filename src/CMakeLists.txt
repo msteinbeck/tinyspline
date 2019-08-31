@@ -476,8 +476,11 @@ if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
 			get_filename_component(basedir
 				${CMAKE_CXX_COMPILER}
 				DIRECTORY)
-			set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-				"${basedir}/libstdc++-6.dll")
+			list(APPEND
+				CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+				"${basedir}/libstdc++-6.dll"
+				"${basedir}/libgcc_s_seh-1.dll"
+				"${basedir}/libwinpthread-1.dll")
 		endif()
 		# Override cached variable.
 		set(TINYSPLINE_RUNTIME_LIBRARIES

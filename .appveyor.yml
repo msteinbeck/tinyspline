@@ -8,8 +8,8 @@ branches:
 
 environment:
   matrix:
-    - COMPILER: mingw
-      PLATFORM: Win32
+    #- COMPILER: mingw
+      #PLATFORM: Win32
 
     #- COMPILER: mingw-w64
       #GENERATOR: MinGW Makefiles

@@ -528,6 +528,10 @@ endif()
 ###############################################################################
 ### Create the C/C++ library. We explicitly set the prefix of the static
 ### library to 'lib' to prevent naming collisions when compiling with MSVC.
+### Further, we need to explicitly set the output directory
+### (RUNTIME_OUTPUT_DIRECTORY) to ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
+### because CMake treats DLL files as runtime artifacts (see
+### https://cmake.org/cmake/help/v3.0/prop_tgt/LIBRARY_OUTPUT_DIRECTORY.html).
 #
 # TINYSPLINE_INCLUDE_DIRS (set in parent scope)
 #   Include directories of the C/C++ library. The listed directories contain
@@ -577,11 +581,12 @@ set_target_properties(tinyspline_shared PROPERTIES
 	OUTPUT_NAME "tinyspline"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
+	RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
 )
 install(TARGETS tinyspline_shared
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
-	RUNTIME DESTINATION bin
+	RUNTIME DESTINATION lib
 )
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_static PROPERTIES
@@ -608,11 +613,12 @@ if(TINYSPLINE_ENABLE_CXX)
 		OUTPUT_NAME "tinysplinecpp"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
+		RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
 	)
 	install(TARGETS tinysplinecpp_shared
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION bin
+		RUNTIME DESTINATION lib
 	)
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_static PROPERTIES

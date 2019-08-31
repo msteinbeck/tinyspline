@@ -71,11 +71,10 @@ set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for inte
 #   Location of compiled binaries.
 #
 # TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY
-#   Location of the compiled libraries.
+#   Location of compiled libraries.
 #
 # TINYSPLINE_***_SOURCE_DIRECTORY
-#   The directory where the auto-generated source code of binding *** is
-#   located.
+#   Location of the auto-generated source code of binding ***.
 #
 # TINYSPLINE_***_INTERFACE_FILE
 #   Location of the auto-generated interface file of binding *** (if any).

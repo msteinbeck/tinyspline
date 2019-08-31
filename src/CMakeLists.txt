@@ -478,8 +478,7 @@ if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
 				DIRECTORY)
 			list(APPEND
 				CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-				"${basedir}/libstdc++-6.dll"
-				"${basedir}/libwinpthread-1.dll")
+				"${basedir}/libstdc++-6.dll")
 			if(TINYSPLINE_PLATFORM_ARCH STREQUAL "x86")
 				list(APPEND
 					CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
@@ -487,7 +486,8 @@ if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
 			elseif(TINYSPLINE_PLATFORM_ARCH STREQUAL "x86_64")
 				list(APPEND
 					CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-					"${basedir}/libgcc_s_seh-1.dll")
+					"${basedir}/libgcc_s_seh-1.dll"
+					"${basedir}/libwinpthread-1.dll")
 			endif()
 		endif()
 		# Override cached variable.

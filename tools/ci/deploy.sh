@@ -231,9 +231,6 @@ pushd "$DOCS_BRANCH_DIR"
 	# Copy TravisCI config file.
 	cp "$TRAVISCI_CONFIG_PATH" ./
 
-	# Copy CircleCI config directory.
-	cp -R "$CIRCLECI_CONFIG_DIR" ./
-
 	# Set user name and email for commit.
 	git config user.name "Travis CI"
 	git config user.email "travis@tinyspline.org"

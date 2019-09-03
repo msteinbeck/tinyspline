@@ -1062,7 +1062,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline, net, status))
 		do {
-			mid = (min + max) / 2.0;
+			mid = (tsReal) ((min + max) / 2.0);
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
 				spline, mid, net, status));
 			P = ts_int_deboornet_access_result(net);

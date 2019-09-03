@@ -51,11 +51,6 @@ if [ ! -f "$TRAVISCI_CONFIG_PATH" ]; then
 	echo "TravisCI config file is not available; aborting."
 	exit -1
 fi
-CIRCLECI_CONFIG_DIR="$SCRIPT_DIR/../../.circleci"
-if [ ! -d "$CIRCLECI_CONFIG_DIR" ]; then
-	echo "CircleCI config directory is not available; aborting."
-	exit -1
-fi
 
 # Store some git-related information.
 REPO=`git config remote.origin.url`
@@ -183,9 +178,6 @@ pushd "$BUILD_BRANCH_DIR"
 
 	# Copy TravisCI config file.
 	cp "$TRAVISCI_CONFIG_PATH" ./
-
-	# Copy CircleCI config directory.
-	cp -R "$CIRCLECI_CONFIG_DIR" ./
 
 	# Set user name and email for commit.
 	git config user.name "Travis CI"

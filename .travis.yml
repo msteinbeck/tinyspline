@@ -1,49 +1,38 @@
-branches:
-  except:
-    - appveyor
-    - circleci
-    - gh-pages
-    - build_linux_64
-    - build_osx_64
-
-# Travis CI tests only Clang. GCC is tested elsewhere.
-language: cpp
-compiler: clang
-
 os:
   - linux
   - osx
+  - windows
+compiler:
+  - gcc
+  - clang
+env:
+  - TINYSPLINE_FLOAT_PRECISION=OFF
+  - TINYSPLINE_FLOAT_PRECISION=ON
 
-# Ubuntu 16.04
-dist: xenial
+language: cpp
+dist: bionic
 sudo: true
-
-osx_image: xcode10.1
-
-jdk: openjdk8
+osx_image: xcode11
 
 install:
-  - pushd tools/ci
-  - ./install_deps.sh
-  - popd
-
-before_script:
-  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - export BUILD_DIR="build"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_CSHARP=TRUE"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_D=TRUE"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_JAVA=TRUE"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_LUA=TRUE"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_PYTHON=TRUE"
-  - export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_RUBY=TRUE"
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_OCTAVE=TRUE"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CMAKE_FLAGS="$CMAKE_FLAGS -DTINYSPLINE_ENABLE_R=TRUE"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export DEPLOY_DOCS="true"; fi;
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"; fi;
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update && sudo apt-get install -y cmake; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install cmake && choco install swig; fi;
 
 script:
-  - pushd tools/ci
-  - ./compile.sh
-  - ./deploy.sh
-  - popd
+  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 .; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then cmake -G "Visual Studio 15 2017" -A x64 .; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake .; fi;
+  - cmake --build .
+  - cmake --build . --target tests
+
+jobs:
+  include:
+    - stage: deploy
+      services: docker
+      install: skip
+      script:
+        - pushd tools/ci
+        - ./build.linux-x86_64.sh
+        - ./build.macosx-x86_64.sh
+        - ./build.docs.sh
+        - popd

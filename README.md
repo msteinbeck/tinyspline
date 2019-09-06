@@ -166,10 +166,7 @@ int main(int argc, char **argv)
 
 #### Prebuilt Binaries
 
-Snapshot binaries are available at:
-
-- macOS: https://github.com/msteinbeck/tinyspline/tree/build_osx_64
-- Linux (Ubuntu 16.04): https://github.com/msteinbeck/tinyspline/tree/build_linux_64
+Comming soon.
 
 #### Compiling From Source
 TinySpline uses the CMake build system to compile and package its interfaces.

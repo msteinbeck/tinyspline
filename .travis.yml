@@ -37,9 +37,18 @@ jobs:
         - ./build.docs.sh
         - popd
       deploy:
-        provider: pages
-        skip_cleanup: true
-        github_token: $GITHUB_TOKEN
-        local_dir: tools/ci/build.docs/html
-        on:
-          branch: master
+        - provider: pages
+          github_token: $GITHUB_TOKEN
+          skip_cleanup: true
+          local_dir: tools/ci/build.docs/html
+          on:
+            branch: master
+        - provider: releases
+          api-key: $GITHUB_TOKEN
+          skip_cleanup: true
+          file_glob: true
+          file: tools/ci/build.linux-x86_64/*
+          draft: true
+          overwrite: true
+          on:
+            branch: master

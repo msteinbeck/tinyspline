@@ -36,3 +36,11 @@ jobs:
         - ./build.macosx-x86_64.sh
         - ./build.docs.sh
         - popd
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        keep_history: true
+        local_dir: tools/ci/build.docs/html
+        on:
+          branch: master

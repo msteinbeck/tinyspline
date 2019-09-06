@@ -105,8 +105,8 @@ BUILD_OCTAVE_R_UBUNTU() {
 		cp -a tinyspliner.ubuntu-${1}.tar.gz ${STORAGE}"
 }
 
-BUILD_OCTAVE_R_UBUNTU 16.04
-BUILD_OCTAVE_R_UBUNTU 18.04
+#BUILD_OCTAVE_R_UBUNTU 16.04
+#BUILD_OCTAVE_R_UBUNTU 18.04
 
 ##################################### PHP #####################################
 BUILD_PHP_7() {

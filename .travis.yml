@@ -36,6 +36,11 @@ jobs:
         - ./build.macosx-x86_64.sh
         - ./build.docs.sh
         - popd
+      before_deploy:
+        - git tag -f snapshot
+        - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git push -f gh snapshot
+        - git remote remove gh
       deploy:
         - provider: pages
           github_token: $GITHUB_TOKEN
@@ -48,7 +53,9 @@ jobs:
           skip_cleanup: true
           file_glob: true
           file: tools/ci/build.linux-x86_64/*
-          draft: true
+          name: Snapshot build
+          prerelease: true
           overwrite: true
+          target_commitish: $TRAVIS_COMMIT
           on:
             branch: master

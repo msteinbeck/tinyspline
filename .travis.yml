@@ -37,6 +37,7 @@ jobs:
         - ./build.linux-x86_64.sh
         - ./build.macosx-x86_64.sh
         - ./build.docs.sh
+        - ./bundle.sh
         - popd
       before_deploy:
         - git tag -f snapshot
@@ -54,7 +55,7 @@ jobs:
           api-key: $GITHUB_TOKEN
           skip_cleanup: true
           file_glob: true
-          file: tools/ci/build.linux-x86_64/*
+          file: tools/ci/tinyspline/*
           name: Snapshot build
           prerelease: true
           overwrite: true

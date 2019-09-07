@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
+SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
 ROOT_DIR="${SCRIPT_DIR}/../.."
 VOLUME="${SCRIPT_DIR}/build.macosx-x86_64"
-mkdir -p ${VOLUME}
+mkdir -p "${VOLUME}"
 
 REPOSITORY="tinyspline"
 TAG="build.macosx-x86_64"
@@ -22,7 +22,7 @@ END
 )
 
 BUILD_RUN_DELETE() {
-	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+	docker build -t ${IMAGE_NAME} -f - "${ROOT_DIR}" <<-END
 		${1}
 	END
 	docker run \
@@ -103,9 +103,9 @@ PYTHON37_URL="https://homebrew.bintray.com/bottles/python-3.7.3.sierra.bottle.ta
 
 BUILD_PYTHON() {
 	url="PYTHON${1}${2}_URL"
-	if [ ${1} = "3" ]; then v="3"; else v=""; fi
-	if [ ${1} = "3" ]; then m="m"; else m=""; fi
-	if [ ${1} = "3" ]; then s="36"; else s="27"; fi
+	if [ "${1}" = "3" ]; then v="3"; else v=""; fi
+	if [ "${1}" = "3" ]; then m="m"; else m=""; fi
+	if [ "${1}" = "3" ]; then s="36"; else s="27"; fi
 	basedir="/opt/python/Frameworks/Python.framework/Versions/${1}.${2}"
 	BUILD_RUN_DELETE \
 	"FROM liushuyu/osxcross:latest

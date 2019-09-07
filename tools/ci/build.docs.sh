@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-SCRIPT_DIR=$( cd $(dirname $0); pwd -P)
+SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
 ROOT_DIR="${SCRIPT_DIR}/../.."
 VOLUME="${SCRIPT_DIR}/build.docs"
-mkdir -p ${VOLUME}
+mkdir -p "${VOLUME}"
 
 REPOSITORY="tinyspline"
 TAG="build.docs"
@@ -19,7 +19,7 @@ END
 )
 
 BUILD_RUN_DELETE() {
-	docker build -t ${IMAGE_NAME} -f - ${ROOT_DIR} <<-END
+	docker build -t ${IMAGE_NAME} -f - "${ROOT_DIR}" <<-END
 		${1}
 	END
 	docker run \

@@ -65,59 +65,127 @@ set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for inte
 
 
 ###############################################################################
-### Location-related constants.
+### Location-related constants. The default output directories will be restored
+### at the end of this script.
 #
-# TINYSPLINE_BINARY_OUTPUT_DIRECTORY
-#   Location of compiled binaries.
+# CMAKE_RUNTIME_OUTPUT_DIRECTORY_BACKUP
+#   Backup of CMAKE_RUNTIME_OUTPUT_DIRECTORY.
 #
-# TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY
-#   Location of compiled libraries.
+# CMAKE_LIBRARY_OUTPUT_DIRECTORY_BACKUP
+#   Backup of CMAKE_LIBRARY_OUTPUT_DIRECTORY.
+#
+# CMAKE_ARCHIVE_OUTPUT_DIRECTORY_BACKUP
+#   Backup of CMAKE_ARCHIVE_OUTPUT_DIRECTORY.
+#
+# CMAKE_RUNTIME_OUTPUT_DIRECTORY_***_BACKUP
+#   Backup of config specific CMAKE_RUNTIME_OUTPUT_DIRECTORY (with *** being
+#   one of the available CMake configuration types).
+#
+# CMAKE_LIBRARY_OUTPUT_DIRECTORY_***_BACKUP
+#   Backup of config specific CMAKE_LIBRARY_OUTPUT_DIRECTORY (with *** being
+#   one of the available CMake configuration types).
+#
+# CMAKE_ARCHIVE_OUTPUT_DIRECTORY_***_BACKUP
+#   Backup of config specific CMAKE_ARCHIVE_OUTPUT_DIRECTORY (with *** being
+#   one of the available CMake configuration types).
+#
+# TINYSPLINE_OUTPUT_DIRECTORY
+#   Output directory of build artifacts.
 #
 # TINYSPLINE_***_SOURCE_DIRECTORY
-#   Location of the auto-generated source code of binding ***.
+#   Location of the source code of binding ***.
 #
 # TINYSPLINE_***_INTERFACE_FILE
-#   Location of the auto-generated interface file of binding *** (if any).
+#   Full path of the interface file of binding *** (if any).
 #
 # TINYSPLINE_DLANG_INTERMEDIATE_FILE
-#   Location of the auto-generated intermediate file of D.
+#   Full path of the D intermediate file.
 ###############################################################################
-set(TINYSPLINE_BINARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "")
-set(TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "")
+set(TINYSPLINE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "")
 
 # First for the generic no-config case (e.g. with MinGW)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_BACKUP ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_BACKUP ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_BACKUP ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_OUTPUT_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${TINYSPLINE_OUTPUT_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${TINYSPLINE_OUTPUT_DIRECTORY})
 # Second, for multi-config builds (e.g. MSVC)
 foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-		string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
-		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_BINARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
-		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG} ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY} CACHE INTERNAL "")
+	string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP
+		${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP
+		${CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}})
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP
+		${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${TINYSPLINE_OUTPUT_DIRECTORY})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${TINYSPLINE_OUTPUT_DIRECTORY})
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${TINYSPLINE_OUTPUT_DIRECTORY})
 endforeach()
 
-set(TINYSPLINE_CSHARP_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/csharp")
-set(TINYSPLINE_DLANG_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dlang")
-set(TINYSPLINE_GO_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/go")
-set(TINYSPLINE_JAVA_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/java")
-set(TINYSPLINE_LUA_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lua")
-set(TINYSPLINE_NODEJS_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nodejs")
-set(TINYSPLINE_OCTAVE_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/octave")
-set(TINYSPLINE_PHP_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/php")
-set(TINYSPLINE_PYTHON_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python")
-set(TINYSPLINE_R_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/r")
-set(TINYSPLINE_RUBY_SOURCE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ruby")
+set(TINYSPLINE_CSHARP_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/csharp"
+	CACHE INTERNAL "")
+set(TINYSPLINE_DLANG_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/dlang"
+	CACHE INTERNAL "")
+set(TINYSPLINE_GO_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/go"
+	CACHE INTERNAL "")
+set(TINYSPLINE_JAVA_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/java"
+	CACHE INTERNAL "")
+set(TINYSPLINE_LUA_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/lua"
+	CACHE INTERNAL "")
+set(TINYSPLINE_NODEJS_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/nodejs"
+	CACHE INTERNAL "")
+set(TINYSPLINE_OCTAVE_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/octave"
+	CACHE INTERNAL "")
+set(TINYSPLINE_PHP_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/php"
+	CACHE INTERNAL "")
+set(TINYSPLINE_PYTHON_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/python"
+	CACHE INTERNAL "")
+set(TINYSPLINE_R_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/r"
+	CACHE INTERNAL "")
+set(TINYSPLINE_RUBY_SOURCE_DIRECTORY
+	"${CMAKE_CURRENT_BINARY_DIR}/ruby"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_CSHARP_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/TinySpline.dll" CACHE INTERNAL "")
-set(TINYSPLINE_DLANG_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.d" CACHE INTERNAL "")
-set(TINYSPLINE_GO_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.go" CACHE INTERNAL "")
-set(TINYSPLINE_JAVA_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.jar" CACHE INTERNAL "")
-set(TINYSPLINE_PHP_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.php" CACHE INTERNAL "")
-set(TINYSPLINE_PYTHON_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.py" CACHE INTERNAL "")
-set(TINYSPLINE_R_INTERFACE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline.R" CACHE INTERNAL "")
+set(TINYSPLINE_CSHARP_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/TinySpline.dll"
+	CACHE INTERNAL "")
+set(TINYSPLINE_DLANG_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.d"
+	CACHE INTERNAL "")
+set(TINYSPLINE_GO_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.go"
+	CACHE INTERNAL "")
+set(TINYSPLINE_JAVA_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.jar"
+	CACHE INTERNAL "")
+set(TINYSPLINE_PHP_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.php"
+	CACHE INTERNAL "")
+set(TINYSPLINE_PYTHON_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.py"
+	CACHE INTERNAL "")
+set(TINYSPLINE_R_INTERFACE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.R"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_DLANG_INTERMEDIATE_FILE "${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/tinyspline_im.d" CACHE INTERNAL "")
+set(TINYSPLINE_DLANG_INTERMEDIATE_FILE
+	"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline_im.d"
+	CACHE INTERNAL "")
 
 # Add additional files and directories to delete with
 # 'cmake --build . --target clean'.
@@ -147,20 +215,43 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 
 
 ###############################################################################
-### CMake-related/Platform-related constants.
-#
-# TINYSPLINE_***_CMAKE_TARGET
-#   The CMake buid target for binding ***.
+### Platform-related constants.
 #
 # TINYSPLINE_PLATFORM_NAME
-#   Name of the platform in lowercase. Supported values are: 'linux', 'macosx',
-#   'windows', and 'generic'.
+#   Name of target platform in lowercase. Supported values are: 'linux',
+#   'macosx', 'windows', and 'generic' (fallback).
 #
 # TINYSPLINE_PLATFORM_ARCH
-#   Architecture of target system, e. g. 'x86_64'.
+#   Architecture of target platform. Supported values are: 'x86' and 'x86_64'.
 #
 # TINYSPLINE_PLATFORM
 #   Platform specific identifier, e. g. 'linux-x86_64'.
+###############################################################################
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	set(TINYSPLINE_PLATFORM_NAME "macosx" CACHE INTERNAL "")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
+else()
+	set(TINYSPLINE_PLATFORM_NAME "generic" CACHE INTERNAL "")
+endif()
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	set(TINYSPLINE_PLATFORM_ARCH "x86_64" CACHE INTERNAL "")
+else()
+	set(TINYSPLINE_PLATFORM_ARCH "x86" CACHE INTERNAL "")
+endif()
+set(TINYSPLINE_PLATFORM
+	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"
+	CACHE INTERNAL "")
+
+
+
+###############################################################################
+### CMake-related constants.
+#
+# TINYSPLINE_***_CMAKE_TARGET
+#   CMake build target of binding ***.
 ###############################################################################
 set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
 set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
@@ -173,26 +264,6 @@ set(TINYSPLINE_PHP_CMAKE_TARGET "tinysplinephp" CACHE INTERNAL "")
 set(TINYSPLINE_PYTHON_CMAKE_TARGET "tinysplinepython" CACHE INTERNAL "")
 set(TINYSPLINE_R_CMAKE_TARGET "tinyspliner" CACHE INTERNAL "")
 set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-	set(TINYSPLINE_PLATFORM_NAME "macosx" CACHE INTERNAL "")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
-else()
-	set(TINYSPLINE_PLATFORM_NAME "generic" CACHE INTERNAL "")
-endif()
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set(TINYSPLINE_PLATFORM_ARCH "x86_64" CACHE INTERNAL "")
-else()
-	set(TINYSPLINE_PLATFORM_ARCH "x86" CACHE INTERNAL "")
-endif()
-
-set(TINYSPLINE_PLATFORM
-	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"
-	CACHE INTERNAL "")
 
 
 
@@ -326,7 +397,7 @@ endif()
 #
 # TINYSPLINE_RUNTIME_LIBS (set in parent scope)
 #   Stores the names of the files that are copied from
-#   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY.
+#   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
 # TINYSPLINE_DEBUG_POSTFIX
 # TINYSPLINE_DEFINITIONS
@@ -512,7 +583,7 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 	if(NOT EXISTS ${file})
 		message(FATAL_ERROR "'${file}' does not exist")
 	endif()
-	file(COPY ${file} DESTINATION ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY})
+	file(COPY ${file} DESTINATION ${TINYSPLINE_OUTPUT_DIRECTORY})
 	get_filename_component(name ${file} NAME)
 	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
 endforeach()
@@ -528,10 +599,6 @@ endif()
 ###############################################################################
 ### Create the C/C++ library. We explicitly set the prefix of the static
 ### library to 'lib' to prevent naming collisions when compiling with MSVC.
-### Further, we need to explicitly set the output directory
-### (RUNTIME_OUTPUT_DIRECTORY) to ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
-### because CMake treats DLL files as runtime artifacts (see
-### https://cmake.org/cmake/help/v3.0/prop_tgt/LIBRARY_OUTPUT_DIRECTORY.html).
 #
 # TINYSPLINE_INCLUDE_DIRS (set in parent scope)
 #   Include directories of the C/C++ library. The listed directories contain
@@ -581,7 +648,6 @@ set_target_properties(tinyspline_shared PROPERTIES
 	OUTPUT_NAME "tinyspline"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
-	RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
 )
 install(TARGETS tinyspline_shared
 	LIBRARY DESTINATION lib
@@ -613,7 +679,6 @@ if(TINYSPLINE_ENABLE_CXX)
 		OUTPUT_NAME "tinysplinecpp"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-		RUNTIME_OUTPUT_DIRECTORY ${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
 	)
 	install(TARGETS tinysplinecpp_shared
 		LIBRARY DESTINATION lib
@@ -707,7 +772,7 @@ function (tinyspline_add_swig_library)
 	set_target_properties(${ACTUAL_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}"
-    )
+	)
 	if(${ARGS_CXX11})
 		set_property(TARGET ${ACTUAL_TARGET}
 			APPEND PROPERTY CXX_STANDARD 11
@@ -721,7 +786,7 @@ function (tinyspline_add_swig_library)
 	endif()
 	if (NOT ${ARGS_NAME} STREQUAL "")
         set_property(TARGET ${ACTUAL_TARGET}
-			APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}"
+		APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}"
         )
     endif()
 endfunction()
@@ -852,7 +917,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 				COMMAND
 					${CMAKE_COMMAND}
 					-E copy
-					"${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
+					"${TINYSPLINE_OUTPUT_DIRECTORY}/$<TARGET_FILE_NAME:${TINYSPLINE_JAVA_CMAKE_TARGET}>"
 					"${TINYSPLINE_JAVA_SOURCE_DIRECTORY}/classes/${TINYSPLINE_PLATFORM}"
 				COMMAND
 					${CMAKE_COMMAND}
@@ -1079,11 +1144,9 @@ tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
 ### Configure language-specific build systems.
 #
 # TINYSPLINE_LIB_DIR
-#   Name of TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY.
+#   Name of TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
-get_filename_component(TINYSPLINE_LIB_DIR
-	${TINYSPLINE_LIBRARY_OUTPUT_DIRECTORY}
-	NAME)
+get_filename_component(TINYSPLINE_LIB_DIR ${TINYSPLINE_OUTPUT_DIRECTORY} NAME)
 
 # Dub
 file(REMOVE "${CMAKE_BINARY_DIR}/dub.json")
@@ -1204,6 +1267,26 @@ endif()
 
 
 ###############################################################################
+### Restore output directories.
+###############################################################################
+# First for the generic no-config case (e.g. with MinGW)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_BACKUP})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_BACKUP})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_BACKUP})
+# Second, for multi-config builds (e.g. MSVC)
+foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+	string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${CMAKE_LIBRARY_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP})
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}
+		${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}_BACKUP})
+endforeach()
+
+
+
+###############################################################################
 ### Print summary.
 ###############################################################################
 string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_SUMMARY_C_FLAGS)
@@ -1212,7 +1295,7 @@ string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUM
 
 message(STATUS
 "
-******************* TinySpline Configuration Summary *******************
+/// TinySpline Configuration Summary //////////////////////////////////////////
 Platform:
   Id: ${TINYSPLINE_PLATFORM}
 
@@ -1277,4 +1360,5 @@ Available Interfaces:
 
 Installation:
   Prefix: ${CMAKE_INSTALL_PREFIX}
+///////////////////////////////////////////////////////////////////////////////
 ")

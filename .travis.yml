@@ -55,7 +55,9 @@ jobs:
           target_commitish: $TRAVIS_COMMIT
           on:
             branch: master
-    - stage: Deploy Documentation
+    - stage: Deploy Binaries (Windows VM)
+      os: windows
+    - stage: Deploy Website
       service: docker
       install: skip
       script:

@@ -29,14 +29,13 @@ script:
 
 jobs:
   include:
-    - stage: deploy
+    - stage: Deploy Binaries (Linux Docker)
       services: docker
       install: skip
       script:
         - pushd tools/ci
         - ./build.linux-x86_64.sh
         - ./build.macosx-x86_64.sh
-        - ./build.docs.sh
         - ./bundle.sh
         - popd
       before_deploy:
@@ -45,12 +44,6 @@ jobs:
         - git push -f gh snapshot
         - git remote remove gh
       deploy:
-        - provider: pages
-          github_token: $GITHUB_TOKEN
-          skip_cleanup: true
-          local_dir: tools/ci/build.docs/html
-          on:
-            branch: master
         - provider: releases
           api-key: $GITHUB_TOKEN
           skip_cleanup: true
@@ -60,5 +53,19 @@ jobs:
           prerelease: true
           overwrite: true
           target_commitish: $TRAVIS_COMMIT
+          on:
+            branch: master
+    - stage: Deploy Documentation
+      service: docker
+      install: skip
+      script:
+        - pushd tools/ci
+        - ./build.docs.sh
+        - popd
+      deploy:
+        - provider: pages
+          github_token: $GITHUB_TOKEN
+          skip_cleanup: true
+          local_dir: tools/ci/build.docs/html
           on:
             branch: master

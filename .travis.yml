@@ -61,7 +61,8 @@ jobs:
         - choco install cmake
         - choco install swig
         - choco install python3
-        - C:\\Python37\\Scripts\\pip3 install wheel
+        - python -m pip install -U pip setuptools
+        - python -m pip install wheel
       script:
         - mkdir python3
         - pushd python3

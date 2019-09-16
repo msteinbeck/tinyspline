@@ -1159,7 +1159,7 @@ if(${TINYSPLINE_WITH_DLANG})
 , \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/dub.json.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/dub.json.in"
 		"${CMAKE_BINARY_DIR}/dub.json"
 		@ONLY
 	)
@@ -1185,7 +1185,7 @@ if(${TINYSPLINE_WITH_LUA})
 , \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.rockspec.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.rockspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec"
 		@ONLY
 	)
@@ -1210,7 +1210,7 @@ src=\"${TINYSPLINE_LIB_DIR}/${lib}\" \
 target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
 	endforeach()
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/.nuspec.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/.nuspec.in"
 		"${CMAKE_BINARY_DIR}/.nuspec"
 		@ONLY
 	)
@@ -1220,7 +1220,7 @@ endif()
 file(REMOVE "${CMAKE_BINARY_DIR}/pom.xml")
 if(${TINYSPLINE_WITH_JAVA})
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pom.xml.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/pom.xml.in"
 		"${CMAKE_BINARY_DIR}/pom.xml"
 		@ONLY
 	)
@@ -1242,7 +1242,7 @@ if(${TINYSPLINE_WITH_PYTHON})
 	endforeach()
 	set(TINYSPLINE_SETUP_FILE_ARRAY "[${TINYSPLINE_SETUP_FILE_ARRAY}]")
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/setup.py.in"
 		"${CMAKE_BINARY_DIR}/setup.py"
 		@ONLY
 	)
@@ -1258,7 +1258,7 @@ if(${TINYSPLINE_WITH_RUBY})
 << \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
 	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.gemspec.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gemspec.in"
 		"${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec"
 		@ONLY
 	)

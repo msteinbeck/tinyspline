@@ -18,7 +18,7 @@ osx_image: xcode11
 
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update && sudo apt-get install -y cmake; fi;
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install cmake && choco install swig; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install cmake; fi;
 
 script:
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 .; fi;
@@ -69,6 +69,18 @@ jobs:
         - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
         - C:\\Python37\\python setup.py bdist_wheel
         - popd
+      deploy:
+        - provider: releases
+          api-key: $GITHUB_TOKEN
+          skip_cleanup: true
+          file_glob: true
+          file: python3/dist/*
+          name: Snapshot build
+          prerelease: true
+          overwrite: true
+          target_commitish: $TRAVIS_COMMIT
+          on:
+            branch: master
     - stage: Deploy Website
       service: docker
       install: skip

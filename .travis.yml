@@ -69,11 +69,6 @@ jobs:
         - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
         - C:\\Python37\\python setup.py bdist_wheel
         - popd
-      before_deploy:
-        - git tag -f snapshot
-        - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git push -f gh snapshot
-        - git remote remove gh
       deploy:
         - provider: releases
           api-key: $GITHUB_TOKEN

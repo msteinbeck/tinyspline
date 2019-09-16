@@ -29,7 +29,6 @@ script:
 
 jobs:
   include:
-    if: branch = master
     - stage: Deploy Binaries (Linux Docker)
       services: docker
       install: skip

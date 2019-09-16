@@ -752,15 +752,25 @@ function (tinyspline_add_swig_library)
 		"SWIG_ARGS;FLAGS"
 		${ARGN}
 	)
-	set_source_files_properties("${ARGS_TARGET}.i" PROPERTIES CPLUSPLUS ON)
+	set_source_files_properties("swig/${ARGS_TARGET}.i"
+		PROPERTIES CPLUSPLUS ON
+	)
 	set(CMAKE_SWIG_FLAGS ${ARGS_SWIG_ARGS} -O ${TINYSPLINE_SWIG_DEFINES})
 	set(CMAKE_SWIG_OUTDIR ${ARGS_OUTPUT})
 	if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		swig_add_module(${ARGS_TARGET} ${ARGS_LANG} "${ARGS_TARGET}.i"
-			${TINYSPLINE_CXX_SOURCE_FILES})
+		swig_add_module(
+			${ARGS_TARGET}
+			${ARGS_LANG}
+			"swig/${ARGS_TARGET}.i"
+			${TINYSPLINE_CXX_SOURCE_FILES}
+		)
 	else()
-		swig_add_library(${ARGS_TARGET} LANGUAGE ${ARGS_LANG}
-			SOURCES "${ARGS_TARGET}.i" ${TINYSPLINE_CXX_SOURCE_FILES})
+		swig_add_library(
+			${ARGS_TARGET}
+			LANGUAGE ${ARGS_LANG}
+			SOURCES "swig/${ARGS_TARGET}.i"
+			${TINYSPLINE_CXX_SOURCE_FILES}
+		)
 	endif()
 	swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
 	# For some reasons Python's make target starts with '_'.

@@ -79,6 +79,7 @@ jobs:
           prerelease: true
           overwrite: true
           target_commitish: $TRAVIS_COMMIT
+          tag_name: snapshot
           on:
             branch: master
     - stage: Deploy Website

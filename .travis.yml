@@ -29,6 +29,7 @@ script:
 
 jobs:
   include:
+    if: branch = master
     - stage: Deploy Binaries (Linux Docker)
       services: docker
       install: skip
@@ -57,6 +58,17 @@ jobs:
             branch: master
     - stage: Deploy Binaries (Windows VM)
       os: windows
+      install:
+        - choco install cmake
+        - choco install swig
+        - choco install python3
+        - pip3 install wheel
+      script:
+        - mkdir python3
+        - pushd python3
+        - cmake -DTINYSPLINE_ENABLE_PYTHON=True ..
+        - python setup.py bdist_wheel
+        - popd
     - stage: Deploy Website
       service: docker
       install: skip

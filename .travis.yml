@@ -65,8 +65,8 @@ jobs:
       script:
         - mkdir python3
         - pushd python3
-        - cmake -DTINYSPLINE_ENABLE_PYTHON=True ..
-        - python setup.py bdist_wheel
+        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
+        - C:\\Python37\\Scripts\\pip3 install wheel
         - popd
     - stage: Deploy Website
       service: docker

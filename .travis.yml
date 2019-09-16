@@ -61,12 +61,12 @@ jobs:
         - choco install cmake
         - choco install swig
         - choco install python3
-        - pip3 install wheel
+        - C:\\Python37\\Scripts\\pip3 install wheel
       script:
         - mkdir python3
         - pushd python3
         - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
-        - C:\\Python37\\Scripts\\pip3 install wheel
+        - python setup.py bdist_wheel
         - popd
     - stage: Deploy Website
       service: docker

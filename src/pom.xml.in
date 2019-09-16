@@ -35,6 +35,8 @@
 									<arg value="."/>
 									<arg value="--target"/>
 									<arg value="@TINYSPLINE_JAVA_CMAKE_TARGET@"/>
+									<arg value="--config"/>
+									<arg value="Release"/>
 								</exec>
 							</target>
 						</configuration>

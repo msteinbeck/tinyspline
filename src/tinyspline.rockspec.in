@@ -19,7 +19,7 @@ dependencies = {
 }
 build = {
 	type = "command",
-	build_command = "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_LUA_CMAKE_TARGET@",
+	build_command = "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_LUA_CMAKE_TARGET@ --config Release",
 	modules = {},
 	install = {
 		lib = { @TINYSPLINE_LUAROCKS_INSTALL_LIB@ }

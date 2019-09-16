@@ -1,4 +1,4 @@
-puts(`@CMAKE_COMMAND@ --build . --target @TINYSPLINE_RUBY_CMAKE_TARGET@`)
+puts(`@CMAKE_COMMAND@ --build . --target @TINYSPLINE_RUBY_CMAKE_TARGET@ --config Release`)
 
 Gem::Specification.new do |spec|
   spec.name        = '@TINYSPLINE_PACKAGE_NAME@.@TINYSPLINE_PLATFORM@'

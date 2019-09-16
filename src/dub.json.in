@@ -4,7 +4,7 @@
 	"homepage" : "@TINYSPLINE_URL@",
 	"authors" : ["@TINYSPLINE_AUTHOR@"],
 	"license" : "@TINYSPLINE_LICENSE@",
-	"preGenerateCommands" : ["@CMAKE_COMMAND@ --build . --target @TINYSPLINE_DLANG_CMAKE_TARGET@"],
+	"preGenerateCommands" : ["@CMAKE_COMMAND@ --build . --target @TINYSPLINE_DLANG_CMAKE_TARGET@ --config Release"],
 	"targetType" : "staticLibrary",
 	"sourcePaths" : ["lib"],
 	"copyFiles" : [@TINYSPLINE_DUB_COPY_FILES@],

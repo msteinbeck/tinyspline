@@ -11,8 +11,8 @@ project(tinyspline)
 # https://cmake.org/cmake/help/v3.0/prop_gbl/USE_FOLDERS.html
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Add additional CMake modules located in the source directory of this script.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+# Add additional CMake modules.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Does this script have a parent?
 get_directory_property(TINYSPLINE_HAS_PARENT PARENT_DIRECTORY)

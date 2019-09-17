@@ -63,14 +63,15 @@ jobs:
         - ./build.linux-x86_64.sh
         - ./build.macosx-x86_64.sh
         - ./bundle.sh
-        - pushd tinyspline
-        - git checkout origin/travis-storage tinyspline*.whl
-        - popd
         - popd
       before_deploy:
         - git tag -f snapshot
         - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git push -f gh snapshot >/dev/null 2>&1
+        - git fetch gh >/dev/null 2>&1
+        - pushd tools/ci/tinyspline
+        - git checkout gh/travis-storage tinyspline*.whl
+        - popd
         - git remote remove gh
       deploy:
         - provider: releases

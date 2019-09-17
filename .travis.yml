@@ -36,13 +36,21 @@ jobs:
       install:
         - choco install cmake
         - choco install swig
+        - choco install python2
+        - C:\\Python27\\python -m pip install -U pip setuptools
+        - C:\\Python27\\python -m pip install wheel
         - choco install python3
         - C:\\Python37\\python -m pip install -U pip setuptools
         - C:\\Python37\\python -m pip install wheel
       script:
+        - mkdir python2
+        - pushd python2
+        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=2 ..
+        - C:\\Python27\\python setup.py bdist_wheel
+        - popd
         - mkdir python3
         - pushd python3
-        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
+        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=3 ..
         - C:\\Python37\\python setup.py bdist_wheel
         - popd
         - git config user.name "Travis CI"
@@ -50,6 +58,7 @@ jobs:
         - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git branch -D travis-storage >/dev/null 2>&1 || true
         - git checkout --orphan travis-storage
+        - cp python2/dist/tinyspline*.whl ./
         - cp python3/dist/tinyspline*.whl ./
         - git add tinyspline*.whl
         - git commit tinyspline*.whl -m "Windows build for ${TRAVIS_COMMIT}"

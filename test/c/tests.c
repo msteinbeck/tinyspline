@@ -8,6 +8,7 @@ CuSuite* get_move_suite();
 CuSuite* get_eval_suite();
 CuSuite* get_setter_suite();
 CuSuite* get_insert_knot_suite();
+CuSuite* get_sample_suite();
 
 int main()
 {
@@ -21,6 +22,7 @@ int main()
 	CuSuiteAddSuite(suite, get_eval_suite());
 	CuSuiteAddSuite(suite, get_setter_suite());
 	CuSuiteAddSuite(suite, get_insert_knot_suite());
+	CuSuiteAddSuite(suite, get_sample_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

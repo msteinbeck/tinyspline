@@ -1074,15 +1074,18 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 
 /**
  * Generates a sequence of \p num different knots (The knots are equally
- * distributed between #TS_MIN_KNOT_VALUE and TS_MAX_KNOT_VALUE), passes this
- * sequence to ts_bspline_eval_all, and stores the result points in \p points.
- * If \p num is 0, the following default value is taken as fallback:
+ * distributed between the minimum and the maximum of the domain of \p spline),
+ * passes this sequence to ts_bspline_eval_all, and stores the result points in
+ * \p points. If \p num is 0, the following default value is taken as fallback:
  *
- * 	num = ts_bspline_num_distinct_knots(spline) * 30
+ * 	num = (ts_bspline_num_control_points(spline) -
+ * 		ts_bspline_degree(spline)) * 30;
  *
  * That is, the fallback generates 30 knots per Bezier segment. For the sake
  * of stability regarding future changes, the actual number of generated knots
  * (which only differs from \p num if \p num is 0) is stored in \p actual_num.
+ * If \p num is 1, the point located at the minimum of the domain of \p spline
+ * is evaluated.
  *
  * @param spline
  * 	The spline to evaluate.

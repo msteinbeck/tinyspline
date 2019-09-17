@@ -1011,21 +1011,27 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 {
 	tsError err;
 	tsReal *knots;
+	tsReal min, max;
 	size_t i;
 	if (num == 0)
-		num = ts_bspline_num_distinct_knots(spline) * 30;
+		num = (ts_bspline_num_control_points(spline) -
+			ts_bspline_degree(spline)) * 30;
 	*actual_num = num;
 	knots = (tsReal *) malloc(num * sizeof(tsReal));
 	if (!knots) {
 		*points = NULL;
 		TS_RETURN_0(status, TS_MALLOC, "out of memory");
 	}
+	ts_bspline_domain(spline, &min, &max);
 	for (i = 0; i < num; i++) {
-		knots[i] = TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE;
-		knots[i] *= (tsReal)i / num;
-		knots[i] += TS_MIN_KNOT_VALUE;
+		knots[i] = max - min;
+		knots[i] *= (tsReal)i / (num - 1);
+		knots[i] += min;
 	}
-	knots[num - 1] = TS_MAX_KNOT_VALUE;
+	/* Set knots[0] after knots[num - 1] to ensure that
+	 * knots[0] = min if num == 1. */
+	knots[num - 1] = max;
+	knots[0] = min;
 	TS_TRY(try, err, status)
 	       TS_CALL(try, err, ts_bspline_eval_all(
 			spline, knots, num, points, status));

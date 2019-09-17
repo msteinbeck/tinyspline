@@ -69,9 +69,8 @@ jobs:
         - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
         - git push -f gh snapshot >/dev/null 2>&1
         - git fetch gh >/dev/null 2>&1
-        - pushd tools/ci/tinyspline
         - git checkout gh/travis-storage tinyspline*.whl
-        - popd
+        - mv tinyspline*.whl tools/ci/tinyspline
         - git remote remove gh
       deploy:
         - provider: releases

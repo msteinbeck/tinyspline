@@ -29,6 +29,28 @@ script:
 
 jobs:
   include:
+    - stage: Deploy Binaries (Windows VM)
+      os: windows
+      install:
+        - choco install cmake
+        - choco install swig
+        - choco install python3
+        - C:\\Python37\\python -m pip install -U pip setuptools
+        - C:\\Python37\\python -m pip install wheel
+      script:
+        - mkdir python3
+        - pushd python3
+        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
+        - C:\\Python37\\python setup.py bdist_wheel
+        - popd
+        - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+        - git branch -D travis-storage
+        - git checkout --orphan travis-storage
+        - cp python3/tinyspline*.whl ./
+        - git add tinyspline*.whl
+        - git commit tinyspline*.whl -m "Windows build for ${TRAVIS_COMMIT}"
+        - git push -f gh travis-storage
+        - git remote remove gh
     - stage: Deploy Binaries (Linux Docker)
       services: docker
       install: skip
@@ -53,33 +75,6 @@ jobs:
           prerelease: true
           overwrite: true
           target_commitish: $TRAVIS_COMMIT
-          on:
-            branch: master
-    - stage: Deploy Binaries (Windows VM)
-      os: windows
-      install:
-        - choco install cmake
-        - choco install swig
-        - choco install python3
-        - C:\\Python37\\python -m pip install -U pip setuptools
-        - C:\\Python37\\python -m pip install wheel
-      script:
-        - mkdir python3
-        - pushd python3
-        - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True ..
-        - C:\\Python37\\python setup.py bdist_wheel
-        - popd
-      deploy:
-        - provider: releases
-          api-key: $GITHUB_TOKEN
-          skip_cleanup: true
-          file_glob: true
-          file: python3/dist/*
-          name: Snapshot build
-          prerelease: true
-          overwrite: true
-          target_commitish: $TRAVIS_COMMIT
-          tag_name: snapshot
           on:
             branch: master
     - stage: Deploy Website

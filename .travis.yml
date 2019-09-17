@@ -44,12 +44,12 @@ jobs:
         - C:\\Python37\\python setup.py bdist_wheel
         - popd
         - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git branch -D travis-storage
+        - git branch -D travis-storage >/dev/null 2>&1 || true
         - git checkout --orphan travis-storage
-        - cp python3/tinyspline*.whl ./
+        - cp python3/dist/tinyspline*.whl ./
         - git add tinyspline*.whl
         - git commit tinyspline*.whl -m "Windows build for ${TRAVIS_COMMIT}"
-        - git push -f gh travis-storage
+        - git push -f gh travis-storage >/dev/null 2>&1
         - git remote remove gh
     - stage: Deploy Binaries (Linux Docker)
       services: docker
@@ -63,7 +63,7 @@ jobs:
       before_deploy:
         - git tag -f snapshot
         - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-        - git push -f gh snapshot
+        - git push -f gh snapshot >/dev/null 2>&1
         - git remote remove gh
       deploy:
         - provider: releases

@@ -126,7 +126,7 @@ BUILD_PYTHON() {
 		for f in dist/*.whl; do mv \$f \${f/${s}/${1}${2}$}; done && \
 		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
 		for f in dist/*.whl; do mv \$f \${f/$/}; done && \
-		for f in dist/*.whl; do mv \$f \${f/linux/macosx-10.14}; done && \
+		for f in dist/*.whl; do mv \$f \${f/linux/macosx_10_14}; done && \
 		chown $(id -u):$(id -g) dist/*.whl && \
 		cp -a dist/*.whl ${STORAGE}"
 }

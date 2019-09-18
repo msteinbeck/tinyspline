@@ -1406,27 +1406,27 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
-	tsBSpline *_buckled_, tsStatus *status)
+tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
+	tsBSpline *result, tsStatus *status)
 {
-	const tsReal b_hat  = 1.f-b; /**< The straightening factor. */
+	const tsReal s  = 1.f - tension; /**< The straightening factor. */
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t N = ts_bspline_num_control_points(spline);
 	const tsReal* p0 = ts_int_bspline_access_ctrlp(spline);
 	const tsReal* pn_1 = p0 + (N-1)*dim;
 
-	tsReal *ctrlp; /**< Pointer to the control points of \p _buckled_. */
+	tsReal *ctrlp; /**< Pointer to the control points of \p result. */
 	size_t i, d; /**< Used in for loops. */
 	tsError err;
 
-	TS_CALL_ROE(err, ts_bspline_copy(spline, _buckled_, status))
-	ctrlp = ts_int_bspline_access_ctrlp(_buckled_);
+	TS_CALL_ROE(err, ts_bspline_copy(spline, result, status))
+	ctrlp = ts_int_bspline_access_ctrlp(result);
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {
-			ctrlp[i*dim + d] =
-				b     * ctrlp[i*dim + d] +
-				b_hat * (p0[d] + ((tsReal)i / (N-1)) * (pn_1[d] - p0[d]));
+			ctrlp[i*dim + d] *= tension;
+			ctrlp[i*dim + d] += s * (p0[d] + ((tsReal)i / (N-1)) *
+				(pn_1[d] - p0[d]));
 		}
 	}
 	TS_RETURN_SUCCESS(status)

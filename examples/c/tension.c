@@ -20,7 +20,7 @@
 
 tsBSpline spline;
 GLUnurbsObj *theNurb;
-tsReal b = 1.f;
+tsReal factor = 1.f;
 
 /********************************************************
 *                                                       *
@@ -62,26 +62,26 @@ void tear_down()
 void display(void)
 {
 	size_t i;
-	tsBSpline buckled;
+	tsBSpline result;
 	tsReal *ctrlp, *knots;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	ts_bspline_buckle(&spline, b, &buckled, NULL);
+	ts_bspline_tension(&spline, factor, &result, NULL);
 
-	/* draw buckled */
-	ts_bspline_control_points(&buckled, &ctrlp, NULL);
-	ts_bspline_knots(&buckled, &knots, NULL);
+	/* draw result */
+	ts_bspline_control_points(&result, &ctrlp, NULL);
+	ts_bspline_knots(&result, &knots, NULL);
 	glColor3f(1.0, 1.0, 1.0);
 	glLineWidth(3);
 	gluBeginCurve(theNurb);
 		gluNurbsCurve(
 			theNurb, 
-			(GLint)ts_bspline_num_knots(&buckled),
+			(GLint)ts_bspline_num_knots(&result),
 			knots,
-			(GLint)ts_bspline_dimension(&buckled),
+			(GLint)ts_bspline_dimension(&result),
 			ctrlp,
-			(GLint)ts_bspline_order(&buckled),
+			(GLint)ts_bspline_order(&result),
 			GL_MAP1_VERTEX_3
 		);
 	gluEndCurve(theNurb);
@@ -90,17 +90,17 @@ void display(void)
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
-	  for (i = 0; i < ts_bspline_num_control_points(&buckled); i++)
-		 glVertex3fv(&ctrlp[i * ts_bspline_dimension(&buckled)]);
+	  for (i = 0; i < ts_bspline_num_control_points(&result); i++)
+		 glVertex3fv(&ctrlp[i * ts_bspline_dimension(&result)]);
 	glEnd();
 
-	ts_bspline_free(&buckled);
+	ts_bspline_free(&result);
 	free(ctrlp);
 	free(knots);
 
-	b -= 0.001f;
-	if (b < 0.f)
-		b = 1.f;
+	factor -= 0.001f;
+	if (factor < 0.f)
+		factor = 1.f;
 
 	glutSwapBuffers();
 	glutPostRedisplay();

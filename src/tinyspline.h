@@ -1247,10 +1247,10 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 *     tsBSpline in = ...                  // an arbitrary spline              *
 *     tsBSpline out;                      // result of transformations        *
 *                                                                             *
-*     ts_bspline_to_beziers(&in, &out);   // first transformation             *
-*     ...                                 // some code                        *
-*     ts_bspline_free(&out);              // avoid memory leak.               *
-*     ts_bspline_buckle(&in, &out);       // next transformation              *
+*     ts_bspline_to_beziers(&in, &out);    // first transformation            *
+*     ...                                  // some code                       *
+*     ts_bspline_free(&out);               // avoid memory leak.              *
+*     ts_bspline_tension(&in, 0.85, &out); // next transformation             *
 *                                                                             *
 * If you want to modify your input directly without having a separate output, *
 * pass it as input and output at once:                                        *
@@ -1366,8 +1366,12 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
 	size_t *_k_, tsStatus *status);
 
 /**
- * Buckles \p spline by \p b and stores the result in \p \_buckled\_. Creates
- * a deep copy of \p spline, if \p spline != \p \_buckled\_.
+ * Sets the control points of \p spline so that their tension corresponds the
+ * given tension factor (0 => yields to a line connecting the first and the
+ * last control point; 1 => keeps the original shape). If \p tension < 0 or if
+ * \p tension > 1, the behaviour of this function is undefined, though, it will
+ * not result in an error. Creates a deep copy of \p spline if
+ * \p spline != \p result.
  *
  * This function is based on:
  * 
@@ -1377,27 +1381,21 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * 
  * Holten calls it "straightening" (page 744, equation 1).
  *
- * Usually, the range of \p b is: 0.0 <= \p b <= 1.0 with 0 yielding to a line
- * connecting the first and the last control point (no buckle) and 1 keeping
- * the original shape (maximum buckle). If \b < 0 or \b > 1 the behaviour is
- * undefined, though, it will not result in an error.
- *
- * @param spline
- * 	The spline to buckle.
- * @param b
- * 	The buckle factor (usually 0.0 <= \p b <= 1.0).
- * @param \_buckled\_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[in] spline
+ * 	The input spline.
+ * @param[in] tension
+ * 	The tension factor (0 <= \p tension <= 1).
+ * @param[out] result
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_buckle(const tsBSpline *spline, tsReal b,
-	tsBSpline *_buckled_, tsStatus *status);
+tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
+	tsBSpline *result, tsStatus *status);
 
 /**
  * Subdivides \p spline into a sequence of Bezier curves by splitting it at

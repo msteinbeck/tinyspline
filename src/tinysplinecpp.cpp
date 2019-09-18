@@ -470,13 +470,14 @@ tinyspline::BSpline tinyspline::BSpline::split(tinyspline::real u) const
 	return bs;
 }
 
-tinyspline::BSpline tinyspline::BSpline::buckle(tinyspline::real b) const
+tinyspline::BSpline tinyspline::BSpline::tension(
+	tinyspline::real tension) const
 {
-	tinyspline::BSpline bs;
+	tinyspline::BSpline result;
 	tsStatus status;
-	if (ts_bspline_buckle(&spline, b, &bs.spline, &status))
+	if (ts_bspline_tension(&spline, tension, &result.spline, &status))
 		throw std::runtime_error(status.message);
-	return bs;
+	return result;
 }
 
 tinyspline::BSpline tinyspline::BSpline::toBeziers() const

@@ -99,12 +99,12 @@ if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 	)
 	set_target_properties(derivative PROPERTIES FOLDER "examples/c")
 
-	add_executable(buckle buckle.c)
-	target_link_libraries(buckle
+	add_executable(tension tension.c)
+	target_link_libraries(tension
 		LINK_PUBLIC tinyspline_static
 		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
 	)
-	set_target_properties(buckle PROPERTIES FOLDER "examples/c")
+	set_target_properties(tension PROPERTIES FOLDER "examples/c")
 
 	add_executable(triangle triangle.c)
 	target_link_libraries(triangle

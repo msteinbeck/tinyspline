@@ -111,7 +111,7 @@ public:
 	/* Transformations */
 	BSpline insertKnot(real u, size_t n) const;
 	BSpline split(real u) const;
-	BSpline buckle(real b) const;
+	BSpline tension(real tension) const;
 	BSpline toBeziers() const;
 	BSpline derive(size_t n = 1) const;
 

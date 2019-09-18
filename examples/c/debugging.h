@@ -14,7 +14,7 @@ void ts_bspline_print(const tsBSpline *spline)
 	ts_bspline_control_points(spline, &ctrlp, NULL);
 	ts_bspline_knots(spline, &knots, NULL);
 	
-	printf("########### control points (%lu) ###########\n",
+	printf("///control points (%lu)\n",
 		   (unsigned long) num_ctrlp);
 	for (i = 0; i < num_ctrlp; i++) {
 		for (j = 0; j < dim; j++) {
@@ -24,10 +24,10 @@ void ts_bspline_print(const tsBSpline *spline)
 	}
 	printf("\n");
 	
-	printf("########### knots(%lu) ###########\n",
+	printf("///knots(%lu)\n",
 		   (unsigned long) num_knots);
 	for (i = 0; i < num_knots; i++) {
-		printf("%f  ", knots[i]);
+		printf("%f\n", knots[i]);
 	}
 	printf("\n\n");
 

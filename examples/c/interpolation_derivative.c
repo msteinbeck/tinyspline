@@ -1,4 +1,5 @@
 #include "tinyspline.h"
+#include "debugging.h"
 
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
@@ -15,7 +16,6 @@
 #endif
 
 #include <stdio.h>
-#include <debugging.h>
 #include <assert.h>
 
 /*

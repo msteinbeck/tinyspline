@@ -273,8 +273,11 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 # TINYSPLINE_FLOAT_PRECISION - default: OFF
 #   Build with float instead of double precision.
 #
-# TINYSPLINE_CSHARP_FRAMEWORK - default: 3.5
-#   The .Net framework version that is used to compile the C# DLL.
+# TINYSPLINE_CSHARP_FRAMEWORK
+#   The .NET framework version that is used to compile the C# DLL.
+#
+# TINYSPLINE_CSHARP_NET_DIR
+#   Name of the 'net' directory of the .nupkg archive.
 #
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
@@ -293,7 +296,10 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
 # TINYSPLINE_CSHARP_FRAMEWORK
-set(TINYSPLINE_CSHARP_FRAMEWORK "3.5" CACHE STRING ".Net framework version.")
+set(TINYSPLINE_CSHARP_FRAMEWORK "" CACHE STRING "Sets the .NET framework version that is used to compile the C# DLL. If empty, the version is determined automatically.")
+
+# TINYSPLINE_CSHARP_NET_DIR
+set(TINYSPLINE_CSHARP_NET_DIR "" CACHE STRING "Name of the 'net' directory of the .nupkg archive (e.g. net35). If empty, the name is determined automatically.")
 
 # TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
@@ -582,7 +588,7 @@ if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
 		# Override cached variable.
 		set(TINYSPLINE_RUNTIME_LIBRARIES
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			CACHE FILEPATH "Autodetected" FORCE)
+			CACHE FILEPATH "Autodetected." FORCE)
 	endif()
 endif()
 foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
@@ -821,13 +827,46 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			SWIG_ARGS -namespace TinySpline
 		)
 		# DLL
-		find_program(TINYSPLINE_CSHARP_COMPILER
-			NAMES csc mcs
-			PATHS "C:/Windows/Microsoft.NET/Framework/v${TINYSPLINE_CSHARP_FRAMEWORK}"
-		)
+		if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+			if(TINYSPLINE_CSHARP_FRAMEWORK STREQUAL "")
+				set(TINYSPLINE_CSHARP_FRAMEWORK
+					"3.5" CACHE STRING "Autodetected."
+					FORCE)
+
+			endif()
+			if(TINYSPLINE_CSHARP_NET_DIR STREQUAL "")
+				set(TINYSPLINE_CSHARP_NET_DIR
+					"net35" CACHE STRING "Autodetected."
+					FORCE)
+
+			endif()
+			set(TINYSPLINE_CSHARP_HOME
+				"C:/Windows/Microsoft.NET/Framework/v")
+			set(TINYSPLINE_CSHARP_HOME
+				"${TINYSPLINE_CSHARP_HOME}${TINYSPLINE_CSHARP_FRAMEWORK}")
+			if(NOT EXISTS ${TINYSPLINE_CSHARP_HOME})
+				message(FATAL_ERROR "'${TINYSPLINE_CSHARP_HOME}' does not exist")
+			endif()
+			find_program(TINYSPLINE_CSHARP_COMPILER
+				NAMES csc
+				PATHS "${TINYSPLINE_CSHARP_HOME}")
+		else()
+			if(TINYSPLINE_CSHARP_FRAMEWORK STREQUAL "")
+				set(TINYSPLINE_CSHARP_FRAMEWORK
+					"2" CACHE STRING "Autodetected." FORCE)
+			endif()
+			if(TINYSPLINE_CSHARP_NET_DIR STREQUAL "")
+				set(TINYSPLINE_CSHARP_NET_DIR
+					"net20" CACHE STRING "Autodetected."
+					FORCE)
+
+			endif()
+			find_program(TINYSPLINE_CSHARP_COMPILER
+				NAMES mcs)
+		endif()
 		if(TINYSPLINE_CSHARP_COMPILER)
-			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc$|csc.exe$")
-				# csc neither supports the 'sdk' flag nor '/' in 'recursive'
+			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc.exe$")
+				# csc does not support '/' in 'recursive'.
 				add_custom_command(
 					TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
 					POST_BUILD
@@ -1210,14 +1249,12 @@ endif()
 # Nuget
 file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
 if(${TINYSPLINE_WITH_CSHARP})
-	string(REPLACE "." "" TINYSPLINE_CSHARP_NET_DIR
-		${TINYSPLINE_CSHARP_FRAMEWORK})
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
 		${TINYSPLINE_CSHARP_INTERFACE_FILE}
 		NAME)
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
-target=\"lib/net${TINYSPLINE_CSHARP_NET_DIR}\" />")
+target=\"lib/${TINYSPLINE_CSHARP_NET_DIR}\" />")
 	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
 target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")

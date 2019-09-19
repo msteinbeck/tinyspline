@@ -271,13 +271,16 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 ### Add different options to this script.
 #
 # TINYSPLINE_FLOAT_PRECISION - default: OFF
-#   Use single (float) instead of double precision.
+#   Build with float instead of double precision.
+#
+# TINYSPLINE_CSHARP_FRAMEWORK - default: 3.5
+#   The .Net framework version that is used to compile the C# DLL.
 #
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
 #
 # TINYSPLINE_ENABLE_*** - default: TRUE for CXX, FALSE otherwise
-#   These options allow to enable certain interfaces.
+#   These options enable certain interfaces.
 #
 # TINYSPLINE_ENABLE_ALL_INTERFACES
 #   If set, all interfaces are enabled automatically.
@@ -287,7 +290,10 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   distribution artifacts.
 ###############################################################################
 # TINYSPLINE_FLOAT_PRECISION
-option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with single (float) precision." OFF)
+option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
+
+# TINYSPLINE_CSHARP_FRAMEWORK
+set(TINYSPLINE_CSHARP_FRAMEWORK "3.5" CACHE STRING ".Net framework version.")
 
 # TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
@@ -817,7 +823,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 		# DLL
 		find_program(TINYSPLINE_CSHARP_COMPILER
 			NAMES csc mcs
-			PATHS "C:/Windows/Microsoft.NET/Framework/v4.5"
+			PATHS "C:/Windows/Microsoft.NET/Framework/v${TINYSPLINE_CSHARP_FRAMEWORK}"
 		)
 		if(TINYSPLINE_CSHARP_COMPILER)
 			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc$|csc.exe$")
@@ -837,7 +843,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 					POST_BUILD
 					COMMAND
 						${TINYSPLINE_CSHARP_COMPILER}
-						-sdk:4.5
+						-sdk:${TINYSPLINE_CSHARP_FRAMEWORK}
 						-target:library
 						-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
 						-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs"
@@ -1204,12 +1210,14 @@ endif()
 # Nuget
 file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
 if(${TINYSPLINE_WITH_CSHARP})
+	string(REPLACE "." "" TINYSPLINE_CSHARP_NET_DIR
+		${TINYSPLINE_CSHARP_FRAMEWORK})
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
 		${TINYSPLINE_CSHARP_INTERFACE_FILE}
 		NAME)
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
-target=\"lib/net45\" />")
+target=\"lib/net${TINYSPLINE_CSHARP_NET_DIR}\" />")
 	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
 target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")

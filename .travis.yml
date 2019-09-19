@@ -71,6 +71,7 @@ jobs:
         - pushd tools/ci
         - ./build.linux-x86_64.sh
         - ./build.macosx-x86_64.sh
+        - ./build.windows-x86_64.sh
         - ./bundle.sh
         - popd
       before_deploy:

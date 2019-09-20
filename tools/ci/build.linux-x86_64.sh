@@ -36,7 +36,7 @@ BUILD_CSHARP_D_JAVA() {
 	"FROM buildpack-deps:stretch
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends 	\
-		mono-mcs nuget \
+		mono-mcs mono-reference-assemblies-2.0 nuget \
 		dub \
 		default-jdk maven" \
 	"cmake . \

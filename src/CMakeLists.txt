@@ -1252,17 +1252,33 @@ if(${TINYSPLINE_WITH_CSHARP})
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
 		${TINYSPLINE_CSHARP_INTERFACE_FILE}
 		NAME)
+	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
+		set(TINYSPLINE_NUGET_RID "linux")
+	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "macosx")
+		set(TINYSPLINE_NUGET_RID "osx")
+	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "windows")
+		set(TINYSPLINE_NUGET_RID "win")
+	else()
+		message(FATAL_ERROR "Unable to determine Nuget RID (platform)")
+	endif()
+	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")
+		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x64")
+	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
+		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x86")
+	else()
+		message(FATAL_ERROR "Unable to determine Nuget RID (arch)")
+	endif()
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
 target=\"lib/${TINYSPLINE_CSHARP_FRAMEWORK_NAME}\" />")
 	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
-target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
 	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
 		set(TINYSPLINE_NUGET_FILES
 			"${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/${lib}\" \
-target=\"runtimes/${TINYSPLINE_PLATFORM}/lib/native\" />")
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
 	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/.nuspec.in"

@@ -58,7 +58,7 @@ set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
 
 set(TINYSPLINE_VERSION "0.3.0" CACHE INTERNAL "")
 
-set(TINYSPLINE_SUMMARY "NURBS Library for a Multitude of Programming Languages" CACHE INTERNAL "")
+set(TINYSPLINE_SUMMARY "Spline Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 
 set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and Ruby." CACHE INTERNAL "")
 
@@ -219,7 +219,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #
 # TINYSPLINE_PLATFORM_NAME
 #   Name of target platform in lowercase. Supported values are: 'linux',
-#   'macosx', 'windows', and 'generic' (fallback).
+#   'macosx', and 'windows'.
 #
 # TINYSPLINE_PLATFORM_ARCH
 #   Architecture of target platform. Supported values are: 'x86' and 'x86_64'.
@@ -234,7 +234,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
 else()
-	set(TINYSPLINE_PLATFORM_NAME "generic" CACHE INTERNAL "")
+	message(FATAL_ERROR "Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
 endif()
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	set(TINYSPLINE_PLATFORM_ARCH "x86_64" CACHE INTERNAL "")
@@ -546,7 +546,7 @@ endif()
 # TINYSPLINE_RUNTIME_LIBS
 set(TINYSPLINE_RUNTIME_LIBS "")
 if(TINYSPLINE_RUNTIME_LIBRARIES STREQUAL "")
-	if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "windows")
 		# Store determined files in CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS.
 		# This allows to conveniently reuse the
 		# InstallRequiredSystemLibraries module.
@@ -1225,7 +1225,7 @@ file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline-${TINYSPLINE_VERSION}-1.rockspec")
 if(${TINYSPLINE_WITH_LUA})
 	set(TINYSPLINE_LUAROCKS_INSTALL_LIB
 		"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_LUA_CMAKE_TARGET}")
-	if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "windows")
 		set(TINYSPLINE_LUAROCKS_INSTALL_LIB
 			"${TINYSPLINE_LUAROCKS_INSTALL_LIB}.dll")
 	else()

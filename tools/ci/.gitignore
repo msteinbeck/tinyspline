@@ -2,5 +2,6 @@ build.docs
 build.linux-x86_64
 build.macosx-x86_64
 build.windows-x86_64
+jar
 nuget
 tinyspline

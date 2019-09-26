@@ -52,6 +52,19 @@ pushd ${NUPKG_TMP_DIR}
 	zip -r "${OUTPUT}/${NUPKG_NAME}" *
 popd
 
+# Java
+JAR_TMP_DIR="${SCRIPT_DIR}/jar"
+find "${WINDOWS_X86_64}" -name '*.jar' -print0 | \
+	xargs -0 -I{} unzip -d "${JAR_TMP_DIR}" -o {}
+find "${MACOSX_X86_64}" -name '*.jar' -print0 | \
+	xargs -0 -I{} unzip -d "${JAR_TMP_DIR}" -o {}
+find "${LINUX_X86_64}" -name '*.jar' -print0 | \
+	xargs -0 -I{} unzip -d "${JAR_TMP_DIR}" -o {}
+JAR_NAME=$( find "${LINUX_X86_64}" -name "*.jar" -exec basename {} \; )
+pushd ${JAR_TMP_DIR}
+	zip -r "${OUTPUT}/${JAR_NAME}" *
+popd
+
 # Lua
 find "${LINUX_X86_64}" -name '*.rock' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"

@@ -8,65 +8,191 @@
 // Automatically load native library.
 %pragma(java) jniclasscode=%{
 	static {
+		final java.util.logging.Logger log = java.util.logging.Logger
+			.getLogger(tinysplinejavaJNI.class.getName());
+
 		// Load dependencies, ignore errors.
-		try { System.loadLibrary("jvm"); } catch(final Throwable e) {}
-		try { System.loadLibrary("awt"); } catch(final Throwable e) {}
+		try { System.loadLibrary("jvm"); } catch(Throwable e) {}
+		try { System.loadLibrary("awt"); } catch(Throwable e) {}
 
-		// Determine platform.
+		// Copy libraries.
+		final String platform = determinePlatform();
+		final java.util.Properties prop = loadProperties(platform);
+		final java.util.Map<String, java.io.File> libs =
+			new java.util.HashMap<String, java.io.File>();
+		for (final String lib : getRuntimeLibs(prop)) {
+			libs.put(lib, copyResource(platform + "/" + lib));
+		}
+		final String nativeLib = getNativeLib(prop);
+		libs.put(nativeLib, copyResource(platform + "/" + nativeLib));
+
+		// Load libraries.
+		boolean progress;
+		do {
+			progress = false;
+			final java.util.Iterator<String> it =
+				libs.keySet().iterator();
+			while (it.hasNext()) {
+				final String lib = it.next();
+				final java.io.File file = libs.get(lib);
+				try {
+					log.fine(String.format(
+						"Trying to load '%s'", lib));
+					System.load(file.getAbsolutePath());
+					it.remove();
+					progress = true;
+				} catch (final UnsatisfiedLinkError e) {
+				} catch (final Exception e) {
+					throw new Error(String.format(
+						"Error while loading '%s'",
+						lib));
+				}
+			}
+		} while (progress);
+
+		// Check for missing libraries.
+		if (!libs.isEmpty()) {
+			throw new Error(String.format(
+				"Unable to load the following libraries %s",
+				libs.keySet().toString()));
+		}
+	}
+
+	private static String determinePlatform() throws Error {
 		final String os = System.getProperty("os.name").toLowerCase();
+		if (os == null) {
+			throw new Error(
+				"Unable to determine operating system");
+		}
 		final String arch = System.getProperty("sun.arch.data.model");
-		String library = ""; // < name of the native library to copy
+		if (arch == null) {
+			throw new Error(
+				"Unable to determine architecture");
+		}
+		String platform = "";
 		if (os.startsWith("linux")) {
-			library = "linux";
+			platform = "linux";
 		} else if (os.startsWith("mac")) {
-			library = "macosx";
+			platform = "macosx";
 		} else if (os.startsWith("windows")) {
-			library = "windows";
+			platform = "windows";
 		} else {
-			library = "generic";
+			throw new Error(String.format(
+				"Unsupported operating system '%s'", os));
 		}
-		if (!library.equals("generic")) {
-			library += "-x86";
-			if (arch.equals("64")) {
-				library += "_64";
-			}
+		if (arch.equals("64")) {
+			platform += "-x86_64";
+		} else if (arch.equals("32")) {
+			platform += "-x86";
+		} else {
+			throw new Error(String.format(
+				"Unsupported architecture '%s'", arch));
 		}
+		return platform;
+	}
 
-		// Copy native library to a temporary file.
+	private static java.io.InputStream loadResource(final String path) {
+		if (path == null) {
+			throw new Error(
+				"'null' is not a valid resource");
+		}
+		final java.io.InputStream is =
+			tinysplinejavaJNI.class
+			.getResourceAsStream("/" + path);
+		if (is == null) {
+			throw new Error(String.format(
+				"Missing resource '%s'", path));
+		}
+		return is;
+	}
+
+	private static void closeQuietly(final java.io.Closeable closeable) {
+		if (closeable != null) {
+			try { closeable.close(); }
+			catch (final java.io.IOException e) {}
+		}
+	}
+
+	private static java.io.File copyResource(final String file) {
 		java.io.InputStream in = null;
-		java.io.FileOutputStream out = null;
-		java.io.File tmp;
+		java.io.OutputStream out = null;
 		try {
-			in = tinysplinejavaJNI.class.getResourceAsStream("/" + library);
-			if (in == null) {
-				throw new java.io.FileNotFoundException(String.format(
-					"Native library '%s' is not available", library));
-			}
-			tmp = java.io.File.createTempFile("tinyspline", null);
+			in = loadResource(file);
+			final java.io.File tmp = java.io.File
+				.createTempFile("tinyspline", null);
 			tmp.deleteOnExit();
 			out = new java.io.FileOutputStream(tmp);
-
-			final byte[] buffer = new byte[1024];
+			final byte[] buffer = new byte[4096];
 			int read = -1;
 			while((read = in.read(buffer)) != -1) {
 				out.write(buffer, 0, read);
 			}
+			return tmp;
 		} catch (final Exception e) {
 			throw new Error(String.format(
-				"Error while copying native library '%s'", library), e);
+				"Error while copying resource '%s'", file));
 		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-				if (out != null) {
-					out.close();
-				}
-			} catch (final java.io.IOException e) {}
+			closeQuietly(in);
+			closeQuietly(out);
 		}
+	}
 
-		// Load native library.
-		System.load(tmp.getAbsolutePath());
+	private static java.util.Properties loadProperties(final String pltf) {
+		if (pltf == null) {
+			throw new Error(
+				"'null' is not a valid platform");
+		} else if (pltf.contains("/")) {
+			throw new Error(String.format(
+				"Platform id (%s) must not contain '/'",
+				pltf));
+		}
+		final java.util.Properties prop = new java.util.Properties();
+		final String file = pltf + "/libs.properties";
+		java.io.InputStream is = null;
+		try {
+			is = loadResource(file);
+			prop.load(is);
+		} catch (Exception e) {
+			throw new Error(String.format(
+				"Error while loading properties file '%s'",
+				file));
+		} finally {
+			closeQuietly(is);
+		}
+		return prop;
+	}
+
+	private static String getNativeLib(final java.util.Properties prop) {
+		final String key = "native";
+		final String nat = prop.getProperty(key);
+		if (nat == null) {
+			throw new Error(String.format(
+				"Missing property '%s'", key));
+		} else if (nat.trim().isEmpty()) {
+			throw new Error(String.format(
+				"Property '%s' is blank", key));
+		}
+		return nat;
+	}
+
+	private static java.util.List<String> getRuntimeLibs(
+			final java.util.Properties prop) {
+		final String key = "runtime";
+		final String libs = prop.getProperty(key);
+		if (libs == null) {
+			throw new Error(String.format(
+				"Missing property '%s'", key));
+		}
+		final String[] libsArr = libs.split(",");
+		final java.util.List<String> libsList =
+			new java.util.ArrayList<String>();
+		for (int i = 0; i < libsArr.length; i++) {
+			libsArr[i] = libsArr[i].trim();
+			if (!libsArr[i].isEmpty()) {
+				libsList.add(libsArr[i]);
+			}
+		}
+		return libsList;
 	}
 %}
 
@@ -117,7 +243,7 @@
 %typemap(in) std::vector<tinyspline::real> * {
 	$1 = new std::vector<tinyspline::real>();
 	const jobject list = *(jobject*)&$input;
-  
+
 	const jclass listClass = jenv->FindClass("java/util/ArrayList");
 	const jmethodID listSize = jenv->GetMethodID(listClass, "size", "()I");
 	const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");

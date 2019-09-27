@@ -12,8 +12,7 @@
 			.getLogger(tinysplinejavaJNI.class.getName());
 
 		// Load dependencies, ignore errors.
-		try { System.loadLibrary("jvm"); } catch(Throwable e) {}
-		try { System.loadLibrary("awt"); } catch(Throwable e) {}
+		try { System.loadLibrary("jawt"); } catch(Throwable e) {}
 
 		// Copy libraries.
 		final String platform = determinePlatform();

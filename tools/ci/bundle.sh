@@ -40,6 +40,13 @@ find  "${SCRIPT_DIR}/nuget/runtimes/" \
 		'DIRNAME=$( dirname "${0}" ) && \
 		 BASENAME=$( basename "${0}" ) && \
 		 mv "${0}" "${DIRNAME}/${BASENAME#lib}"' {} \;
+# Add 'lib' prefix to the native library of the Linux/OSX so file.
+find  "${SCRIPT_DIR}/nuget/runtimes/" \
+	-name 'tinyspline*.so' \
+	-exec /bin/bash -c \
+		'DIRNAME=$( dirname "${0}" ) && \
+		 BASENAME=$( basename "${0}" ) && \
+		 mv "${0}" "${DIRNAME}/lib${BASENAME}"' {} \;
 # See https://github.com/NuGet/Home/issues/5956
 find  "${SCRIPT_DIR}/nuget/runtimes/" \
 	-name '*\%2B*' \

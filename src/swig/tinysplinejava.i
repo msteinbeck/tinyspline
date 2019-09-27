@@ -44,7 +44,7 @@
 				} catch (final Exception e) {
 					throw new Error(String.format(
 						"Error while loading '%s'",
-						lib));
+						lib), e);
 				}
 			}
 		} while (progress);
@@ -121,7 +121,7 @@
 				.createTempFile("tinyspline", null);
 			tmp.deleteOnExit();
 			out = new java.io.FileOutputStream(tmp);
-			final byte[] buffer = new byte[4096];
+			final byte[] buffer = new byte[16384];
 			int read = -1;
 			while((read = in.read(buffer)) != -1) {
 				out.write(buffer, 0, read);
@@ -129,7 +129,8 @@
 			return tmp;
 		} catch (final Exception e) {
 			throw new Error(String.format(
-				"Error while copying resource '%s'", file));
+				"Error while copying resource '%s'",
+				file), e);
 		} finally {
 			closeQuietly(in);
 			closeQuietly(out);
@@ -154,7 +155,7 @@
 		} catch (Exception e) {
 			throw new Error(String.format(
 				"Error while loading properties file '%s'",
-				file));
+				file), e);
 		} finally {
 			closeQuietly(is);
 		}

@@ -54,7 +54,9 @@ BUILD_CSHARP_D_JAVA() {
 		cp -a tinysplinedlang.tar.gz ${STORAGE} && \
 	mvn package && \
 		chown $(id -u):$(id -g) target/*.jar && \
-		cp -a target/*.jar ${STORAGE}"
+		cp -a target/*.jar ${STORAGE} && \
+		chown $(id -u):$(id -g) pom.xml && \
+		cp -a pom.xml ${STORAGE}"
 }
 
 BUILD_CSHARP_D_JAVA

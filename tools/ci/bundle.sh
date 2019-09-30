@@ -55,11 +55,19 @@ find  "${SCRIPT_DIR}/nuget/runtimes/" \
 		 BASENAME=$( basename "${0}" ) && \
 		 mv "${0}" "${DIRNAME}/${BASENAME/\%2B\%2B/++}"' {} \;
 NUPKG_NAME=$( find "${LINUX_X86_64}" -name "*.nupkg" -exec basename {} \; )
-pushd ${NUPKG_TMP_DIR}
+pushd "${NUPKG_TMP_DIR}"
 	zip -r "${OUTPUT}/${NUPKG_NAME}" *
 popd
 
 # Java
+JAVA_ZIP_TMP_DIR="${SCRIPT_DIR}/java"
+mkdir -p "${JAVA_ZIP_TMP_DIR}"
+find "${LINUX_X86_64}" -name '*javadoc.jar' -print0 | \
+	xargs -0 -I{} cp {} "${JAVA_ZIP_TMP_DIR}"
+find "${LINUX_X86_64}" -name '*sources.jar' -print0 | \
+	xargs -0 -I{} cp {} "${JAVA_ZIP_TMP_DIR}"
+find "${LINUX_X86_64}" -name 'pom.xml' -print0 | \
+	xargs -0 -I{} cp {} "${JAVA_ZIP_TMP_DIR}"
 JAR_TMP_DIR="${SCRIPT_DIR}/jar"
 find "${WINDOWS_X86_64}" \( -name '*.jar' \
 	-and -not -name '*javadoc*' \
@@ -77,8 +85,11 @@ JAR_NAME=$( find "${LINUX_X86_64}" \( -name '*.jar' \
 	-and -not -name '*javadoc*' \
 	-and -not -name '*sources*' \) \
 	-exec basename {} \; )
-pushd ${JAR_TMP_DIR}
-	zip -r "${OUTPUT}/${JAR_NAME}" *
+pushd "${JAR_TMP_DIR}"
+	zip -r "${JAVA_ZIP_TMP_DIR}/${JAR_NAME}" *
+popd
+pushd "${JAVA_ZIP_TMP_DIR}"
+	zip -r "${OUTPUT}/tinyspline-java.zip" *
 popd
 
 # Lua
@@ -86,11 +97,13 @@ find "${LINUX_X86_64}" -name '*.rock' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
 find "${MACOSX_X86_64}" -name '*.rock' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
+
 # Python
 find "${LINUX_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
 find "${MACOSX_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
+
 # Ruby
 find "${LINUX_X86_64}" -name '*.gem' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"

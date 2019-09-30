@@ -15,7 +15,7 @@
 
 	<build>
 		<plugins>
-			<!-- Replace jar archive after packaging -->
+			<!-- Replace jar archive after packaging. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -54,6 +54,40 @@
 									tofile="${project.build.directory}/${project.artifactId}-${project.version}.jar">
 								</copy>
 							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Create empty javadoc and sources jar. -->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>javadoc</classifier>
+						</configuration>
+					</execution>
+					<execution>
+						<id>sources-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>sources</classifier>
 						</configuration>
 					</execution>
 				</executions>

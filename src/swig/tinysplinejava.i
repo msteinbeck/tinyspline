@@ -120,6 +120,9 @@
 			final java.io.File tmp = java.io.File
 				.createTempFile("tinyspline", null);
 			tmp.deleteOnExit();
+			tmp.setReadable(true, true);
+			tmp.setWritable(true, true);
+			tmp.setExecutable(false, false);
 			out = new java.io.FileOutputStream(tmp);
 			final byte[] buffer = new byte[16384];
 			int read = -1;

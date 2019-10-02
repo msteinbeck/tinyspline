@@ -54,7 +54,13 @@ set(TINYSPLINE_MAIL "tinyspline@retux.de" CACHE INTERNAL "")
 
 set(TINYSPLINE_URL "https://github.com/msteinbeck/tinyspline" CACHE INTERNAL "")
 
+set(TINYSPLINE_SCM "scm:git:git://github.com/msteinbeck/tinyspline.git" CACHE INTERNAL "")
+
+set(TINYSPLINE_SCM_CONNECTION "scm:git:git@github.com:msteinbeck/tinyspline.git" CACHE INTERNAL "")
+
 set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
+
+set(TINYSPLINE_LICENSE_URL "https://opensource.org/licenses/mit-license" CACHE INTERNAL "")
 
 set(TINYSPLINE_VERSION "0.3.0" CACHE INTERNAL "")
 

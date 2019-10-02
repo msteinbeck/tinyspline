@@ -1,12 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>org.tinyspline</groupId>
 	<artifactId>@TINYSPLINE_PACKAGE_NAME@</artifactId>
 	<packaging>jar</packaging>
 	<version>@TINYSPLINE_VERSION@-1</version>
+
 	<name>@TINYSPLINE_PACKAGE_NAME@</name>
-	<url>http://maven.apache.org</url>
+	<description>@TINYSPLINE_DESCRIPTION@</description>
+	<url>@TINYSPLINE_URL@</url>
+
+	<licenses>
+		<license>
+			<name>@TINYSPLINE_LICENSE@</name>
+			<url>@TINYSPLINE_LICENSE_URL@</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>@TINYSPLINE_AUTHOR@</name>
+			<email>@TINYSPLINE_MAIL@</email>
+			<organizationUrl>@TINYSPLINE_URL@</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>@TINYSPLINE_SCM@</connection>
+		<developerConnection>@TINYSPLINE_SCM_CONNECTION@</developerConnection>
+		<url>@TINYSPLINE_URL@</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

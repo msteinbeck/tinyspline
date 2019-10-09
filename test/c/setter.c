@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "tinyspline.h"
+#include <tinyspline.h>
 #include "CuTest.h"
 
 #define EPSILON 0.0001

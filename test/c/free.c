@@ -1,7 +1,6 @@
-#include "tinyspline.h"
-#include "CuTest.h"
 #include <stdlib.h>
 #include <tinyspline.h>
+#include "CuTest.h"
 
 void free_test_bspline(CuTest* tc)
 {

@@ -1,6 +1,6 @@
-#include "tinyspline.h"
+#include <stdlib.h>
+#include <tinyspline.h>
 #include "CuTest.h"
-#include <stdint.h>
 
 void new_test_bspline_zero_dim(CuTest* tc)
 {

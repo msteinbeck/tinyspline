@@ -284,8 +284,10 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	tsStatus *status)
 {
 	size_t num_knots, order, idx, mult;
-	tsReal lst_knot, knot, *to_knots;
+	tsReal from_knots_first, from_knots_last, lst_knot, knot, *to_knots;
 	num_knots = ts_bspline_num_knots(spline);
+	from_knots_first = knots[0];
+	from_knots_last = knots[num_knots - 1];
 	order = ts_bspline_order(spline);
 	lst_knot = knots[0];
 	mult = 1;
@@ -310,8 +312,8 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	}
 	to_knots = ts_int_bspline_access_knots(spline);
 	for (idx = 0; idx < num_knots; idx++) {
-		to_knots[idx] = (knots[idx] - knots[0]) /
-			(knots[num_knots - 1] - knots[0]);
+		to_knots[idx] = (knots[idx] - from_knots_first) /
+			(from_knots_last - from_knots_first);
 		to_knots[idx] *= TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE;
 		to_knots[idx] += TS_MIN_KNOT_VALUE;
 		/* Handle floating point precision. */
@@ -1170,8 +1172,8 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 
 	/* Copy control points and knots. */
 	if (!back && n < 0) {
-		memcpy(to_ctrlp, from_ctrlp + n*dim, sof_min_num_ctrlp);
-		memcpy(to_knots, from_knots + n    , sof_min_num_knots);
+		memcpy(to_ctrlp, from_ctrlp - n*dim, sof_min_num_ctrlp);
+		memcpy(to_knots, from_knots - n    , sof_min_num_knots);
 	} else if (!back && n > 0) {
 		memcpy(to_ctrlp + n*dim, from_ctrlp, sof_min_num_ctrlp);
 		memcpy(to_knots + n    , from_knots, sof_min_num_knots);
@@ -1458,7 +1460,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 		/* DO NOT FORGET TO UPDATE knots AND num_knots AFTER EACH
 		 * TRANSFORMATION OF tmp! */
 
-		/* fix first control point if necessary */
+		/* Fix first control point if necessary. */
 		u_min = knots[deg];
 		if (!ts_knots_equal(knots[0], u_min)) {
 			TS_CALL(try, err, ts_bspline_split(
@@ -1470,7 +1472,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 			num_knots = ts_bspline_num_knots(&tmp);
 		}
 
-		/* fix last control point if necessary */
+		/* Fix last control point if necessary. */
 		u_max = knots[num_knots - order];
 		if (!ts_knots_equal(knots[num_knots - 1], u_max)) {
 			TS_CALL(try, err, ts_bspline_split(
@@ -1483,6 +1485,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 			num_knots = ts_bspline_num_knots(&tmp);
 		}
 
+		/* Split internal knots. */
 		k = order;
 		while (k < num_knots - order) {
 			TS_CALL(try, err, ts_bspline_split(

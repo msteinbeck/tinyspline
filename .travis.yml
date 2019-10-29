@@ -51,7 +51,7 @@ jobs:
         - mkdir python3
         - pushd python3
         - cmake -G "Visual Studio 15 2017" -A x64 -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=3 ..
-        - C:\\Python37\\python setup.py bdist_wheel
+        - C:\\Python38\\python setup.py bdist_wheel
         - popd
         - git config user.name "Travis CI"
         - git config user.email "travis@tinyspline.org"

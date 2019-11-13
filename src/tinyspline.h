@@ -24,12 +24,12 @@ extern "C" {
 #define TS_MAX_NUM_KNOTS 10000
 
 /**
- * The minimum knot value of a spline.
+ * The default minimum knot value of a spline.
  */
 #define TS_MIN_KNOT_VALUE 0.0f
 
 /**
- * The maximum knot value of a spline.
+ * The default maximum knot value of a spline.
  */
 #define TS_MAX_KNOT_VALUE 1.0f
 
@@ -634,8 +634,7 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 	tsStatus *status);
 
 /**
- * Sets the knots of \p spline. Creates a deep copy of \p knots and scales it's
- * values to [TS_MIN_KNOT_VALUE, TS_MAX_KNOT_VALUE].
+ * Sets the knots of \p spline. Creates a deep copy of \p knots.
  *
  * @param[out] spline
  * 	The spline whose knots are set.

@@ -283,12 +283,11 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	tsStatus *status)
 {
-	size_t num_knots, order, idx, mult;
-	tsReal from_knots_first, from_knots_last, lst_knot, knot, *to_knots;
-	num_knots = ts_bspline_num_knots(spline);
-	from_knots_first = knots[0];
-	from_knots_last = knots[num_knots - 1];
-	order = ts_bspline_order(spline);
+	const size_t size = ts_bspline_sof_knots(spline);
+	const size_t num_knots = ts_bspline_num_knots(spline);
+	const size_t order = ts_bspline_order(spline);
+	size_t idx, mult;
+	tsReal lst_knot, knot;
 	lst_knot = knots[0];
 	mult = 1;
 	for (idx = 1; idx < num_knots; idx++) {
@@ -310,18 +309,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 		}
 		lst_knot = knot;
 	}
-	to_knots = ts_int_bspline_access_knots(spline);
-	for (idx = 0; idx < num_knots; idx++) {
-		to_knots[idx] = (knots[idx] - from_knots_first) /
-			(from_knots_last - from_knots_first);
-		to_knots[idx] *= TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE;
-		to_knots[idx] += TS_MIN_KNOT_VALUE;
-		/* Handle floating point precision. */
-		to_knots[idx] = to_knots[idx] < TS_MIN_KNOT_VALUE
-			? TS_MIN_KNOT_VALUE : to_knots[idx];
-		to_knots[idx] = to_knots[idx] > TS_MAX_KNOT_VALUE
-			? TS_MAX_KNOT_VALUE : to_knots[idx];
-	}
+	memmove(ts_int_bspline_access_knots(spline), knots, size);
 	TS_RETURN_SUCCESS(status)
 }
 

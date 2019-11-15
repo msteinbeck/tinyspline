@@ -1,7 +1,7 @@
 puts(`@CMAKE_COMMAND@ --build . --target @TINYSPLINE_RUBY_CMAKE_TARGET@ --config Release`)
 
 Gem::Specification.new do |spec|
-  spec.name        = '@TINYSPLINE_PACKAGE_NAME@.@TINYSPLINE_PLATFORM@'
+  spec.name        = '@TINYSPLINE_PACKAGE_NAME@'
   spec.version     = '@TINYSPLINE_VERSION@-1'
   spec.authors     = ["@TINYSPLINE_AUTHOR@"]
   spec.email       = '@TINYSPLINE_MAIL@'
@@ -10,4 +10,6 @@ Gem::Specification.new do |spec|
   spec.files       = @TINYSPLINE_GEM_FILES@
   spec.homepage    = '@TINYSPLINE_URL@'
   spec.license     = '@TINYSPLINE_LICENSE@'
+  spec.platform    = Gem::Platform.local
+  spec.required_ruby_version = '~> @TINYSPLINE_RUBY_REQ_VERSION@'
 end

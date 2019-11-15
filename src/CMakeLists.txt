@@ -1332,6 +1332,8 @@ endif()
 # Gem
 file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
+	set(TINYSPLINE_RUBY_REQ_VERSION
+			"${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}")
 	set(TINYSPLINE_GEM_FILES
 "Dir.glob(\"{${TINYSPLINE_LIB_DIR}}/*${TINYSPLINE_RUBY_CMAKE_TARGET}*\")")
 	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
@@ -1340,7 +1342,7 @@ if(${TINYSPLINE_WITH_RUBY})
 	endforeach()
 	configure_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gemspec.in"
-		"${CMAKE_BINARY_DIR}/tinyspline.${TINYSPLINE_PLATFORM}.gemspec"
+		"${CMAKE_BINARY_DIR}/tinyspline.gemspec"
 		@ONLY
 	)
 endif()

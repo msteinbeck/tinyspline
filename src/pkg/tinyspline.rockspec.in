@@ -1,4 +1,4 @@
-package = "@TINYSPLINE_PACKAGE_NAME@"
+package = "@TINYSPLINE_PACKAGE_NAME@@LUA_VERSION_MAJOR@@LUA_VERSION_MINOR@"
 version = "@TINYSPLINE_VERSION@-1"
 source = {
 	url = "@TINYSPLINE_URL@",
@@ -15,7 +15,7 @@ description = {
 	license = "@TINYSPLINE_LICENSE@"
 }
 dependencies = {
-	"lua >= 5.1, < 5.4",
+	"lua ~> @LUA_VERSION_MAJOR@.@LUA_VERSION_MINOR@",
 }
 build = {
 	type = "command",

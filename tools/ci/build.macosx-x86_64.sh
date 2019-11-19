@@ -76,7 +76,7 @@ BUILD_LUA() {
 	"FROM liushuyu/osxcross:latest
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends \
-		luarocks" \
+		luarocks lua5.${1}" \
 	"wget ${!url} -O /opt/lua.tar.gz && mkdir /opt/lua && \
 		tar -C /opt/lua -xf /opt/lua.tar.gz --strip 2 && \
 	CC=o64-clang CXX=o64-clang++ \
@@ -88,7 +88,6 @@ BUILD_LUA() {
 		-DLUA_LIBRARY=/opt/lua/lib/liblua5.${1}.dylib && \
 	sed -i '/supported_platforms/,/}/d' *.rockspec && \
 		luarocks make --pack-binary-rock && \
-		for f in ./*.rock; do mv \$f \${f/.rock/-5.${1}.rock}; done && \
 		for f in ./*.rock; do mv \$f \${f/linux/macosx}; done && \
 		chown $(id -u):$(id -g) *.rock && \
 		cp -a *.rock ${STORAGE}"

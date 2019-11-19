@@ -67,12 +67,11 @@ BUILD_LUA() {
 	"FROM buildpack-deps:stretch
 	${SETUP_CMDS}
 	RUN apt-get install -y --no-install-recommends \
-		luarocks liblua${1}-dev" \
+		luarocks lua${1} liblua${1}-dev" \
 	"cmake . \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DTINYSPLINE_ENABLE_LUA=True && \
 	luarocks make --pack-binary-rock && \
-		for f in ./*.rock; do mv \$f \${f/.rock/-${1}.rock}; done && \
 		chown $(id -u):$(id -g) *.rock && \
 		cp -a *.rock ${STORAGE}"
 }

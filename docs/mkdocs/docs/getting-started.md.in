@@ -1,7 +1,7 @@
 ## C++ Interface
 
 The following listing gives an example of TinySpline's C++ API. Depending on
-its configuration, _tinyspline::real_ reprsents either a _float_ or a _double_:
+its configuration, _tinyspline::real_ represents either a _float_ or a _double_:
 
 ```c++
 #include <iostream>

@@ -1,5 +1,5 @@
 ###############################################################################
-### Check if code coverage is availabe. Code coverage is measured and depicted
+### Check if code coverage is available. Code coverage is measured and depicted
 ### using gcov, lcov, and genthml. The following CMake variables may be useful
 ### for targets creating code coverage.
 #

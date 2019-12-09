@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 
 #### Prebuilt Binaries
 
-Comming soon.
+Coming soon.
 
 #### Compiling From Source
 TinySpline uses the CMake build system to compile and package its interfaces.

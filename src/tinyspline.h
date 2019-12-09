@@ -969,7 +969,7 @@ void ts_deboornet_free(tsDeBoorNet *net);
  * On error, all values of \p \_spline\_ are set to 0/NULL.
  *
  * Note: \p n is the number of points in \p points and not the length of
- * \p points. For instance, the follwing point vector yields to \p n = 4 and
+ * \p points. For instance, the following point vector yields to \p n = 4 and
  * \p dim = 2:
  * 
  *     [x0, y0, x1, y1, x2, y2, x3, y3]
@@ -1093,7 +1093,7 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
  * @param points
  * 	The output parameter.
  * @param actual_num
- * 	The actual number of generated knots. Differs from \p num ony if \p num
+ * 	The actual number of generated knots. Differs from \p num only if \p num
  * 	is 0. Must not be NULL.
  * @param status
  * 	The status of this function. May be NULL.

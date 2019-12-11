@@ -128,7 +128,7 @@ BUILD_PHP_7() {
 		cp -a tinysplinephp7.tar.gz ${STORAGE}"
 }
 
-BUILD_PHP_7
+#BUILD_PHP_7
 
 ################################### Python ####################################
 BUILD_PYTHON() {

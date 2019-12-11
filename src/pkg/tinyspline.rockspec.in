@@ -26,7 +26,6 @@ build = {
 		@CMAKE_COMMAND@ -E echo 'function tinyspline_minor() return tinyspline_split(tinyspline_split(_VERSION, " ")[2], ".")[2] end' >> tinyspline.lua
 		@CMAKE_COMMAND@ -E echo 'return require("@TINYSPLINE_LUA_CMAKE_TARGET@"..tinyspline_major()..tinyspline_minor())' >> tinyspline.lua
 	]],
-	modules = {},
 	install = {
 		lua = { "tinyspline.lua" },
 		lib = { @TINYSPLINE_LUAROCKS_INSTALL_LIB@ }

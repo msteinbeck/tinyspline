@@ -65,8 +65,11 @@ jobs:
         - git push -f gh travis-storage >/dev/null 2>&1
         - git remote remove gh
     - stage: Deploy Binaries (Linux Docker)
+      os: linux
+      sudo: true
       services: docker
-      install: skip
+      install:
+        - sudo apt-get -qq update && sudo apt-get install -y luarocks
       script:
         - pushd tools/ci
         - ./build.linux-x86_64.sh

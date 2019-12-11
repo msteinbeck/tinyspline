@@ -790,7 +790,6 @@ function (tinyspline_add_swig_library)
 			${TINYSPLINE_CXX_SOURCE_FILES}
 		)
 	endif()
-	swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
 	# For some reasons Python's make target starts with '_'.
 	set(ACTUAL_TARGET ${ARGS_TARGET})
 	if(${ARGS_LANG} STREQUAL python)
@@ -798,6 +797,7 @@ function (tinyspline_add_swig_library)
 	endif()
 	set(TINYSPLINE_SWIG_CMAKE_TARGET ${ACTUAL_TARGET} PARENT_SCOPE)
 	set_target_properties(${ACTUAL_TARGET} PROPERTIES
+		TYPE MODULE_LIBRARY
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}"
 	)

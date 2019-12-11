@@ -11,9 +11,6 @@
 		final java.util.logging.Logger log = java.util.logging.Logger
 			.getLogger(tinysplinejavaJNI.class.getName());
 
-		// Load dependencies, ignore errors.
-		try { System.loadLibrary("jawt"); } catch(Throwable e) {}
-
 		// Copy libraries.
 		final String platform = determinePlatform();
 		final java.util.Properties prop = loadProperties(platform);

@@ -1,4 +1,4 @@
-local ts = require("tinysplinelua")
+local ts = require("tinyspline")
 
 -- Create a cubic spline with 7 control points in 2D using
 -- a clamped knot vector. This call is equivalent to:

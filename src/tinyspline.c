@@ -1397,7 +1397,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
 }
 
 tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
-	tsBSpline *result, tsStatus *status)
+	tsBSpline *out, tsStatus *status)
 {
 	const tsReal s  = 1.f - tension; /**< The straightening factor. */
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1405,12 +1405,12 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 	const tsReal* p0 = ts_int_bspline_access_ctrlp(spline);
 	const tsReal* pn_1 = p0 + (N-1)*dim;
 
-	tsReal *ctrlp; /**< Pointer to the control points of \p result. */
+	tsReal *ctrlp; /**< Pointer to the control points of \p out. */
 	size_t i, d; /**< Used in for loops. */
 	tsError err;
 
-	TS_CALL_ROE(err, ts_bspline_copy(spline, result, status))
-	ctrlp = ts_int_bspline_access_ctrlp(result);
+	TS_CALL_ROE(err, ts_bspline_copy(spline, out, status))
+	ctrlp = ts_int_bspline_access_ctrlp(out);
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {

@@ -1370,7 +1370,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * last control point; 1 => keeps the original shape). If \p tension < 0 or if
  * \p tension > 1, the behaviour of this function is undefined, though, it will
  * not result in an error. Creates a deep copy of \p spline if
- * \p spline != \p result.
+ * \p spline != \p out.
  *
  * This function is based on:
  * 
@@ -1384,7 +1384,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * 	The input spline.
  * @param[in] tension
  * 	The tension factor (0 <= \p tension <= 1).
- * @param[out] result
+ * @param[out] out
  * 	The output spline.
  * @param[out] status
  * 	The status of this function. May be NULL.
@@ -1394,7 +1394,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
  * 	If allocating memory failed.
  */
 tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
-	tsBSpline *result, tsStatus *status);
+	tsBSpline *out, tsStatus *status);
 
 /**
  * Subdivides \p spline into a sequence of Bezier curves by splitting it at

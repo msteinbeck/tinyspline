@@ -785,6 +785,7 @@ function (tinyspline_add_swig_library)
 	else()
 		swig_add_library(
 			${ARGS_TARGET}
+			TYPE MODULE
 			LANGUAGE ${ARGS_LANG}
 			SOURCES "swig/${ARGS_TARGET}.i"
 			${TINYSPLINE_CXX_SOURCE_FILES}
@@ -797,10 +798,14 @@ function (tinyspline_add_swig_library)
 	endif()
 	set(TINYSPLINE_SWIG_CMAKE_TARGET ${ACTUAL_TARGET} PARENT_SCOPE)
 	set_target_properties(${ACTUAL_TARGET} PROPERTIES
-		TYPE MODULE_LIBRARY
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}"
 	)
+	if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
+		set_property(TARGET ${ACTUAL_TARGET}
+			APPEND PROPERTY TYPE MODULE_LIBRARY
+		)
+	endif()
 	if(${ARGS_CXX11})
 		set_property(TARGET ${ACTUAL_TARGET}
 			APPEND PROPERTY CXX_STANDARD 11

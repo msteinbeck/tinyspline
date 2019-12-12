@@ -791,6 +791,10 @@ function (tinyspline_add_swig_library)
 			${TINYSPLINE_CXX_SOURCE_FILES}
 		)
 	endif()
+	# On Windows, libraries need to be linked.
+	if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
+	endif()
 	# For some reasons Python's make target starts with '_'.
 	set(ACTUAL_TARGET ${ARGS_TARGET})
 	if(${ARGS_LANG} STREQUAL python)

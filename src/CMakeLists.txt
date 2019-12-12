@@ -231,7 +231,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #   Architecture of target platform. Supported values are: 'x86' and 'x86_64'.
 #
 # TINYSPLINE_PLATFORM
-#   Platform specific identifier, e. g. 'linux-x86_64'.
+#   Platform (target platform) specific identifier, e. g. 'linux-x86_64'.
 ###############################################################################
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")

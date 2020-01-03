@@ -2,6 +2,10 @@ site_name: TinySpline
 
 nav:
         - Home: index.md
+        - Installation: installation.md
         - Getting Started: getting-started.md
+
+markdown_extensions:
+        - admonition
 
 theme: readthedocs

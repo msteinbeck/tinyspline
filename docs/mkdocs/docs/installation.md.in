@@ -1,0 +1,121 @@
+## Binaries
+
+Pre-built snapshot binaries and release for __Linux (64 bit)__,
+__MacOSX (64 bit)__, and __Windows (64 bit)__ are available at
+[Github](@TINYSPLINE_URL@/releases). In addition, the following package manager
+are supported:
+
+- Maven
+```xml
+<dependency>
+  <groupId>org.tinyspline</groupId>
+  <artifactId>tinyspline</artifactId>
+  <version>@TINYSPLINE_LATEST_RELEASE_VERSION@-1</version>
+</dependency>
+```
+
+- Pip
+```sh
+python -m pip install tinyspline
+```
+
+## Compiling From Source
+
+TinySpline uses the __CMake__ build system to compile and package its
+interfaces. The following compiler suites are tested: __GCC__, __Clang__, and
+__MSVC__. In order to create one of the bindings, __Swig__ (3.0.1 or later)
+must be installed. To compile the native library of a binding, additional
+dependencies may be required. The following table gives an overview:
+
+Binding | Dependencies
+------- | ------------
+C#      | -
+D       | -
+Go      | -
+Java    | Java Development Kit
+Lua     | Lua headers
+Octave  | Octave headers
+PHP     | PHP headers & Zend headers
+Python  | Python headers
+R       | R headers & RCPP
+Ruby    | Ruby headers
+
+The generated source code of compiled languages (e.g., C# and Java) will be
+compiled and packaged if the neccessary tools are available:
+
+Language | Tools                     | Output | Note
+-------- | --------------------------| ------ | ----
+C#       | csc (Windows), mcs (Mono) | TinySpline.dll |
+Java     | javac & jar               | tinyspline.jar | _contains the native libraries_
+
+The following listing shows the necessary shell commands:
+
+```sh
+git clone @TINYSPLINE_URL@ tinyspline
+mkdir tinyspline/build && cd tinyspline/build
+cmake .. && cmake --build .
+```
+
+By default, the generation of the bindings is disabled. To enable a certain
+binding, set the CMake option `TINYSPLINE_ENABLE_LANGUAGE` to `True` (where
+`LANGUAGE` is the binding you want to build). The following command shows how
+to enable the Python binding:
+
+```sh
+cmake -DTINYSPLINE_ENABLE_PYTHON=True ..
+```
+
+The list of available _enable_ options is given in the following:
+
+- TINYSPLINE_ENABLE_CXX (enabled by default)
+- TINYSPLINE_ENABLE_CSHARP
+- TINYSPLINE_ENABLE_DLANG
+- TINYSPLINE_ENABLE_GO
+- TINYSPLINE_ENABLE_JAVA
+- TINYSPLINE_ENABLE_LUA
+- TINYSPLINE_ENABLE_OCTAVE
+- TINYSPLINE_ENABLE_PHP
+- TINYSPLINE_ENABLE_PYTHON
+- TINYSPLINE_ENABLE_R
+- TINYSPLINE_ENABLE_RUBY
+
+To enable all interfaces at once, use `TINYSPLINE_ENABLE_ALL_INTERFACES`:
+
+```sh
+cmake -TINYSPLINE_ENABLE_ALL_INTERFACES=True ..
+```
+
+__Python 2 vs. Python 3__: While generating the Python binding, Swig needs to
+distinguish between Python 2 and Python 3. That is, Swig uses the command line
+parameter _-py_ to generate Python 2 compatible code and _-py3_ to generate
+Python 3 compatible code. Accordingly, Swig is configured depending on the
+Python version found by CMake during initialization. On systems with multiple
+versions of Python installed, CMake usually chooses the more recent one. If you
+want to use a specific version of Python instead, use the CMake option
+`TINYSPLINE_PYTHON_VERSION`. Supporte values are `2`, `3`, and `ANY`
+(default):
+
+```sh
+cmake -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=2 ..
+```
+
+__Float vs. Double Precision__: The libraries can be compiled with either
+_float_ or _double_ precision. The default is to compile the code with double
+precision. To explicitly enable float precision, set the CMake option
+`TINYSPLINE_FLOAT_PRECISION` to `On`:
+
+```sh
+cmake TINYSPLINE_FLOAT_PRECISION=On ..
+```
+
+__Installation__: The following command installs the C/C++ libraries to your 
+system:
+
+```sh
+cmake --build . --target install
+```
+
+Depending on your configuration, language-specific build files are generated
+within the root of your CMake build tree. For example, a `pom.xml` file is
+generated if the Java binding is enabled and all requirements to create a jar
+are met. Use the build files to create and install the corresponding packages.

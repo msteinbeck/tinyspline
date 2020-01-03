@@ -64,6 +64,8 @@ set(TINYSPLINE_LICENSE_URL "https://opensource.org/licenses/mit-license" CACHE I
 
 set(TINYSPLINE_VERSION "0.3.0" CACHE INTERNAL "")
 
+set(TINYSPLINE_LATEST_RELEASE_VERSION "0.3.0" CACHE INTERNAL "")
+
 set(TINYSPLINE_SUMMARY "Spline Library for a Multitude of Programming Languages" CACHE INTERNAL "")
 
 set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and Ruby." CACHE INTERNAL "")

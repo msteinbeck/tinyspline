@@ -13,9 +13,9 @@ extern "C" {
 *                                                                             *
 * :: Predefined Constants                                                     *
 *                                                                             *
-* The following constants should only be changed with caution. Otherwise, the *
-* internal consistency can not be guaranteed anymore. The predefined values   *
-* should be suitable for almost all environments, though.                     *
+* The following constants should only be changed with caution because         *
+* internal consistency may be affected. The default values should be suitable *
+* for almost all environments though.                                         *
 *                                                                             *
 ******************************************************************************/
 /**
@@ -42,11 +42,7 @@ extern "C" {
 
 /******************************************************************************
 *                                                                             *
-* :: System Dependent Configuration                                           *
-*                                                                             *
-* The following configuration values must be adapted to your system. Some of  *
-* them may be configured with preprocessor definitions. The default values    *
-* should be fine for most modern hardware, such as x86, x86_64, and arm.      *
+* :: Configuration                                                            *
 *                                                                             *
 ******************************************************************************/
 #ifdef TINYSPLINE_FLOAT_PRECISION
@@ -61,12 +57,12 @@ typedef double tsReal;
 *                                                                             *
 * :: Error Handling                                                           *
 *                                                                             *
-* The following section defines enums, structs, and macros that are used to   *
-* handle different types of errors. The following listing shows an example:   *
+* The following enums, structs, and macros are used to define and handle      *
+* different types of errors. Use them as follows:                             *
 *                                                                             *
 *     tsStatus status;                                                        *
 *     TS_TRY(any_label, status.code, &status)                                 *
-*         // Use TS_CALL when calling functions of this library.              *
+*         // Wrap function calls with TS_CALL.                                *
 *         TS_CALL(any_label, status.code, ts_bspline_to_beziers(              *
 *             &spline, &beziers, &status))                                    *
 *         if (...)                                                            *
@@ -80,8 +76,8 @@ typedef double tsReal;
 *     TS_END_TRY                                                              *
 *                                                                             *
 * Although it is always advisable to properly handle errors, embedding your   *
-* code into TS_TRY/TS_END_TRY as well as passing a pointer to a tsStatus      *
-* object is entirely optional, as shown by the following example:             *
+* code into a TS_TRY/TS_END_TRY block as well as passing a pointer to a       *
+* tsStatus object is entirely optional:                                       *
 *                                                                             *
 *     ts_bspline_to_beziers(&spline, &beziers, NULL);                         *
 *                                                                             *
@@ -246,7 +242,9 @@ typedef struct {
 *                                                                             *
 * :: Data Types                                                               *
 *                                                                             *
-* The following section defines all available data types.                     *
+* Using the PIMPL design pattern, the internal fields of the data types are   *
+* encapsulated and can only be accessed by calling the corresponding field    *
+* access functions.                                                           *
 *                                                                             *
 ******************************************************************************/
 /**
@@ -268,15 +266,14 @@ typedef enum
 } tsBSplineType;
 
 /**
- * Represents a B-Spline which may also be used for NURBS, Bezier curves,
- * lines, and points. NURBS are represented by homogeneous coordinates where
- * the last component of a control point stores the weight of this control
- * point. Bezier curves are B-Splines with 'num_control_points == order' and a
- * clamped knot vector, therefore passing through their first and last control
- * point (a property which does not necessarily apply to B-Splines and NURBS).
- * If a Bezier curve consists of two control points only, we call it a line.
- * Points, ultimately, are just very short lines consisting of a single control
- * point.
+ * Represents a B-Spline, which may also be used for NURBS, Bezier curves,
+ * lines, and points. NURBS use homogeneous coordinates to store their control
+ * points (i.e. the last component of a control point stores the weight).
+ * Bezier curves are B-Splines with 'num_control_points == order' and a
+ * clamped knot vector, which lets them pass through their first and last
+ * control point (a property which does not necessarily apply to B-Splines and
+ * NURBS). Lines and points, on that basis, are Bezier curves of degree 1
+ * (lines) and 0 (points).
  *
  * Two dimensional control points are stored as follows:
  *
@@ -286,12 +283,13 @@ typedef enum
  *
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
- * ... and so on. NURBS are represented by homogeneous coordinates. For
- * example, let's say we have a NURBS in 2D consisting of 11 control points
- * where 'w_i' is the weight of the i'th control point. Then, the corresponding
- * control points are stored as follows:
+ * ... and so on. As already mentioned, NURBS use homogeneous coordinates to
+ * store their control points. For example, a NURBS in 2D stores its control
+ * points as follows:
  *
- *     [x_0*w_0, y_0*w_0, w_0, x_1*w_1, y_1*w_1, w_1, ..., x_10*w_10, y_10*w_10, w_10]
+ *     [x_0*w_0, y_0*w_0, w_0, x_1*w_1, y_1*w_1, w_1, ...]
+ *
+ * where 'w_i' is the weight of the i'th control point.
  */
 typedef struct
 {
@@ -299,21 +297,16 @@ typedef struct
 } tsBSpline;
 
 /**
- * Represents the output of De Boor's algorithm. De Boor's algorithm is used to
- * evaluate a spline at given knot value 'u' by iteratively computing a net of
- * intermediate values until the result is available:
+ * Represents the output of De Boor's algorithm. It is used to evaluate a
+ * spline at given knots by iteratively computing a net of intermediate values
+ * until the result is available:
  *
  *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
  *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
  *
- * All points of a net are stored in 'points'. The resulting point is the last
- * point in 'points' and, for the sake of convenience, may be accessed with
- * 'result':
- *
- *     tsDeBoorNet net = ...    // evaluate an arbitrary spline and store
- *                              // the resulting net of points in 'net'
- *
- *     ts_deboornet_result(...) // use 'result' to access the resulting point
+ * All points of a net are stored in 'points' (ts_deboornet_points). The
+ * resultant point is the last point in 'points' and, for the sake of
+ * convenience, can be accessed with 'ts_deboornet_result'.
  *
  * Two dimensional points are stored as follows:
  *
@@ -323,62 +316,43 @@ typedef struct
  *
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
- * ... and so on. The output also supports homogeneous coordinates described
- * above.
+ * ... and so on. The output also supports homogeneous coordinates
+ * (cf. tsBSpline).
  *
  * There is a special case in which the evaluation of a knot value 'u' returns
  * two results instead of one. It occurs when the multiplicity of 'u' ( s(u) )
- * is equals to a spline's order, indicating that the spline is discontinuous
- * at 'u'. This is common practice for B-Splines (and NURBS) consisting of
- * connected Bezier curves where the endpoint of curve 'c_i' is equals to the
- * start point of curve 'c_i+1'. The end point of 'c_i' and the start point of
- * 'c_i+1' may still be completely different though, yielding to a spline
- * having a (real and visible) gap at 'u'. Consequently, De Boor's algorithm
- * must return two results if 's(u) == order' in order to give access to the
- * desired points.  In such case, 'points' stores only the two resulting points
- * (there is no net to calculate) and 'result' points to the *first* point in
- * 'points'. Since having (real) gaps in splines is unusual, both points in
- * 'points' are generally equals, making it easy to handle this special case by
- * accessing 'result' as already shown above for regular cases:
+ * is equals to the order of a spline, indicating that the corresponding spline
+ * is discontinuous at 'u'. This is common practice for B-Splines (and NURBS)
+ * consisting of connected Bezier curves where the endpoint of curve 'c_i' is
+ * equal to the start point of curve 'c_i+1'. Yet, the end point of 'c_i' and
+ * the start point of 'c_i+1' may still be completely different, yielding to
+ * visible gaps. In such case (s(u) == order), 'points' stores only the two
+ * resultant points (there is no net to calculate) and 'result' points to the
+ * *first* point in 'points'. Since having gaps in splines is unusual, both
+ * points in 'points' are generally equals, making it easy to handle this
+ * special case by accessing 'result' as usual. However, you can access both
+ * points if necessary:
  *
- *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // the given knot value, yielding to a net with
- *                              // two results
+ *     ts_deboornet_result(...)[0] ...       // Stores the first component of
+ *                                           // the first result.
  *
- *     ts_deboornet_result(...) // use 'result' to access the resulting point
- *
- * However, you can access both points if necessary:
- *
- *     tsDeBoorNet net = ...    // evaluate a spline which is discontinuous at
- *                              // the given knot value, yielding to a net with
- *                              // two results
- *
- *     ts_deboornet_result(...)[0] ...       // stores the first component of
- *                                           // the first point
- *
- *     ts_deboornet_result(...)[dim(spline)] // stores the first component of
- *                                           // the second point
+ *     ts_deboornet_result(...)[dim(spline)] // Stores the first component of
+ *                                           // the second result.
  *
  * As if this wasn't complicated enough, there is an exception for this special
  * case, yielding to exactly one result (just like the regular case) even if
  * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
  * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
  * evaluated at 'u = 0' or 'u = 1' then 'result' is *always* a single point
- * regardless of the multiplicity of 'u'. Hence, handling this exception is
- * straightforward:
+ * regardless of the multiplicity of 'u'.
  *
- *     tsDeBoorNet net = ...    // evaluate a spline at the lower or upper
- *                              // bound of its domain, for instance, 0 or 1
- *
- *     ts_deboornet_result(...) // use 'result' to access the resulting point
- *
- * In summary, we have three different types of evaluation. 1) The regular case
- * returning all points of the net we used to calculate the resulting point. 2)
- * The special case returning exactly two points which is required for splines
- * with (real) gaps. 3) The exception of 2) returning exactly one point even if
- * 's(u) == order'. All in all this looks quite complex (and actually it is)
- * but for most applications you do not have to deal with it. Just use 'result'
- * to access the outcome of De Boor's algorithm.
+ * In summary, three different types of evaluation exist: i) the regular case,
+ * in which all points of the corresponding net are returned, ii) a special
+ * case, in which exactly two points are returned (required for splines with
+ * gaps), and iii) the exception of ii), in which exactly one point is returned
+ * even if 's(u) == order'. All in all this looks quite complex (and actually
+ * it is), but for most applications you do not have to deal with this. Just
+ * use 'ts_deboornet_result' to access the outcome of De Boor's algorithm.
  */
 typedef struct
 {
@@ -390,9 +364,6 @@ typedef struct
 /******************************************************************************
 *                                                                             *
 * :: Field Access Functions                                                   *
-*                                                                             *
-* The following section contains getter and setter functions for the internal *
-* state of the structs listed above.                                          *
 *                                                                             *
 ******************************************************************************/
 /**
@@ -655,7 +626,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 /* ------------------------------------------------------------------------- */
 
 /**
- * Returns the knot (sometimes also called 'u' or 't') of \p net.
+ * Returns the knot (sometimes referred to as 'u' or 't') of \p net.
  *
  * @param[in] net
  * 	The net whose knot is read.
@@ -812,10 +783,6 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
 *                                                                             *
 * :: Constructors, Destructors, Copy, and Move Functions                      *
 *                                                                             *
-* The following section contains functions to create and delete instances of  *
-* the data types listed above. Additionally, each data type has a copy and    *
-* move function.                                                              *
-*                                                                             *
 ******************************************************************************/
 /**
  * Creates a new spline whose data points to NULL.
@@ -950,52 +917,48 @@ void ts_deboornet_free(tsDeBoorNet *net);
 *                                                                             *
 * :: Interpolation and Approximation Functions                                *
 *                                                                             *
-* The following section contains functions to interpolate and approximate     *
-* arbitrary splines.                                                          *
-*                                                                             *
 ******************************************************************************/
 /**
- * Performs a cubic spline interpolation using the thomas algorithm, see:
+ * Interpolates a cubic spline using the thomas algorithm, see:
  * 
  *     https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
  *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
  *
- * The resulting spline is a sequence of bezier curves connecting each point
- * in \p points. Each bezier curve _b_ is of degree 3 with \p dim being the
- * dimension of the each control point in _b_. The total number of control
- * points is (\p n - 1) * 4.
+ * The resultant spline is a sequence of bezier curves connecting each point
+ * in \p points. Each bezier curve _b_ is of degree 3 with \p dimension being
+ * the dimension of the each control point in _b_. The total number of control
+ * points is (\p num_points - 1) * 4.
  *
- * On error, all values of \p \_spline\_ are set to 0/NULL.
+ * On error, all values of \p spline are set to 0/NULL.
  *
- * Note: \p n is the number of points in \p points and not the length of
- * \p points. For instance, the following point vector yields to \p n = 4 and
- * \p dim = 2:
+ * Note: \p num_points is the number of points in \p points and not the length
+ * of \p points. For instance, the following point vector has
+ * \p num_points = 4 and \p dimension = 2:
  * 
  *     [x0, y0, x1, y1, x2, y2, x3, y3]
  *
- * @param points
+ * @param[in] points
  * 	The points to interpolate.
- * @param n
+ * @param[in] num_points
  * 	The number of points in \p points.
- * @param dim
- * 	The dimension of each control point in \p \_spline\_.
- * @param \_spline\_
- * 	The output parameter storing the result of this function.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[in] dimension
+ * 	The dimension of each control point in \p spline.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p dim == 0.
+ * 	If \p dimension == 0.
  * @return TS_DEG_GE_NCTRLP
- * 	If \p n < 2.
+ * 	If \p num_points < 2.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
-	size_t dim, tsBSpline *_spline_, tsStatus *status);
+tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
+	size_t dimension, tsBSpline *spline, tsStatus *status);
 
 
 
@@ -1003,13 +966,11 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 *                                                                             *
 * :: Query Functions                                                          *
 *                                                                             *
-* The following section contains functions to query splines.                  *
-*                                                                             *
 ******************************************************************************/
 /**
  * Returns the number of distinct knots.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to query.
  * @return
  *	The number of distinct knots.
@@ -1017,18 +978,17 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 size_t ts_bspline_num_distinct_knots(const tsBSpline *spline);
 
 /**
- * Evaluates \p spline at knot value \p u and stores the result in
- * \p \_deBoorNet\_.
+ * Evaluates \p spline at knot \p u and stores the result (cf. tsDeBoorNet) in
+ * \p net.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to evaluate.
- * @param u
- * 	The knot value to evaluate.
- * @param \_deBoorNet\_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[in] u
+ * 	The knot to evaluate \p spline at.
+ * @param[out] net
+ * 	The output parameter
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
@@ -1036,15 +996,15 @@ size_t ts_bspline_num_distinct_knots(const tsBSpline *spline);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *_deBoorNet_, tsStatus *status);
+tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
+	tsStatus *status);
 
 /**
- * Evaluates \p spline at the given knot values \p us and stores the result
- * points in \p points. If \p us contains one or more knot values where
- * \p spline is discontinuous at, only the first point of the corresponding
- * evaluation result is taken. After calling this function \p points contains
- * exactly \p num * ts_bspline_dimension(spline) values.
+ * Evaluates \p spline at knots \p us and stores the resultant points in
+ * \p points. If \p us contains one or more knots where \p spline is
+ * discontinuous at, only the first point of the corresponding evaluation
+ * result is taken. After calling this function \p points contains exactly
+ * \p num * ts_bspline_dimension(spline) values.
  *
  * This function is in particular useful in cases where a multitude of knots
  * need to be evaluated, because only a single instance of tsDeBoorNet is
@@ -1074,8 +1034,8 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 /**
  * Generates a sequence of \p num different knots (The knots are equally
  * distributed between the minimum and the maximum of the domain of \p spline),
- * passes this sequence to ts_bspline_eval_all, and stores the result points in
- * \p points. If \p num is 0, the following default value is taken as fallback:
+ * passes this sequence to ts_bspline_eval_all, and stores the resultant points
+ * in \p points. If \p num is 0, the following default is taken as fallback:
  *
  * 	num = (ts_bspline_num_control_points(spline) -
  * 		ts_bspline_degree(spline)) * 30;
@@ -1086,16 +1046,16 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
  * If \p num is 1, the point located at the minimum of the domain of \p spline
  * is evaluated.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to evaluate.
- * @param num
+ * @param[in] num
  * 	The number of knots to generate.
- * @param points
+ * @param[out] points
  * 	The output parameter.
- * @param actual_num
- * 	The actual number of generated knots. Differs from \p num only if \p num
- * 	is 0. Must not be NULL.
- * @param status
+ * @param[out] actual_num
+ * 	The actual number of generated knots. Differs from \p num only if
+ * 	\p num is 0. Must not be NULL.
+ * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
@@ -1118,7 +1078,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
  * For the sake of fail-safeness, the distance of P[index] and \p value is
  * compared with the absolute value of \p epsilon (using fabs).
  *
- * The bisection method is an iterative approach, minimizing the error
+ * The bisection method is an iterative approach, which minimizes the error
  * (\p epsilon) with each iteration step until an "optimum" was found. However,
  * there may be no point P satisfying the distance condition. Thus, the number
  * of iterations must be limited (\p max_iter). Depending on the domain of the
@@ -1145,7 +1105,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
  * 	Indicates whether the control points of \p spline are sorted in
  * 	ascending (!= 0) or in descending (== 0) order at component \p index.
  * @param[in] max_iter
- * 	The maximum number of iterations (16 is a sane default value).
+ * 	The maximum number of iterations (30 is a sane default value).
  * @param[out] net
  * 	The output parameter.
  * @param[out] status
@@ -1181,17 +1141,16 @@ void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
  * necessarily the control points) of \p spline is less than or equal to
  * \p epsilon. The distance of possible inner gaps is not considered.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to query.
- * @param epsilon
+ * @param[in] epsilon
  * 	The maximum distance.
- * @param closed
+ * @param[out] closed
  * 	The output parameter. Is set to 1 if the distance of the first and the
  * 	last point (not necessarily the control points) of \p spline is less
  * 	than or equal to \p epsilon. Is set to 0 otherwise.
  * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1266,8 +1225,8 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 ******************************************************************************/
 /**
  * Returns the \p n'th derivative of \p spline and stores the result in
- * \p \_derivative\_. Creates a deep copy of \p spline, if
- * \p spline != \p \_result\_. For more details, see:
+ * \p derivative. Creates a deep copy of \p spline, if
+ * \p spline != \p derivative. For more details, see:
  * 
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
@@ -1293,13 +1252,12 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * rather than _p+1_. The derivative of a point (degree == 0) is another point
  * with coordinates 0.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to derive.
- * @param \_derivative\_
- *	The output parameter.
+ * @param[out] derivative
+ *	The derivative of \p spline.
  * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_UNDERIVABLE
@@ -1309,51 +1267,50 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * 	If allocating memory failed.
  */
 tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
-	tsBSpline *_derivative_, tsStatus *status);
+	tsBSpline *derivative, tsStatus *status);
 
 /**
- * Inserts the knot value \p u up to \p n times into \p spline and stores the
- * result in \p \_result\_. Creates a deep copy of \p spline, if
- * \p spline != \p \_result\_.
+ * Inserts the knot \p u up to \p num times into the knot vector of \p spline
+ * and stores the result in \p result. Creates a deep copy of \p spline, if
+ * \p spline != \p result.
  * 
- * @param spline
- * 	The spline whose knot vector is extended.
- * @param u
- * 	The knot value to insert.
- * @param n
+ * @param[in] spline
+ * 	The spline with its knot vector into which \p u is inserted up to
+ * 	\p num times.
+ * @param[in] u
+ * 	The knot to insert.
+ * @param[in] num
  * 	How many times \p u should be inserted.
- * @param \_result\_
- * 	The output parameter.
- * @param \_k\_
- * 	Stores the last index of \p u in \p \_result\_.
+ * @param[out] result
+ * 	The output spline.
+ * @param[out] k
+ * 	Stores the last index of \p u in \p result.
  * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
-	tsBSpline *_result_, size_t *_k_, tsStatus *status);
+tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
+	tsBSpline *result, size_t *k, tsStatus *status);
 
 /**
- * Splits \p spline at knot value \p u and stores the result in \p \_split\_.
- * That is, \p u is inserted _n_ times such that the multiplicity of \p u in
- * \p spline is equal to the spline's order. Creates a deep copy of \p spline,
- * if \p spline != \p \_split\_.
+ * Splits \p spline at knot value \p u and stores the result in \p split. That
+ * is, \p u is inserted _n_ times such that the multiplicity of \p u is equal
+ * to the \p spline's order. Creates a deep copy of \p spline, if
+ * \p spline != \p split.
  * 
- * @param spline
+ * @param[in] spline
  * 	The spline to split.
- * @param u
- * 	The split point.
- * @param \_split\_
+ * @param[in] u
+ * 	The split point (knot).
+ * @param[out] split
  * 	The output parameter.
- * @param \_k\_
- * 	Output parameter. Stores the last index of \p u in \p \_split\_.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] k
+ * 	Stores the last index of \p u in \p split.
+ * @param[out] status
+ * 	Stores the last index of \p u in \p result.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
@@ -1361,8 +1318,8 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
-	size_t *_k_, tsStatus *status);
+tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
+	size_t *k, tsStatus *status);
 
 /**
  * Sets the control points of \p spline so that their tension corresponds the
@@ -1397,23 +1354,22 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 	tsBSpline *out, tsStatus *status);
 
 /**
- * Subdivides \p spline into a sequence of Bezier curves by splitting it at
+ * Decomposes \p spline into a sequence of Bezier curves by splitting it at
  * each internal knot value. Creates a deep copy of \p spline, if
- * \p spline != \p \_beziers\_.
+ * \p spline != \p beziers.
  * 
- * @param spline
- * 	The spline to subdivide.
- * @param \_beziers\_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[in] spline
+ * 	The spline to decompose.
+ * @param[out] beziers
+ * 	The bezier decomposition of \p spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
+tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 	tsStatus *status);
 
 
@@ -1428,15 +1384,14 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 ******************************************************************************/
 /**
  * Serializes \p spline to a null-terminated JSON string and stores the result
- * in \p \_json\_.
+ * in \p json.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to serialize.
- * @param json
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] json
+ * 	The serialized json string.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -1446,15 +1401,14 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
 	tsStatus *status);
 
 /**
- * Parses \p json and stores the result in \p \_spline\_.
+ * Parses \p json and stores the result in \p spline.
  *
- * @param json
+ * @param[in] json
  * 	The JSON string to parse.
- * @param _spline_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] spline
+ * 	The deserialized spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_PARSE_ERROR
@@ -1475,19 +1429,18 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_,
+tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
 	tsStatus *status);
 
 /**
  * Saves \p spline as JSON ASCII file.
  *
- * @param spline
+ * @param[in] spline
  * 	The spline to save.
- * @param path
+ * @param[in] path
  * 	Path of the JSON file.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_IO_ERROR
@@ -1499,15 +1452,14 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
 	tsStatus *status);
 
 /**
- * Loads the contents of \p path and stores the result in \p \_spline\_.
+ * Loads \p spline from a JSON ASCII file.
  *
- * @param path
+ * @param[in] path
  * 	Path of the JSON file.
- * @param _spline_
- * 	The output parameter.
- * @param status
- * 	Output parameter. Store the returned error code and a descriptive error
- * 	message. May be NULL.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[ou] status
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_IO_ERROR
@@ -1530,7 +1482,7 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
+tsError ts_bspline_load_json(const char *path, tsBSpline *spline,
 	tsStatus *status);
 
 
@@ -1547,9 +1499,9 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
  * Compares the knots \p x and \p y using the epsilon environment
  * TS_KNOT_EPSILON.
  *
- * @param x
+ * @param[in] x
  * 	The x value to compare.
- * @param y
+ * @param[in] y
  * 	The y value to compare.
  * @return 1
  * 	If \p x is equal to \p y with respect to the epsilon environment
@@ -1562,17 +1514,24 @@ int ts_knots_equal(tsReal x, tsReal y);
 /**
  * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num
  * (exclusive).
+ *
+ * @param[in] arr
+ * 	The array to fill.
+ * @param[in] num
+ * 	The fill length.
+ * @param[out] val
+ * 	The value to fill into \p arr.
  */
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
 
 /**
  * Returns the euclidean distance of the points \p x and \p y.
  *
- * @param x
+ * @param[in] x
  * 	The x value.
- * @param y
+ * @param[in] y
  * 	The y value.
- * @param dim
+ * @param[in] dimemsion
  * 	The dimension of \p x and \p y.
  * @return
  * 	The euclidean distance of \p x and \p y.

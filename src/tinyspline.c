@@ -606,7 +606,7 @@ void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
 *                                                                             *
 ******************************************************************************/
 tsError ts_int_bspline_thomas_algorithm(const tsReal *points, size_t n,
-	size_t dim, tsReal *_result_, tsStatus *status)
+	size_t dim, tsReal *result, tsStatus *status)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
@@ -622,7 +622,7 @@ tsError ts_int_bspline_thomas_algorithm(const tsReal *points, size_t n,
 	if (n == 0)
 		TS_RETURN_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
 	if (n <= 2) {
-		memcpy(_result_, points, n * sof_ctrlp);
+		memcpy(result, points, n * sof_ctrlp);
 		TS_RETURN_SUCCESS(status)
 	}
 
@@ -639,42 +639,42 @@ tsError ts_int_bspline_thomas_algorithm(const tsReal *points, size_t n,
 		m[i] = 1.f/(4 - m[i-1]);
 
 	/* forward sweep */
-	ts_arr_fill(_result_, n*dim, 0.f);
-	memcpy(_result_, points, sof_ctrlp);
-	memcpy(_result_+lst, points+lst, sof_ctrlp);
+	ts_arr_fill(result, n*dim, 0.f);
+	memcpy(result, points, sof_ctrlp);
+	memcpy(result+lst, points+lst, sof_ctrlp);
 	for (d = 0; d < dim; d++) {
 		k = dim+d;
-		_result_[k] = 6*points[k];
-		_result_[k] -= points[d];
+		result[k] = 6*points[k];
+		result[k] -= points[d];
 	}
 	for (i = 2; i <= n-2; i++) {
 		for (d = 0; d < dim; d++) {
 			j = (i-1)*dim+d;
 			k = i*dim+d;
 			l = (i+1)*dim+d;
-			_result_[k] = 6*points[k];
-			_result_[k] -= _result_[l];
-			_result_[k] -= m[i-2]*_result_[j]; /* i >= 2 */
+			result[k] = 6*points[k];
+			result[k] -= result[l];
+			result[k] -= m[i-2]*result[j]; /* i >= 2 */
 		}
 	}
 
 	/* back substitution */
 	if (n > 3)
-		ts_arr_fill(_result_+lst, dim, 0.f);
+		ts_arr_fill(result+lst, dim, 0.f);
 	for (i = n-2; i >= 1; i--) {
 		for (d = 0; d < dim; d++) {
 			k = i*dim+d;
 			l = (i+1)*dim+d;
 			/* The following line is the reason why it's important
-			 * to not fill \p _result_ with 0 if n = 3. On the
+			 * to not fill \p result with 0 if n = 3. On the
 			 * other hand, if n > 3 subtracting 0 is exactly what
 			 * we want. */
-			_result_[k] -= _result_[l];
-			_result_[k] *= m[i-1]; /* i >= 1 */
+			result[k] -= result[l];
+			result[k] *= m[i-1]; /* i >= 1 */
 		}
 	}
 	if (n > 3)
-		memcpy(_result_+lst, points+lst, sof_ctrlp);
+		memcpy(result+lst, points+lst, sof_ctrlp);
 
 	/* we are done */
 	free(m);
@@ -682,7 +682,7 @@ tsError ts_int_bspline_thomas_algorithm(const tsReal *points, size_t n,
 }
 
 tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
-	size_t dim, tsBSpline *_spline_, tsStatus *status)
+	size_t dim, tsBSpline *spline, tsStatus *status)
 {
 	const size_t order = 4;    /**< Order of spline to interpolate. */
 	const tsReal as = 1.f/6.f; /**< The value 'a sixth'. */
@@ -711,8 +711,8 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	TS_TRY(try, err, status)
 		/* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
 		TS_CALL(try, err, ts_bspline_new(
-			(n-1)*4, dim, order-1, TS_BEZIERS, _spline_, status));
-		ctrlp = ts_int_bspline_access_ctrlp(_spline_);
+			(n-1)*4, dim, order-1, TS_BEZIERS, spline, status));
+		ctrlp = ts_int_bspline_access_ctrlp(spline);
 
 		s = (tsReal*) malloc(n * sof_ctrlp);
 		if (!s) {
@@ -749,7 +749,7 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 			}
 		}
 	TS_CATCH(err)
-		ts_bspline_free(_spline_);
+		ts_bspline_free(spline);
 	TS_FINALLY
 		if (s)
 			free(s);
@@ -757,11 +757,11 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 }
 
 tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
-	size_t dim, tsBSpline *_spline_, tsStatus *status)
+	size_t dim, tsBSpline *spline, tsStatus *status)
 {
 	tsError err;
 	tsReal* thomas;
-	ts_int_bspline_init(_spline_);
+	ts_int_bspline_init(spline);
 	thomas = NULL;
 	TS_TRY(try, err, status)
 		thomas = (tsReal*) malloc(n*dim*sizeof(tsReal));
@@ -772,9 +772,9 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 		TS_CALL(try, err, ts_int_bspline_thomas_algorithm(
 			points, n, dim, thomas, status))
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
-			thomas, n, dim, _spline_, status))
+			thomas, n, dim, spline, status))
 	TS_CATCH(err)
-		ts_bspline_free(_spline_);
+		ts_bspline_free(spline);
 	TS_FINALLY
 		free(thomas);
 	TS_END_TRY_RETURN(err)
@@ -948,18 +948,18 @@ tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *_deBoorNet_, tsStatus *status)
+tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
+	tsStatus *status)
 {
 	tsError err;
-	ts_int_deboornet_init(_deBoorNet_);
+	ts_int_deboornet_init(net);
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline, _deBoorNet_, status))
+			spline, net, status))
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			spline, u, _deBoorNet_, status))
+			spline, u, net, status))
 	TS_CATCH(err)
-		ts_deboornet_free(_deBoorNet_);
+		ts_deboornet_free(net);
 	TS_END_TRY_RETURN(err)
 }
 
@@ -1178,7 +1178,7 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 }
 
 tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
-	tsBSpline *_derivative_, tsStatus *status)
+	tsBSpline *derivative, tsStatus *status)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1195,7 +1195,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsBSpline swap; /**< Used to swap worker and _derivative_. */
 	tsError err;
 
-	INIT_OUT_BSPLINE(spline, _derivative_)
+	INIT_OUT_BSPLINE(spline, derivative)
 	TS_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
 	ctrlp = ts_int_bspline_access_ctrlp(&worker);
 	knots = ts_int_bspline_access_knots(&worker);
@@ -1233,16 +1233,16 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 		       num_ctrlp * dim * sof_real);
 		memcpy(ts_int_bspline_access_knots(&swap), knots,
 		       num_knots * sof_real);
-		if (spline == _derivative_)
-			ts_bspline_free(_derivative_);
-		ts_bspline_move(&swap, _derivative_);
+		if (spline == derivative)
+			ts_bspline_free(derivative);
+		ts_bspline_move(&swap, derivative);
 	TS_FINALLY
 		ts_bspline_free(&worker);
 	TS_END_TRY_RETURN(err)
 }
 
 tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
-	const tsDeBoorNet *deBoorNet, size_t n, tsBSpline *_result_,
+	const tsDeBoorNet *deBoorNet, size_t n, tsBSpline *result,
 	tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
@@ -1266,16 +1266,16 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	tsError err;
 
 	if (n == 0 || s+n > ts_bspline_order(spline))
-		return ts_bspline_copy(spline, _result_, status);
+		return ts_bspline_copy(spline, result, status);
 
 	TS_CALL_ROE(err, ts_int_bspline_resize(
-		spline, (int)n, 1, _result_, status));
+		spline, (int)n, 1, result, status));
 	ctrlp_spline = ts_int_bspline_access_ctrlp(spline);
 	knots_spline = ts_int_bspline_access_knots(spline);
-	ctrlp_result = ts_int_bspline_access_ctrlp(_result_);
-	knots_result = ts_int_bspline_access_knots(_result_);
-	num_ctrlp_result = ts_bspline_num_control_points(_result_);
-	num_knots_result = ts_bspline_num_knots(_result_);
+	ctrlp_result = ts_int_bspline_access_ctrlp(result);
+	knots_result = ts_int_bspline_access_knots(result);
+	num_ctrlp_result = ts_bspline_num_control_points(result);
+	num_knots_result = ts_bspline_num_knots(result);
 
 	/* n > 0 implies s <= deg implies a regular evaluation implies h+1 is
 	 * valid. */
@@ -1346,19 +1346,19 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
-	tsBSpline *_result_, size_t* k, tsStatus *status)
+tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
+	tsBSpline *result, size_t* k, tsStatus *status)
 {
 	tsDeBoorNet net;
 	tsError err;
-	INIT_OUT_BSPLINE(spline, _result_)
+	INIT_OUT_BSPLINE(spline, result)
 	ts_int_deboornet_init(&net);
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_eval(spline, u, &net, status))
 		TS_CALL(try, err, ts_int_bspline_insert_knot(
-			spline, &net, n, _result_, status))
+			spline, &net, num, result, status))
 		ts_deboornet_free(&net);
-		TS_CALL(try, err, ts_bspline_eval(_result_, u, &net, status))
+		TS_CALL(try, err, ts_bspline_eval(result, u, &net, status))
 		*k = ts_deboornet_index(&net);
 	TS_CATCH(err)
 		*k = 0;
@@ -1367,24 +1367,24 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t n,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *_split_,
+tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
 	size_t* k, tsStatus *status)
 {
 	tsDeBoorNet net;
 	tsError err;
-	INIT_OUT_BSPLINE(spline, _split_)
+	INIT_OUT_BSPLINE(spline, split)
 	ts_int_deboornet_init(&net);
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_eval(spline, u, &net, status))
 		if (ts_deboornet_multiplicity(&net)
 				== ts_bspline_order(spline)) {
 			TS_CALL(try, err, ts_bspline_copy(
-				spline, _split_, status))
+				spline, split, status))
 			*k = ts_deboornet_index(&net);
 		} else {
 			TS_CALL(try, err, ts_int_bspline_insert_knot(
 				spline, &net,
-				ts_deboornet_num_insertions(&net) + 1, _split_,
+				ts_deboornet_num_insertions(&net) + 1, split,
 				status))
 			*k = ts_deboornet_index(&net) +
 				ts_deboornet_num_insertions(&net) + 1;
@@ -1422,7 +1422,7 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
+tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 	tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
@@ -1439,7 +1439,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 
 	tsError err;
 
-	INIT_OUT_BSPLINE(spline, _beziers_)
+	INIT_OUT_BSPLINE(spline, beziers)
 	TS_CALL_ROE(err, ts_bspline_copy(spline, &tmp, status))
 	knots = ts_int_bspline_access_knots(&tmp);
 	num_knots = ts_bspline_num_knots(&tmp);
@@ -1483,9 +1483,9 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *_beziers_,
 			k++;
 		}
 
-		if (spline == _beziers_)
-			ts_bspline_free(_beziers_);
-		ts_bspline_move(&tmp, _beziers_);
+		if (spline == beziers)
+			ts_bspline_free(beziers);
+		ts_bspline_move(&tmp, beziers);
 	TS_FINALLY
 		ts_bspline_free(&tmp);
 	TS_END_TRY_RETURN(err)
@@ -1718,26 +1718,26 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
+tsError ts_bspline_to_json(const tsBSpline *spline, char **json,
 	tsStatus *status)
 {
 	tsError err;
 	JSON_Value *value = NULL;
-	*_json_ = NULL;
+	*json = NULL;
 	TS_CALL_ROE(err, ts_int_bspline_to_json(spline, &value, status))
-	*_json_ = json_serialize_to_string_pretty(value);
+	*json = json_serialize_to_string_pretty(value);
 	json_value_free(value);
-	if (!*_json_)
+	if (!*json)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory");
 	TS_RETURN_SUCCESS(status);
 }
 
-tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_,
+tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
 	tsStatus *status)
 {
 	tsError err;
 	JSON_Value *value = NULL;
-	ts_int_bspline_init(_spline_);
+	ts_int_bspline_init(spline);
 	TS_TRY(try, err, status)
 		value = json_parse_string(json);
 		if (!value) {
@@ -1745,7 +1745,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *_spline_,
 				   "invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_from_json(
-			value, _spline_, status))
+			value, spline, status))
 	TS_FINALLY
 		if (value)
 			json_value_free(value);
@@ -1766,13 +1766,13 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
+tsError ts_bspline_load_json(const char *path, tsBSpline *spline,
 	tsStatus *status)
 {
 	tsError err;
 	FILE *file = NULL;
 	JSON_Value *value = NULL;
-	ts_int_bspline_init(_spline_);
+	ts_int_bspline_init(spline);
 	TS_TRY(try, err, status)
 		file = fopen(path, "r");
 		if (!file) {
@@ -1785,14 +1785,14 @@ tsError ts_bspline_load_json(const char *path, tsBSpline *_spline_,
 				   "invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_from_json(
-			value, _spline_, status))
+			value, spline, status))
 	TS_FINALLY
 		if (file)
 			fclose(file);
 		if (value)
 			json_value_free(value);
 	TS_CATCH(err)
-		ts_bspline_free(_spline_);
+		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
 }
 
@@ -1815,11 +1815,11 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 		arr[i] = val;
 }
 
-tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dim)
+tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
 {
 	tsReal sum = 0;
 	size_t i;
-	for (i = 0; i < dim; i++)
+	for (i = 0; i < dimension; i++)
 		sum += (x[i] - y[i]) * (x[i] - y[i]);
 	return (tsReal) sqrt(sum);
 }

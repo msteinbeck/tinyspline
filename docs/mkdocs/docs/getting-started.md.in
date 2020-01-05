@@ -51,7 +51,7 @@ point = BSpline(1, dim, 0)
 ```
 
 __NURBS__: As for Bézier curves, lines, and points, there is no discrete class
-for NURBS because NURBS are B-Splines whose control points are stored in 
+for NURBS because NURBS are B-Splines whose control points are stored in
 [homogeneous coordinates](https://en.wikipedia.org/wiki/Homogeneous_coordinates)
 (also referred to as projective coordinates). To obtain a _n_-dimensional
 NURBS, create a B-Spline with dimension _n+1_.
@@ -82,16 +82,16 @@ point elements, use the following pattern:
 spline = BSpline(7, 2)
 ctrlp  = spline.control_points
 for i in range(len(ctrlp) / spline.dimension):
-	px = ctrlp[i * spline.dimension]
-	py = ctrlp[i * spline.dimension + 1]
-	...
+        px = ctrlp[i * spline.dimension]
+        py = ctrlp[i * spline.dimension + 1]
+        ...
 ```
 !!! note
     Properties (accessor methods) return deep copies of their fields so
     that modifying the returned data doesn't affect the internal state of
     the corresponding object. To apply changes, the modified data has to
     assigned to the property explicitly (which in turn creates a deep copy
-    of the given values to encapsulate the internal state).
+    of the given input values to encapsulate the internal state).
 
 
 ## Drawing Splines
@@ -109,20 +109,20 @@ objects. In principle, there are different ways to render a spline:
   sequence of connected Bézier curves by using the `to_beziers()` method.
   Then, draw the Bézier curves one after another. The following example gives a
   pattern:
-  
+
 ```python
 spline = BSpline(7, 2)
 beziers = spline.to_beziers().control_points
 for c in range(int(len(beziers)) / spline.dimension / spline.order):
-	p0x = beziers[c * spline.order * spline.dimension]
-	p0y = beziers[c * spline.order * spline.dimension + 1]
-	p1x = beziers[c * spline.order * spline.dimension + 2]
-	p1y = beziers[c * spline.order * spline.dimension + 3]
-	p2x = beziers[c * spline.order * spline.dimension + 4]
-	p2y = beziers[c * spline.order * spline.dimension + 5]
-	p3x = beziers[c * spline.order * spline.dimension + 6]
-	p3y = beziers[c * spline.order * spline.dimension + 7]
-	...
+        p0x = beziers[c * spline.order * spline.dimension]
+        p0y = beziers[c * spline.order * spline.dimension + 1]
+        p1x = beziers[c * spline.order * spline.dimension + 2]
+        p1y = beziers[c * spline.order * spline.dimension + 3]
+        p2x = beziers[c * spline.order * spline.dimension + 4]
+        p2y = beziers[c * spline.order * spline.dimension + 5]
+        p3x = beziers[c * spline.order * spline.dimension + 6]
+        p3y = beziers[c * spline.order * spline.dimension + 7]
+        ...
 ```
 
 - Some frameworks allow to render Catmull-Rom splines (e.g. Unreal Engine 4).
@@ -142,11 +142,11 @@ for c in range(int(len(beziers)) / spline.dimension / spline.order):
 spline = BSpline(7, 2)
 points = spline.sample()
 for p in range(int(len(points)) / spline.dimension - 1):
-	p0x = points[p * spline.dimension]
-	p0y = points[p * spline.dimension + 1]
-	p1x = points[(p+1) * spline.dimension]
-	p1y = points[(p+1) * spline.dimension + 1]
-	...
+        p0x = points[p * spline.dimension]
+        p0y = points[p * spline.dimension + 1]
+        p1x = points[(p+1) * spline.dimension]
+        p1y = points[(p+1) * spline.dimension + 1]
+        ...
 ```
 
 !!! note
@@ -221,19 +221,85 @@ spline(0.26)
 
 The result of _eval()_  isn't a sole point, but an instance of the `DeBoorNet`
 class. Knots are evaluated by iteratively computing a net of intermediate
-values until the resultant point is available. The DeBoorNet class not only
-stores the resultant point, but also the entire net that was necessary to
-obtain it (as well as additional properties, such as the multiplicity of the
-evaluated knot). The net of intermediate values (including the resultant point)
-can be read from the `points` property. The property `result` allows to access
-the sole point:
+values until the resultant point is available (De Boor's algorithm). The
+DeBoorNet class not only stores the resultant point, but also the entire net
+that was necessary to obtain it (as well as additional properties, such as the
+multiplicity of the evaluated knot). The net of intermediate values (including
+the resultant point) can be read from the `points` property. The property
+`result` allows to access the sole point:
 
 ```python
 spline = BSpline(7)
 spline(0.95).result
 ```
 
-__Bisection-based Evaluation:__
+__Bisection-based Evaluation:__ This type of evaluation is useful in cases
+where a spline represents a function, i.e. its control points are strictly
+monotone (increasing or decreasing) at one of the components (e.g. the
+x-coordinate). In such cases, it might be of interest, for example, to query
+the y-coordinate of a given x-coordinate. Another example are time series: The
+first component of the control points store a point in time (e.g. seconds) and
+the remaining components store a location (e.g. x-, y- and z-coordinates). Now
+one can query a location at a certain point in time. This type of evaluation
+(where a specific component is the input parameter) is provded by the
+`bisect()` method:
+
+```python
+spline = BSpline(2, 2, 1)
+ctrlp = spline.control_points
+ctrlp[0] = 0
+ctrlp[1] = 1
+ctrlp[2] = 1
+ctrlp[3] = 0
+spline.control_points = ctrlp
+spline.bisect(0.3)
+```
+
+As for the _eval()_ method, the result of _bisect()_ isn't a sole point, but
+an instance of the `DeBoorNet` class, which, for a given input _i_, contains
+an approximated knot value _u_ such that _eval(u)_ evaluates to a point _p_
+whose distance between the desired component (_c_) of _p_ and _i_ is less than
+or  equal to a threshold (_epsilon_): _distance(i, eval(u).result[c]) <=
+epsilon_. The approximated knot is determined by combining knot-based
+evaluation with bisection (which is binary search in continous space). The
+default value of _epsilon_ is _0.01_ but can be changed with the second
+parameter of the _bisect()_ method.
+
+It is also possible to pass a value which exceed the limits of the outer
+control points. That is, for instance, in the example listed above one can
+also pass _-1_ (which falls below the first component of the first control
+point) and _2_ (which exceeds the first component of the last control point).
+In such case, the best matching point (the point with the minimum distance) is
+returned. However, this behaviour can be changed by setting the third
+parameter of the _bisect()_ method (with the very speaking name _persnickety_)
+to _True_. If _persnickety_ is _True_, an exception rather than the best
+matching point is thrown.
+
+By default, it is expected that the first component (index 0) of the control
+points is strictly increasing. This is a sane default because in most cases
+the first component encodes some sort of serial value (e.g. time). Yet, one
+may want to specify another component to be evaluated or the relevant values
+of the control points are strictly decreasing. The default values can be
+overwritten with the forth (named _index_) and fifth (named _ascending_)
+parameter of the _bisect()_ method respectively.
+
+Finally, the sixth parameter of the _bisect()_ method (_maxIter_) allows to
+set the maximum number of knot-based evaluations before (depending on
+parameter _persnickety_) returning the best matching point or throwing an
+exception. The default value is _30_. The following listing reuses the
+previous example and makes use of all six parameters:
+
+```python
+spline = BSpline(2, 2, 1)
+ctrlp = spline.control_points
+ctrlp[0] = 0
+ctrlp[1] = 1
+ctrlp[2] = 1
+ctrlp[3] = 0
+spline.control_points = ctrlp
+spline.bisect(0.3, 0.1, True, 1, False, 10)
+```
+
 
 ## Accessing the Knot Vector
 

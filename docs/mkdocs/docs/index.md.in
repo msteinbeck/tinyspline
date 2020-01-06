@@ -31,7 +31,7 @@ In addition, the following features are available:
 - Subdivision (also referred to as decomposition) of B-Splines into Bézier
   curves. This is useful when drawing splines.
 
-- Knot- and bisection-based evaluation.
+- Knot- and component-based evaluation.
 
 - Transformations: _knot insertion_, _spline splitting_, _derivative_,
   _tension_ etc.

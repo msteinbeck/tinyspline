@@ -159,10 +159,11 @@ for p in range(int(len(points)) / spline.dimension - 1):
 
 ## Evaluating Splines
 
-Evaluation is the process of extracting points (laying on a spline) based on a
-certain type of parameter. Two different types of evaluation are supported:
-_knot-based evaluation_ and _bisection-based evaluation_. The former is
-probably the best known form of evaluation while the latter is useful when
+Spline evaluation is the process of querying points (laying on a spline) based
+on a certain type of parameter. Two different types of evaluation are
+supported: _knot-based evaluation_ and _component-based evaluation_. The former
+is probably the best known variant of evaluation (and also is the one which
+usually is associated with _spline evaluation_) while the latter is useful when
 interpolating functions.
 
 __Knot-based Evaluation:__ B-Splines, as well as NURBS, lines, and points (due
@@ -188,26 +189,25 @@ not have multiplicity _order_, the corresponding knot vector is _open_. An
 opened knot vector could be structured as follows (for a cubic spline with
 seven control points):
 
-    [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    knots = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
 !!! note
     The minimum of the domain of a spline _s_ is _knots[s.order]_.  Likewise,
-    the maximum of the domain of  _s_ is _knots[-s.order]_. Thus, the first and
-    last _s.degree_ knots of the knot vector of _s_ do not specify the domain
-    of _s_.
+    the maximum of the domain of  _s_ is _knots[-s.order]_. Hence, the first
+    and last _s.degree_ knots of the knot vector of _s_ do not affect the
+    domain of _s_.
 
 Knot-based evaluation means that (as the name suggests) points are extracted
 from splines by means of certain knots. For example, let _s_ be a spline with
 domain [u0, u1]. Evaluating _s_ at knot _u_ (with _u0 <= u <= u1)_ returns a
 point laying on _s_. By iteratively evaluating _s_ from _u0_ to _u1_ (i.e.,
 iterating from _u0_ to _u1_ in small steps), one can extract a sequence of
-consecutive points which approximate _s_ (this is how the _sample()_ method
+consecutive points that approximate _s_ (this is how the _sample()_ method
 works). To evaluate a spline at a certain knot, use the `eval()` method or, if
-the programming language of the binding supports operator overloading, the `()`
+the binding's programming language supports operator overloading, the `()`
 operator:
 
 ```python
-spline = BSpline(7)
 spline.eval(0.3)
 spline(0.26)
 ```
@@ -229,11 +229,25 @@ the resultant point) can be read from the `points` property. The property
 `result` allows to access the sole point:
 
 ```python
-spline = BSpline(7)
 spline(0.95).result
 ```
 
-__Bisection-based Evaluation:__ This type of evaluation is useful in cases
+Like many other things in life, the actual situation is somewhat more complex
+than one would initially assume: When evaluating splines (in particular when
+using the knot-based evaluation), there may be a special case in which the
+result is made up of two points (instead of one as described above). It occurs
+if the multiplicity of an input knot _u_ is equal to the order of the evaluated
+spline _s_ (i.e. the knot vector _k_ of spline _s_ contains _u_ _order_ times
+and _u_ is an internal knot: _k[x]_ with _order < x < -order_), indicating
+that _s_ is discontinous at _u_. Knot vectors with internal knots whose
+multiplicity is equal to the order of a spline are commonly used for B-Splines
+(and NURBS) consisting of connected Bézier curves. "Conntected", in this case,
+is an elastic concept, meaning that the end point of Bézier curve _ci_ and the
+start point of Bézier curve _ci+1_ may be located at different positions. And
+that is also the crux of the matter. In such cases it is not clear to which
+point a knot (which falls exactly on the "connection" point) corresponds.
+
+__Component-based Evaluation:__ This type of evaluation is useful in cases
 where a spline represents a function, i.e. its control points are strictly
 monotone (increasing or decreasing) at one of the components (e.g. the
 x-coordinate). In such cases, it might be of interest, for example, to query
@@ -300,7 +314,6 @@ spline.control_points = ctrlp
 spline.bisect(0.3, 0.1, True, 1, False, 10)
 ```
 
-
 ## Accessing the Knot Vector
 
 ## Inserting Knots and Knot Refinement
@@ -308,5 +321,7 @@ spline.bisect(0.3, 0.1, True, 1, False, 10)
 ## Derive Splines
 
 ## Spline Interpolation
+
+## Serialization
 
 ## Error Handling

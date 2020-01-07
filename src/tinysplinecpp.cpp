@@ -279,6 +279,11 @@ tsBSpline * tinyspline::BSpline::data()
 	return &spline;
 }
 
+size_t tinyspline::BSpline::numControlPoints() const
+{
+	return ts_bspline_num_control_points(&spline);
+}
+
 size_t tinyspline::BSpline::numDistinctKnots() const
 {
 	return ts_bspline_num_distinct_knots(&spline);

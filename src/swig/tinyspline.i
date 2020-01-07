@@ -34,6 +34,14 @@
 	size_t,
 	dimension,
 	dimension);
+%attribute(tinyspline::BSpline,
+	size_t,
+	numDistinctKnots,
+	numDistinctKnots);
+%attribute(tinyspline::BSpline,
+	size_t,
+	numControlPoints,
+	numControlPoints);
 %attributeval(tinyspline::BSpline,
 	tinyspline::Domain,
 	domain,

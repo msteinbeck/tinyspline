@@ -42,7 +42,7 @@ extern "C" {
 
 /******************************************************************************
 *                                                                             *
-* :: Configuration                                                            *
+* :: API Configuration                                                        *
 *                                                                             *
 ******************************************************************************/
 #ifdef TINYSPLINE_FLOAT_PRECISION
@@ -1225,7 +1225,7 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 ******************************************************************************/
 /**
  * Returns the \p n'th derivative of \p spline and stores the result in
- * \p derivative. Creates a deep copy of \p spline, if
+ * \p derivative. Creates a deep copy of \p spline if
  * \p spline != \p derivative. For more details, see:
  * 
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
@@ -1256,7 +1256,7 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * 	The spline to derive.
  * @param[out] derivative
  *	The derivative of \p spline.
- * @param status
+ * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
@@ -1271,7 +1271,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
 
 /**
  * Inserts the knot \p u up to \p num times into the knot vector of \p spline
- * and stores the result in \p result. Creates a deep copy of \p spline, if
+ * and stores the result in \p result. Creates a deep copy of \p spline if
  * \p spline != \p result.
  * 
  * @param[in] spline
@@ -1298,7 +1298,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
 /**
  * Splits \p spline at knot value \p u and stores the result in \p split. That
  * is, \p u is inserted _n_ times such that the multiplicity of \p u is equal
- * to the \p spline's order. Creates a deep copy of \p spline, if
+ * to the \p spline's order. Creates a deep copy of \p spline if
  * \p spline != \p split.
  * 
  * @param[in] spline
@@ -1306,7 +1306,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
  * @param[in] u
  * 	The split point (knot).
  * @param[out] split
- * 	The output parameter.
+ * 	The split spline.
  * @param[out] k
  * 	Stores the last index of \p u in \p split.
  * @param[out] status
@@ -1355,7 +1355,7 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 
 /**
  * Decomposes \p spline into a sequence of Bezier curves by splitting it at
- * each internal knot value. Creates a deep copy of \p spline, if
+ * each internal knot value. Creates a deep copy of \p spline if
  * \p spline != \p beziers.
  * 
  * @param[in] spline
@@ -1519,7 +1519,7 @@ int ts_knots_equal(tsReal x, tsReal y);
  * 	The array to fill.
  * @param[in] num
  * 	The fill length.
- * @param[out] val
+ * @param[in] val
  * 	The value to fill into \p arr.
  */
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
@@ -1531,12 +1531,12 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
  * 	The x value.
  * @param[in] y
  * 	The y value.
- * @param[in] dimemsion
+ * @param[in] dimension
  * 	The dimension of \p x and \p y.
  * @return
  * 	The euclidean distance of \p x and \p y.
  */
-tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dim);
+tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension);
 
 
 

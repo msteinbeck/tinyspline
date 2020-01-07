@@ -14,8 +14,8 @@ extern "C" {
 * :: Predefined Constants                                                     *
 *                                                                             *
 * The following constants should only be changed with caution because         *
-* internal consistency may be affected. The default values should be suitable *
-* for almost all environments though.                                         *
+* they have been aligned to maintain internal consistency. The default values *
+* should be suitable for almost all environments.                             *
 *                                                                             *
 ******************************************************************************/
 /**

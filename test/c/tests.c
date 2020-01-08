@@ -10,6 +10,7 @@ CuSuite* get_setter_suite();
 CuSuite* get_insert_knot_suite();
 CuSuite* get_sample_suite();
 CuSuite* get_to_beziers_suite();
+CuSuite* get_interpolation_suite();
 
 int main()
 {
@@ -25,6 +26,7 @@ int main()
 	CuSuiteAddSuite(suite, get_insert_knot_suite());
 	CuSuiteAddSuite(suite, get_sample_suite());
 	CuSuiteAddSuite(suite, get_to_beziers_suite());
+	CuSuiteAddSuite(suite, get_interpolation_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

@@ -36,6 +36,9 @@ public:
 	std::vector<real> result() const;
 	tsDeBoorNet * data();
 
+	/* Debug */
+	std::string toString() const;
+
 private:
 	tsDeBoorNet net;
 
@@ -54,9 +57,13 @@ public:
 	/* Operators */
 	Domain &operator=(const Domain &other);
 
-	/* Getter */
+	/* Accessors */
 	real min() const;
 	real max() const;
+
+	/* Debug */
+	std::string toString() const;
+
 private:
     real _min;
     real _max;
@@ -115,6 +122,9 @@ public:
 	BSpline tension(real tension) const;
 	BSpline toBeziers() const;
 	BSpline derive(size_t n = 1) const;
+
+	/* Debug */
+	std::string toString() const;
 
 private:
 	tsBSpline spline;

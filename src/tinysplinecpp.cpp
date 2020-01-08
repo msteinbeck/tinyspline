@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <cstdio>
+#include <sstream>
 
 /* Suppress some useless MSVC warnings. */
 #ifdef _MSC_VER
@@ -123,6 +124,20 @@ tsDeBoorNet * tinyspline::DeBoorNet::data()
 	return &net;
 }
 
+std::string tinyspline::DeBoorNet::toString() const
+{
+	std::ostringstream oss;
+	oss << "DeBoorNet{";
+	oss << "knot: " << knot();
+	oss << ", index: " << index();
+	oss << ", multiplicity: " << multiplicity();
+	oss << ", insertions: " << numInsertions();
+	oss << ", dimension: " << dimension();
+	oss << ", points: " << ts_deboornet_num_points(&net);
+	oss << "}";
+	return oss.str();
+}
+
 
 
 /******************************************************************************
@@ -160,6 +175,13 @@ tinyspline::real tinyspline::Domain::min() const
 tinyspline::real tinyspline::Domain::max() const
 {
 	return _max;
+}
+
+std::string tinyspline::Domain::toString() const
+{
+	std::ostringstream oss;
+	oss << "Domain{min: " << _min << ", max: " << _max << "}";
+	return oss.str();
 }
 
 
@@ -501,6 +523,20 @@ tinyspline::BSpline tinyspline::BSpline::derive(size_t n) const
 	if (ts_bspline_derive(&spline, n, &bs.spline, &status))
 		throw std::runtime_error(status.message);
 	return bs;
+}
+
+std::string tinyspline::BSpline::toString() const
+{
+	Domain d = domain();
+	std::ostringstream oss;
+	oss << "BSpline{";
+	oss << "dimension: " << dimension();
+	oss << ", degree: " << degree();
+	oss << ", domain: [" << d.min() << ", " << d.max() << "]";
+	oss << ", control points: " << numControlPoints();
+	oss << ", knots: " << ts_bspline_num_knots(&spline);
+	oss << "}";
+	return oss.str();
 }
 
 

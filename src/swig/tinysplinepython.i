@@ -4,6 +4,10 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%rename (__repr__) tinyspline::BSpline::toString;
+%rename (__repr__) tinyspline::DeBoorNet::toString;
+%rename (__repr__) tinyspline::Domain::toString;
+
 %rename("%(undercase)s", %$isfunction) "";
 %rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
 

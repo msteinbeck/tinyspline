@@ -2,6 +2,7 @@
 #define	DEBUGGING_H
 
 #include "tinyspline.h"
+#include <stdlib.h>
 #include <stdio.h>
 
 void ts_bspline_print(const tsBSpline *spline)

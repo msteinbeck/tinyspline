@@ -540,7 +540,7 @@ tsDeBoorNet ts_deboornet_init()
 	return net;
 }
 
-tsError ts_int_deboornet_new(const tsBSpline *spline, tsDeBoorNet *_deBoorNet_,
+tsError ts_int_deboornet_new(const tsBSpline *spline, tsDeBoorNet *net,
 	tsStatus *status)
 {
 	const size_t dim = ts_bspline_dimension(spline);
@@ -555,16 +555,16 @@ tsError ts_int_deboornet_new(const tsBSpline *spline, tsDeBoorNet *_deBoorNet_,
 	const size_t sof_points_vec = fixed_num_points * dim * sof_real;
 	const size_t sof_net = sof_impl * sof_points_vec;
 
-	_deBoorNet_->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
-	if (!_deBoorNet_->pImpl)
+	net->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
+	if (!net->pImpl)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
-	_deBoorNet_->pImpl->u = 0.f;
-	_deBoorNet_->pImpl->k = 0;
-	_deBoorNet_->pImpl->s = 0;
-	_deBoorNet_->pImpl->h = deg;
-	_deBoorNet_->pImpl->dim = dim;
-	_deBoorNet_->pImpl->n_points = fixed_num_points;
+	net->pImpl->u = 0.f;
+	net->pImpl->k = 0;
+	net->pImpl->s = 0;
+	net->pImpl->h = deg;
+	net->pImpl->dim = dim;
+	net->pImpl->n_points = fixed_num_points;
 	TS_RETURN_SUCCESS(status)
 }
 

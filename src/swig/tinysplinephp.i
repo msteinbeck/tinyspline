@@ -5,6 +5,10 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%rename (__toString) tinyspline::BSpline::toString;
+%rename (__toString) tinyspline::DeBoorNet::toString;
+%rename (__toString) tinyspline::Domain::toString;
+
 // Map std::vector<tinyspline::real> to PHP array.
 %typemap(out) std::vector<tinyspline::real> * {
 	const int size = $1->size();

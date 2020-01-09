@@ -5,6 +5,15 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%csmethodmodifiers tinyspline::BSpline::toString "public override";
+%csmethodmodifiers tinyspline::DeBoorNet::toString "public override";
+%csmethodmodifiers tinyspline::Domain::toString "public override";
+
+// Capitalize first character of methods and properties.
+%rename("%(camelcase)s", %$ismember, notregexmatch$name=
+	// Ignore some methods of std::vector.
+	"capacity|push_back|getitem|setitem|size|reserve|size|getitemcopy") "";
+
 // Create a typemap that generalizes the types float and double to a single type, which is
 // accessible with $typemap(cstype, tinyspline::real).
 #ifdef TINYSPLINE_FLOAT_PRECISION

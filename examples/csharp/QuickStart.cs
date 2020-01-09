@@ -12,7 +12,7 @@ class QuickStart
 		BSpline spline = new BSpline(7);
 
 		// Setup control points.
-		IList<double> ctrlp = spline.controlPoints;
+		IList<double> ctrlp = spline.ControlPoints;
 		ctrlp[0]  = -1.75; // x0
 		ctrlp[1]  = -1.0;  // y0
 		ctrlp[2]  = -1.5;  // x1
@@ -27,17 +27,17 @@ class QuickStart
 		ctrlp[11] =  0.5;  // y5
 		ctrlp[12] =  0.5;  // x6
 		ctrlp[13] =  0.0;  // y6
-		spline.controlPoints = ctrlp;
+		spline.ControlPoints = ctrlp;
 
 		// Evaluate `spline` at u = 0.4.
-		IList<double> result = spline.eval(0.4).result;
+		IList<double> result = spline.Eval(0.4).Result;
 		Console.WriteLine("x = {0}, y = {1}", result[0], result[1]);
 
 		// Derive `spline` and subdivide it into a sequence of Bezier curves.
-		BSpline beziers = spline.derive().toBeziers();
+		BSpline beziers = spline.Derive().ToBeziers();
 
 		// Evaluate `beziers` at u = 0.3.
-		result = beziers.eval(0.3).result;
+		result = beziers.Eval(0.3).Result;
 		Console.WriteLine("x = {0}, y = {1}", result[0], result[1]);
 	}
 }

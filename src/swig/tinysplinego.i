@@ -5,6 +5,10 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%rename (string) tinyspline::BSpline::toString;
+%rename (string) tinyspline::DeBoorNet::toString;
+%rename (string) tinyspline::Domain::toString;
+
 %insert(cgo_comment_typedefs) %{
 #cgo LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-rpath,${SRCDIR}
 %}

@@ -4,6 +4,13 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%rename (inspect) tinyspline::BSpline::toString;
+%extend tinyspline::BSpline {std::string to_s() { return $self->toString(); }}
+%rename (inspect) tinyspline::DeBoorNet::toString;
+%extend tinyspline::DeBoorNet {std::string to_s() { return $self->toString(); }}
+%rename (inspect) tinyspline::Domain::toString;
+%extend tinyspline::Domain {std::string to_s() { return $self->toString(); }}
+
 %rename("%(undercase)s", %$isfunction) "";
 %rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
 

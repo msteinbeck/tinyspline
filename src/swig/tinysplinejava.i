@@ -5,6 +5,10 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%javamethodmodifiers tinyspline::BSpline::toString "@Override public";
+%javamethodmodifiers tinyspline::DeBoorNet::toString "@Override public";
+%javamethodmodifiers tinyspline::Domain::toString "@Override public";
+
 // Automatically load native library.
 %pragma(java) jniclasscode=%{
 	static {

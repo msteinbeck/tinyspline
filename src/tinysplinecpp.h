@@ -98,11 +98,11 @@ public:
 	DeBoorNet eval(real u) const;
 	std_real_vector_out evalAll(const std_real_vector_in us) const;
 	std_real_vector_out sample(size_t num = 0) const;
-	DeBoorNet bisect(real value, real epsilon = 0.01,
+	DeBoorNet bisect(real value, real epsilon = TS_CONTROL_POINT_EPSILON,
 		bool persnickety = false, size_t index = 0,
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
-	bool isClosed(real epsilon = 0.00001) const;
+	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Serialization */
 	std::string toJSON();

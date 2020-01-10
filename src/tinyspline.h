@@ -38,6 +38,13 @@ extern "C" {
  */
 #define TS_KNOT_EPSILON 1e-4
 
+/**
+ * Maximum distance between two control points. The value is not used directly
+ * by this library, but is intended to provide as a sane default for functions
+ * requiring an epsilon.
+ */
+#define TS_CONTROL_POINT_EPSILON 1e-6
+
 
 
 /******************************************************************************

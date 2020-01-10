@@ -1,6 +1,6 @@
 # - Find Octave
-# GNU Octave is a high-level interpreted language, primarily intended for numerical computations.
-# available at http://www.gnu.org/software/octave/
+# GNU Octave is a high-level interpreted language, primarily intended for
+# numerical computations. Available at http://www.gnu.org/software/octave
 #
 # This module defines: 
 #  OCTAVE_EXECUTABLE           - octave interpreter
@@ -14,7 +14,6 @@
 #  OCTAVE_PATCH_VERSION        - patch version
 #  OCTAVE_OCT_FILE_DIR         - object files that will be dynamically loaded
 #  OCTAVE_OCT_LIB_DIR          - oct libraries
-#  OCTAVE_ROOT_DIR             - octave prefix
 #
 
 #=============================================================================
@@ -50,13 +49,6 @@ find_program(OCTAVE_CONFIG_EXECUTABLE
 )
 
 if(OCTAVE_CONFIG_EXECUTABLE)
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p PREFIX
-			OUTPUT_VARIABLE OCTAVE_ROOT_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-
 	execute_process(
 		COMMAND
 			${OCTAVE_CONFIG_EXECUTABLE} -p BINDIR
@@ -170,7 +162,6 @@ mark_as_advanced(
 	OCTAVE_LIBRARIES
 	OCTAVE_INCLUDE_DIR
 	OCTAVE_INCLUDE_DIRS
-	OCTAVE_ROOT_DIR
 	OCTAVE_VERSION_STRING
 	OCTAVE_MAJOR_VERSION
 	OCTAVE_MINOR_VERSION
@@ -181,7 +172,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Octave
 	REQUIRED_VARS
 		OCTAVE_EXECUTABLE
-		OCTAVE_ROOT_DIR
 		OCTAVE_INCLUDE_DIRS
 		OCTAVE_LIBRARIES
 	VERSION_VAR

@@ -3,8 +3,8 @@ tinyspline
 
 # Create a cubic spline with 7 control points in 2D using
 # a clamped knot vector. This call is equivalent to:
-# spline = ts.BSpline(7, 2, 3, ts.CLAMPED)
-spline = tinyspline.BSpline(7);
+# spline = BSpline(7, 2, 3, CLAMPED)
+spline = BSpline(7);
 
 # Setup control points.
 ctrlp = spline.control_points;

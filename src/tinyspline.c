@@ -787,24 +787,6 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 * :: Query Functions                                                          *
 *                                                                             *
 ******************************************************************************/
-size_t ts_bspline_num_distinct_knots(const tsBSpline *spline)
-{
-	const tsReal *knots = ts_int_bspline_access_knots(spline);
-	const size_t num_knots = ts_bspline_num_knots(spline);
-	size_t result = 1;
-	tsReal last = knots[0];
-	tsReal current;
-	size_t i;
-	for (i = 1; i < num_knots; i++) {
-		current = knots[i];
-		if (!ts_knots_equal(last, current)) {
-			result++;
-			last = current;
-		}
-	}
-	return result;
-}
-
 tsError ts_int_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	size_t *s, tsStatus *status)
 {

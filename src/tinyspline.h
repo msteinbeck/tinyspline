@@ -968,16 +968,6 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 *                                                                             *
 ******************************************************************************/
 /**
- * Returns the number of distinct knots.
- *
- * @param[in] spline
- * 	The spline to query.
- * @return
- *	The number of distinct knots.
- */
-size_t ts_bspline_num_distinct_knots(const tsBSpline *spline);
-
-/**
  * Evaluates \p spline at knot \p u and stores the result (cf. tsDeBoorNet) in
  * \p net.
  *

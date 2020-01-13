@@ -39,9 +39,10 @@ extern "C" {
 #define TS_KNOT_EPSILON 1e-4
 
 /**
- * Maximum distance between two control points. The value is not used directly
- * by this library, but is intended to provide as a sane default for functions
- * requiring an epsilon.
+ * Maximum distance between two control points. This value is not used directly
+ * by any function of the C interface but is intended to provide a sane default
+ * value (the C++ interface uses this as default value for its optional
+ * parameters).
  */
 #define TS_CONTROL_POINT_EPSILON 1e-6
 
@@ -517,13 +518,12 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
 	tsStatus *status);
 
 /**
- * Returns a deep copy of the control point of \p spline at \p index (index 0
- * is the first control points, index 1 is the second control point, and so on).
+ * Returns a deep copy of the control point of \p spline at \p index.
  *
  * @param[in] spline
- * 	The spline whose control point is read.
+ * 	The spline whose control point is read at \p index.
  * @param[in] index
- * 	The zero based index of the requested control point.
+ * 	The zero-based index of the control point to return.
  * @param[out] ctrlp
  * 	The output array.
  * @param[out] status
@@ -531,7 +531,7 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
- * 	If there is no control point at \p index.
+ * 	If \p index is out of range.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
@@ -558,17 +558,17 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
  * \p ctrlp.
  *
  * @param[out] spline
- * 	The spline whose control point is set.
+ * 	The spline whose control point is set at \p index.
  * @param[in] index
- * 	The zero based index of the control point to set.
+ * 	The zero-based index of the control point to set.
  * @param[in] ctrlp
- * 	The values to deep copy.
+ * 	The control point to be set at \p index.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
- * 	If there is no control point at \p index.
+ * 	If \p index is out of range.
  */
 tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
 	const tsReal *ctrlp, tsStatus *status);
@@ -612,6 +612,25 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 	tsStatus *status);
 
 /**
+ * Returns the knot of \p spline at \p index.
+ *
+ * @param[in] spline
+ * 	The spline whose knot is read at \p index.
+ * @param[in] index
+ * 	The zero-based index of the knot to return.
+ * @param[out] knot
+ * 	The output value.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_INDEX_ERROR
+ * 	If \p index is out of range.
+ */
+tsError ts_bspline_knot_at(const tsBSpline *spline, size_t index, tsReal *knot,
+	tsStatus *status);
+
+/**
  * Sets the knots of \p spline. Creates a deep copy of \p knots.
  *
  * @param[out] spline
@@ -628,6 +647,30 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
  * 	If there is a knot with multiplicity > order
  */
 tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
+	tsStatus *status);
+
+/**
+ * Sets the knot of \p spline at \p index.
+ *
+ * @param[in] spline
+ * 	The spline whose knot is set at \p index.
+ * @param[in] index
+ * 	The zero-based index of the knot to set.
+ * @param[in] knot
+ * 	The knot to be set at \p index.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_INDEX_ERROR
+ * 	If \p index is out of range.
+ * @return TS_KNOTS_DECR
+ * 	If setting the knot at \p index results in a decreasing knot vector.
+ * @return TS_MULTIPLICITY
+ * 	If setting the knot at \p index results in a knot vector containing
+ * 	\p knot with multiplicity greater than the order of \p spline.
+ */
+tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 	tsStatus *status);
 
 /* ------------------------------------------------------------------------- */
@@ -1247,10 +1290,16 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * 
  * where the multiplicity of the first and the last knot value _u_ is _p_
  * rather than _p+1_. The derivative of a point (degree == 0) is another point
- * with coordinates 0.
+ * with coordinate 0.
  *
  * @param[in] spline
  * 	The spline to derive.
+ * @param[in] n
+ * 	The number of derivations.
+ * @param[in] epsilon
+ * 	The maximum distance of discontinuous points. If negative,
+ * 	discontinuity is ignored and the derivative is computed based on the
+ * 	first result of the corresponding DeBoorNet.
  * @param[out] derivative
  *	The derivative of \p spline.
  * @param[out] status
@@ -1258,12 +1307,12 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_UNDERIVABLE
- * 	If the multiplicity of an internal knot of \p spline is greater than
- * 	the degree of \p spline. NOTE: This will be fixed in the future.
+ * 	If \p spline is discontinuous at an internal knot and the distance
+ * 	between the corresponding points is greater than \p epsilon.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
+tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	tsBSpline *derivative, tsStatus *status);
 
 /**

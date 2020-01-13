@@ -91,6 +91,7 @@ public:
 	std::vector<real> controlPoints() const;
 	std_real_vector_out controlPointAt(size_t index) const;
 	std::vector<real> knots() const;
+	real knotAt(size_t index) const;
 	tsBSpline * data();
 
 	/* Query */
@@ -114,13 +115,15 @@ public:
 	void setControlPoints(const std::vector<real> &ctrlp);
 	void setControlPointAt(size_t index, const std_real_vector_in ctrlp);
 	void setKnots(const std::vector<real> &knots);
+	void setKnotAt(size_t index, real knot);
 
 	/* Transformations */
 	BSpline insertKnot(real u, size_t n) const;
 	BSpline split(real u) const;
 	BSpline tension(real tension) const;
 	BSpline toBeziers() const;
-	BSpline derive(size_t n = 1) const;
+	BSpline derive(size_t n = 1,
+		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;

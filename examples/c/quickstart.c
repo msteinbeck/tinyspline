@@ -68,7 +68,8 @@ int main(int argc, char **argv)
 
 		/* Derive `spline` ... */
 		TS_CALL(try, status.code, ts_bspline_derive(
-			&spline, 1, &beziers, &status))
+			&spline, 1, TS_CONTROL_POINT_EPSILON,
+			&beziers, &status))
 		/* ... and subdivide it into a sequence of Bezier curves. */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&beziers, &beziers, &status))

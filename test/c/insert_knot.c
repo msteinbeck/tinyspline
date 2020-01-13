@@ -7,7 +7,7 @@
 #define DEGREE        3
 #define CTRLP_EPSILON 0.001
 
-void insert_knot_one(CuTest *tc)
+void insert_knot_once(CuTest *tc)
 {
 	const size_t num_insertions = 1;
 	const tsReal knot_to_insert = 0.3f;
@@ -132,7 +132,7 @@ void insert_knot_one(CuTest *tc)
 	TS_END_TRY
 }
 
-void insert_knot_two(CuTest *tc)
+void insert_knot_twice(CuTest *tc)
 {
 	const size_t num_insertions = 2;
 	const tsReal knot_to_insert = 0.6f;
@@ -258,7 +258,7 @@ void insert_knot_two(CuTest *tc)
 	TS_END_TRY
 }
 
-void insert_knot_three(CuTest *tc)
+void insert_knot_three_times(CuTest *tc)
 {
 	const size_t num_insertions = 3;
 	const tsReal knot_to_insert = 0.8f;
@@ -388,8 +388,8 @@ void insert_knot_three(CuTest *tc)
 CuSuite* get_insert_knot_suite()
 {
 	CuSuite* suite = CuSuiteNew();
-	SUITE_ADD_TEST(suite, insert_knot_one);
-	SUITE_ADD_TEST(suite, insert_knot_two);
-	SUITE_ADD_TEST(suite, insert_knot_three);
+	SUITE_ADD_TEST(suite, insert_knot_once);
+	SUITE_ADD_TEST(suite, insert_knot_twice);
+	SUITE_ADD_TEST(suite, insert_knot_three_times);
 	return suite;
 }

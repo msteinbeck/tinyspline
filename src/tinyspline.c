@@ -100,6 +100,19 @@ tsError ts_int_bspline_access_ctrlp_at(const tsBSpline *spline, size_t index,
 	TS_RETURN_SUCCESS(status)
 }
 
+tsError ts_int_bspline_access_knot_at(const tsBSpline *spline, size_t index,
+	tsReal *knot, tsStatus *status)
+{
+	if (index >= ts_bspline_num_knots(spline)) {
+		TS_RETURN_2(status, TS_INDEX_ERROR,
+			    "index (%lu) >= num(knots) (%lu)",
+			    (unsigned long) index,
+			    (unsigned long) ts_bspline_num_knots(spline))
+	}
+	*knot = ts_int_bspline_access_knots(spline)[index];
+	TS_RETURN_SUCCESS(status)
+}
+
 void ts_int_deboornet_init(tsDeBoorNet *_deBoorNet_)
 {
 	_deBoorNet_->pImpl = NULL;
@@ -280,6 +293,12 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 	TS_RETURN_SUCCESS(status)
 }
 
+tsError ts_bspline_knot_at(const tsBSpline *spline, size_t index, tsReal *knot,
+	tsStatus *status)
+{
+	return ts_int_bspline_access_knot_at(spline, index, knot, status);
+}
+
 tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	tsStatus *status)
 {
@@ -312,6 +331,30 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	memmove(ts_int_bspline_access_knots(spline), knots, size);
 	TS_RETURN_SUCCESS(status)
 }
+
+tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
+	tsStatus *status)
+{
+	tsReal *knots = NULL;
+	tsReal oldKnot;
+	tsError err;
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_int_bspline_access_knot_at(
+			spline, index, &oldKnot, status))
+		/* knots must be set after reading oldKnot because the catch
+		 * block assumes that oldKnot is initialized if knots is not
+		 * NULL. */
+		knots = ts_int_bspline_access_knots(spline);
+		knots[index] = knot;
+		TS_CALL(try, err, ts_bspline_set_knots(
+			spline, knots, status))
+	TS_CATCH(err)
+		/* If knots is not NULL, oldKnot is initialized. */
+		if (knots)
+			knots[index] = oldKnot;
+	TS_END_TRY_RETURN(err)
+}
+
 
 /* ------------------------------------------------------------------------- */
 
@@ -1159,60 +1202,95 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_derive(const tsBSpline *spline, size_t n,
+tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	tsBSpline *derivative, tsStatus *status)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
+	const size_t sof_ctrlp = dim * sof_real;
 	size_t deg = ts_bspline_degree(spline);
 	size_t num_ctrlp = ts_bspline_num_control_points(spline);
 	size_t num_knots = ts_bspline_num_knots(spline);
 
-	tsBSpline worker; /**< Stores intermediate results. */
+	tsBSpline worker; /**< Stores the intermediate result. */
 	tsReal* ctrlp;    /**< Pointer to the control points of worker. */
 	tsReal* knots;    /**< Pointer to the knots of worker. */
+	tsReal min, max;  /**< Domain limits. */
+	tsReal span;      /**< Span of domain. */
 
 	size_t m, i, j, k, l; /**< Used in for loops. */
+	tsReal *fst, *snd; /**< Pointer to first and second control point. */
+	tsReal dist; /**< Distance between fst and snd. */
+	tsReal scaled_kid1, scaled_ki1; /**< Scaled knots. */
+	tsReal scaled; /**< Distance between scaled knots. */
 
-	tsBSpline swap; /**< Used to swap worker and _derivative_. */
+	tsBSpline swap; /**< Used to swap worker and derivative. */
 	tsError err;
 
 	INIT_OUT_BSPLINE(spline, derivative)
 	TS_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
 	ctrlp = ts_int_bspline_access_ctrlp(&worker);
 	knots = ts_int_bspline_access_knots(&worker);
+	ts_bspline_domain(&worker, &min, &max);
+	span = max - min;
 
 	TS_TRY(try, err, status)
 		for (m = 1; m <= n; m++) { /* from 1st to n'th derivative */
 			if (deg == 0) {
-				ts_arr_fill(ctrlp, num_ctrlp * dim, 0.f);
+				ts_arr_fill(ctrlp, dim, 0.f);
+				ts_bspline_domain(spline,
+					&knots[0], &knots[1]);
+				num_ctrlp = 1;
+				num_knots = 2;
 				break;
-			} else {
-				for (i = 0; i < num_ctrlp-1; i++) {
-					for (j = 0; j < dim; j++) {
-						if (ts_knots_equal(knots[i+deg+1], knots[i+1])) {
-							TS_THROW_0(try, err, status,
-								   TS_UNDERIVABLE,
-								   "unable to derive spline")
-						} else {
-							k = i    *dim + j;
-							l = (i+1)*dim + j;
-							ctrlp[k] = ctrlp[l] - ctrlp[k];
-							ctrlp[k] *= deg;
-							ctrlp[k] /= knots[i+deg+1] - knots[i+1];
-						}
+			}
+			/* Check and, if possible, fix discontinuity. */
+			for (i = 2*deg + 1; i < num_knots - (deg+1); i++) {
+				if (!ts_knots_equal(knots[i], knots[i-deg]))
+					continue;
+				fst = ctrlp + (i - (deg+1)) * dim;
+				snd = fst + dim;
+				dist = ts_distance(fst, snd, dim);
+				if (epsilon >= 0.f && dist > epsilon) {
+					TS_THROW_1(try, err, status, TS_UNDERIVABLE,
+						   "spline is discontinuous at knot: %f",
+						   knots[i])
+				}
+				memmove(&knots[i], &knots[i+1],
+					(num_knots - (i+1)) * sof_real);
+				/* Preserve fst by copying it to snd. */
+				memcpy(snd, fst, sof_ctrlp);
+				memmove(fst, snd, (num_ctrlp - (i-deg)) * sof_ctrlp);
+				num_ctrlp--;
+				num_knots--;
+				i += deg-1;
+			}
+			/* Derive continuous worker. */
+			for (i = 0; i < num_ctrlp-1; i++) {
+				for (j = 0; j < dim; j++) {
+					k = i    *dim + j;
+					l = (i+1)*dim + j;
+					ctrlp[k] = ctrlp[l] - ctrlp[k];
+					if (deg > 1) {
+						scaled_kid1 = (knots[i+deg+1] - min) / span;
+						scaled_ki1  = (knots[i+1]     - min) / span;
+						scaled = scaled_kid1 - scaled_ki1;
+						if (scaled < TS_KNOT_EPSILON)
+							scaled = TS_KNOT_EPSILON;
+						ctrlp[k] *= deg;
+						ctrlp[k] /= scaled;
 					}
 				}
-				deg       -= 1;
-				num_ctrlp -= 1;
-				num_knots -= 2;
-				knots     += 1;
 			}
+			deg       -= 1;
+			num_ctrlp -= 1;
+			num_knots -= 2;
+			knots     += 1;
 		}
 		TS_CALL(try, err, ts_bspline_new(
 			num_ctrlp, dim, deg, TS_OPENED, &swap, status))
 		memcpy(ts_int_bspline_access_ctrlp(&swap), ctrlp,
-		       num_ctrlp * dim * sof_real);
+		       num_ctrlp * sof_ctrlp);
 		memcpy(ts_int_bspline_access_knots(&swap), knots,
 		       num_knots * sof_real);
 		if (spline == derivative)

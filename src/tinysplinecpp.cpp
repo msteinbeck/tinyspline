@@ -296,6 +296,15 @@ std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 	return vec;
 }
 
+tinyspline::real tinyspline::BSpline::knotAt(size_t index) const
+{
+	tsReal knot;
+	tsStatus status;
+	if (ts_bspline_knot_at(&spline, index, &knot, &status))
+		throw std::runtime_error(status.message);
+	return knot;
+}
+
 tsBSpline * tinyspline::BSpline::data()
 {
 	return &spline;
@@ -471,6 +480,13 @@ void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
 		throw std::runtime_error(status.message);
 }
 
+void tinyspline::BSpline::setKnotAt(size_t index, tinyspline::real knot)
+{
+	tsStatus status;
+	if (ts_bspline_set_knot_at(&spline, index, knot, &status))
+		throw std::runtime_error(status.message);
+}
+
 tinyspline::BSpline tinyspline::BSpline::insertKnot(tinyspline::real u,
 	size_t n) const
 {
@@ -511,11 +527,11 @@ tinyspline::BSpline tinyspline::BSpline::toBeziers() const
 	return bs;
 }
 
-tinyspline::BSpline tinyspline::BSpline::derive(size_t n) const
+tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 {
 	tinyspline::BSpline bs;
 	tsStatus status;
-	if (ts_bspline_derive(&spline, n, &bs.spline, &status))
+	if (ts_bspline_derive(&spline, n, epsilon, &bs.spline, &status))
 		throw std::runtime_error(status.message);
 	return bs;
 }

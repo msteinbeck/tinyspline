@@ -336,7 +336,7 @@ tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 	tsStatus *status)
 {
 	tsReal *knots = NULL;
-	tsReal oldKnot;
+	tsReal oldKnot = 0.f;
 	tsError err;
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_bspline_access_knot_at(

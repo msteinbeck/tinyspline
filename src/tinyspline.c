@@ -343,14 +343,14 @@ tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 		TS_CALL(try, err, ts_int_bspline_access_knot_at(
 			spline, index, &oldKnot, status))
 		/* knots must be set after reading oldKnot because the catch
-		 * block assumes that oldKnot is initialized if knots is not
-		 * NULL. */
+		 * block assumes that oldKnot contains the correct value if
+		 * knots is not NULL. */
 		knots = ts_int_bspline_access_knots(spline);
 		knots[index] = knot;
 		TS_CALL(try, err, ts_bspline_set_knots(
 			spline, knots, status))
 	TS_CATCH(err)
-		/* If knots is not NULL, oldKnot is initialized. */
+		/* If knots is not NULL, oldKnot contains the correct value. */
 		if (knots)
 			knots[index] = oldKnot;
 	TS_END_TRY_RETURN(err)
@@ -1277,7 +1277,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 						scaled_ki1  = (knots[i+1]     - min) / span;
 						scaled = scaled_kid1 - scaled_ki1;
 						if (scaled < TS_KNOT_EPSILON)
-							scaled = TS_KNOT_EPSILON;
+							scaled = (tsReal) TS_KNOT_EPSILON;
 						ctrlp[k] *= deg;
 						ctrlp[k] /= scaled;
 					}

@@ -12,6 +12,7 @@ CuSuite* get_sample_suite();
 CuSuite* get_to_beziers_suite();
 CuSuite* get_interpolation_suite();
 CuSuite* get_derive_suite();
+CuSuite* get_bisect_suite();
 
 int main()
 {
@@ -29,6 +30,7 @@ int main()
 	CuSuiteAddSuite(suite, get_to_beziers_suite());
 	CuSuiteAddSuite(suite, get_interpolation_suite());
 	CuSuiteAddSuite(suite, get_derive_suite());
+	CuSuiteAddSuite(suite, get_bisect_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

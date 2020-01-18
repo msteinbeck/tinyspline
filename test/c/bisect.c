@@ -301,6 +301,37 @@ void bisect_greater_than_last_control_point(CuTest *tc)
 	TS_END_TRY
 }
 
+void bisect_invalid_index(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsError err;
+	tsStatus status;
+
+	TS_TRY(try, status.code, &status)
+		/* Create arbitrary spline. */
+		TS_CALL(try, status.code, ts_bspline_new(
+			16, 3, 3, TS_OPENED, &spline, &status))
+
+		/* Check index off-by-one. */
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+			4, 1, 50, &net, NULL);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+		/* Check another invalid index. */
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+			8, 1, 50, &net, NULL);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+	TS_CATCH(status.code)
+		CuFail(tc, status.message);
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_deboornet_free(&net);
+	TS_END_TRY
+}
+
 CuSuite* get_bisect_suite()
 {
 	CuSuite* suite = CuSuiteNew();
@@ -309,5 +340,6 @@ CuSuite* get_bisect_suite()
 	SUITE_ADD_TEST(suite, bisect_compare_with_eval_z_coordinate);
 	SUITE_ADD_TEST(suite, bisect_less_than_first_control_point);
 	SUITE_ADD_TEST(suite, bisect_greater_than_last_control_point);
+	SUITE_ADD_TEST(suite, bisect_invalid_index);
 	return suite;
 }

@@ -452,6 +452,43 @@ void bisect_descending_compare_with_eval(CuTest *tc)
 	TS_END_TRY
 }
 
+void bisect_persnickety(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsError err;
+	tsStatus status, stat;
+
+	tsReal ctrlp[6] = { 1.0, 1.5, 2.0, 3.0, 6.7, 7.0 };
+
+	TS_TRY(try, status.code, &status)
+		/* Create spline with control points. */
+		TS_CALL(try, status.code, ts_bspline_new(
+			6, 1, 4, TS_OPENED, &spline, &status))
+		TS_CALL(try, status.code, ts_bspline_set_control_points(
+			&spline, ctrlp, &status))
+
+		/* Check persnickety without status. */
+		err = ts_bspline_bisect(&spline, 6.0, 0.f,
+			1 /**< persnickety */, 0, 1, 2, &net, NULL);
+		CuAssertIntEquals(tc, TS_NO_RESULT, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+		/* Check persnickety with status. */
+		stat.code = TS_SUCCESS;
+		err = ts_bspline_bisect(&spline, 6.0, 0.f,
+			1 /**< persnickety */, 0, 1, 2, &net, &stat);
+		CuAssertIntEquals(tc, TS_NO_RESULT, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+		CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
+	TS_CATCH(status.code)
+		CuFail(tc, status.message);
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_deboornet_free(&net);
+	TS_END_TRY
+}
+
 CuSuite* get_bisect_suite()
 {
 	CuSuite* suite = CuSuiteNew();
@@ -463,5 +500,6 @@ CuSuite* get_bisect_suite()
 	SUITE_ADD_TEST(suite, bisect_invalid_index);
 	SUITE_ADD_TEST(suite, bisect_max_iter_0);
 	SUITE_ADD_TEST(suite, bisect_descending_compare_with_eval);
+	SUITE_ADD_TEST(suite, bisect_persnickety);
 	return suite;
 }

@@ -306,24 +306,74 @@ void bisect_invalid_index(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsError err;
-	tsStatus status;
+	tsStatus status, stat;
 
 	TS_TRY(try, status.code, &status)
 		/* Create arbitrary spline. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			16, 3, 3, TS_OPENED, &spline, &status))
 
-		/* Check index off-by-one. */
+		/* Check index off-by-one without status. */
 		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			4, 1, 50, &net, NULL);
+			4 /**< index */, 1, 50, &net, NULL);
 		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
 		CuAssertPtrEquals(tc, NULL, net.pImpl);
 
-		/* Check another invalid index. */
+		/* Check index off-by-one with status. */
+		stat.code = TS_SUCCESS;
 		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			8, 1, 50, &net, NULL);
+			4 /**< index */, 1, 50, &net, &stat);
 		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
 		CuAssertPtrEquals(tc, NULL, net.pImpl);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
+
+		/* Check another invalid index without status. */
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+			8 /**< index */, 1, 50, &net, NULL);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+		/* Check another invalid index with status. */
+		stat.code = TS_SUCCESS;
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+			8 /**< index */, 1, 50, &net, &stat);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+		CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
+	TS_CATCH(status.code)
+		CuFail(tc, status.message);
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_deboornet_free(&net);
+	TS_END_TRY
+}
+
+void bisect_max_iter_0(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsError err;
+	tsStatus status, stat;
+
+	stat.code = TS_SUCCESS;
+	TS_TRY(try, status.code, &status)
+		/* Create arbitrary spline. */
+		TS_CALL(try, status.code, ts_bspline_new(
+			12, 2, 6, TS_CLAMPED, &spline, &status))
+
+		/* Check max_iter = 0 without status. */
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
+			0 /**< max_iter */, &net, NULL);
+		CuAssertIntEquals(tc, TS_NO_RESULT, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+		/* Check max_iter = 0 with status. */
+		stat.code = TS_SUCCESS;
+		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
+			0 /**< max_iter */, &net, &stat);
+		CuAssertIntEquals(tc, TS_NO_RESULT, err);
+		CuAssertPtrEquals(tc, NULL, net.pImpl);
+		CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -341,5 +391,6 @@ CuSuite* get_bisect_suite()
 	SUITE_ADD_TEST(suite, bisect_less_than_first_control_point);
 	SUITE_ADD_TEST(suite, bisect_greater_than_last_control_point);
 	SUITE_ADD_TEST(suite, bisect_invalid_index);
+	SUITE_ADD_TEST(suite, bisect_max_iter_0);
 	return suite;
 }

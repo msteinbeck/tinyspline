@@ -1,10 +1,10 @@
 ###############################################################################
-### Check if code coverage is available. Code coverage is measured and depicted
-### using gcov, lcov, and genthml. The following CMake variables may be useful
-### for targets creating code coverage.
+### Check if code coverage is available. Coverage is measured and visualized
+### using gcov, lcov, and genthml.
 #
 # TINYSPLINE_COVERAGE_AVAILABLE
-#   TRUE if tools required to generate coverage are available, FALSE otherwise.
+#   TRUE if the tools that are required to generate code coverage are
+#   available. FALSE otherwise.
 #
 # TINYSPLINE_GCOV
 #   gcov executable.
@@ -16,8 +16,8 @@
 #   genhtml executable.
 #
 # TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY
-#   Root directory of genhtml coverage output. Each target generating code
-#   coverage should store results in a separate subdirectory.
+#   Root directory of genhtml output. Each target generating code coverage
+#   should store results in a separate subdirectory.
 #
 # TINYSPLINE_COVERAGE_C_FLAGS
 #   C flags for coverage executables.
@@ -27,26 +27,18 @@
 ###############################################################################
 # TINYSPLINE_COVERAGE_AVAILABLE
 set(TINYSPLINE_COVERAGE_AVAILABLE FALSE)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-	message(STATUS "Code coverage is only available for \"Debug\" builds")
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	message(STATUS "Code coverage requires GCC")
 else()
-	if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
-			NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-		message(STATUS "Code coverage is not available for ${CMAKE_CXX_COMPILER_ID}")
+	find_program(TINYSPLINE_GCOV gcov)
+	find_program(TINYSPLINE_LCOV lcov)
+	find_program(TINYSPLINE_GENHTML genhtml)
+	if(NOT TINYSPLINE_GCOV
+			OR NOT TINYSPLINE_LCOV
+			OR NOT TINYSPLINE_GENHTML)
+		message(STATUS "Code coverage requires gcov, lcov, and genhtml")
 	else()
-		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND
-				CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3)
-			message(STATUS "Code coverage requires Clang 3.0.0 or later")
-		else()
-			find_program(TINYSPLINE_GCOV gcov)
-			find_program(TINYSPLINE_LCOV lcov)
-			find_program(TINYSPLINE_GENHTML genhtml)
-			if(NOT TINYSPLINE_GCOV OR NOT TINYSPLINE_LCOV OR NOT TINYSPLINE_GENHTML)
-				message(STATUS "Code coverage requires gcov, lcov, and genhtml")
-			else()
-				set(TINYSPLINE_COVERAGE_AVAILABLE TRUE)
-			endif()
-		endif()
+		set(TINYSPLINE_COVERAGE_AVAILABLE TRUE)
 	endif()
 endif()
 

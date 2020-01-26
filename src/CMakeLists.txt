@@ -415,7 +415,7 @@ endif()
 #   C++ binding specific flags.
 #
 # TINYSPLINE_RUNTIME_LIBS (set in parent scope)
-#   Stores the names of the files that are copied from
+#   Stores the names of the files that are copied (and stripped) from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
 # TINYSPLINE_DEBUG_POSTFIX
@@ -605,6 +605,11 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 	file(COPY ${file} DESTINATION ${TINYSPLINE_OUTPUT_DIRECTORY})
 	get_filename_component(name ${file} NAME)
 	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
+	if (NOT ${CMAKE_STRIP} STREQUAL "")
+		execute_process(
+			COMMAND "${CMAKE_STRIP}" --strip-unneeded ${name}
+			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
+	endif()
 endforeach()
 # Export relevant variables.
 if(TINYSPLINE_HAS_PARENT)
@@ -824,10 +829,19 @@ function (tinyspline_add_swig_library)
 		)
 	endif()
 	if (NOT ${ARGS_NAME} STREQUAL "")
-        set_property(TARGET ${ACTUAL_TARGET}
-		APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}"
-        )
-    endif()
+		set_property(TARGET ${ACTUAL_TARGET}
+			APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}"
+		)
+	endif()
+	if (NOT ${CMAKE_STRIP} STREQUAL "")
+		add_custom_command(
+			TARGET ${ACTUAL_TARGET}
+			POST_BUILD
+			COMMAND
+				"${CMAKE_STRIP}" --strip-unneeded
+				"$<TARGET_FILE_NAME:${ACTUAL_TARGET}>"
+			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
+	endif()
 endfunction()
 
 if(${TINYSPLINE_BINDING_REQUESTED})

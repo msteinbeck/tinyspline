@@ -605,7 +605,7 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 	file(COPY ${file} DESTINATION ${TINYSPLINE_OUTPUT_DIRECTORY})
 	get_filename_component(name ${file} NAME)
 	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
-	if (NOT ${CMAKE_STRIP} STREQUAL "")
+	if (CMAKE_STRIP)
 		execute_process(
 			COMMAND "${CMAKE_STRIP}" --strip-unneeded ${name}
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
@@ -833,7 +833,7 @@ function (tinyspline_add_swig_library)
 			APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}"
 		)
 	endif()
-	if (NOT ${CMAKE_STRIP} STREQUAL "")
+	if (CMAKE_STRIP)
 		add_custom_command(
 			TARGET ${ACTUAL_TARGET}
 			POST_BUILD

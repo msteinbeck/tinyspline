@@ -15,16 +15,34 @@
 		final java.util.logging.Logger log = java.util.logging.Logger
 			.getLogger(tinysplinejavaJNI.class.getName());
 
-		// Copy libraries.
+		// Determine the libraries that need to be loaded.
 		final String platform = determinePlatform();
+		log.fine(String.format(
+			"Detected platform '%s'",
+			platform));
+		log.fine(String.format(
+			"Loading properties file of platform '%s'",
+			platform));
 		final java.util.Properties prop = loadProperties(platform);
+		log.fine("Reading libraries from properties file");
+		final java.util.List<String> libsToCopy = getRuntimeLibs(prop);
+		libsToCopy.add(getNativeLib(prop));
+		log.fine(String.format(
+			"Libraries to load: %s",
+			libsToCopy.toString()));
+
+		// Copy libraries.
 		final java.util.Map<String, java.io.File> libs =
 			new java.util.HashMap<String, java.io.File>();
-		for (final String lib : getRuntimeLibs(prop)) {
+		for (final String lib : libsToCopy) {
+			log.fine(String.format(
+				"Trying to copy library '%s' to a temporary file",
+				lib));
 			libs.put(lib, copyResource(platform + "/" + lib));
+			log.fine(String.format(
+				"Successfully copied library '%s' to '%s'",
+				lib, libs.get(lib).getAbsolutePath()));
 		}
-		final String nativeLib = getNativeLib(prop);
-		libs.put(nativeLib, copyResource(platform + "/" + nativeLib));
 
 		// Load libraries.
 		boolean progress;
@@ -37,14 +55,21 @@
 				final java.io.File file = libs.get(lib);
 				try {
 					log.fine(String.format(
-						"Trying to load '%s'", lib));
+						"Trying to load library '%s'",
+						lib));
 					System.load(file.getAbsolutePath());
+					log.fine(String.format(
+						"Successfully loaded library '%s'",
+						lib));
 					it.remove();
 					progress = true;
 				} catch (final UnsatisfiedLinkError e) {
+					log.fine(String.format(
+						"Library '%s' could not be loaded yet (%s)",
+						lib, e.getMessage()));
 				} catch (final Exception e) {
 					throw new Error(String.format(
-						"Error while loading '%s'",
+						"Unexpected error while loading library '%s'",
 						lib), e);
 				}
 			}
@@ -53,7 +78,7 @@
 		// Check for missing libraries.
 		if (!libs.isEmpty()) {
 			throw new Error(String.format(
-				"Unable to load the following libraries %s",
+				"Unable to load libraries: %s",
 				libs.keySet().toString()));
 		}
 	}

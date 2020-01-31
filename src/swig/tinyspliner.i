@@ -3,6 +3,7 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore ts_bspline_insert_knot;
 %ignore ts_deboornet_result;
 
 // Map std::vector<tinyspline::real> to R vector.

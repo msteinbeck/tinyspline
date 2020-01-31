@@ -82,7 +82,7 @@ public:
 
 	/* Create from static method */
 	static BSpline interpolateCubic(
-		const std::vector<real> *points, size_t dim);
+		const std_real_vector_in points, size_t dim);
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);

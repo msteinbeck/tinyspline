@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	points.push_back(4);
 
 	tinyspline::BSpline spline = tinyspline::BSpline::
-		interpolateCubic(&points, 4);
+		interpolateCubic(points, 4);
 
 	tinyspline::DeBoorNet net = spline.bisect(1850);
 	std::vector<tinyspline::real> result = net.result();

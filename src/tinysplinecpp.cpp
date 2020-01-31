@@ -223,16 +223,17 @@ tinyspline::BSpline::~BSpline()
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCubic(
-	const std::vector<tinyspline::real> *points, size_t dim)
+	const std_real_vector_in points, size_t dim)
 {
 	if (dim == 0)
 		throw std::runtime_error("unsupported dimension: 0");
-	if (points->size() % dim != 0)
+	if (std_real_vector_read(points)size() % dim != 0)
 		throw std::runtime_error("#points % dim == 0 failed");
 	tinyspline::BSpline bspline;
 	tsStatus status;
-	if (ts_bspline_interpolate_cubic(points->data(), points->size()/dim,
-			dim, bspline.data(), &status))
+	if (ts_bspline_interpolate_cubic(std_real_vector_read(points)data(),
+			std_real_vector_read(points)size()/dim, dim,
+			bspline.data(), &status))
 		throw std::runtime_error(status.message);
 	return bspline;
 }

@@ -80,6 +80,10 @@ public:
 		tinyspline::BSpline::type type = TS_CLAMPED);
 	~BSpline();
 
+	/* Create from static method */
+	static BSpline interpolateCubic(
+		const std::vector<real> *points, size_t dim);
+
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
 	DeBoorNet operator()(real u) const;
@@ -134,8 +138,6 @@ private:
 
 class Utils {
 public:
-	static BSpline interpolateCubic(
-		const std::vector<real> *points, size_t dim);
 	static bool knotsEqual(real x, real y);
 
 private:

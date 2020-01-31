@@ -222,6 +222,21 @@ tinyspline::BSpline::~BSpline()
 	ts_bspline_free(&spline);
 }
 
+tinyspline::BSpline tinyspline::BSpline::interpolateCubic(
+	const std::vector<tinyspline::real> *points, size_t dim)
+{
+	if (dim == 0)
+		throw std::runtime_error("unsupported dimension: 0");
+	if (points->size() % dim != 0)
+		throw std::runtime_error("#points % dim == 0 failed");
+	tinyspline::BSpline bspline;
+	tsStatus status;
+	if (ts_bspline_interpolate_cubic(points->data(), points->size()/dim,
+			dim, bspline.data(), &status))
+		throw std::runtime_error(status.message);
+	return bspline;
+}
+
 tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {
@@ -557,21 +572,6 @@ std::string tinyspline::BSpline::toString() const
 * Utils                                                                       *
 *                                                                             *
 ******************************************************************************/
-tinyspline::BSpline tinyspline::Utils::interpolateCubic(
-	const std::vector<tinyspline::real> *points, size_t dim)
-{
-	if (dim == 0)
-		throw std::runtime_error("unsupported dimension: 0");
-	if (points->size() % dim != 0)
-		throw std::runtime_error("#points % dim == 0 failed");
-	tinyspline::BSpline bspline;
-	tsStatus status;
-	if (ts_bspline_interpolate_cubic(points->data(), points->size()/dim,
-			dim, bspline.data(), &status))
-		throw std::runtime_error(status.message);
-	return bspline;
-}
-
 bool tinyspline::Utils::knotsEqual(tinyspline::real x, tinyspline::real y)
 {
 	return ts_knots_equal(x, y) == 1;

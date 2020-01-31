@@ -67,7 +67,7 @@ public class Swing extends JPanel implements
 			toInterpolate.add(p.getX());
 			toInterpolate.add(p.getY());
 		});
-		final BSpline spline = Utils.interpolateCubic(
+		final BSpline spline = BSpline.interpolateCubic(
 				toInterpolate, 2).toBeziers();
 		if (spline.getControlPoints().size() % 4 != 0) { // just to be sure
 			throw new IllegalStateException(

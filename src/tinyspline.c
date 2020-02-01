@@ -824,6 +824,132 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
+	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
+	const tsReal *last, tsReal epsilon, tsBSpline *spline,
+	tsStatus *status)
+{
+	const size_t sof_real = sizeof(tsReal);
+	const size_t sof_ctrlp = dimension * sof_real;
+	const tsReal eps = fabs(epsilon); /**< Absolute value of `epsilon`. */
+	tsReal *bs_ctrlp; /* Points to the control points of `spline`. */
+	tsReal *cr_ctrlp; /**< The points to interpolate based on `points`. */
+	size_t i, d; /**< Used in for loops. */
+	tsError err; /**< Local error handling. */
+	/* https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline */
+	tsReal t0, t1, t2, t3; /**< Catmull-Rom knots. */
+	/* https://stackoverflow.com/questions/30748316/catmull-rom-interpolation-on-svg-paths/30826434#30826434 */
+	tsReal c1, c2, d1, d2, m1, m2; /**< Used to calculate derivatives. */
+	tsReal *p0, *p1, *p2, *p3; /**< Processed Catmull-Rom points. */
+
+	ts_int_bspline_init(spline);
+	if (dimension == 0)
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+	if (num_points == 0)
+		TS_RETURN_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
+	if (num_points == 1) {
+		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
+			num_points - 1, TS_CLAMPED, spline, status))
+		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
+		memcpy(bs_ctrlp, points, sof_ctrlp);
+		TS_RETURN_SUCCESS(status)
+	}
+
+	/* Copy `points` to `cr_ctrlp`. Add space for `first` and `last`. */
+	cr_ctrlp = (tsReal *) malloc((num_points + 2) * sof_ctrlp);
+	if (!cr_ctrlp)
+		TS_RETURN_0(status, TS_MALLOC, "out of memory");
+	memcpy(cr_ctrlp + dimension, points, num_points * sof_ctrlp);
+
+	/* Remove redundant points from `cr_ctrlp`. Update `num_points`. */
+	for (i = 1 /* 0 is not assigned yet */;
+			i < num_points - 1 /* skip last point */;
+			i++) {
+		p0 = cr_ctrlp + (i * dimension);
+		p1 = p0 + dimension;
+		if (ts_distance(p0, p1, dimension) <= eps) {
+			if (i < num_points - 2) {
+				memmove(p1, p1 + dimension,
+					num_points - (i + 1));
+			}
+			num_points--;
+			i--;
+		}
+	}
+
+	/* Check if there are still enough points for interpolation. */
+	if (num_points == 1) { /* `num_points` can't be 0 */
+		free(cr_ctrlp); /* Copy the point from `points`. */
+		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
+			num_points - 1, TS_CLAMPED, spline, status))
+		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
+		memcpy(bs_ctrlp, points, sof_ctrlp);
+		TS_RETURN_SUCCESS(status)
+	}
+
+	/* Add or generate `first` and `last`. Update `num_points`. */
+	p0 = cr_ctrlp + dimension;
+	if (first && ts_distance(first, p0, dimension) > eps) {
+		memcpy(cr_ctrlp, first, sof_ctrlp);
+	} else {
+		p1 = p0 + dimension;
+		for (d = 0; d < dimension; d++)
+			cr_ctrlp[d] = p0[d] + (p0[d] - p1[d]);
+	}
+	p1 = cr_ctrlp + (num_points * dimension);
+	if (last) {
+		memcpy(cr_ctrlp + ((num_points + 1) * dimension),
+		       last, sof_ctrlp);
+	} else {
+		p0 = p1 - dimension;
+		for (d = 0; d < dimension; d++) {
+			cr_ctrlp[((num_points + 1) * dimension) + d] =
+				p1[d] + (p1[d] - p0[d]);
+		}
+	}
+	num_points = num_points + 2;
+
+	/* Transform the sequence of Catmull-Rom splines. */
+	bs_ctrlp = NULL;
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_bspline_new(
+			(num_points - 3) * 4, dimension, 4,
+			TS_CLAMPED, spline, status))
+		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
+	TS_CATCH(err)
+		free(cr_ctrlp);
+	TS_END_TRY_ROE(err)
+	for (i = 0; i < ts_bspline_num_control_points(spline) / 4; i++) {
+		p0 = cr_ctrlp + ((i+0) * dimension);
+		p1 = cr_ctrlp + ((i+1) * dimension);
+		p2 = cr_ctrlp + ((i+2) * dimension);
+		p3 = cr_ctrlp + ((i+3) * dimension);
+
+		t0 = (tsReal) 0.f;
+		t1 = t0 + pow(ts_distance(p0, p1, dimension), alpha);
+		t2 = t1 + pow(ts_distance(p1, p2, dimension), alpha);
+		t3 = t2 + pow(ts_distance(p2, p3, dimension), alpha);
+
+		c1 = (t2-t1) / (t2-t0);
+		c2 = (t1-t0) / (t2-t0);
+		d1 = (t3-t2) / (t3-t1);
+		d2 = (t2-t1) / (t3-t1);
+
+		for (d = 0; d < dimension; d++) {
+			m1 = (t2-t1)*(c1*(p1[d]-p0[d])/(t1-t0)
+				      + c2*(p2[d]-p1[d])/(t2-t1));
+			m2 = (t2-t1)*(d1*(p2[d]-p1[d])/(t2-t1) +
+				      d2*(p3[d]-p2[d])/(t3-t2));
+			bs_ctrlp[((i*4 + 0) * dimension) + d] = p1[d];
+			bs_ctrlp[((i*4 + 1) * dimension) + d] = p1[d] + m1/3;
+			bs_ctrlp[((i*4 + 2) * dimension) + d] = p2[d] - m2/3;
+			bs_ctrlp[((i*4 + 3) * dimension) + d] = p2[d];
+		}
+	}
+	free(cr_ctrlp);
+	TS_RETURN_SUCCESS(status)
+}
+
 
 
 /******************************************************************************

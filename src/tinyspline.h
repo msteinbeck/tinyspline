@@ -151,13 +151,14 @@ typedef struct {
 #define TS_END_TRY_RETURN(error)   \
 	TS_END_TRY return (error);
 
+#define TS_END_TRY_ROE(error)                 \
+	TS_END_TRY if ((error)) return error;
 
 #define TS_CALL_ROE(error, call)   \
 {                                  \
 	(error) = (call);          \
 	if ((error)) return error; \
 }
-
 
 #define TS_RETURN_SUCCESS(status)            \
 {                                            \
@@ -1009,6 +1010,11 @@ void ts_deboornet_free(tsDeBoorNet *net);
  */
 tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 	size_t dimension, tsBSpline *spline, tsStatus *status);
+
+tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
+	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
+	const tsReal *last, tsReal epsilon, tsBSpline *spline,
+	tsStatus *status);
 
 
 

@@ -81,8 +81,8 @@ public:
 	~BSpline();
 
 	/* Create from static method */
-	static BSpline interpolateCubic(
-		const std_real_vector_in points, size_t dim);
+	static BSpline interpolateCubic(const std_real_vector_in points,
+		size_t dimension);
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);

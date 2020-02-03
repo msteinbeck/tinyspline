@@ -854,6 +854,10 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		memcpy(bs_ctrlp, points, sof_ctrlp);
 		TS_RETURN_SUCCESS(status)
 	}
+	if (alpha < 0.f)
+		alpha = (tsReal) 0.f;
+	if (alpha > 1.f)
+		alpha = (tsReal) 1.f;
 
 	/* Copy `points` to `cr_ctrlp`. Add space for `first` and `last`. */
 	cr_ctrlp = (tsReal *) malloc((num_points + 2) * sof_ctrlp);

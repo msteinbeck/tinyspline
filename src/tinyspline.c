@@ -831,7 +831,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dimension * sof_real;
-	const tsReal eps = fabs(epsilon); /**< Absolute value of `epsilon`. */
+	const tsReal eps = (tsReal) fabs(epsilon);
 	tsReal *bs_ctrlp; /* Points to the control points of `spline`. */
 	tsReal *cr_ctrlp; /**< The points to interpolate based on `points`. */
 	size_t i, d; /**< Used in for loops. */
@@ -917,8 +917,8 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	bs_ctrlp = NULL;
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_new(
-			(num_points - 3) * 4, dimension, 4,
-			TS_CLAMPED, spline, status))
+			(num_points - 3) * 4, dimension, 3,
+			TS_BEZIERS, spline, status))
 		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
 	TS_CATCH(err)
 		free(cr_ctrlp);
@@ -930,9 +930,9 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		p3 = cr_ctrlp + ((i+3) * dimension);
 
 		t0 = (tsReal) 0.f;
-		t1 = t0 + pow(ts_distance(p0, p1, dimension), alpha);
-		t2 = t1 + pow(ts_distance(p1, p2, dimension), alpha);
-		t3 = t2 + pow(ts_distance(p2, p3, dimension), alpha);
+		t1 = t0 + (tsReal) pow(ts_distance(p0, p1, dimension), alpha);
+		t2 = t1 + (tsReal) pow(ts_distance(p1, p2, dimension), alpha);
+		t3 = t2 + (tsReal) pow(ts_distance(p2, p3, dimension), alpha);
 
 		c1 = (t2-t1) / (t2-t0);
 		c2 = (t1-t0) / (t2-t0);

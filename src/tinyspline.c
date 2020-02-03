@@ -874,7 +874,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		if (ts_distance(p0, p1, dimension) <= eps) {
 			if (i < num_points - 2) {
 				memmove(p1, p1 + dimension,
-					num_points - (i + 1));
+					(num_points - (i + 1)) * sof_ctrlp);
 			}
 			num_points--;
 			i--;

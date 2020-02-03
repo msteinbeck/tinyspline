@@ -937,9 +937,9 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 		for (d = 0; d < dimension; d++) {
 			m1 = (t2-t1)*(c1*(p1[d]-p0[d])/(t1-t0)
-				      + c2*(p2[d]-p1[d])/(t2-t1));
-			m2 = (t2-t1)*(d1*(p2[d]-p1[d])/(t2-t1) +
-				      d2*(p3[d]-p2[d])/(t3-t2));
+				+ c2*(p2[d]-p1[d])/(t2-t1));
+			m2 = (t2-t1)*(d1*(p2[d]-p1[d])/(t2-t1)
+				+ d2*(p3[d]-p2[d])/(t3-t2));
 			bs_ctrlp[((i*4 + 0) * dimension) + d] = p1[d];
 			bs_ctrlp[((i*4 + 1) * dimension) + d] = p1[d] + m1/3;
 			bs_ctrlp[((i*4 + 2) * dimension) + d] = p2[d] - m2/3;

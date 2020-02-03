@@ -1011,6 +1011,55 @@ void ts_deboornet_free(tsDeBoorNet *net);
 tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 	size_t dimension, tsBSpline *spline, tsStatus *status);
 
+/**
+ * Interpolates a cubic spline by translating the given catmull-rom control
+ * points into a sequence of bezier curves. In order to avoid division by zero,
+ * successive control points with distance less than or equals to \p epsilon
+ * are filtered out. If the resultant sequence contains only a single point, a
+ * spline of degree 0 (a point) is created. Optionally, the first and last
+ * control point can be specified (\p first and \p last).
+ *
+ * @param[in] points
+ * 	The points to interpolate.
+ * @param[in] num_points
+ * 	The number of points in \p points.
+ * @param[in] dimension
+ * 	The dimensionality of the points.
+ * @param[in] alpha
+ * 	The knot parameterization: 0 => uniform, 0.5 => centripetal,
+ * 	1 => chordal. The input value is automatically trimmed to the [0, 1]
+ * 	interval.
+ * @param[in] first
+ * 	The first control point of the catmull-rom sequence. If NULL, an
+ * 	appropriate point is generated based on the first two points in
+ * 	\p points. If the distance between \p first and the first control point
+ * 	in \p points is less than or equals to \p epsilon, \p first is treated
+ * 	as NULL. This is necessary to avoid division by zero.
+ * @param[in] last
+ * 	The last control point of the catmull-rom sequence. If NULL, an
+ * 	appropriate point is generated based on the last two points in
+ * 	\p points. If the distance between \p last and the last control point
+ * 	in \p points is less than or equals to \p epsilon, \p last is treated
+ * 	as NULL. This is necessary to avoid division by zero.
+ * @param[in] epsilon
+ * 	The maximum distance between points with "same" coordinates. That is,
+ * 	if the distance between two points is less than or equals \p epsilon,
+ * 	they are considered to be the same point. For the sake of
+ * 	fail-safeness, the sign is removed with fabs. It is advisable to pass a
+ * 	value greater than zero, however, it is not necessary.
+ * @param[out] spline
+ * 	The interpolated spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension is 0.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p num_points is 1.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
 tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
 	const tsReal *last, tsReal epsilon, tsBSpline *spline,

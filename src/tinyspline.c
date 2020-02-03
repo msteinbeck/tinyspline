@@ -867,12 +867,12 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 	/* Remove redundant points from `cr_ctrlp`. Update `num_points`. */
 	for (i = 1 /* 0 is not assigned yet */;
-			i < num_points - 1 /* skip last point */;
+			i < num_points /* skip last point */;
 			i++) {
 		p0 = cr_ctrlp + (i * dimension);
 		p1 = p0 + dimension;
 		if (ts_distance(p0, p1, dimension) <= eps) {
-			if (i < num_points - 2) {
+			if (i < num_points - 1) { /* there is a next point */
 				memmove(p1, p1 + dimension,
 					(num_points - (i + 1)) * sof_ctrlp);
 			}

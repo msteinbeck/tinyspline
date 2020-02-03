@@ -83,6 +83,11 @@ public:
 	/* Create from static method */
 	static BSpline interpolateCubic(const std_real_vector_in points,
 		size_t dimension);
+	static BSpline interpolateCatmullRom(const std_real_vector_in points,
+		size_t dimension, tsReal alpha = (tsReal) 0.5f,
+		std::vector<tinyspline::real> *first = NULL,
+		std::vector<tinyspline::real> *last = NULL,
+		tsReal epsilon = TS_CONTROL_POINT_EPSILON);
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);

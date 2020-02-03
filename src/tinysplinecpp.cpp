@@ -238,6 +238,32 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCubic(
 	return bspline;
 }
 
+tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
+	const std_real_vector_in points, size_t dimension, tsReal alpha,
+	std::vector<tinyspline::real> *first,
+	std::vector<tinyspline::real> *last, tsReal epsilon)
+{
+	if (dimension == 0)
+		throw std::runtime_error("unsupported dimension: 0");
+	if (std_real_vector_read(points)size() % dimension != 0)
+		throw std::runtime_error("#points % dim == 0 failed");
+	tsReal *fst = NULL;
+	if (first && first->size() >= dimension)
+		fst = first->data();
+	tsReal *lst = NULL;
+	if (last && last->size() >= dimension)
+		lst = last->data();
+	tinyspline::BSpline bspline;
+	tsStatus status;
+	if (ts_bspline_interpolate_catmull_rom(
+			std_real_vector_read(points)data(),
+			std_real_vector_read(points)size()/dimension,
+			dimension, alpha, fst, lst, epsilon, bspline.data(),
+			&status))
+		throw std::runtime_error(status.message);
+	return bspline;
+}
+
 tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {

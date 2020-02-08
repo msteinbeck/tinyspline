@@ -649,80 +649,72 @@ void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
 * :: Interpolation and Approximation Functions                                *
 *                                                                             *
 ******************************************************************************/
-tsError ts_int_bspline_thomas_algorithm(const tsReal *points, size_t n,
-	size_t dim, tsReal *result, tsStatus *status)
+tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
+	const tsReal *c, size_t num, size_t dim, tsReal *d, tsStatus *status)
 {
-	const size_t sof_real = sizeof(tsReal);
-	const size_t sof_ctrlp = dim * sof_real;
-	tsReal* m;      /* Array of weights. */
-	size_t len_m;   /* Length of m. */
-	size_t lst;     /* Index of the last control point in \p points. */
-	size_t i, d;    /* Used in for loops. */
-	size_t j, k, l; /* Used as temporary indices. */
+	size_t i, j, k, l;
+	tsReal m, *cc = NULL;
+	tsError err;
 
-	/* input validation */
-	if (dim == 0)
-		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
-	if (n == 0)
-		TS_RETURN_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
-	if (n <= 2) {
-		memcpy(result, points, n * sof_ctrlp);
-		TS_RETURN_SUCCESS(status)
+	if (dim == 0) {
+		TS_RETURN_0(status, TS_DIM_ZERO,
+			    "unsupported dimension: 0")
 	}
-
-	/* In the following n >= 3 applies... */
-	len_m = n-2; /* ... len_m >= 1 */
-	lst = (n-1)*dim; /* ... lst >= 2*dim */
-
-	/* m_0 = 1/4, m_{k+1} = 1/(4-m_k), for k = 0,...,n-2 */
-	m = (tsReal*) malloc(len_m * sof_real);
-	if (m == NULL)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
-	m[0] = 0.25f;
-	for (i = 1; i < len_m; i++)
-		m[i] = 1.f/(4 - m[i-1]);
-
-	/* forward sweep */
-	ts_arr_fill(result, n*dim, 0.f);
-	memcpy(result, points, sof_ctrlp);
-	memcpy(result+lst, points+lst, sof_ctrlp);
-	for (d = 0; d < dim; d++) {
-		k = dim+d;
-		result[k] = 6*points[k];
-		result[k] -= points[d];
+	if (num <= 1) {
+		TS_RETURN_1(status, TS_NUM_POINTS,
+			"num(points) (%lu) <= 1", (unsigned long) num)
 	}
-	for (i = 2; i <= n-2; i++) {
-		for (d = 0; d < dim; d++) {
-			j = (i-1)*dim+d;
-			k = i*dim+d;
-			l = (i+1)*dim+d;
-			result[k] = 6*points[k];
-			result[k] -= result[l];
-			result[k] -= m[i-2]*result[j]; /* i >= 2 */
+	cc = (tsReal *) malloc(num * sizeof(tsReal));
+	if (!cc) TS_RETURN_0(status, TS_MALLOC, "out of memory")
+
+	TS_TRY(try, err, status)
+		/* Forward sweep. */
+		if (fabs(b[0]) <= fabs(c[0])) {
+			TS_THROW_2(try, err, status, TS_NO_RESULT,
+				   "error: |%f| <= |%f|", b[0], c[0])
 		}
-	}
-
-	/* back substitution */
-	if (n > 3)
-		ts_arr_fill(result+lst, dim, 0.f);
-	for (i = n-2; i >= 1; i--) {
-		for (d = 0; d < dim; d++) {
-			k = i*dim+d;
-			l = (i+1)*dim+d;
-			/* The following line is the reason why it's important
-			 * to not fill \p result with 0 if n = 3. On the
-			 * other hand, if n > 3 subtracting 0 is exactly what
-			 * we want. */
-			result[k] -= result[l];
-			result[k] *= m[i-1]; /* i >= 1 */
+		/* |b[i]| > |c[i]| implies that |b[i]| > 0. Thus, the following
+		 * statements cannot evaluate to division by zero.*/
+		cc[0] = c[0] / b[0];
+		for (i = 0; i < dim; i++)
+			d[i] = d[i] / b[0];
+		for (i = 1; i < num; i++) {
+			if (fabs(b[i]) <= fabs(a[i]) + fabs(c[i])) {
+				TS_THROW_3(try, err, status, TS_NO_RESULT,
+					   "error: |%f| <= |%f| + |%f|",
+					   b[i], a[i], c[i])
+			}
+			/* |a[i]| < |b[i]| and cc[i - 1] < 1. Therefore, the
+			 * following statement cannot evaluate to division by
+			 * zero. */
+			m = 1.f / (b[i] - a[i] * cc[i - 1]);
+			/* |b[i]| > |a[i]| + |c[i]| implies that there must be
+			 * an eps > 0 such that |b[i]| = |a[i]| + |c[i]| + eps.
+			 * Even if |a[i]| is 0 (by which the result of the
+			 * following statement becomes maximum), |c[i]| is less
+			 * than |b[i]| by an amount of eps. By substituting the
+			 * previous and the following statements (under the
+			 * assumption that |a[i]| is 0), we obtain c[i] / b[i],
+			 * which must be less than 1. */
+			cc[i] = c[i] * m;
+			for (j = 0; j < dim; j++) {
+				k = i * dim + j;
+				l = (i-1) * dim + j;
+				d[k] = (d[k] - a[i] * d[l]) * m;
+			}
 		}
-	}
-	if (n > 3)
-		memcpy(result+lst, points+lst, sof_ctrlp);
 
-	/* we are done */
-	free(m);
-	TS_RETURN_SUCCESS(status)
+		/* Back substitution. */
+		for (i = num-1; i > 0; i--) {
+			for (j = 0; j < dim; j++) {
+				k = (i-1) * dim + j;
+				l = i * dim + j;
+				d[k] -= cc[i-1] * d[l];
+			}
+		}
+	TS_FINALLY
+		free(cc);
+	TS_END_TRY_RETURN(err)
 }
 
 tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
@@ -800,23 +792,54 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t n,
-	size_t dim, tsBSpline *spline, tsStatus *status)
+tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
+	size_t dimension, tsBSpline *spline, tsStatus *status)
 {
+	const size_t sof_ctrlp = dimension * sizeof(tsReal);
+	const size_t len_points = num_points * dimension;
+	const size_t num_int_points = num_points - 2;
+	const size_t len_int_points = num_int_points * dimension;
+	tsReal *thomas, *a, *b, *c, *d;
+	size_t i, j, k, l;
 	tsError err;
-	tsReal* thomas;
 	ts_int_bspline_init(spline);
 	thomas = NULL;
 	TS_TRY(try, err, status)
-		thomas = (tsReal*) malloc(n*dim*sizeof(tsReal));
+		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
 		if (!thomas) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
 				   "out of memory")
 		}
-		TS_CALL(try, err, ts_int_bspline_thomas_algorithm(
-			points, n, dim, thomas, status))
+		/* The system of linear equations is taken from:
+		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
+		 *     pst-bspline-doc.pdf */
+		a = c = thomas;
+		ts_arr_fill(a, len_int_points, 1);
+		b = a + len_int_points;
+		ts_arr_fill(b, len_int_points, 4);
+		d = b + len_int_points;
+		/* 6 * S_{i+1} */
+		for (i = 0; i < num_int_points; i++) {
+			for (j = 0; j < dimension; j++) {
+				k = i * dimension + j;
+				l = (i+1) * dimension + j;
+				d[k] = 6 * points[l];
+			}
+		}
+		for (i = 0; i < dimension; i++) {
+			/* 6 * S_{1} − S_{0} */
+			d[i] -= points[i];
+			/* 6 * S_{n-1} − S_{n} */
+			k = len_int_points - (i+1);
+			l = len_points - (i+1);
+			d[k] -= points[l];
+		}
+		TS_CALL(try, err, ts_int_thomas_algorithm(
+			a, b, c, num_int_points, dimension, d, status));
+		memcpy(thomas, points, num_points * sof_ctrlp);
+		memcpy(thomas + dimension, d, num_int_points * sof_ctrlp);
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
-			thomas, n, dim, spline, status))
+			thomas, num_points, dimension, spline, status))
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_FINALLY

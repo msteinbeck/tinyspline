@@ -102,10 +102,10 @@ typedef double tsReal;
 typedef enum {
     TS_SUCCESS = 0, /**< No error. */
     TS_MALLOC = -1, /**< Unable to allocate memory. */
-    TS_DIM_ZERO = -2, /**< The dimension of the control points are 0. */
+    TS_DIM_ZERO = -2, /**< Points with dimensionality 0. */
     TS_DEG_GE_NCTRLP = -3, /**< degree >= num_control_points. */
     TS_U_UNDEFINED = -4, /**< Undefined knot value. */
-    TS_MULTIPLICITY = -5, /**< s(u) > order */
+    TS_MULTIPLICITY = -5, /**< multiplicity(u) > order */
     TS_KNOTS_DECR = -6, /**< Decreasing knot vector. */
     TS_NUM_KNOTS = -7, /**< Unexpected number of knots. */
     TS_UNDERIVABLE = -8, /**< Spline is not derivable. */
@@ -113,7 +113,8 @@ typedef enum {
     TS_IO_ERROR = -11, /**< Error while reading/writing a file. */
     TS_PARSE_ERROR = -12, /**< Error while parsing a serialized entity. */
     TS_INDEX_ERROR = -13, /**< Index does not exist. */
-    TS_NO_RESULT = -14 /**< Function returns without result. */
+    TS_NO_RESULT = -14, /**< Function returns without result. */
+    TS_NUM_POINTS = -15 /**< Unexpected number of points. */
 } tsError;
 
 /**

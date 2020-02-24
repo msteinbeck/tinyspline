@@ -696,6 +696,8 @@ target_include_directories(tinyspline_static
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
+
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
 	add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
@@ -708,6 +710,10 @@ if(TINYSPLINE_ENABLE_CXX)
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
 		RUNTIME DESTINATION lib
+	)
+	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in" "tinysplinecpp.pc" @ONLY)
+	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
+		DESTINATION "${INSTALL_PKGCONFIG_DIR}"
 	)
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_static PROPERTIES

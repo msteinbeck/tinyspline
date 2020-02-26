@@ -8,5 +8,5 @@ Description: @TINYSPLINE_DESCRIPTION@
 Version: @TINYSPLINE_VERSION@
 
 Libs: -L${libdir} -l tinysplinecpp
-Cflags: -I${includedir}
+Cflags: -I${includedir} @TINYSPLINE_PKGCONFIG_CXX_FLAGS@
 

@@ -804,6 +804,23 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 	tsError err;
 	ts_int_bspline_init(spline);
 	thomas = NULL;
+
+	if (num_points == 0)
+		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
+	if (num_points == 1) {
+		TS_CALL_ROE(err, ts_bspline_new(
+			4, dimension, 3, TS_CLAMPED, spline, status))
+		for (i = 0; i < ts_bspline_num_control_points(spline); i++) {
+			memcpy(ts_int_bspline_access_ctrlp(spline)
+			       + i * dimension, points, sof_ctrlp);
+		}
+		TS_RETURN_SUCCESS(status)
+	}
+	if (num_points == 2) {
+		return ts_int_relaxed_uniform_cubic_bspline(
+			points, num_points, dimension, spline, status);
+	}
+	/* `num_points` >= 3 */
 	TS_TRY(try, err, status)
 		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
 		if (!thomas) {
@@ -848,8 +865,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 		memcpy(thomas, points, sof_ctrlp);
 		memmove(thomas + dimension, d, num_int_points * sof_ctrlp);
 		memcpy(thomas + (num_int_points+1) * dimension,
-		       points + (num_points-1) * dimension,
-		       sof_ctrlp);
+		       points + (num_points-1) * dimension, sof_ctrlp);
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
 			thomas, num_points, dimension, spline, status))
 	TS_CATCH(err)

@@ -889,13 +889,15 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	memcpy(cr_ctrlp + dimension, points, num_points * sof_ctrlp);
 
 	/* Remove redundant points from `cr_ctrlp`. Update `num_points`. */
-	for (i = 1 /* 0 is not assigned yet */;
-			i < num_points /* skip last point */;
+	for (i = 1 /* 0 (`first`) is not assigned yet */;
+			i < num_points /* skip last point (inclusive end) */;
 			i++) {
 		p0 = cr_ctrlp + (i * dimension);
 		p1 = p0 + dimension;
 		if (ts_distance(p0, p1, dimension) <= eps) {
-			if (i < num_points - 1) { /* there is a next point */
+			/* Are there any other points (after the one that is
+			 * to be removed) that need to be shifted? */
+			if (i < num_points - 1) {
 				memmove(p1, p1 + dimension,
 					(num_points - (i + 1)) * sof_ctrlp);
 			}
@@ -906,7 +908,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 	/* Check if there are still enough points for interpolation. */
 	if (num_points == 1) { /* `num_points` can't be 0 */
-		free(cr_ctrlp); /* Copy the point from `points`. */
+		free(cr_ctrlp); /* The point is copied from `points`. */
 		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
 			num_points - 1, TS_CLAMPED, spline, status))
 		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
@@ -924,7 +926,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 			cr_ctrlp[d] = p0[d] + (p0[d] - p1[d]);
 	}
 	p1 = cr_ctrlp + (num_points * dimension);
-	if (last) {
+	if (last && ts_distance(p1, last, dimension) > eps) {
 		memcpy(cr_ctrlp + ((num_points + 1) * dimension),
 		       last, sof_ctrlp);
 	} else {

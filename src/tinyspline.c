@@ -834,16 +834,29 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 			l = len_points - (i+1);
 			d[k] -= points[l];
 		}
-		TS_CALL(try, err, ts_int_thomas_algorithm(
-			a, b, c, num_int_points, dimension, d, status));
-		memcpy(thomas, points, num_points * sof_ctrlp);
-		memcpy(thomas + dimension, d, num_int_points * sof_ctrlp);
+		/* The Thomas algorithm requires at least two points. Hence,
+		 * `num_int_points` == 1 must be handled separately (let's call
+		 * it "Mini Thomas"). */
+		if (num_int_points == 1) {
+			for (i = 0; i < dimension; i++)
+				d[i] *= (tsReal) 0.25f;
+		} else {
+			TS_CALL(try, err, ts_int_thomas_algorithm(
+				a, b, c, num_int_points, dimension, d,
+				status));
+		}
+		memcpy(thomas, points, sof_ctrlp);
+		memmove(thomas + dimension, d, num_int_points * sof_ctrlp);
+		memcpy(thomas + (num_int_points+1) * dimension,
+		       points + (num_points-1) * dimension,
+		       sof_ctrlp);
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
 			thomas, num_points, dimension, spline, status))
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_FINALLY
-		free(thomas);
+		if (thomas)
+			free(thomas);
 	TS_END_TRY_RETURN(err)
 }
 

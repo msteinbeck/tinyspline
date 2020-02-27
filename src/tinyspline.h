@@ -978,11 +978,10 @@ void ts_deboornet_free(tsDeBoorNet *net);
  *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
  *
  * The resultant spline is a sequence of bezier curves connecting each point
- * in \p points. Each bezier curve _b_ is of degree 3 with \p dimension being
- * the dimension of the each control point in _b_. The total number of control
- * points is (\p num_points - 1) * 4.
+ * in \p points. Each bezier curve is of degree 3 with dimensionality
+ * \p dimension. The total number of control points is:
  *
- * On error, all values of \p spline are set to 0/NULL.
+ *     min(1, \p num_points - 1) * 4
  *
  * Note: \p num_points is the number of points in \p points and not the length
  * of \p points. For instance, the following point vector has
@@ -1003,9 +1002,9 @@ void ts_deboornet_free(tsDeBoorNet *net);
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p num_points < 2.
+ * 	If \p dimension is 0.
+ * @return TS_NUM_POINTS
+ * 	If \p num_points is 0.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
@@ -1056,7 +1055,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
  * 	On success.
  * @return TS_DIM_ZERO
  * 	If \p dimension is 0.
- * @return TS_DEG_GE_NCTRLP
+ * @return TS_NUM_POINTS
  * 	If \p num_points is 1.
  * @return TS_MALLOC
  * 	If allocating memory failed.

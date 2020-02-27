@@ -736,7 +736,7 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	if (dim == 0)
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n <= 1) {
-		TS_RETURN_1(status, TS_DEG_GE_NCTRLP,
+		TS_RETURN_1(status, TS_NUM_POINTS,
 			   "num(points) (%lu) <= 1", (unsigned long) n)
 	}
 	/* in the following n >= 2 applies */
@@ -898,7 +898,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	if (dimension == 0)
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (num_points == 0)
-		TS_RETURN_0(status, TS_DEG_GE_NCTRLP, "num(points) == 0")
+		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (num_points == 1) {
 		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
 			num_points - 1, TS_CLAMPED, spline, status))

@@ -802,9 +802,8 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 	tsReal *thomas, *a, *b, *c, *d;
 	size_t i, j, k, l;
 	tsError err;
-	ts_int_bspline_init(spline);
-	thomas = NULL;
 
+	ts_int_bspline_init(spline);
 	if (num_points == 0)
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (num_points == 1) {
@@ -821,6 +820,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 			points, num_points, dimension, spline, status);
 	}
 	/* `num_points` >= 3 */
+	thomas = NULL;
 	TS_TRY(try, err, status)
 		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
 		if (!thomas) {

@@ -844,9 +844,9 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
 			}
 		}
 		for (i = 0; i < dimension; i++) {
-			/* 6 * S_{1} − S_{0} */
+			/* 6 * S_{1} - S_{0} */
 			d[i] -= points[i];
-			/* 6 * S_{n-1} − S_{n} */
+			/* 6 * S_{n-1} - S_{n} */
 			k = len_int_points - (i+1);
 			l = len_points - (i+1);
 			d[k] -= points[l];

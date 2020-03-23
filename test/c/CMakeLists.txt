@@ -14,8 +14,7 @@ include_directories(cutest)
 add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
 	LINK_PUBLIC tinyspline_static
-	${TINYSPLINE_LIBRARIES}
-)
+	${TINYSPLINE_STATIC_LIBRARIES})
 
 ###############################################################################
 ### Create code coverage.
@@ -31,9 +30,8 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 		COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS}
 	)
 	target_link_libraries(tinyspline_tests_coverage
-		${TINYSPLINE_LIBRARIES}
-		${TINYSPLINE_COVERAGE_C_LIBRARIES}
-	)
+		${TINYSPLINE_STATIC_LIBRARIES}
+		${TINYSPLINE_COVERAGE_C_LIBRARIES})
 	set(TINYSPLINE_COVERAGE_INFO_FILE coverage.info)
 	add_custom_target(tinyspline_coverage
 		COMMAND ${TINYSPLINE_LCOV}

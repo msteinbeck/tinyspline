@@ -44,15 +44,13 @@ endif()
 add_executable(quickstart_c quickstart.c)
 target_link_libraries(quickstart_c
 		LINK_PUBLIC tinyspline_static
-		${TINYSPLINE_LIBRARIES}
-		)
+		${TINYSPLINE_STATIC_LIBRARIES})
 set_target_properties(quickstart_c PROPERTIES FOLDER "examples/c")
 
 add_executable(json_export_c json_export.c)
 target_link_libraries(json_export_c
 		LINK_PUBLIC tinyspline_static
-		${TINYSPLINE_LIBRARIES}
-		)
+		${TINYSPLINE_STATIC_LIBRARIES})
 set_target_properties(json_export_c PROPERTIES FOLDER "examples/c")
 
 if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
@@ -60,63 +58,54 @@ if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 	add_executable(bspline bspline.c)
 	target_link_libraries(bspline
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES}${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(bspline PROPERTIES FOLDER "examples/c")
 
 	add_executable(nurbs nurbs.c)
 	target_link_libraries(nurbs
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(nurbs PROPERTIES FOLDER "examples/c")
 
 	add_executable(split split.c)
 	target_link_libraries(split
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(split PROPERTIES FOLDER "examples/c")
 
 	add_executable(beziers beziers.c)
 	target_link_libraries(beziers
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(beziers PROPERTIES FOLDER "examples/c")
 
 	add_executable(interpolation interpolation.c)
 	target_link_libraries(interpolation
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(interpolation PROPERTIES FOLDER "examples/c")
 
 	add_executable(derivative derivative.c)
 	target_link_libraries(derivative
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(derivative PROPERTIES FOLDER "examples/c")
 
 	add_executable(tension tension.c)
 	target_link_libraries(tension
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(tension PROPERTIES FOLDER "examples/c")
 
 	add_executable(triangle triangle.c)
 	target_link_libraries(triangle
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(triangle PROPERTIES FOLDER "examples/c")
 
 	add_executable(triangle-nurbs triangle-nurbs.c)
 	target_link_libraries(triangle-nurbs
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_LIBRARIES}
-	)
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(triangle-nurbs PROPERTIES FOLDER "examples/c")
 endif()

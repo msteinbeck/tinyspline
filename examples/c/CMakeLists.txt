@@ -31,6 +31,7 @@ endif()
 ###############################################################################
 if(APPLE)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -framework OpenGL -framework GLUT")
+	add_definitions(-DGL_SILENCE_DEPRECATION)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")

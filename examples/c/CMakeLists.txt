@@ -59,7 +59,7 @@ if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 	add_executable(bspline bspline.c)
 	target_link_libraries(bspline
 		LINK_PUBLIC tinyspline_static
-		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES}${TINYSPLINE_STATIC_LIBRARIES})
+		${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${TINYSPLINE_STATIC_LIBRARIES})
 	set_target_properties(bspline PROPERTIES FOLDER "examples/c")
 
 	add_executable(nurbs nurbs.c)

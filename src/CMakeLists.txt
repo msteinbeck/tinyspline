@@ -277,6 +277,15 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 ###############################################################################
 ### Add different options to this script.
 #
+# TINYSPLINE_INSTALL_INCLUDE_DIR
+#   Installation directory of header files.
+#
+# TINYSPLINE_INSTALL_LIBRARY_DIR
+#   Installation directory of library files.
+#
+# TINYSPLINE_INSTALL_PKGCONFIG_DIR
+#   Installation directory of pkg-config files.
+#
 # TINYSPLINE_FLOAT_PRECISION - default: OFF
 #   Build with float instead of double precision.
 #
@@ -299,6 +308,24 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   List of compiler specific runtime libraries that mus be included into
 #   distribution artifacts.
 ###############################################################################
+# TINYSPLINE_INSTALL_INCLUDE_DIR
+set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files.")
+
+# TINYSPLINE_INSTALL_LIBRARY_DIR
+set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files. If empty, the directory is determined automatically.")
+if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(TINYSPLINE_INSTALL_LIBRARY_DIR
+            "lib64" CACHE STRING "Autodetected." FORCE)
+	else()
+        set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib"
+            CACHE STRING "Autodetected." FORCE)
+	endif()
+endif()
+
+# TINYSPLINE_INSTALL_PKGCONFIG_DIR
+set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "share/pkgconfig" CACHE STRING "Installation directory of pkg-config (.pc) files.")
+
 # TINYSPLINE_FLOAT_PRECISION
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
@@ -712,9 +739,9 @@ set_target_properties(tinyspline_shared PROPERTIES
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
 install(TARGETS tinyspline_shared
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	RUNTIME DESTINATION lib)
+	LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+	ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+	RUNTIME DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
 target_include_directories(tinyspline_shared
 	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
@@ -724,14 +751,12 @@ set_target_properties(tinyspline_static PROPERTIES
 	PREFIX "lib"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
 install(TARGETS tinyspline_static
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib)
+	LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+	ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
 target_include_directories(tinyspline_static
 	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 install(FILES tinyspline.h
-	DESTINATION include)
-
-set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
+	DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
@@ -741,9 +766,9 @@ if(TINYSPLINE_ENABLE_CXX)
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
 	install(TARGETS tinysplinecpp_shared
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION lib)
+		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+		RUNTIME DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
 	target_include_directories(tinysplinecpp_shared
 			PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
@@ -753,16 +778,16 @@ if(TINYSPLINE_ENABLE_CXX)
 		PREFIX "lib"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
 	install(TARGETS tinysplinecpp_static
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib)
+		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
+		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
 	target_include_directories(tinysplinecpp_static
 		PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
 	install(FILES tinysplinecpp.h
-			DESTINATION include)
+			DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
 	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in"
 			"tinysplinecpp.pc" @ONLY)
 	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
-			DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+			DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
 endif()
 
 

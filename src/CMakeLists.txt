@@ -402,13 +402,13 @@ endif()
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
 #
-# TINYSPLINE_STATIC_LIBRARIES (set in parent scope)
+# TINYSPLINE_C_STATIC_LIBRARIES (set in parent scope)
 #   Additional libraries to link against when linking TinySpline's C interface
-#   statically.
+#   statically (a string containing the necessary linker flags).
 #
 # TINYSPLINE_CXX_STATIC_LIBRARIES (set in parent scope)
 #   Additional libraries to link against when linking TinySpline's C++
-#   interface statically.
+#   interface statically (a string containing the necessary linker flags).
 #
 # TINYSPLINE_LIBRARY_C_FLAGS
 #   C library specific flags.
@@ -460,7 +460,7 @@ set(TINYSPLINE_PKGCONFIG_C_FLAGS "${TINYSPLINE_DEFINITIONS}")
 set(TINYSPLINE_PKGCONFIG_CXX_FLAGS "${TINYSPLINE_DEFINITIONS}")
 
 # TINYSPLINE_CXX11_COMPLIANT
-# TINYSPLINE_STATIC_LIBRARIES
+# TINYSPLINE_C_STATIC_LIBRARIES
 # TINYSPLINE_CXX_STATIC_LIBRARIES
 # TINYSPLINE_LIBRARY_C_FLAGS
 # TINYSPLINE_LIBRARY_CXX_FLAGS
@@ -480,9 +480,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	# CMAKE_C_FLAGS
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
 
-	# TINYSPLINE_STATIC_LIBRARIES
+	# TINYSPLINE_C_STATIC_LIBRARIES
 	# TINYSPLINE_CXX_STATIC_LIBRARIES
-	set(TINYSPLINE_STATIC_LIBRARIES "${TINYSPLINE_STATIC_LIBRARIES} -lm")
+	set(TINYSPLINE_C_STATIC_LIBRARIES "${TINYSPLINE_C_STATIC_LIBRARIES} -lm")
 	set(TINYSPLINE_CXX_STATIC_LIBRARIES "${TINYSPLINE_CXX_STATIC_LIBRARIES} -lm")
 	# Link the necessary libraries directly into shared libs.
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
@@ -516,9 +516,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# CMAKE_C_FLAGS
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c89")
 
-	# TINYSPLINE_STATIC_LIBRARIES
+	# TINYSPLINE_C_STATIC_LIBRARIES
 	# TINYSPLINE_CXX_STATIC_LIBRARIES
-	set(TINYSPLINE_STATIC_LIBRARIES "${TINYSPLINE_STATIC_LIBRARIES} -lm")
+	set(TINYSPLINE_C_STATIC_LIBRARIES "${TINYSPLINE_C_STATIC_LIBRARIES} -lm")
 	set(TINYSPLINE_CXX_STATIC_LIBRARIES "${TINYSPLINE_CXX_STATIC_LIBRARIES} -lm")
 	# Link the necessary libraries directly into shared libs.
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lm")
@@ -567,7 +567,7 @@ endif()
 # Remove leading and trailing spaces from variables.
 string(STRIP "${CMAKE_C_FLAGS}" CMAKE_C_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
-string(STRIP "${TINYSPLINE_STATIC_LIBRARIES}" TINYSPLINE_STATIC_LIBRARIES)
+string(STRIP "${TINYSPLINE_C_STATIC_LIBRARIES}" TINYSPLINE_C_STATIC_LIBRARIES)
 string(STRIP "${TINYSPLINE_CXX_STATIC_LIBRARIES}" TINYSPLINE_CXX_STATIC_LIBRARIES)
 string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
@@ -576,14 +576,14 @@ string(STRIP "${TINYSPLINE_PKGCONFIG_C_FLAGS}" TINYSPLINE_PKGCONFIG_C_FLAGS)
 string(STRIP "${TINYSPLINE_PKGCONFIG_CXX_FLAGS}" TINYSPLINE_PKGCONFIG_CXX_FLAGS)
 # Export relevant variables.
 if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_STATIC_LIBRARIES
-			"${TINYSPLINE_STATIC_LIBRARIES}"
+	set(TINYSPLINE_C_STATIC_LIBRARIES
+			"${TINYSPLINE_C_STATIC_LIBRARIES}"
 			PARENT_SCOPE)
 	set(TINYSPLINE_CXX_STATIC_LIBRARIES
 			"${TINYSPLINE_CXX_STATIC_LIBRARIES}"
 			PARENT_SCOPE)
 else()
-	set(TINYSPLINE_STATIC_LIBRARIES "${TINYSPLINE_STATIC_LIBRARIES}")
+	set(TINYSPLINE_C_STATIC_LIBRARIES "${TINYSPLINE_C_STATIC_LIBRARIES}")
 	set(TINYSPLINE_CXX_STATIC_LIBRARIES "${TINYSPLINE_CXX_STATIC_LIBRARIES}")
 endif()
 
@@ -661,9 +661,11 @@ endif()
 ### Create the C/C++ library. We explicitly set the prefix of the static
 ### library to 'lib' to prevent naming collisions when compiling with MSVC.
 #
-# TINYSPLINE_INCLUDE_DIRS (set in parent scope)
-#   Include directories of the C/C++ library. The listed directories contain
-#   all header files as well as all source files (.c/.cpp files).
+# TINYSPLINE_C_INCLUDE_DIR (set in parent scope)
+#   Include directory (absolute path) of the C library.
+#
+# TINYSPLINE_CXX_INCLUDE_DIR (set in parent scope)
+#   Include directory (absolute path) of the C++ library.
 #
 # TINYSPLINE_C_SOURCE_FILES (set in parent scope)
 #   List of source files (absolute paths) that are required to build the C
@@ -674,18 +676,19 @@ endif()
 #   library. Does not contain header files, but all source files listed in
 #   TINYSPLINE_C_SOURCE_FILES.
 ###############################################################################
-# TINYSPLINE_INCLUDE_DIRS
+# TINYSPLINE_C_INCLUDE_DIR
+# TINYSPLINE_CXX_INCLUDE_DIR
+set(TINYSPLINE_C_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(TINYSPLINE_CXX_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
-else()
-	set(TINYSPLINE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+	set(TINYSPLINE_C_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
+	set(TINYSPLINE_CXX_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
 endif()
 
 # TINYSPLINE_C_SOURCE_FILES
 list(APPEND TINYSPLINE_C_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.c"
-	"${CMAKE_CURRENT_SOURCE_DIR}/parson.c"
-)
+	"${CMAKE_CURRENT_SOURCE_DIR}/parson.c")
 if(TINYSPLINE_HAS_PARENT)
 	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
 else()
@@ -695,8 +698,7 @@ endif()
 # TINYSPLINE_CXX_SOURCE_FILES
 list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 	${TINYSPLINE_C_SOURCE_FILES}
-	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecpp.cpp"
-)
+	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecpp.cpp")
 if(TINYSPLINE_HAS_PARENT)
 	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
 else()
@@ -708,30 +710,26 @@ add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_shared PROPERTIES
 	OUTPUT_NAME "tinyspline"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
-)
+	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
 install(TARGETS tinyspline_shared
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
-	RUNTIME DESTINATION lib
-)
+	RUNTIME DESTINATION lib)
+target_include_directories(tinyspline_shared
+	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_static PROPERTIES
 	OUTPUT_NAME "tinyspline"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	PREFIX "lib"
-	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
-)
+	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
 install(TARGETS tinyspline_static
 	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
-install(FILES tinyspline.h
-	DESTINATION include
-)
+	ARCHIVE DESTINATION lib)
 target_include_directories(tinyspline_static
-	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
+	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
+install(FILES tinyspline.h
+	DESTINATION include)
 
 set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
@@ -741,34 +739,30 @@ if(TINYSPLINE_ENABLE_CXX)
 	set_target_properties(tinysplinecpp_shared PROPERTIES
 		OUTPUT_NAME "tinysplinecpp"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-	)
+		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
 	install(TARGETS tinysplinecpp_shared
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION lib
-	)
-	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in" "tinysplinecpp.pc" @ONLY)
-	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
-		DESTINATION "${INSTALL_PKGCONFIG_DIR}"
-	)
+		RUNTIME DESTINATION lib)
+	target_include_directories(tinysplinecpp_shared
+			PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_static PROPERTIES
 		OUTPUT_NAME "tinysplinecpp"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		PREFIX "lib"
-		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-	)
+		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
 	install(TARGETS tinysplinecpp_static
 		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
-	install(FILES tinysplinecpp.h
-		DESTINATION include
-	)
+		ARCHIVE DESTINATION lib)
 	target_include_directories(tinysplinecpp_static
-		PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-	)
+		PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
+	install(FILES tinysplinecpp.h
+			DESTINATION include)
+	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in"
+			"tinysplinecpp.pc" @ONLY)
+	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
+			DESTINATION "${INSTALL_PKGCONFIG_DIR}")
 endif()
 
 
@@ -1465,7 +1459,7 @@ Interface Configuration:
 Compiler Configuration:
   Compiler:       ${CMAKE_CXX_COMPILER}
   C flags:        ${TINYSPLINE_SUMMARY_C_FLAGS}
-  C libraries:    ${TINYSPLINE_STATIC_LIBRARIES}
+  C libraries:    ${TINYSPLINE_C_STATIC_LIBRARIES}
   C++ flags:      ${TINYSPLINE_SUMMARY_CXX_FLAGS}
   C++ libraries:  ${TINYSPLINE_CXX_STATIC_LIBRARIES}
   Binding flags:  ${TINYSPLINE_SUMMARY_BINDING_FLAGS}

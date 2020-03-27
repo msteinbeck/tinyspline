@@ -8,15 +8,15 @@
 # php-devel package. See http://php.net/manual/en/install.pecl.php-config.php
 # for php-config documentation.
 #
-# This code sets the following variables:
-#  PHP_EXECUTABLE             = full path to the php binary
-#  PHP_CONFIG_EXECUTABLE      = full path to the php-config binary
-#  PHP_EXTENSIONS_DIR         = directory containing PHP extensions
-#  PHP_EXTENSIONS_INCLUDE_DIR = directory containing PHP extension headers
-#  PHP_INCLUDE_DIRS           = include directives for PHP development
-#  PHP_VERSION_NUMBER         = PHP version number in PHP's "vernum" format eg 50303
-#  PHP_VERSION_STRING         = PHP version string eg 5.3.3-1ubuntu9.3
-#  PHP_FOUND                  = set to TRUE if all of the above has been found.
+# This module defines:
+#  PHP_EXECUTABLE             - full path to the php binary
+#  PHP_CONFIG_EXECUTABLE      - full path to the php-config binary
+#  PHP_EXTENSIONS_DIR         - directory containing PHP extensions
+#  PHP_EXTENSIONS_INCLUDE_DIR - directory containing PHP extension headers
+#  PHP_INCLUDE_DIRS           - include directives for PHP development
+#  PHP_VERSION_NUMBER         - PHP version number in PHP's "vernum" format eg 50303
+#  PHP_VERSION_STRING         - PHP version string eg 5.3.3-1ubuntu9.3
+#  PHP_FOUND                  - set to TRUE if all of the above has been found.
 #
 
 #=============================================================================
@@ -36,69 +36,55 @@
 # and find Zend headers.  © Nightwave Studios, 2017.
 #
 
-FIND_PROGRAM(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
+find_program(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
 
 if(PHP_CONFIG_EXECUTABLE)
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --php-binary
-			OUTPUT_VARIABLE PHP_EXECUTABLE
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --php-binary
+		OUTPUT_VARIABLE PHP_EXECUTABLE
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --extension-dir
-			OUTPUT_VARIABLE PHP_EXTENSIONS_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --extension-dir
+		OUTPUT_VARIABLE PHP_EXTENSIONS_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --include-dir
-			OUTPUT_VARIABLE PHP_EXTENSIONS_INCLUDE_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --include-dir
+		OUTPUT_VARIABLE PHP_EXTENSIONS_INCLUDE_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --includes
-			OUTPUT_VARIABLE PHP_INCLUDE_DIRS
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --includes
+		OUTPUT_VARIABLE PHP_INCLUDE_DIRS
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --vernum
-			OUTPUT_VARIABLE PHP_VERSION_NUMBER
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --vernum
+		OUTPUT_VARIABLE PHP_VERSION_NUMBER
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${PHP_CONFIG_EXECUTABLE} --version
-			OUTPUT_VARIABLE PHP_VERSION_STRING
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${PHP_CONFIG_EXECUTABLE} --version
+		OUTPUT_VARIABLE PHP_VERSION_STRING
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
 	PHP_CONFIG_EXECUTABLE
 	PHP_EXECUTABLE
 	PHP_EXTENSIONS_DIR
 	PHP_EXTENSIONS_INCLUDE_DIR
 	PHP_INCLUDE_DIRS
 	PHP_VERSION_NUMBER
-	PHP_VERSION_STRING
-)
+	PHP_VERSION_STRING)
 
 if(PHP_FIND_COMPONENTS)
 	foreach(component ${PHP_FIND_COMPONENTS})
 		if(component STREQUAL "Zend")
-			FIND_PATH(PHP_ZEND_HEADER
+			find_path(PHP_ZEND_HEADER
 				NAMES "zend.h"
-				PATHS "${PHP_EXTENSIONS_INCLUDE_DIR}/*"
-			)
+				PATHS "${PHP_EXTENSIONS_INCLUDE_DIR}/*")
 			if(PHP_ZEND_HEADER)
 				set(PHP_Zend_FOUND TRUE)
 			endif()
@@ -107,8 +93,8 @@ if(PHP_FIND_COMPONENTS)
 	endforeach()
 endif()
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(PHP
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PHP
 	FOUND_VAR
 		PHP_FOUND
 	REQUIRED_VARS
@@ -121,5 +107,4 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(PHP
 		PHP_VERSION_STRING
 	VERSION_VAR
 		PHP_VERSION_STRING
-	HANDLE_COMPONENTS
-)
+	HANDLE_COMPONENTS)

@@ -2,18 +2,18 @@
 # GNU Octave is a high-level interpreted language, primarily intended for
 # numerical computations. Available at http://www.gnu.org/software/octave
 #
-# This module defines: 
-#  OCTAVE_EXECUTABLE           - octave interpreter
-#  OCTAVE_INCLUDE_DIRS         - include path for mex.h, mexproto.h
-#  OCTAVE_LIBRARIES            - required libraries: octinterp, octave
-#  OCTAVE_OCTINTERP_LIBRARY    - path to the library octinterp
-#  OCTAVE_OCTAVE_LIBRARY       - path to the library octave
-#  OCTAVE_VERSION_STRING       - octave version string
-#  OCTAVE_MAJOR_VERSION        - major version
-#  OCTAVE_MINOR_VERSION        - minor version
-#  OCTAVE_PATCH_VERSION        - patch version
-#  OCTAVE_OCT_FILE_DIR         - object files that will be dynamically loaded
-#  OCTAVE_OCT_LIB_DIR          - oct libraries
+# This module defines:
+#  OCTAVE_EXECUTABLE        - octave interpreter
+#  OCTAVE_INCLUDE_DIRS      - include path for mex.h, mexproto.h
+#  OCTAVE_LIBRARIES         - required libraries: octinterp, octave
+#  OCTAVE_OCTINTERP_LIBRARY - path to the library octinterp
+#  OCTAVE_OCTAVE_LIBRARY    - path to the library octave
+#  OCTAVE_VERSION_STRING    - octave version string
+#  OCTAVE_MAJOR_VERSION     - major version
+#  OCTAVE_MINOR_VERSION     - minor version
+#  OCTAVE_PATCH_VERSION     - patch version
+#  OCTAVE_OCT_FILE_DIR      - object files that will be dynamically loaded
+#  OCTAVE_OCT_LIB_DIR       - oct libraries
 #
 
 #=============================================================================
@@ -45,114 +45,87 @@
 #=============================================================================
 
 find_program(OCTAVE_CONFIG_EXECUTABLE
-	NAMES octave-config
-)
+	NAMES octave-config)
 
 if(OCTAVE_CONFIG_EXECUTABLE)
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p BINDIR
-			OUTPUT_VARIABLE OCTAVE_BIN_PATHS
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -p BINDIR
+		OUTPUT_VARIABLE OCTAVE_BIN_PATHS
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p OCTINCLUDEDIR
-			OUTPUT_VARIABLE OCTAVE_INCLUDE_PATHS
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -p OCTINCLUDEDIR
+		OUTPUT_VARIABLE OCTAVE_INCLUDE_PATHS
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
-			OUTPUT_VARIABLE OCTAVE_LIBRARIES_PATHS
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
+		OUTPUT_VARIABLE OCTAVE_LIBRARIES_PATHS
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p OCTFILEDIR
-			OUTPUT_VARIABLE OCTAVE_OCT_FILE_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -p OCTFILEDIR
+		OUTPUT_VARIABLE OCTAVE_OCT_FILE_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
-			OUTPUT_VARIABLE OCTAVE_OCT_LIB_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
+		OUTPUT_VARIABLE OCTAVE_OCT_LIB_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${OCTAVE_CONFIG_EXECUTABLE} -v
-			OUTPUT_VARIABLE OCTAVE_VERSION_STRING
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${OCTAVE_CONFIG_EXECUTABLE} -v
+		OUTPUT_VARIABLE OCTAVE_VERSION_STRING
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	string(
-		REGEX REPLACE
-			"([0-9]+)\\..*" "\\1"
-			OCTAVE_MAJOR_VERSION
-			${OCTAVE_VERSION_STRING}
-	)
+	string(REGEX REPLACE
+		"([0-9]+)\\..*" "\\1"
+		OCTAVE_MAJOR_VERSION
+		${OCTAVE_VERSION_STRING})
 
-	string(
-		REGEX REPLACE
-			"[0-9]+\\.([0-9]+).*" "\\1"
-			OCTAVE_MINOR_VERSION
-			${OCTAVE_VERSION_STRING}
-	)
+	string(REGEX REPLACE
+		"[0-9]+\\.([0-9]+).*" "\\1"
+		OCTAVE_MINOR_VERSION
+		${OCTAVE_VERSION_STRING})
 
-	string(
-		REGEX REPLACE
-			"[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
-			OCTAVE_PATCH_VERSION
-			${OCTAVE_VERSION_STRING}
-	)
+	string(REGEX REPLACE
+		"[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+		OCTAVE_PATCH_VERSION
+		${OCTAVE_VERSION_STRING})
 endif()
 
 find_program(OCTAVE_EXECUTABLE
 	NAMES octave
-	HINTS ${OCTAVE_BIN_PATHS}
-)
+	HINTS ${OCTAVE_BIN_PATHS})
 
 find_program(OCTAVE_MKOCTFILE
 	NAMES mkoctfile
-	HINTS ${OCTAVE_BIN_PATHS}
-)
+	HINTS ${OCTAVE_BIN_PATHS})
 
 find_library(OCTAVE_OCTINTERP_LIBRARY
 	NAMES octinterp liboctinterp
-	HINTS ${OCTAVE_LIBRARIES_PATHS}
-)
+	HINTS ${OCTAVE_LIBRARIES_PATHS})
 
 find_library(OCTAVE_OCTAVE_LIBRARY
 	NAMES octave liboctave
-	HINTS ${OCTAVE_LIBRARIES_PATHS}
-)
+	HINTS ${OCTAVE_LIBRARIES_PATHS})
 
 find_path(OCTAVE_INCLUDE_DIR 
 	NAMES octave.h
 	HINTS ${OCTAVE_INCLUDE_PATHS}
-	"${OCTAVE_INCLUDE_PATHS}/octave"
-)
+	"${OCTAVE_INCLUDE_PATHS}/octave")
 
 get_filename_component(OCTAVE_INCLUDE_DIR2
 	${OCTAVE_INCLUDE_DIR}
-	DIRECTORY
-)
+	DIRECTORY)
 
 set(OCTAVE_INCLUDE_DIRS
 	${OCTAVE_INCLUDE_DIR}
-	${OCTAVE_INCLUDE_DIR2}
-)
+	${OCTAVE_INCLUDE_DIR2})
 
 set(OCTAVE_LIBRARIES
 	${OCTAVE_OCTINTERP_LIBRARY}
-	${OCTAVE_OCTAVE_LIBRARY}
-)
+	${OCTAVE_OCTAVE_LIBRARY})
 
 mark_as_advanced(
 	OCTAVE_OCT_FILE_DIR
@@ -165,8 +138,7 @@ mark_as_advanced(
 	OCTAVE_VERSION_STRING
 	OCTAVE_MAJOR_VERSION
 	OCTAVE_MINOR_VERSION
-	OCTAVE_PATCH_VERSION
-)
+	OCTAVE_PATCH_VERSION)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Octave
@@ -175,5 +147,4 @@ find_package_handle_standard_args(Octave
 		OCTAVE_INCLUDE_DIRS
 		OCTAVE_LIBRARIES
 	VERSION_VAR
-		OCTAVE_VERSION_STRING
-)
+		OCTAVE_VERSION_STRING)

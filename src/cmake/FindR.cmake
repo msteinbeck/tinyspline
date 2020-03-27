@@ -4,7 +4,7 @@
 # 	Nightwave Studios - FindR.cmake
 # 	https://www.nightwave.co
 #
-# The following variables are set:
+# This module defines:
 #   R_RSCRIPT_EXECUTABLE - full path to the Rscript binary
 #   R_HOME_DIR           - home directory of R
 #   R_INCLUDE_DIRS       - include directories of R
@@ -17,37 +17,28 @@
 #
 
 find_program(R_RSCRIPT_EXECUTABLE
-	NAMES Rscript
-)
+	NAMES Rscript)
 
 if(R_RSCRIPT_EXECUTABLE)
-	execute_process(
-		COMMAND
-			${R_RSCRIPT_EXECUTABLE} -e "cat(R.home())"
-			OUTPUT_VARIABLE R_HOME_DIR
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${R_RSCRIPT_EXECUTABLE} -e "cat(R.home())"
+		OUTPUT_VARIABLE R_HOME_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${R_RSCRIPT_EXECUTABLE} -e "cat(R.home('include'))"
-			OUTPUT_VARIABLE R_INCLUDE_DIRS
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${R_RSCRIPT_EXECUTABLE} -e "cat(R.home('include'))"
+		OUTPUT_VARIABLE R_INCLUDE_DIRS
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	execute_process(
-		COMMAND
-			${R_RSCRIPT_EXECUTABLE} -e "cat(R.version.string)"
-			OUTPUT_VARIABLE R_VERSION
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process(COMMAND
+		${R_RSCRIPT_EXECUTABLE} -e "cat(R.version.string)"
+		OUTPUT_VARIABLE R_VERSION
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	string(
-		REGEX REPLACE
-			"[a-zA-Z]|[(].*|[ ]" ""
-			R_VERSION
-			"${R_VERSION}"
-	)
+	string(REGEX REPLACE
+		"[a-zA-Z]|[(].*|[ ]" ""
+		R_VERSION
+		"${R_VERSION}")
 
 	set(R_LIBRARY_DIR "${R_HOME_DIR}/bin/x64")
 	if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
@@ -55,29 +46,23 @@ if(R_RSCRIPT_EXECUTABLE)
 	endif()
 	find_library(R_LIBRARIES
 		NAMES libR R
-		PATHS ${R_LIBRARY_DIR} "${R_HOME_DIR}/*"
-	)
+		PATHS ${R_LIBRARY_DIR} "${R_HOME_DIR}/*")
 	unset(R_LIBRARY_DIR)
 
 	if(R_FIND_COMPONENTS)
 		foreach(component ${R_FIND_COMPONENTS})
 			if(component STREQUAL "Rcpp")
-				execute_process(
-					COMMAND
-						${R_RSCRIPT_EXECUTABLE} -e "library(Rcpp) ; cat(path.package('Rcpp'))"
-						OUTPUT_VARIABLE R_RCPP_HOME_DIR
-						OUTPUT_STRIP_TRAILING_WHITESPACE
-				)
+				execute_process(COMMAND
+					${R_RSCRIPT_EXECUTABLE} -e "library(Rcpp) ; cat(path.package('Rcpp'))"
+					OUTPUT_VARIABLE R_RCPP_HOME_DIR
+					OUTPUT_STRIP_TRAILING_WHITESPACE)
 				find_path(R_RCPP_INCLUDE_DIR
 					NAMES Rcpp.h
-					PATHS "${R_RCPP_HOME_DIR}/*"
-				)
+					PATHS "${R_RCPP_HOME_DIR}/*")
 				if(R_RCPP_INCLUDE_DIR)
-					list(
-						APPEND
-							R_INCLUDE_DIRS
-							${R_RCPP_INCLUDE_DIR}
-					)
+					list(APPEND
+						R_INCLUDE_DIRS
+						${R_RCPP_INCLUDE_DIR})
 					set(R_Rcpp_FOUND TRUE)
 				endif()
 				unset(R_RCPP_HOME_DIR)
@@ -87,15 +72,14 @@ if(R_RSCRIPT_EXECUTABLE)
 	endif()
 endif()
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
 	R_RSCRIPT_EXECUTABLE
 	R_HOME
 	R_INCLUDE_DIRS
 	R_VERSION
-	R_LIBRARIES
-)
+	R_LIBRARIES)
 
-INCLUDE(FindPackageHandleStandardArgs)
+include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(R
 	FOUND_VAR
 		R_FOUND
@@ -107,5 +91,4 @@ find_package_handle_standard_args(R
 		R_LIBRARIES
 	VERSION_VAR
 		R_VERSION
-	HANDLE_COMPONENTS
-)
+	HANDLE_COMPONENTS)

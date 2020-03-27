@@ -24,11 +24,9 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 	add_executable(tinyspline_tests_coverage
 		EXCLUDE_FROM_ALL
 		${TINYSPLINE_TESTS_SOURCE_FILES}
-		${TINYSPLINE_C_SOURCE_FILES}
-	)
+		${TINYSPLINE_C_SOURCE_FILES})
 	set_target_properties(tinyspline_tests_coverage PROPERTIES
-		COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS}
-	)
+		COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS})
 	target_link_libraries(tinyspline_tests_coverage
 		${TINYSPLINE_C_STATIC_LIBRARIES}
 		${TINYSPLINE_COVERAGE_C_LIBRARIES})
@@ -53,6 +51,5 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 			${TINYSPLINE_COVERAGE_INFO_FILE}
 		COMMAND ${CMAKE_COMMAND}
 			-E remove ${TINYSPLINE_COVERAGE_INFO_FILE}
-		DEPENDS tinyspline_tests_coverage
-	)
+		DEPENDS tinyspline_tests_coverage)
 endif()

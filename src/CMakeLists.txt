@@ -685,8 +685,8 @@ endif()
 
 
 ###############################################################################
-### Create the C/C++ library. We explicitly set the prefix of the static
-### library to 'lib' to prevent naming collisions when compiling with MSVC.
+### Create the C/C++ libraries. We explicitly set the prefix of the static
+### libraries to 'lib' to prevent naming collisions when compiling with MSVC.
 #
 # TINYSPLINE_C_INCLUDE_DIR (set in parent scope)
 #   Include directory (absolute path) of the C library.

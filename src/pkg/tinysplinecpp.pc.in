@@ -1,12 +1,12 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=@CMAKE_INSTALL_PREFIX@
-libdir=@INSTALL_LIB_DIR@
-includedir=@INSTALL_INC_DIR@
+exec_prefix=${prefix}
+libdir=${prefix}/@TINYSPLINE_INSTALL_LIBRARY_DIR@
+includedir=${prefix}/@TINYSPLINE_INSTALL_INCLUDE_DIR@
 
 Name: @TINYSPLINE_PACKAGE_NAME@
 Description: @TINYSPLINE_DESCRIPTION@
 Version: @TINYSPLINE_VERSION@
 
-Libs: -L${libdir} -l tinysplinecpp
+Libs: -L${libdir} -ltinysplinecpp
+Libs.private: @TINYSPLINE_CXX_STATIC_LIBRARIES@
 Cflags: -I${includedir} @TINYSPLINE_PKGCONFIG_CXX_FLAGS@
-

@@ -757,6 +757,10 @@ target_include_directories(tinyspline_static
 	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 install(FILES tinyspline.h
 	DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
+		"tinyspline.pc" @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
+		DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)

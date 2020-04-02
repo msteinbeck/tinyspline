@@ -11,88 +11,129 @@
 
 // Automatically load native library.
 %pragma(java) jniclasscode=%{
+	private static final java.util.logging.Logger log = java.util.logging.Logger
+		.getLogger(tinysplinejavaJNI.class.getName());
+
+	private static void log(final String msg, final Object... args) {
+		log.fine(String.format(msg, args));
+	}
+
+	private static void error(final String msg, final Object... args) {
+		throw new Error(String.format(msg, args));
+	}
+
+	private static void error(final Throwable t, final String msg, final Object... args) {
+		throw new Error(String.format(msg, args), t);
+	}
+
 	static {
-		final java.util.logging.Logger log = java.util.logging.Logger
-			.getLogger(tinysplinejavaJNI.class.getName());
+		log("Creating temporary directory");
+		final java.io.File tmpDir = createTmpDir();
+		log("Created directory '%s'", tmpDir);
 
 		// Determine the libraries that need to be loaded.
-		final String platform = determinePlatform();
-		log.fine(String.format(
-			"Detected platform '%s'",
-			platform));
-		log.fine(String.format(
-			"Loading properties file of platform '%s'",
-			platform));
+		log("Detecting platform");
+		final String platform = detectPlatform();
+		log("Detected platform '%s'", platform);
+		log("Loading platform specific properties file");
 		final java.util.Properties prop = loadProperties(platform);
-		log.fine("Reading libraries from properties file");
+		log("Reading libraries from properties file");
 		final java.util.List<String> libsToCopy = getRuntimeLibs(prop);
 		libsToCopy.add(getNativeLib(prop));
-		log.fine(String.format(
-			"Libraries to load: %s",
-			libsToCopy.toString()));
+		log("Libraries to load: %s", libsToCopy.toString());
 
 		// Copy libraries.
 		final java.util.Map<String, java.io.File> libs =
 			new java.util.HashMap<String, java.io.File>();
 		for (final String lib : libsToCopy) {
-			log.fine(String.format(
-				"Trying to copy library '%s' to a temporary file",
-				lib));
-			libs.put(lib, copyResource(platform + "/" + lib));
-			log.fine(String.format(
-				"Successfully copied library '%s' to '%s'",
-				lib, libs.get(lib).getAbsolutePath()));
+			log("Copying library '%s' into '%s'", lib, tmpDir);
+			libs.put(lib, copyResource(platform + "/" + lib, lib, tmpDir));
+			log("Copied '%s' to '%s'", lib, libs.get(lib).getAbsolutePath());
 		}
 
 		// Load libraries.
 		boolean progress;
 		do {
 			progress = false;
-			final java.util.Iterator<String> it =
-				libs.keySet().iterator();
+			final java.util.Iterator<String> it = libs.keySet().iterator();
 			while (it.hasNext()) {
 				final String lib = it.next();
 				final java.io.File file = libs.get(lib);
 				try {
-					log.fine(String.format(
-						"Trying to load library '%s'",
-						lib));
+					log("Trying to load '%s'", lib);
 					System.load(file.getAbsolutePath());
-					log.fine(String.format(
-						"Successfully loaded library '%s'",
-						lib));
+					log("Successfully loaded '%s'", lib);
 					it.remove();
 					progress = true;
 				} catch (final UnsatisfiedLinkError e) {
-					log.fine(String.format(
-						"Library '%s' could not be loaded yet (%s)",
-						lib, e.getMessage()));
+					log("'%s' could not be loaded yet (%s)",
+						lib, e.getMessage());
 				} catch (final Exception e) {
-					throw new Error(String.format(
-						"Unexpected error while loading library '%s'",
-						lib), e);
+					error(e, "Unexpected error while loading '%s'", lib);
 				}
 			}
 		} while (progress);
 
 		// Check for missing libraries.
 		if (!libs.isEmpty()) {
-			throw new Error(String.format(
-				"Unable to load libraries: %s",
-				libs.keySet().toString()));
+			error("Could not load libraries: %s", libs.keySet().toString());
 		}
 	}
 
-	private static String determinePlatform() throws Error {
+	private static java.io.File createTmpDir() {
+		final java.io.File tmpDir;
+		try {
+			log("Creating a temporary file to obtain path");
+			tmpDir = java.io.File.createTempFile("tinyspline","");
+		} catch (final java.io.IOException e) {
+			error(e, "Could not create file");
+			// Just for the compiler.
+			throw new Error("Unreachable");
+		}
+		log.fine(String.format("Deleteing file '%s'", tmpDir.getPath()));
+		if (!tmpDir.delete()) {
+			error("Could not delete file '%s'", tmpDir.getPath());
+		}
+		log("Creating directory from file path");
+		if(!tmpDir.mkdir()) {
+			error("Could not create directory '%s'", tmpDir.getPath());
+		}
+		log("Setting permissions");
+		tmpDir.setReadable(true, true);
+		tmpDir.setWritable(true, true);
+		tmpDir.setExecutable(false, false);
+		log("Adding shutdown hook");
+		Runtime.getRuntime().addShutdownHook(new Thread(
+			new Runnable() {
+				@Override
+				public void run() {
+					try { delete(tmpDir); }
+					catch (final Exception e) {}
+				}
+
+				public void delete(final java.io.File file) {
+					if (file.isDirectory()) {
+						for (final java.io.File f : file.listFiles()) {
+							delete(f);
+						}
+					}
+					log("Deleting '%s'", file.getName());
+					if (!file.delete()) {
+						log("Could not delete '%s'", file.getName());
+					}
+				}
+			}));
+		return tmpDir;
+	}
+
+	private static String detectPlatform() {
 		final String os = System.getProperty("os.name").toLowerCase();
 		if (os == null) {
-			throw new Error(
-				"Unable to determine operating system");
+			error("Could not detect operating system");
 		}
 		final String arch = System.getProperty("sun.arch.data.model");
 		if (arch == null) {
-			throw new Error(
-				"Unable to determine architecture");
+			error("Could not detect architecture");
 		}
 		String platform = "";
 		if (os.startsWith("linux")) {
@@ -102,31 +143,26 @@
 		} else if (os.startsWith("windows")) {
 			platform = "windows";
 		} else {
-			throw new Error(String.format(
-				"Unsupported operating system '%s'", os));
+			error("Unsupported operating system '%s'", os);
 		}
 		if (arch.equals("64")) {
 			platform += "-x86_64";
 		} else if (arch.equals("32")) {
 			platform += "-x86";
 		} else {
-			throw new Error(String.format(
-				"Unsupported architecture '%s'", arch));
+			error("Unsupported architecture '%s'", arch);
 		}
 		return platform;
 	}
 
 	private static java.io.InputStream loadResource(final String path) {
 		if (path == null) {
-			throw new Error(
-				"'null' is not a valid resource");
+			error("Internal error: path to resource is 'null'");
 		}
-		final java.io.InputStream is =
-			tinysplinejavaJNI.class
+		final java.io.InputStream is =tinysplinejavaJNI.class
 			.getResourceAsStream("/" + path);
 		if (is == null) {
-			throw new Error(String.format(
-				"Missing resource '%s'", path));
+			error("Missing resource '%s'", path);
 		}
 		return is;
 	}
@@ -138,53 +174,53 @@
 		}
 	}
 
-	private static java.io.File copyResource(final String file) {
+	private static java.io.File copyResource(final String res, final String name,
+			final java.io.File outDir) {
+		if (res == null) {
+			error("Internal error: path to resource is 'null'");
+		}
+		if (name == null) {
+			error("Internal error: name of resource is 'null'");
+		}
+		if (outDir == null) {
+			error("Internal error: output directory is 'null'");
+		}
 		java.io.InputStream in = null;
 		java.io.OutputStream out = null;
 		try {
-			in = loadResource(file);
-			final java.io.File tmp = java.io.File
-				.createTempFile("tinyspline", null);
-			tmp.deleteOnExit();
-			tmp.setReadable(true, true);
-			tmp.setWritable(true, true);
-			tmp.setExecutable(false, false);
-			out = new java.io.FileOutputStream(tmp);
+			in = loadResource(res);
+			final java.io.File dest = new java.io.File(outDir, name);
+			out = new java.io.FileOutputStream(dest);
 			final byte[] buffer = new byte[16384];
 			int read = -1;
 			while((read = in.read(buffer)) != -1) {
 				out.write(buffer, 0, read);
 			}
-			return tmp;
+			return dest;
 		} catch (final Exception e) {
-			throw new Error(String.format(
-				"Error while copying resource '%s'",
-				file), e);
+			error(e, "Could not copy resource '%s'", res);
+			// Just for the compiler.
+			throw new Error("Unreachable");
 		} finally {
 			closeQuietly(in);
 			closeQuietly(out);
 		}
 	}
 
-	private static java.util.Properties loadProperties(final String pltf) {
-		if (pltf == null) {
-			throw new Error(
-				"'null' is not a valid platform");
-		} else if (pltf.contains("/")) {
-			throw new Error(String.format(
-				"Platform id (%s) must not contain '/'",
-				pltf));
+	private static java.util.Properties loadProperties(final String platform) {
+		if (platform == null) {
+			error("Internal error: platform is 'null'");
+		} else if (platform.contains("/")) {
+			error("Internal error: platform id (%s) must not contain '/'", platform);
 		}
 		final java.util.Properties prop = new java.util.Properties();
-		final String file = pltf + "/libs.properties";
+		final String file = platform + "/libs.properties";
 		java.io.InputStream is = null;
 		try {
 			is = loadResource(file);
 			prop.load(is);
 		} catch (Exception e) {
-			throw new Error(String.format(
-				"Error while loading properties file '%s'",
-				file), e);
+			error(e, "Could not load properties file '%s'", file);
 		} finally {
 			closeQuietly(is);
 		}
@@ -192,29 +228,30 @@
 	}
 
 	private static String getNativeLib(final java.util.Properties prop) {
+		if (prop == null) {
+			error("Internal error: properties is 'null'");
+		}
 		final String key = "native";
 		final String nat = prop.getProperty(key);
 		if (nat == null) {
-			throw new Error(String.format(
-				"Missing property '%s'", key));
+			error("Missing property '%s'", key);
 		} else if (nat.trim().isEmpty()) {
-			throw new Error(String.format(
-				"Property '%s' is blank", key));
+			error("Property '%s' is blank", key);
 		}
 		return nat;
 	}
 
-	private static java.util.List<String> getRuntimeLibs(
-			final java.util.Properties prop) {
+	private static java.util.List<String> getRuntimeLibs(final java.util.Properties prop) {
+		if (prop == null) {
+			error("Internal error: properties is 'null'");
+		}
 		final String key = "runtime";
 		final String libs = prop.getProperty(key);
 		if (libs == null) {
-			throw new Error(String.format(
-				"Missing property '%s'", key));
+			error("Missing property '%s'", key);
 		}
 		final String[] libsArr = libs.split(",");
-		final java.util.List<String> libsList =
-			new java.util.ArrayList<String>();
+		final java.util.List<String> libsList = new java.util.ArrayList<String>();
 		for (int i = 0; i < libsArr.length; i++) {
 			libsArr[i] = libsArr[i].trim();
 			if (!libsArr[i].isEmpty()) {

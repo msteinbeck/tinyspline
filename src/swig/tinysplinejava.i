@@ -101,7 +101,7 @@
 		log("Setting permissions");
 		tmpDir.setReadable(true, true);
 		tmpDir.setWritable(true, true);
-		tmpDir.setExecutable(false, false);
+		tmpDir.setExecutable(true, true);
 		log("Adding shutdown hook");
 		Runtime.getRuntime().addShutdownHook(new Thread(
 			new Runnable() {

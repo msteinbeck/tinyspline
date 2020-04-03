@@ -27,9 +27,9 @@
 	}
 
 	static {
-		log("Creating temporary directory");
+		log("Creating temporary directory...");
 		final java.io.File tmpDir = createTmpDir();
-		log("Created directory '%s'", tmpDir);
+		log("... done");
 
 		// Determine the libraries that need to be loaded.
 		log("Detecting platform");
@@ -46,7 +46,7 @@
 		final java.util.Map<String, java.io.File> libs =
 			new java.util.HashMap<String, java.io.File>();
 		for (final String lib : libsToCopy) {
-			log("Copying library '%s' into '%s'", lib, tmpDir);
+			log("Copying '%s' into '%s'", lib, tmpDir);
 			libs.put(lib, copyResource(platform + "/" + lib, lib, tmpDir));
 			log("Copied '%s' to '%s'", lib, libs.get(lib).getAbsolutePath());
 		}
@@ -111,16 +111,13 @@
 					catch (final Exception e) {}
 				}
 
-				public void delete(final java.io.File file) {
+				private void delete(final java.io.File file) {
 					if (file.isDirectory()) {
 						for (final java.io.File f : file.listFiles()) {
 							delete(f);
 						}
 					}
-					log("Deleting '%s'", file.getName());
-					if (!file.delete()) {
-						log("Could not delete '%s'", file.getName());
-					}
+					file.delete();
 				}
 			}));
 		return tmpDir;

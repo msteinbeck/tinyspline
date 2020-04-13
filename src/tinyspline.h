@@ -1173,7 +1173,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
  * For the sake of fail-safeness, the distance of P[index] and \p value is
  * compared with the absolute value of \p epsilon (using fabs).
  *
- * The bisection method is an iterative approach, which minimizes the error
+ * The bisection method is an iterative approach which minimizes the error
  * (\p epsilon) with each iteration step until an "optimum" was found. However,
  * there may be no point P satisfying the distance condition. Thus, the number
  * of iterations must be limited (\p max_iter). Depending on the domain of the

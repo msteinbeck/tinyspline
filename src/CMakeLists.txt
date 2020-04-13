@@ -780,7 +780,7 @@ install(FILES tinyspline.h
 configure_package_config_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline-config.cmake.in"
 	"tinyspline-config.cmake"
-	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}"
+	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline"
 	PATH_VARS
 		TINYSPLINE_INSTALL_INCLUDE_DIR
 		TINYSPLINE_INSTALL_LIBRARY_DIR)
@@ -791,7 +791,7 @@ write_basic_package_version_file(
 install(FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config-version.cmake"
-        DESTINATION ${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR})
+        DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
 	"tinyspline.pc" @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
@@ -826,7 +826,7 @@ if(TINYSPLINE_ENABLE_CXX)
 	configure_package_config_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx-config.cmake.in"
 		"tinysplinecxx-config.cmake"
-		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}"
+		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx"
 		PATH_VARS
 			TINYSPLINE_INSTALL_INCLUDE_DIR
 			TINYSPLINE_INSTALL_LIBRARY_DIR)
@@ -837,7 +837,7 @@ if(TINYSPLINE_ENABLE_CXX)
 	install(FILES
 		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config.cmake"
 		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config-version.cmake"
-		DESTINATION ${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR})
+		DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx")
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx.pc.in"
 		"tinysplinecxx.pc" @ONLY)
 	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecxx.pc

@@ -76,7 +76,8 @@ public:
 	/* Constructors & Destructors */
 	BSpline();
 	BSpline(const BSpline &other);
-	explicit BSpline(size_t nCtrlp, size_t dim = 2, size_t deg = 3,
+	explicit BSpline(size_t numControlPoints, size_t dimension = 2,
+		size_t degree = 3,
 		tinyspline::BSpline::type type = TS_CLAMPED);
 	~BSpline();
 

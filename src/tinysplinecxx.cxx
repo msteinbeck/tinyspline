@@ -209,11 +209,12 @@ tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
 		throw std::runtime_error(status.message);
 }
 
-tinyspline::BSpline::BSpline(size_t nCtrlp, size_t dim, size_t deg,
-	tinyspline::BSpline::type type)
+tinyspline::BSpline::BSpline(size_t numControlPoints, size_t dimension,
+	size_t degree, tinyspline::BSpline::type type)
 {
 	tsStatus status;
-	if (ts_bspline_new(nCtrlp, dim, deg, type, &spline, &status))
+	if (ts_bspline_new(numControlPoints, dimension, degree, type, &spline,
+			   &status))
 		throw std::runtime_error(status.message);
 }
 

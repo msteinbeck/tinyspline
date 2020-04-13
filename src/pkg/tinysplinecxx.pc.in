@@ -7,6 +7,6 @@ Name: @TINYSPLINE_PACKAGE_NAME@
 Description: @TINYSPLINE_SUMMARY@
 Version: @TINYSPLINE_VERSION@
 
-Libs: -L${libdir} -ltinysplinecpp
+Libs: -L${libdir} -l@TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME@
 Libs.private: @TINYSPLINE_CXX_STATIC_LIBRARIES@
 Cflags: -I${includedir} @TINYSPLINE_PKGCONFIG_CXX_FLAGS@

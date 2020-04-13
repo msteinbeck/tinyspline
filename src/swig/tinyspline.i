@@ -109,11 +109,11 @@
 
 %{
 	#include "tinyspline.h"
-	#include "tinysplinecpp.h"
+	#include "tinysplinecxx.h"
 %}
 
 %include "tinyspline.h"
-%include "tinysplinecpp.h"
+%include "tinysplinecxx.h"
 
 // Make std::vector<tinyspline::real> available in target language. Is also required by
 // '%attributeval' (see above).

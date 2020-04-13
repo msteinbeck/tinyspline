@@ -267,7 +267,7 @@ set(TINYSPLINE_PLATFORM
 #   CMake build target of binding ***.
 ###############################################################################
 set(TINYSPLINE_C_LIBRARIES_OUTPUT_NAME "tinyspline")
-set(TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME "tinysplinecpp")
+set(TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME "tinysplinecxx")
 set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
 set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
 set(TINYSPLINE_GO_CMAKE_TARGET "tinysplinego" CACHE INTERNAL "")
@@ -743,7 +743,7 @@ endif()
 # TINYSPLINE_CXX_SOURCE_FILES
 list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 	${TINYSPLINE_C_SOURCE_FILES}
-	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecpp.cpp")
+	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecxx.cxx")
 if(TINYSPLINE_HAS_PARENT)
 	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
 else()
@@ -799,48 +799,48 @@ install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
-	add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
-	set_target_properties(tinysplinecpp_shared PROPERTIES
+	add_library(tinysplinecxx_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
+	set_target_properties(tinysplinecxx_shared PROPERTIES
 		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
-	install(TARGETS tinysplinecpp_shared
+	install(TARGETS tinysplinecxx_shared
 		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
 		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
 		RUNTIME DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-	target_include_directories(tinysplinecpp_shared
+	target_include_directories(tinysplinecxx_shared
 			PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
-	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
-	set_target_properties(tinysplinecpp_static PROPERTIES
+	add_library(tinysplinecxx_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
+	set_target_properties(tinysplinecxx_static PROPERTIES
 		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		PREFIX "lib"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
-	install(TARGETS tinysplinecpp_static
+	install(TARGETS tinysplinecxx_static
 		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
 		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-	target_include_directories(tinysplinecpp_static
+	target_include_directories(tinysplinecxx_static
 		PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
-	install(FILES tinysplinecpp.h
+	install(FILES tinysplinecxx.h
 		DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
 	configure_package_config_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp-config.cmake.in"
-		"tinysplinecpp-config.cmake"
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx-config.cmake.in"
+		"tinysplinecxx-config.cmake"
 		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}"
 		PATH_VARS
 			TINYSPLINE_INSTALL_INCLUDE_DIR
 			TINYSPLINE_INSTALL_LIBRARY_DIR)
 	write_basic_package_version_file(
-		"tinysplinecpp-config-version.cmake"
+		"tinysplinecxx-config-version.cmake"
 		VERSION ${TINYSPLINE_VERSION}
 		COMPATIBILITY ExactVersion)
 	install(FILES
-		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecpp-config.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecpp-config-version.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config-version.cmake"
 		DESTINATION ${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR})
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in"
-		"tinysplinecpp.pc" @ONLY)
-	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx.pc.in"
+		"tinysplinecxx.pc" @ONLY)
+	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecxx.pc
 		DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
 endif()
 

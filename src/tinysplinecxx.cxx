@@ -1,4 +1,4 @@
-#include "tinysplinecpp.h"
+#include "tinysplinecxx.h"
 #include <stdlib.h>
 #include <stdexcept>
 #include <cstdio>

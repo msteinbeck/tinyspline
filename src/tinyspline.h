@@ -1232,18 +1232,16 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
 
 /**
- * Returns whether the distance of the first and the last point (not
- * necessarily the control points) of \p spline is less than or equal to
- * \p epsilon. The distance of possible inner gaps is not considered.
+ * Returns whether the distance of the endpoints of \p spline is less than or
+ * equal to \p epsilon for the first 'ts_bspline_degree - 1' derivatives
+ * (starting with the zeroth derivative).
  *
  * @param[in] spline
  * 	The spline to query.
  * @param[in] epsilon
  * 	The maximum distance.
  * @param[out] closed
- * 	The output parameter. Is set to 1 if the distance of the first and the
- * 	last point (not necessarily the control points) of \p spline is less
- * 	than or equal to \p epsilon. Is set to 0 otherwise.
+ * 	The output parameter. 1 if true, 0 otherwise.
  * @param status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS

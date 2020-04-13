@@ -1308,20 +1308,39 @@ void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)
 tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	int *closed, tsStatus *status)
 {
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t dim = ts_bspline_dimension(spline);
+	tsBSpline derivative;
 	tsReal min, max;
 	tsDeBoorNet first, last;
+	size_t i;
 	tsError err;
-	ts_bspline_domain(spline, &min, &max);
+
+	ts_int_bspline_init(&derivative);
 	ts_int_deboornet_init(&first);
 	ts_int_deboornet_init(&last);
+
 	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_bspline_eval(spline, min, &first, status))
-		TS_CALL(try, err, ts_bspline_eval(spline, max, &last, status))
-		*closed = ts_distance(
+		for (i = 0; i < deg; i++) {
+			TS_CALL(try, err, ts_bspline_derive(
+				spline, i, -1.f, &derivative, status));
+			ts_bspline_domain(&derivative, &min, &max);
+			TS_CALL(try, err, ts_bspline_eval(
+				&derivative, min, &first, status))
+			TS_CALL(try, err, ts_bspline_eval(
+				&derivative, max, &last, status))
+			*closed = ts_distance(
 				ts_int_deboornet_access_result(&first),
 				ts_int_deboornet_access_result(&last),
-				ts_bspline_dimension(spline)) <= epsilon ? 1 : 0;
+				dim) <= epsilon ? 1 : 0;
+			ts_bspline_free(&derivative);
+			ts_deboornet_free(&first);
+			ts_deboornet_free(&last);
+			if (!*closed)
+				TS_RETURN_SUCCESS(status)
+		}
 	TS_FINALLY
+		ts_bspline_free(&derivative);
 		ts_deboornet_free(&first);
 		ts_deboornet_free(&last);
 	TS_END_TRY_RETURN(err)

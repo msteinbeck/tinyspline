@@ -257,9 +257,17 @@ set(TINYSPLINE_PLATFORM
 ###############################################################################
 ### CMake-related constants.
 #
+# TINYSPLINE_C_LIBRARIES_OUTPUT_NAME
+#   Output name of C libraries.
+#
+# TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME
+#   Output name of C++ libraries.
+#
 # TINYSPLINE_***_CMAKE_TARGET
 #   CMake build target of binding ***.
 ###############################################################################
+set(TINYSPLINE_C_LIBRARIES_OUTPUT_NAME "tinyspline")
+set(TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME "tinysplinecpp")
 set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
 set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
 set(TINYSPLINE_GO_CMAKE_TARGET "tinysplinego" CACHE INTERNAL "")
@@ -282,6 +290,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #
 # TINYSPLINE_INSTALL_LIBRARY_DIR
 #   Installation directory of library files.
+#
+# TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR
+#   Installation directory of CMake config files.
 #
 # TINYSPLINE_INSTALL_PKGCONFIG_DIR
 #   Installation directory of pkg-config files.
@@ -308,37 +319,49 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   List of compiler specific runtime libraries that mus be included into
 #   distribution artifacts.
 ###############################################################################
-# TINYSPLINE_INSTALL_INCLUDE_DIR
 set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files.")
 
-# TINYSPLINE_INSTALL_LIBRARY_DIR
 set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files. If empty, the directory is determined automatically.")
 if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(TINYSPLINE_INSTALL_LIBRARY_DIR
-            "lib64" CACHE STRING "Autodetected." FORCE)
+		set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib64"
+			CACHE STRING "Autodetected." FORCE)
 	else()
-        set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib"
-            CACHE STRING "Autodetected." FORCE)
+		set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib"
+			CACHE STRING "Autodetected." FORCE)
 	endif()
 endif()
 
-# TINYSPLINE_INSTALL_PKGCONFIG_DIR
-set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "share/pkgconfig" CACHE STRING "Installation directory of pkg-config (.pc) files.")
+set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "" CACHE STRING "Installation directory of CMake config files. If empty, the directory is determined automatically.")
+if(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR STREQUAL "")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "lib64/cmake"
+			CACHE STRING "Autodetected." FORCE)
+	else()
+		set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "lib/cmake"
+			CACHE STRING "Autodetected." FORCE)
+	endif()
+endif()
 
-# TINYSPLINE_FLOAT_PRECISION
+set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "" CACHE STRING "Installation directory of pkg-config files. If empty, the directory is determined automatically.")
+if(TINYSPLINE_INSTALL_PKGCONFIG_DIR STREQUAL "")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "lib64/pkgconfig"
+			CACHE STRING "Autodetected." FORCE)
+	else()
+		set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "lib/pkgconfig"
+			CACHE STRING "Autodetected." FORCE)
+	endif()
+endif()
+
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
-# TINYSPLINE_CSHARP_FRAMEWORK_VERSION
 set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "" CACHE STRING "Sets the .NET framework version that is used to compile the C# DLL (e.g. 3.5). If empty, the version is determined automatically.")
 
-# TINYSPLINE_CSHARP_FRAMEWORK_NAME
 set(TINYSPLINE_CSHARP_FRAMEWORK_NAME "" CACHE STRING "Name of the directory located in the 'lib' directory of the .nupkg archive (e.g. net35). If empty, the name is determined automatically.")
 
-# TINYSPLINE_PYTHON_VERSION
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
-# TINYSPLINE_ENABLE_***
 option(TINYSPLINE_ENABLE_CXX "Enable the C++ interface." TRUE)
 option(TINYSPLINE_ENABLE_CSHARP "Enable the C# interface." FALSE)
 option(TINYSPLINE_ENABLE_DLANG "Enable the D interface." FALSE)
@@ -368,7 +391,6 @@ if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 	set(TINYSPLINE_ENABLE_RUBY TRUE)
 endif()
 
-# TINYSPLINE_RUNTIME_LIBRARIES
 set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime libraries that must be included into distribution artifacts. If empty, the necessary files are determined automatically.")
 
 
@@ -390,25 +412,21 @@ set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime li
 # SWIG_EXECUTABLE
 #   The SWIG executable.
 ###############################################################################
-# TINYSPLINE_FLOAT_PRECISION
 if(NOT TINYSPLINE_FLOAT_PRECISION AND DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
 	message(STATUS "Using environment variable 'TINYSPLINE_FLOAT_PRECISION'")
 	set(TINYSPLINE_FLOAT_PRECISION $ENV{TINYSPLINE_FLOAT_PRECISION})
 endif()
 
-# TINYSPLINE_PYTHON_VERSION
 if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY" AND DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
 	message(STATUS "Using environment variable 'TINYSPLINE_PYTHON_VERSION'")
 	set(TINYSPLINE_PYTHON_VERSION $ENV{TINYSPLINE_PYTHON_VERSION})
 endif()
 
-# CMAKE_TOOLCHAIN_FILE
 if(DEFINED ENV{CMAKE_TOOLCHAIN_FILE})
 	message(STATUS "Using environment variable 'CMAKE_TOOLCHAIN_FILE'")
 	set(CMAKE_TOOLCHAIN_FILE $ENV{CMAKE_TOOLCHAIN_FILE})
 endif()
 
-# SWIG_EXECUTABLE
 if(DEFINED ENV{SWIG_EXECUTABLE})
 	message(STATUS "Using environment variable 'SWIG_EXECUTABLE'")
 	set(SWIG_EXECUTABLE $ENV{SWIG_EXECUTABLE})
@@ -732,10 +750,12 @@ else()
 	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES})
 endif()
 
+include(CMakePackageConfigHelpers)
+
 # C library
 add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_shared PROPERTIES
-	OUTPUT_NAME "tinyspline"
+	OUTPUT_NAME "${TINYSPLINE_C_LIBRARIES_OUTPUT_NAME}"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
 install(TARGETS tinyspline_shared
@@ -746,7 +766,7 @@ target_include_directories(tinyspline_shared
 	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
 set_target_properties(tinyspline_static PROPERTIES
-	OUTPUT_NAME "tinyspline"
+	OUTPUT_NAME "${TINYSPLINE_C_LIBRARIES_OUTPUT_NAME}"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	PREFIX "lib"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
@@ -757,16 +777,31 @@ target_include_directories(tinyspline_static
 	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
 install(FILES tinyspline.h
 	DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
-		"tinyspline.pc" @ONLY)
+configure_package_config_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline-config.cmake.in"
+	"tinyspline-config.cmake"
+	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}"
+	PATH_VARS
+		TINYSPLINE_INSTALL_INCLUDE_DIR
+		TINYSPLINE_INSTALL_LIBRARY_DIR)
+write_basic_package_version_file(
+	"tinyspline-config-version.cmake"
+	VERSION ${TINYSPLINE_VERSION}
+	COMPATIBILITY ExactVersion)
+install(FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config-version.cmake"
+        DESTINATION ${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR})
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
+	"tinyspline.pc" @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
-		DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
+	DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
 	add_library(tinysplinecpp_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_shared PROPERTIES
-		OUTPUT_NAME "tinysplinecpp"
+		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
 	install(TARGETS tinysplinecpp_shared
@@ -777,7 +812,7 @@ if(TINYSPLINE_ENABLE_CXX)
 			PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
 	add_library(tinysplinecpp_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
 	set_target_properties(tinysplinecpp_static PROPERTIES
-		OUTPUT_NAME "tinysplinecpp"
+		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		PREFIX "lib"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
@@ -787,11 +822,26 @@ if(TINYSPLINE_ENABLE_CXX)
 	target_include_directories(tinysplinecpp_static
 		PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
 	install(FILES tinysplinecpp.h
-			DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
-	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in"
-			"tinysplinecpp.pc" @ONLY)
+		DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
+	configure_package_config_file(
+		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp-config.cmake.in"
+		"tinysplinecpp-config.cmake"
+		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}"
+		PATH_VARS
+			TINYSPLINE_INSTALL_INCLUDE_DIR
+			TINYSPLINE_INSTALL_LIBRARY_DIR)
+	write_basic_package_version_file(
+		"tinysplinecpp-config-version.cmake"
+		VERSION ${TINYSPLINE_VERSION}
+		COMPATIBILITY ExactVersion)
+	install(FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecpp-config.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecpp-config-version.cmake"
+		DESTINATION ${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR})
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecpp.pc.in"
+		"tinysplinecpp.pc" @ONLY)
 	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecpp.pc
-			DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
+		DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
 endif()
 
 

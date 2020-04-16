@@ -319,9 +319,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   List of compiler specific runtime libraries that mus be included into
 #   distribution artifacts.
 ###############################################################################
-set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files.")
+set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files (relative to CMAKE_INSTALL_PREFIX).")
 
-set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files. If empty, the directory is determined automatically.")
+set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files (relative to CMAKE_INSTALL_PREFIX). If empty, the directory is determined automatically.")
 if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib64"
@@ -332,27 +332,9 @@ if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 	endif()
 endif()
 
-set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "" CACHE STRING "Installation directory of CMake config files. If empty, the directory is determined automatically.")
-if(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR STREQUAL "")
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "lib64/cmake"
-			CACHE STRING "Autodetected." FORCE)
-	else()
-		set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "lib/cmake"
-			CACHE STRING "Autodetected." FORCE)
-	endif()
-endif()
+set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "cmake" CACHE STRING "Installation directory of CMake config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
-set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "" CACHE STRING "Installation directory of pkg-config files. If empty, the directory is determined automatically.")
-if(TINYSPLINE_INSTALL_PKGCONFIG_DIR STREQUAL "")
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "lib64/pkgconfig"
-			CACHE STRING "Autodetected." FORCE)
-	else()
-		set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "lib/pkgconfig"
-			CACHE STRING "Autodetected." FORCE)
-	endif()
-endif()
+set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "pkgconfig" CACHE STRING "Installation directory of pkg-config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
@@ -780,7 +762,7 @@ install(FILES tinyspline.h
 configure_package_config_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline-config.cmake.in"
 	"tinyspline-config.cmake"
-	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline"
+	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline"
 	PATH_VARS
 		TINYSPLINE_INSTALL_INCLUDE_DIR
 		TINYSPLINE_INSTALL_LIBRARY_DIR)
@@ -791,11 +773,11 @@ write_basic_package_version_file(
 install(FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/tinyspline-config-version.cmake"
-        DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline")
+        DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
 	"tinyspline.pc" @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
-	DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
+	DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_PKGCONFIG_DIR}")
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
@@ -826,7 +808,7 @@ if(TINYSPLINE_ENABLE_CXX)
 	configure_package_config_file(
 		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx-config.cmake.in"
 		"tinysplinecxx-config.cmake"
-		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx"
+		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx"
 		PATH_VARS
 			TINYSPLINE_INSTALL_INCLUDE_DIR
 			TINYSPLINE_INSTALL_LIBRARY_DIR)
@@ -837,11 +819,11 @@ if(TINYSPLINE_ENABLE_CXX)
 	install(FILES
 		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config.cmake"
 		"${CMAKE_CURRENT_BINARY_DIR}/tinysplinecxx-config-version.cmake"
-		DESTINATION "${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx")
+		DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx")
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx.pc.in"
 		"tinysplinecxx.pc" @ONLY)
 	install(FILES ${CMAKE_BINARY_DIR}/src/tinysplinecxx.pc
-		DESTINATION ${TINYSPLINE_INSTALL_PKGCONFIG_DIR})
+		DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_PKGCONFIG_DIR}")
 endif()
 
 

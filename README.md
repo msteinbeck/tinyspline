@@ -165,7 +165,8 @@ int main(int argc, char **argv)
 
 #### Prebuilt Binaries
 
-Coming soon.
+Snapshot releases are available at
+[releases](https://github.com/msteinbeck/tinyspline/releases).
 
 #### Compiling From Source
 TinySpline uses the CMake build system to compile and package its interfaces.
@@ -181,26 +182,25 @@ D        | -                               | dlang
 Golang   | -                               | go
 Java     | Java Development Kit            | org/tinyspline
 Lua      | Lua headers                     | lua
+Octave   | Octave headers                  | octave
 PHP      | PHP (Zend) headers *            | php
 Python   | Python headers                  | python
+R        | R headers and RCPP              | r
 Ruby     | Ruby headers                    | ruby
 
 * Please note that macOS comes with PHP, but does not provide the Zend headers.
 It is recommended to use a package manager (such as Homebrew) to obtain the
 headers.
 
-To simplify the usage of the bindings, the generated source files are compiled
-and/or packaged if necessary. That is, for instance, the generated Java files
-are compiled to .class files and packaged into a jar archive. Accordingly, the
-following tools are required if you want to package the corresponding binding:
+The following tools are required if you want to compile and package the
+the source code files of the corresponding binding:
 
 Language | Required Tool(s)                 | Output File
 -------- | -------------------------------- | ----------------
 C#       | Any of: csc, mcs, dmcs, gmcs     | TinySpline.dll
 Java     | javac and jar (available in JDK) | tinyspline.jar
 
-Now let's start building TinySpline. First of all, checkout the repository and
-cd into it:
+Checkout the repository and cd into it:
 
 ```bash
 git clone git@github.com:msteinbeck/tinyspline.git tinyspline
@@ -221,8 +221,8 @@ cmake ..
 cmake --build .
 ```
 
-If you want to build a specific binding, use `-DTINYSPLINE_ENABLE_LANGUAGE`
-(where `LANGUAGE` is interface you want to build) when setting up cmake. For
+If you want to build a specific binding, use `-DTINYSPLINE_ENABLE_<LANGUAGE>`
+when setting up cmake (`<LANGUAGE>` is interface you want to build) . For
 example:
 
 ```bash
@@ -237,7 +237,7 @@ cmake -DTINYSPLINE_ENABLE_ALL_INTERFACES=True ..
 cmake --build .
 ```
 
-You will find the resulting libraries and packages in `tinyspline/build/lib`.
+You will find the resultant libraries and packages in `tinyspline/build/lib`.
 
 #### Python 2 vs. Python 3
 While generating the Python binding, Swig needs to distinguish between Python 2
@@ -247,7 +247,7 @@ Accordingly, Swig is configured depending on the Python version found by CMake
 during initialization. On systems with multiple versions of Python installed,
 CMake usually chooses the more recent one. If you want to use a specific
 version of Python instead, set the environment variable
-'TINYSPLINE_PYTHON_VERSION' to '2' or '3'.
+'TINYSPLINE_PYTHON_VERSION' to '2' or '3'.TINYSPLINE_VERSION
 
 The following example shows how to force CMake to use Python 2 rather than
 Python 3:
@@ -263,17 +263,27 @@ The following command installs TinySpline to your system:
 cmake --build . --target install
 ```
 
-However, there are several binding-related files that CMake does not install
-with this command, as some languages use custom tools to install files.
-Python, for instance, uses Distutils/Setuptools to install files to
-Python-specific directories that CMake is not aware of. Thus, TinySpline
-ships further, language-related distribution tools.
+This command also installs a set of CMake config scripts and pkg-config files
+(for the C and C++ interface respectively). The CMake config script of the C
+interface exports the following variables:
+
+- TINYSPLINE_INCLUDE_DIRS: Contains the header files.
+- TINYSPLINE_LIBRARY_DIRS: Contains the libraries.
+- TINYSPLINE_LIBRARIES: Shared libraries to link against.
+- TINYSPLINE_DEFINITIONS: Definitions to add with `add_definitions`.
+- TINYSPLINE_VERSION: The version string.
+
+The CMake config script of the C++ interface exports the same variables except
+that they have prefix `TINYSPLINECXX`, e.g. `TINYSPLINECXX_INCLUDE_DIRS`.
+
+Use the CMake commands `find_package(tinyspline)` (C) and
+`find_package(tinysplinecxx)` (C++) to include TinySpline into your project. 
 
 #### Install the Bindings
 Depending on your configuration, binding-related distribution files are
-generated within the root of your build directory. That is, for instance, the
-file `setup.py` is generated if support for Python was detected. Currently, the
-following build tools are supported: Setuptools (Python), Maven (Java), and
+generated within the root of your build directory. For example, the file
+`setup.py` is generated if Python is enabled. Currently, the following
+build tools are supported: Setuptools (Python), Maven (Java), and
 Luarocks (Lua).
 
 ### Theoretical Backgrounds

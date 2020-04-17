@@ -1,8 +1,5 @@
 ###############################################################################
 ### General CMake setup.
-#
-# TINYSPLINE_HAS_PARENT
-#   Does this script have a parent?
 ###############################################################################
 cmake_minimum_required(VERSION 3.4)
 project(tinyspline)
@@ -13,9 +10,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Add additional CMake modules.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-# Does this script have a parent?
-get_directory_property(TINYSPLINE_HAS_PARENT PARENT_DIRECTORY)
 
 
 
@@ -422,18 +416,18 @@ endif()
 # TINYSPLINE_DEBUG_POSTFIX
 #   Postfix of debug builds.
 #
-# TINYSPLINE_DEFINITIONS (set in parent scope)
+# TINYSPLINE_DEFINITIONS
 #   Preprocessor definitions that must be added to parent file with
 #   'add_definitions("${TINYSPLINE_DEFINITIONS}")'.
 #
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
 #
-# TINYSPLINE_C_STATIC_LIBRARIES (set in parent scope)
+# TINYSPLINE_C_STATIC_LIBRARIES
 #   Additional libraries to link against when linking TinySpline's C interface
 #   statically (a string containing the necessary linker flags).
 #
-# TINYSPLINE_CXX_STATIC_LIBRARIES (set in parent scope)
+# TINYSPLINE_CXX_STATIC_LIBRARIES
 #   Additional libraries to link against when linking TinySpline's C++
 #   interface statically (a string containing the necessary linker flags).
 #
@@ -452,7 +446,7 @@ endif()
 # TINYSPLINE_PKGCONFIG_CXX_FLAGS
 #   Cflags added to the pkg-config file of the C++ library.
 #
-# TINYSPLINE_RUNTIME_LIBS (set in parent scope)
+# TINYSPLINE_RUNTIME_LIBS
 #   Stores the names of the files that are copied (and stripped) from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
@@ -462,23 +456,19 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# It is common practice for MSVC builds to add a debug postfix.
 	set(TINYSPLINE_DEBUG_POSTFIX "d")
 	if(TINYSPLINE_FLOAT_PRECISION)
-		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_FLOAT_PRECISION")
+		set(TINYSPLINE_DEFINITIONS
+			"${TINYSPLINE_DEFINITIONS} /DTINYSPLINE_FLOAT_PRECISION")
 	endif()
 else()
 	set(TINYSPLINE_DEBUG_POSTFIX "")
 	if(TINYSPLINE_FLOAT_PRECISION)
-		set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_FLOAT_PRECISION")
+		set(TINYSPLINE_DEFINITIONS
+			"${TINYSPLINE_DEFINITIONS} -DTINYSPLINE_FLOAT_PRECISION")
 	endif()
 endif()
 # Remove leading and trailing spaces from variables.
 string(STRIP "${TINYSPLINE_DEBUG_POSTFIX}" TINYSPLINE_DEBUG_POSTFIX)
 string(STRIP "${TINYSPLINE_DEFINITIONS}" TINYSPLINE_DEFINITIONS)
-# Export relevant variables.
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}" PARENT_SCOPE)
-else()
-	set(TINYSPLINE_DEFINITIONS "${TINYSPLINE_DEFINITIONS}")
-endif()
 add_definitions("${TINYSPLINE_DEFINITIONS}")
 
 # TINYSPLINE_PKGCONFIG_C_FLAGS (common)
@@ -601,18 +591,6 @@ string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_PKGCONFIG_C_FLAGS}" TINYSPLINE_PKGCONFIG_C_FLAGS)
 string(STRIP "${TINYSPLINE_PKGCONFIG_CXX_FLAGS}" TINYSPLINE_PKGCONFIG_CXX_FLAGS)
-# Export relevant variables.
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_C_STATIC_LIBRARIES
-			"${TINYSPLINE_C_STATIC_LIBRARIES}"
-			PARENT_SCOPE)
-	set(TINYSPLINE_CXX_STATIC_LIBRARIES
-			"${TINYSPLINE_CXX_STATIC_LIBRARIES}"
-			PARENT_SCOPE)
-else()
-	set(TINYSPLINE_C_STATIC_LIBRARIES "${TINYSPLINE_C_STATIC_LIBRARIES}")
-	set(TINYSPLINE_CXX_STATIC_LIBRARIES "${TINYSPLINE_CXX_STATIC_LIBRARIES}")
-endif()
 
 # TINYSPLINE_RUNTIME_LIBS
 set(TINYSPLINE_RUNTIME_LIBS "")
@@ -675,12 +653,6 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
 	endif()
 endforeach()
-# Export relevant variables.
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_RUNTIME_LIBS "${TINYSPLINE_RUNTIME_LIBS}" PARENT_SCOPE)
-else()
-	set(TINYSPLINE_RUNTIME_LIBS "${TINYSPLINE_RUNTIME_LIBS}")
-endif()
 
 
 
@@ -688,17 +660,17 @@ endif()
 ### Create the C/C++ libraries. We explicitly set the prefix of the static
 ### libraries to 'lib' to prevent naming collisions when compiling with MSVC.
 #
-# TINYSPLINE_C_INCLUDE_DIR (set in parent scope)
+# TINYSPLINE_C_INCLUDE_DIR
 #   Include directory (absolute path) of the C library.
 #
-# TINYSPLINE_CXX_INCLUDE_DIR (set in parent scope)
+# TINYSPLINE_CXX_INCLUDE_DIR
 #   Include directory (absolute path) of the C++ library.
 #
-# TINYSPLINE_C_SOURCE_FILES (set in parent scope)
+# TINYSPLINE_C_SOURCE_FILES
 #   List of source files (absolute paths) that are required to build the C
 #   library. Does not contain header files.
 #
-# TINYSPLINE_CXX_SOURCE_FILES (set in parent scope)
+# TINYSPLINE_CXX_SOURCE_FILES
 #   List of source files (absolute paths) that are required to build the C++
 #   library. Does not contain header files, but all source files listed in
 #   TINYSPLINE_C_SOURCE_FILES.
@@ -707,30 +679,16 @@ endif()
 # TINYSPLINE_CXX_INCLUDE_DIR
 set(TINYSPLINE_C_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(TINYSPLINE_CXX_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_C_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
-	set(TINYSPLINE_CXX_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" PARENT_SCOPE)
-endif()
 
 # TINYSPLINE_C_SOURCE_FILES
 list(APPEND TINYSPLINE_C_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/parson.c")
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
-else()
-	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
-endif()
 
 # TINYSPLINE_CXX_SOURCE_FILES
 list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 	${TINYSPLINE_C_SOURCE_FILES}
 	"${CMAKE_CURRENT_SOURCE_DIR}/tinysplinecxx.cxx")
-if(TINYSPLINE_HAS_PARENT)
-	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
-else()
-	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES})
-endif()
 
 include(CMakePackageConfigHelpers)
 
@@ -1549,3 +1507,29 @@ Installation:
   Prefix: ${CMAKE_INSTALL_PREFIX}
 ///////////////////////////////////////////////////////////////////////////////
 ")
+
+
+
+###############################################################################
+### Export relevant variables.
+###############################################################################
+get_directory_property(TINYSPLINE_HAS_PARENT PARENT_DIRECTORY)
+if(TINYSPLINE_HAS_PARENT)
+	set(TINYSPLINE_DEFINITIONS ${TINYSPLINE_DEFINITIONS} PARENT_SCOPE)
+	set(TINYSPLINE_C_STATIC_LIBRARIES ${TINYSPLINE_C_STATIC_LIBRARIES} PARENT_SCOPE)
+	set(TINYSPLINE_CXX_STATIC_LIBRARIES ${TINYSPLINE_CXX_STATIC_LIBRARIES} PARENT_SCOPE)
+	set(TINYSPLINE_RUNTIME_LIBS ${TINYSPLINE_RUNTIME_LIBS} PARENT_SCOPE)
+	set(TINYSPLINE_C_INCLUDE_DIR ${TINYSPLINE_C_INCLUDE_DIR} PARENT_SCOPE)
+	set(TINYSPLINE_CXX_INCLUDE_DIR ${TINYSPLINE_CXX_INCLUDE_DIR} PARENT_SCOPE)
+	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES} PARENT_SCOPE)
+	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES} PARENT_SCOPE)
+else()
+	set(TINYSPLINE_DEFINITIONS ${TINYSPLINE_DEFINITIONS})
+	set(TINYSPLINE_C_STATIC_LIBRARIES ${TINYSPLINE_C_STATIC_LIBRARIES})
+	set(TINYSPLINE_CXX_STATIC_LIBRARIES ${TINYSPLINE_CXX_STATIC_LIBRARIES})
+	set(TINYSPLINE_RUNTIME_LIBS ${TINYSPLINE_RUNTIME_LIBS})
+	set(TINYSPLINE_C_INCLUDE_DIR ${TINYSPLINE_C_INCLUDE_DIR})
+	set(TINYSPLINE_CXX_INCLUDE_DIR ${TINYSPLINE_CXX_INCLUDE_DIR})
+	set(TINYSPLINE_C_SOURCE_FILES ${TINYSPLINE_C_SOURCE_FILES})
+	set(TINYSPLINE_CXX_SOURCE_FILES ${TINYSPLINE_CXX_SOURCE_FILES})
+endif()

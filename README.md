@@ -267,8 +267,8 @@ This command also installs a set of CMake config scripts and pkg-config files
 (for the C and C++ interface respectively). The CMake config script of the C
 interface exports the following variables:
 
-- TINYSPLINE_INCLUDE_DIRS: Contains the header files.
-- TINYSPLINE_LIBRARY_DIRS: Contains the libraries.
+- TINYSPLINE_INCLUDE_DIRS: Contain the header files.
+- TINYSPLINE_LIBRARY_DIRS: Contain the libraries.
 - TINYSPLINE_LIBRARIES: Shared libraries to link against.
 - TINYSPLINE_DEFINITIONS: Definitions to add with `add_definitions`.
 - TINYSPLINE_VERSION: The version string.

@@ -1056,7 +1056,7 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
  * @return TS_DIM_ZERO
  * 	If \p dimension is 0.
  * @return TS_NUM_POINTS
- * 	If \p num_points is 1.
+ * 	If \p num_points is 0.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */

@@ -12,7 +12,7 @@ points <- c(
 	0.3, 0.6, 0,
 	0.6, 0.5, 0,
 	0.9, 0.9, 0)
-spline <- BSpline_interpolateCubic(points, 3)
+spline <- BSpline_interpolateCubicNatural(points, 3)
 dim    <- BSpline_dimension_get(spline)
 order  <- BSpline_order_get(spline)
 ctrlp  <- BSpline_controlPoints_get(spline)

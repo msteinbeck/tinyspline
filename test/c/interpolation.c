@@ -24,7 +24,7 @@ void interpolation_cubic_natural(CuTest *tc)
 	points[9] =  5.0;
 
 	TS_TRY(try, status.code, &status)
-		TS_CALL(try, status.code, ts_bspline_interpolate_cubic(
+		TS_CALL(try, status.code, ts_bspline_interpolate_cubic_natural(
 			points, 5, 2, &spline, &status));
 
 		TS_CALL(try, status.code, ts_bspline_control_points(
@@ -111,7 +111,7 @@ void interpolation_issue32(CuTest *tc)
 	points[5] =  3.0;
 
 	TS_TRY(try, status.code, &status)
-		TS_CALL(try, status.code, ts_bspline_interpolate_cubic(
+		TS_CALL(try, status.code, ts_bspline_interpolate_cubic_natural(
 			points, 3, 2, &spline, &status));
 
 		TS_CALL(try, status.code, ts_bspline_control_points(

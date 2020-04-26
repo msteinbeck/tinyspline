@@ -1488,7 +1488,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
  * @param[in] spline
  * 	The spline to serialize.
  * @param[out] json
- * 	The serialized json string.
+ * 	The serialized JSON string.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS

@@ -223,16 +223,17 @@ tinyspline::BSpline::~BSpline()
 	ts_bspline_free(&spline);
 }
 
-tinyspline::BSpline tinyspline::BSpline::interpolateCubic(
+tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
 	const std_real_vector_in points, size_t dimension)
 {
 	if (dimension == 0)
 		throw std::runtime_error("unsupported dimension: 0");
 	if (std_real_vector_read(points)size() % dimension != 0)
-		throw std::runtime_error("#points % dim == 0 failed");
+		throw std::runtime_error("#points % dimension != 0");
 	tinyspline::BSpline bspline;
 	tsStatus status;
-	if (ts_bspline_interpolate_cubic(std_real_vector_read(points)data(),
+	if (ts_bspline_interpolate_cubic_natural(
+			std_real_vector_read(points)data(),
 			std_real_vector_read(points)size()/dimension,
 			dimension, bspline.data(), &status))
 		throw std::runtime_error(status.message);
@@ -247,7 +248,7 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 	if (dimension == 0)
 		throw std::runtime_error("unsupported dimension: 0");
 	if (std_real_vector_read(points)size() % dimension != 0)
-		throw std::runtime_error("#points % dim == 0 failed");
+		throw std::runtime_error("#points % dimension != 0");
 	tsReal *fst = NULL;
 	if (first && first->size() >= dimension)
 		fst = first->data();

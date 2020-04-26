@@ -971,7 +971,8 @@ void ts_deboornet_free(tsDeBoorNet *net);
 *                                                                             *
 ******************************************************************************/
 /**
- * Interpolates a cubic spline using the thomas algorithm, see:
+ * Interpolates a cubic spline with natural end conditions. For more details
+ * see:
  * 
  *     https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
@@ -1008,16 +1009,17 @@ void ts_deboornet_free(tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
-	size_t dimension, tsBSpline *spline, tsStatus *status);
+tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
+	size_t num_points, size_t dimension, tsBSpline *spline,
+	tsStatus *status);
 
 /**
- * Interpolates a cubic spline by translating the given catmull-rom control
- * points into a sequence of bezier curves. In order to avoid division by zero,
- * successive control points with distance less than or equals to \p epsilon
- * are filtered out. If the resultant sequence contains only a single point, a
- * spline of degree 0 (a point) is created. Optionally, the first and last
- * control point can be specified (\p first and \p last).
+ * Interpolates a piecewise cubic spline by translating the given catmull-rom
+ * control points into a sequence of bezier curves. In order to avoid division
+ * by zero, successive control points with distance less than or equal to
+ * \p epsilon are filtered out. If the resultant sequence contains only a
+ * single point, a spline of degree 0 (a point) is created. Optionally, the
+ * first and last control point can be specified (\p first and \p last).
  *
  * @param[in] points
  * 	The points to interpolate.
@@ -1043,8 +1045,8 @@ tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
  * 	as NULL. This is necessary to avoid division by zero.
  * @param[in] epsilon
  * 	The maximum distance between points with "same" coordinates. That is,
- * 	if the distance between two points is less than or equals \p epsilon,
- * 	they are considered to be the same point. For the sake of
+ * 	if the distance between neighboring points is less than or equal to
+ * 	\p epsilon, they are considered to be the same point. For the sake of
  * 	fail-safeness, the sign is removed with fabs. It is advisable to pass a
  * 	value greater than zero, however, it is not necessary.
  * @param[out] spline

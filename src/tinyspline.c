@@ -792,8 +792,9 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_interpolate_cubic(const tsReal *points, size_t num_points,
-	size_t dimension, tsBSpline *spline, tsStatus *status)
+tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
+	size_t num_points, size_t dimension, tsBSpline *spline,
+	tsStatus *status)
 {
 	const size_t sof_ctrlp = dimension * sizeof(tsReal);
 	const size_t len_points = num_points * dimension;

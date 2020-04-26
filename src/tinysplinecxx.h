@@ -82,7 +82,7 @@ public:
 	~BSpline();
 
 	/* Create from static method */
-	static BSpline interpolateCubic(const std_real_vector_in points,
+	static BSpline interpolateCubicNatural(const std_real_vector_in points,
 		size_t dimension);
 	static BSpline interpolateCatmullRom(const std_real_vector_in points,
 		size_t dimension, tsReal alpha = (tsReal) 0.5f,

@@ -265,6 +265,24 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 	return bspline;
 }
 
+tinyspline::BSpline tinyspline::BSpline::fromJson(std::string json)
+{
+	tinyspline::BSpline bspline;
+	tsStatus status;
+	if (ts_bspline_from_json(json.c_str(), bspline.data(), &status))
+		throw std::runtime_error(status.message);
+	return bspline;
+}
+
+tinyspline::BSpline tinyspline::BSpline::load(std::string path)
+{
+	tinyspline::BSpline bspline;
+	tsStatus status;
+	if (ts_bspline_load(path.c_str(), bspline.data(), &status))
+		throw std::runtime_error(status.message);
+	return bspline;
+}
+
 tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {
@@ -427,7 +445,7 @@ bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 	return closed == 1;
 }
 
-std::string tinyspline::BSpline::toJSON()
+std::string tinyspline::BSpline::toJson() const
 {
 	char *json;
 	tsStatus status;
@@ -438,31 +456,11 @@ std::string tinyspline::BSpline::toJSON()
 	return string;
 }
 
-void tinyspline::BSpline::fromJSON(std::string json)
-{
-	tsBSpline s;
-	tsStatus status;
-	if (ts_bspline_from_json(json.c_str(), &s, &status))
-		throw std::runtime_error(status.message);
-	ts_bspline_free(&spline);
-	ts_bspline_move(&s, &spline);
-}
-
-void tinyspline::BSpline::save(std::string path)
+void tinyspline::BSpline::save(std::string path) const
 {
 	tsStatus status;
-	if (ts_bspline_save_json(&spline, path.c_str(), &status))
+	if (ts_bspline_save(&spline, path.c_str(), &status))
 		throw std::runtime_error(status.message);
-}
-
-void tinyspline::BSpline::load(std::string path)
-{
-	tsBSpline s;
-	tsStatus status;
-	if (ts_bspline_load_json(path.c_str(), &s, &status))
-		throw std::runtime_error(status.message);
-	ts_bspline_free(&spline);
-	ts_bspline_move(&s, &spline);
 }
 
 void tinyspline::BSpline::setControlPoints(

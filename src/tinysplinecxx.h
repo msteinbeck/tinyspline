@@ -89,6 +89,8 @@ public:
 		std::vector<tinyspline::real> *first = NULL,
 		std::vector<tinyspline::real> *last = NULL,
 		tsReal epsilon = TS_CONTROL_POINT_EPSILON);
+	static BSpline fromJson(std::string json);
+	static BSpline load(std::string path);
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
@@ -116,10 +118,8 @@ public:
 	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Serialization */
-	std::string toJSON();
-	void fromJSON(std::string json);
-	void save(std::string path);
-	void load(std::string path);
+	std::string toJson() const;
+	void save(std::string path) const;
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);

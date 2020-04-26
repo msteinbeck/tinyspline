@@ -2016,7 +2016,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
+tsError ts_bspline_save(const tsBSpline *spline, const char *path,
 	tsStatus *status)
 {
 	tsError err;
@@ -2030,8 +2030,7 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_load_json(const char *path, tsBSpline *spline,
-	tsStatus *status)
+tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 {
 	tsError err;
 	FILE *file = NULL;

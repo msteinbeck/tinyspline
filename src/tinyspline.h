@@ -1547,7 +1547,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
+tsError ts_bspline_save(const tsBSpline *spline, const char *path,
 	tsStatus *status);
 
 /**
@@ -1581,8 +1581,7 @@ tsError ts_bspline_save_json(const tsBSpline *spline, const char *path,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_load_json(const char *path, tsBSpline *spline,
-	tsStatus *status);
+tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status);
 
 
 

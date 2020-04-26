@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     tsBSpline spline; /**< Stores the interpolated spline. */
     char *json; /** < Stores the JSON string. */
 
-    ts_bspline_interpolate_cubic(points, 5, 3, &spline, NULL);
+    ts_bspline_interpolate_cubic_natural(points, 5, 3, &spline, NULL);
     ts_bspline_to_json(&spline, &json, NULL);
 
     puts(json);

@@ -1420,14 +1420,12 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	tsBSpline worker; /**< Stores the intermediate result. */
 	tsReal* ctrlp;    /**< Pointer to the control points of worker. */
 	tsReal* knots;    /**< Pointer to the knots of worker. */
-	tsReal min, max;  /**< Domain limits. */
-	tsReal span;      /**< Span of domain. */
 
 	size_t m, i, j, k, l; /**< Used in for loops. */
 	tsReal *fst, *snd; /**< Pointer to first and second control point. */
 	tsReal dist; /**< Distance between fst and snd. */
-	tsReal scaled_kid1, scaled_ki1; /**< Scaled knots. */
-	tsReal scaled; /**< Distance between scaled knots. */
+	tsReal kid1, ki1; /**< Knots at i+deg+1 and i+1. */
+	tsReal span; /**< Distance between kid1 and ki1. */
 
 	tsBSpline swap; /**< Used to swap worker and derivative. */
 	tsError err;
@@ -1436,8 +1434,6 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	TS_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
 	ctrlp = ts_int_bspline_access_ctrlp(&worker);
 	knots = ts_int_bspline_access_knots(&worker);
-	ts_bspline_domain(&worker, &min, &max);
-	span = max - min;
 
 	TS_TRY(try, err, status)
 		for (m = 1; m <= n; m++) { /* from 1st to n'th derivative */
@@ -1477,13 +1473,13 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 					l = (i+1)*dim + j;
 					ctrlp[k] = ctrlp[l] - ctrlp[k];
 					if (deg > 1) {
-						scaled_kid1 = (knots[i+deg+1] - min) / span;
-						scaled_ki1  = (knots[i+1]     - min) / span;
-						scaled = scaled_kid1 - scaled_ki1;
-						if (scaled < TS_KNOT_EPSILON)
-							scaled = (tsReal) TS_KNOT_EPSILON;
+						kid1 = knots[i+deg+1];
+						ki1  = knots[i+1];
+						span = kid1 - ki1;
+						if (span < TS_KNOT_EPSILON)
+							span = (tsReal) TS_KNOT_EPSILON;
 						ctrlp[k] *= deg;
-						ctrlp[k] /= (scaled * span);
+						ctrlp[k] /= span;
 					}
 				}
 			}

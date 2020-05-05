@@ -201,7 +201,7 @@ void derive_single_line_with_custom_knots_degree_2(CuTest *tc)
 	tsReal ctrlp[3];
 	tsReal knots[6];
 
-    size_t degree = 2;
+	size_t degree = 2;
 	tsReal slope = 3.f;
 	tsReal span = 5.f;
 

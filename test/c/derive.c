@@ -192,7 +192,7 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 	TS_END_TRY
 }
 
-void derive_single_line_with_custom_knots_degree_2(CuTest *tc)
+void derive_single_parabola_with_custom_knots(CuTest *tc)
 {
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
@@ -647,7 +647,7 @@ CuSuite* get_derive_suite()
 	SUITE_ADD_TEST(suite, derive_sequence_of_two_point_with_custom_knots);
 	SUITE_ADD_TEST(suite, derive_single_line);
 	SUITE_ADD_TEST(suite, derive_single_line_with_custom_knots);
-	SUITE_ADD_TEST(suite, derive_single_line_with_custom_knots_degree_2);
+	SUITE_ADD_TEST(suite, derive_single_parabola_with_custom_knots);
 	SUITE_ADD_TEST(suite, derive_discontinuous_and_compare_with_continuous);
 	SUITE_ADD_TEST(suite, derive_discontinuous_lines_exceeding_epsilon);
 	SUITE_ADD_TEST(suite, derive_discontinuous_lines_ignoring_epsilon);

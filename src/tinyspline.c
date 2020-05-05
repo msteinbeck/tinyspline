@@ -1472,6 +1472,9 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 					k = i    *dim + j;
 					l = (i+1)*dim + j;
 					ctrlp[k] = ctrlp[l] - ctrlp[k];
+					/* The new control point (ctrlp[k]) of
+					 * a line (deg == 1) must not be scaled
+					 * with `p / (u{i+p+1} - u{i+1})`.*/
 					if (deg > 1) {
 						kid1 = knots[i+deg+1];
 						ki1  = knots[i+1];

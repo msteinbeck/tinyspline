@@ -192,6 +192,80 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 	TS_END_TRY
 }
 
+void derive_single_parabola_with_custom_knots(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsReal *result = NULL;
+	tsStatus status;
+	tsReal ctrlp[3];
+	tsReal knots[6];
+
+	size_t degree = 2;
+	tsReal slope = 3.f;
+	tsReal span = 5.f;
+
+	/* Set the initial position, slope, and final position.
+	 * Note that this defines a parabola by degree, but a line
+	 * by shape. */
+	ctrlp[0] = -7.f;
+	ctrlp[1] = ctrlp[0] + slope * span / degree;
+	ctrlp[2] = ctrlp[0] + slope * span;
+
+	knots[0] = -1.f;
+	knots[1] = knots[0];
+	knots[2] = knots[0];
+	knots[3] = knots[0] + span;
+	knots[4] = knots[0] + span;
+	knots[5] = knots[0] + span;
+
+	TS_TRY(try, status.code, &status)
+		/* Create spline with control points and custom knots. */
+		TS_CALL(try, status.code, ts_bspline_new(
+			3, 1, degree, TS_CLAMPED, &spline, &status))
+		TS_CALL(try, status.code, ts_bspline_set_control_points(
+			&spline, ctrlp, &status))
+		TS_CALL(try, status.code, ts_bspline_set_knots(
+			&spline, knots, &status))
+
+		/* Confirm the spline is a line with the desired slope. */
+		/* Could drop this block if desired as it is just a sanity
+		 * check that the spline is actually a line. */
+		size_t nsamples = 10;
+		tsReal step = (span - knots[0]) / (nsamples + 1);
+		for(size_t i = 0; i < nsamples; ++i) {
+			/* Eval spline. */
+			TS_CALL(try, status.code, ts_bspline_eval(
+				&spline, knots[0] + (step * i), &net, &status))
+			TS_CALL(try, status.code, ts_deboornet_result(
+				&net, &result, &status))
+			CuAssertDblEquals(tc, ctrlp[0] + slope * (step * i),
+					result[0], EPSILON);
+		}
+
+		/* Create derivative. */
+		TS_CALL(try, status.code, ts_bspline_derive(
+			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
+			&status))
+
+		/* Eval derivative. */
+		for(size_t i = 0; i < nsamples; ++i) {
+			TS_CALL(try, status.code, ts_bspline_eval(
+				&spline, knots[0] + (step * i), &net, &status))
+			TS_CALL(try, status.code, ts_deboornet_result(
+				&net, &result, &status))
+			CuAssertDblEquals(tc,  slope, result[0], EPSILON);
+		}
+
+	TS_CATCH(status.code)
+		CuFail(tc, status.message);
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_deboornet_free(&net);
+		free(result);
+	TS_END_TRY
+}
+
 void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 {
 	tsBSpline spline = ts_bspline_init();
@@ -479,8 +553,8 @@ void derive_continuous_spline_with_custom_knots(CuTest *tc)
 			&spline, 8.4, &net, &status))
 		TS_CALL(try, status.code, ts_deboornet_result(
 			&net, &result, &status))
-		CuAssertDblEquals(tc,  6.4, result[0], EPSILON);
-		CuAssertDblEquals(tc,  5.6, result[1], EPSILON);
+		CuAssertDblEquals(tc,  0.8, result[0], EPSILON);
+		CuAssertDblEquals(tc,  0.7, result[1], EPSILON);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -575,6 +649,7 @@ CuSuite* get_derive_suite()
 	SUITE_ADD_TEST(suite, derive_sequence_of_two_point_with_custom_knots);
 	SUITE_ADD_TEST(suite, derive_single_line);
 	SUITE_ADD_TEST(suite, derive_single_line_with_custom_knots);
+	SUITE_ADD_TEST(suite, derive_single_parabola_with_custom_knots);
 	SUITE_ADD_TEST(suite, derive_discontinuous_and_compare_with_continuous);
 	SUITE_ADD_TEST(suite, derive_discontinuous_lines_exceeding_epsilon);
 	SUITE_ADD_TEST(suite, derive_discontinuous_lines_ignoring_epsilon);

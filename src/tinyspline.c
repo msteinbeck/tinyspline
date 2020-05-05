@@ -1483,7 +1483,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 						if (scaled < TS_KNOT_EPSILON)
 							scaled = (tsReal) TS_KNOT_EPSILON;
 						ctrlp[k] *= deg;
-						ctrlp[k] /= scaled;
+						ctrlp[k] /= (scaled * span);
 					}
 				}
 			}

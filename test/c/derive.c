@@ -205,7 +205,9 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 	tsReal slope = 3.f;
 	tsReal span = 5.f;
 
-	/* Set the initial position, slope, and final position. */
+	/* Set the initial position, slope, and final position.
+	 * Note that this defines a parabola by degree, but a line
+	 * by shape. */
 	ctrlp[0] = -7.f;
 	ctrlp[1] = ctrlp[0] + slope * span / degree;
 	ctrlp[2] = ctrlp[0] + slope * span;

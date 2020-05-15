@@ -136,8 +136,7 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 {
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *result = NULL;
-	tsReal *ctrlp = NULL, *knots = NULL;
+	tsReal *ctrlp = NULL, *knots = NULL, *result = NULL;
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
@@ -182,6 +181,8 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 					result[0], EPSILON);
 			CuAssertDblEquals(tc, ctrlp[1] + slope[1] * (step * i),
 					result[1], EPSILON);
+			ts_deboornet_free(&net);
+			free(result);
 		}
 
 		/* Create derivative. */

@@ -135,6 +135,8 @@ void derive_single_line(CuTest *tc)
 void derive_single_line_with_custom_knots(CuTest *tc)
 {
 	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsReal *result = NULL;
 	tsReal *ctrlp = NULL, *knots = NULL;
 	tsStatus status;
 
@@ -150,8 +152,6 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 		ctrlp[2] =  3.0; ctrlp[3] =  6.0;
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
-		free(ctrlp);
-		ctrlp = NULL;
 
 		/* Setup knots. */
 		TS_CALL(try, status.code, ts_bspline_set_knot_at(
@@ -163,6 +163,27 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_knot_at(
 			&spline, 3, 2.f, &status))
 
+		/* Confirm the spline is a line with the desired slope. */
+		size_t nsamples = 3;
+		tsReal min, max;
+		ts_bspline_domain(&spline, &min, &max);
+		tsReal span = max - min;
+		tsReal slope[2];
+		slope[0] = (ctrlp[2] - ctrlp[0]) / span;
+		slope[1] = (ctrlp[3] - ctrlp[1]) / span;
+		tsReal step = span / (nsamples - 1);
+		for(size_t i = 0; i < nsamples; ++i) {
+			/* Eval spline. */
+			TS_CALL(try, status.code, ts_bspline_eval(
+				&spline, min + step * i, &net, &status))
+			TS_CALL(try, status.code, ts_deboornet_result(
+				&net, &result, &status))
+			CuAssertDblEquals(tc, ctrlp[0] + slope[0] * (step * i),
+					result[0], EPSILON);
+			CuAssertDblEquals(tc, ctrlp[1] + slope[1] * (step * i),
+					result[1], EPSILON);
+		}
+
 		/* Create derivative. */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
@@ -173,8 +194,8 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 			(int) ts_bspline_num_control_points(&spline));
 		TS_CALL(try, status.code, ts_bspline_control_points(
 			&spline, &ctrlp, &status))
-		CuAssertDblEquals(tc, 2.f, ctrlp[0], EPSILON);
-		CuAssertDblEquals(tc, 8.f, ctrlp[1], EPSILON);
+		CuAssertDblEquals(tc, 1.f, ctrlp[0], EPSILON);
+		CuAssertDblEquals(tc, 4.f, ctrlp[1], EPSILON);
 
 		/* Check knots of derivative. */
 		CuAssertIntEquals(tc, 2,
@@ -183,10 +204,21 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 			&spline, &knots, &status))
 		CuAssertDblEquals(tc, -1.f, knots[0], EPSILON);
 		CuAssertDblEquals(tc,  1.f, knots[1], EPSILON);
+
+		/* Evaluate derivative at mid-span. */
+		TS_CALL(try, status.code, ts_bspline_eval(
+			&spline, min + span / 2.f, &net, &status))
+		TS_CALL(try, status.code, ts_deboornet_result(
+			&net, &result, &status))
+		CuAssertDblEquals(tc, slope[0], result[0], EPSILON);
+		CuAssertDblEquals(tc, slope[1], result[1], EPSILON);
+
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
 		ts_bspline_free(&spline);
+		ts_deboornet_free(&net);
+		free(result);
 		free(ctrlp);
 		free(knots);
 	TS_END_TRY

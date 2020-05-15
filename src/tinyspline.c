@@ -747,7 +747,7 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	TS_TRY(try, err, status)
 		/* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
 		TS_CALL(try, err, ts_bspline_new(
-			(n-1)*4, dim, order-1, TS_BEZIERS, spline, status));
+			(n-1)*4, dim, order-1, TS_BEZIERS, spline, status))
 		ctrlp = ts_int_bspline_access_ctrlp(spline);
 
 		s = (tsReal*) malloc(n * sof_ctrlp);
@@ -861,7 +861,7 @@ tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
 		} else {
 			TS_CALL(try, err, ts_int_thomas_algorithm(
 				a, b, c, num_int_points, dimension, d,
-				status));
+				status))
 		}
 		memcpy(thomas, points, sof_ctrlp);
 		memmove(thomas + dimension, d, num_int_points * sof_ctrlp);
@@ -915,7 +915,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	/* Copy `points` to `cr_ctrlp`. Add space for `first` and `last`. */
 	cr_ctrlp = (tsReal *) malloc((num_points + 2) * sof_ctrlp);
 	if (!cr_ctrlp)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory");
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(cr_ctrlp + dimension, points, num_points * sof_ctrlp);
 
 	/* Remove redundant points from `cr_ctrlp`. Update `num_points`. */
@@ -1188,13 +1188,13 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 		*points = (tsReal *) malloc(sof_points);
 		if (!*points) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline,&net, status))
 		for (i = 0; i < num; i++) {
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, us[i], &net, status));
+				spline, us[i], &net, status))
 			result = ts_int_deboornet_access_result(&net);
 			memcpy((*points) + i * dim, result, sof_point);
 		}
@@ -1221,7 +1221,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 	knots = (tsReal *) malloc(num * sizeof(tsReal));
 	if (!knots) {
 		*points = NULL;
-		TS_RETURN_0(status, TS_MALLOC, "out of memory");
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	}
 	ts_bspline_domain(spline, &min, &max);
 	for (i = 0; i < num; i++) {
@@ -1235,7 +1235,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 	knots[0] = min;
 	TS_TRY(try, err, status)
 	       TS_CALL(try, err, ts_bspline_eval_all(
-			spline, knots, num, points, status));
+			spline, knots, num, points, status))
 	TS_FINALLY
 		free(knots);
 	TS_END_TRY_RETURN(err)
@@ -1259,10 +1259,10 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		TS_RETURN_2(status, TS_INDEX_ERROR,
 			    "dimension (%lu) <= index (%lu)",
 			    (unsigned long) dim,
-			    (unsigned long) index);
+			    (unsigned long) index)
 	}
 	if(max_iter == 0)
-		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations");
+		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations")
 
 	ts_bspline_domain(spline, &min, &max);
 	TS_TRY(try, err, status)
@@ -1271,7 +1271,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		do {
 			mid = (tsReal) ((min + max) / 2.0);
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, mid, net, status));
+				spline, mid, net, status))
 			P = ts_int_deboornet_access_result(net);
 			dist = ts_distance(&P[index], &value, 1);
 			if (dist <= eps)
@@ -1291,7 +1291,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		if (persnickety) {
 			TS_THROW_1(try, err, status, TS_NO_RESULT,
 				    "maximum iterations (%lu) exceeded",
-				    (unsigned long) max_iter);
+				    (unsigned long) max_iter)
 		}
 	TS_CATCH(err)
 		ts_deboornet_free(net);
@@ -1324,7 +1324,7 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	TS_TRY(try, err, status)
 		for (i = 0; i < deg; i++) {
 			TS_CALL(try, err, ts_bspline_derive(
-				spline, i, -1.f, &derivative, status));
+				spline, i, -1.f, &derivative, status))
 			ts_bspline_domain(&derivative, &min, &max);
 			TS_CALL(try, err, ts_bspline_eval(
 				&derivative, min, &first, status))
@@ -1533,7 +1533,7 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 		return ts_bspline_copy(spline, result, status);
 
 	TS_CALL_ROE(err, ts_int_bspline_resize(
-		spline, (int)n, 1, result, status));
+		spline, (int)n, 1, result, status))
 	ctrlp_spline = ts_int_bspline_access_ctrlp(spline);
 	knots_spline = ts_int_bspline_access_knots(spline);
 	ctrlp_result = ts_int_bspline_access_ctrlp(result);
@@ -1787,17 +1787,17 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		*value = json_value_init_object();
 		if (!*value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		ctrlp_value = json_value_init_array();
 		if (!ctrlp_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		knots_value = json_value_init_array();
 		if (!knots_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 
 		/* Although the following functions can't fail, that is, they
@@ -1808,37 +1808,37 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		spline_object = json_value_get_object(*value);
 		if (!spline_object) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 
 		/* Set degree and dimension. */
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "degree", (double) deg)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "dimension", (double) dim)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 
 		/* Set control points. */
 		if (JSONSuccess != json_object_set_value(spline_object,
 				"control_points", ctrlp_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		ctrlp_array = json_array(ctrlp_value);
 		if (!ctrlp_array) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		for (i = 0; i < len_ctrlp; i++) {
 			if (JSONSuccess != json_array_append_number(
 					ctrlp_array, (double) ctrlp[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					   "out of memory");
+					   "out of memory")
 			}
 		}
 
@@ -1846,18 +1846,18 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		if (JSONSuccess != json_object_set_value(
 				spline_object, "knots", knots_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		knots_array = json_array(knots_value);
 		if (!knots_array) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory");
+				   "out of memory")
 		}
 		for (i = 0; i < len_knots; i++) {
 			if (JSONSuccess != json_array_append_number(
 					knots_array, (double) knots[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					   "out of memory");
+					   "out of memory")
 			}
 		}
 	TS_CATCH(err)
@@ -1992,8 +1992,8 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **json,
 	*json = json_serialize_to_string_pretty(value);
 	json_value_free(value);
 	if (!*json)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory");
-	TS_RETURN_SUCCESS(status);
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	TS_RETURN_SUCCESS(status)
 }
 
 tsError ts_bspline_from_json(const char *json, tsBSpline *spline,

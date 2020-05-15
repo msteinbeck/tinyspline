@@ -472,10 +472,10 @@ void derive_discontinuous_lines_ignoring_epsilon(CuTest *tc)
 		CuAssertIntEquals(tc, 2, (int)ts_deboornet_num_result(&net));
 		TS_CALL(try, status.code, ts_deboornet_result(
 			&net, &result, &status))
-		CuAssertDblEquals(tc,  1.0, result[0], EPSILON);
-		CuAssertDblEquals(tc,  1.0, result[1], EPSILON);
-		CuAssertDblEquals(tc, -2.0, result[2], EPSILON);
-		CuAssertDblEquals(tc, -2.0, result[3], EPSILON);
+		CuAssertDblEquals(tc,  1.0 / 0.7, result[0], EPSILON);
+		CuAssertDblEquals(tc,  1.0 / 0.7, result[1], EPSILON);
+		CuAssertDblEquals(tc, -2.0 / 0.3, result[2], EPSILON);
+		CuAssertDblEquals(tc, -2.0 / 0.3, result[3], EPSILON);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY

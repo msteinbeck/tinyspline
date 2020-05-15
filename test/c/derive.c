@@ -194,8 +194,8 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 			(int) ts_bspline_num_control_points(&spline));
 		TS_CALL(try, status.code, ts_bspline_control_points(
 			&spline, &ctrlp, &status))
-		CuAssertDblEquals(tc, 1.f, ctrlp[0], EPSILON);
-		CuAssertDblEquals(tc, 4.f, ctrlp[1], EPSILON);
+		CuAssertDblEquals(tc, 2.f / 2.f, ctrlp[0], EPSILON);
+		CuAssertDblEquals(tc, 8.f / 2.f, ctrlp[1], EPSILON);
 
 		/* Check knots of derivative. */
 		CuAssertIntEquals(tc, 2,

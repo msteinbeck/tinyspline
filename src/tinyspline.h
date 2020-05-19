@@ -19,32 +19,35 @@ extern "C" {
 *                                                                             *
 ******************************************************************************/
 /**
- * The maximum number of knots of a spline.
+ * Maximum number of knots of a spline.
  */
 #define TS_MAX_NUM_KNOTS 10000
 
 /**
- * The default minimum knot value of a spline.
+ * Default minimum of a spline's domain.
  */
 #define TS_MIN_KNOT_VALUE 0.0f
 
 /**
- * The default maximum knot value of a spline.
+ * Default maximum of a spline's domain.
  */
 #define TS_MAX_KNOT_VALUE 1.0f
 
 /**
- * Used to check whether two knots are equal.
+ * If the distance between two knots falls below this threshold, they are
+ * considered equal. Must be positive ( > 0 ).
  */
-#define TS_KNOT_EPSILON 1e-4
+#define TS_KNOT_EPSILON 1e-4f
 
 /**
- * Maximum distance between two control points. This value is not used directly
- * by any function of the C interface but is intended to provide a sane default
- * value (the C++ interface uses this as default value for its optional
- * parameters).
+ * If the distance between two control points is less than or equal to this
+ * threshold, they are considered equal. This constant is not used directly by
+ * any function of the C interface but is intended to provide a reasonable
+ * default value for functions requiring an epsilon environment for comparing
+ * control points (the C++ interface, for example, uses this as default value
+ * for its optional parameters).
  */
-#define TS_CONTROL_POINT_EPSILON 1e-6
+#define TS_CONTROL_POINT_EPSILON 1e-6f
 
 
 
@@ -1046,9 +1049,9 @@ tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
  * @param[in] epsilon
  * 	The maximum distance between points with "same" coordinates. That is,
  * 	if the distance between neighboring points is less than or equal to
- * 	\p epsilon, they are considered to be the same point. For the sake of
- * 	fail-safeness, the sign is removed with fabs. It is advisable to pass a
- * 	value greater than zero, however, it is not necessary.
+ * 	\p epsilon, they are considered equal. For the sake of fail-safeness,
+ * 	the sign is removed with fabs. It is advisable to pass a value greater
+ * 	than zero, however, it is not necessary.
  * @param[out] spline
  * 	The interpolated spline.
  * @param[out] status
@@ -1234,7 +1237,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
 
 /**
- * Returns whether the distance of the endpoints of \p spline is less than or
+ * Checks whether the distance of the endpoints of \p spline is less than or
  * equal to \p epsilon for the first 'ts_bspline_degree - 1' derivatives
  * (starting with the zeroth derivative).
  *
@@ -1596,18 +1599,18 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status);
 *                                                                             *
 ******************************************************************************/
 /**
- * Compares the knots \p x and \p y using the epsilon environment
+ * Checks whether \p x and \p y are equal with respect to the epsilon
+ * environment TS_KNOT_EPSILON, i.e. their distance is less than
  * TS_KNOT_EPSILON.
  *
  * @param[in] x
- * 	The x value to compare.
+ * 	A knot.
  * @param[in] y
- * 	The y value to compare.
+ * 	A knot.
  * @return 1
- * 	If \p x is equal to \p y with respect to the epsilon environment
- * 	TS_KNOT_EPSILON.
+ * 	If \p x and \p y are equal.
  * @return 0
- * 	Otherwise.
+ * 	If \p x and \p y are not equal.
  */
 int ts_knots_equal(tsReal x, tsReal y);
 

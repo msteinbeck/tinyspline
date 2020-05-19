@@ -1478,7 +1478,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 					ki1  = knots[i+1];
 					span = kid1 - ki1;
 					if (span < TS_KNOT_EPSILON)
-						span = (tsReal) TS_KNOT_EPSILON;
+						span = TS_KNOT_EPSILON;
 					ctrlp[k] *= deg;
 					ctrlp[k] /= span;
 				}
@@ -2065,7 +2065,7 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 ******************************************************************************/
 int ts_knots_equal(tsReal x, tsReal y)
 {
-	return fabs(x-y) <= TS_KNOT_EPSILON ? 1 : 0;
+	return fabs(x-y) < TS_KNOT_EPSILON ? 1 : 0;
 }
 
 void ts_arr_fill(tsReal *arr, size_t num, tsReal val)

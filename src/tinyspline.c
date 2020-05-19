@@ -1460,12 +1460,10 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 						"discontinuity at knot: %f",
 						knots[i])
 				}
+				memmove(snd, snd + dim,
+					(num_ctrlp - (i+1-deg)) * sof_ctrlp);
 				memmove(&knots[i], &knots[i+1],
 					(num_knots - (i+1)) * sof_real);
-				/* Preserve fst by copying it to snd. */
-				memcpy(snd, fst, sof_ctrlp);
-				memmove(fst, snd,
-					(num_ctrlp - (i-deg)) * sof_ctrlp);
 				num_ctrlp--;
 				num_knots--;
 				i += deg-1;

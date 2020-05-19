@@ -91,9 +91,9 @@ tsError ts_int_bspline_access_ctrlp_at(const tsBSpline *spline, size_t index,
 {
 	if (index >= ts_bspline_num_control_points(spline)) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			    "index (%lu) >= num(control_points) (%lu)",
-			    (unsigned long) index,
-			    (unsigned long) ts_bspline_num_control_points(spline))
+			"index (%lu) >= num(control_points) (%lu)",
+			(unsigned long) index,
+			(unsigned long) ts_bspline_num_control_points(spline))
 	}
 	*ctrlp = ts_int_bspline_access_ctrlp(spline) +
 		 index * ts_bspline_dimension(spline);
@@ -105,9 +105,9 @@ tsError ts_int_bspline_access_knot_at(const tsBSpline *spline, size_t index,
 {
 	if (index >= ts_bspline_num_knots(spline)) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			    "index (%lu) >= num(knots) (%lu)",
-			    (unsigned long) index,
-			    (unsigned long) ts_bspline_num_knots(spline))
+			"index (%lu) >= num(knots) (%lu)",
+			(unsigned long) index,
+			(unsigned long) ts_bspline_num_knots(spline))
 	}
 	*knot = ts_int_bspline_access_knots(spline)[index];
 	TS_RETURN_SUCCESS(status)
@@ -158,9 +158,9 @@ tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status)
 {
 	if (deg >= ts_bspline_num_control_points(spline)) {
 		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			   "degree (%lu) >= num(control_points) (%lu)",
-			    (unsigned long) deg,
-			    (unsigned long) ts_bspline_num_control_points(spline))
+			"degree (%lu) >= num(control_points) (%lu)",
+			(unsigned long) deg,
+			(unsigned long) ts_bspline_num_control_points(spline))
 	}
 	spline->pImpl->deg = deg;
 	TS_RETURN_SUCCESS(status)
@@ -175,9 +175,9 @@ tsError ts_bspline_set_order(tsBSpline *spline, size_t order, tsStatus *status)
 {
 	if (order == 0 || order > ts_bspline_num_control_points(spline)) {
 		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			   "order (%lu) > num(control_points) (%lu)",
-			    (unsigned long) order,
-			    (unsigned long) ts_bspline_num_control_points(spline))
+			"order (%lu) > num(control_points) (%lu)",
+			(unsigned long) order,
+			(unsigned long) ts_bspline_num_control_points(spline))
 	}
 	return ts_bspline_set_degree(spline, order - 1, status);
 }
@@ -194,9 +194,9 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (ts_bspline_len_control_points(spline) % dim != 0) {
 		TS_RETURN_2(status, TS_LCTRLP_DIM_MISMATCH,
-			   "len(control_points) (%lu) %% dimension (%lu) != 0",
-			    (unsigned long) ts_bspline_len_control_points(spline),
-			    (unsigned long) dim)
+			"len(control_points) (%lu) %% dimension (%lu) != 0",
+			(unsigned long) ts_bspline_len_control_points(spline),
+			(unsigned long) dim)
 	}
 	spline->pImpl->dim = dim;
 	TS_RETURN_SUCCESS(status)
@@ -242,7 +242,7 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
 		*ctrlp = (tsReal*) malloc(size);
 		if (!*ctrlp) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		memcpy(*ctrlp, from, size);
 	TS_CATCH(err)
@@ -315,16 +315,16 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 			mult++;
 		} else if (lst_knot > knot) {
 			TS_RETURN_1(status, TS_KNOTS_DECR,
-				   "decreasing knot vector at index: %lu",
-				    (unsigned long) idx)
+				"decreasing knot vector at index: %lu",
+				(unsigned long) idx)
 		} else {
 			mult = 0;
 		}
 		if (mult > order) {
 			TS_RETURN_3(status, TS_MULTIPLICITY,
-				   "mult(%f) (%lu) > order (%lu)",
-				   knot, (unsigned long) mult,
-				   (unsigned long) order)
+				"mult(%f) (%lu) > order (%lu)",
+				knot, (unsigned long) mult,
+				(unsigned long) order)
 		}
 		lst_knot = knot;
 	}
@@ -463,8 +463,8 @@ tsError ts_int_bspline_generate_knots(const tsBSpline *spline,
 	/* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
 	if (type == TS_BEZIERS && n_knots % order != 0) {
 		TS_RETURN_2(status, TS_NUM_KNOTS,
-			    "num(knots) (%lu) %% order (%lu) != 0",
-			    (unsigned long) n_knots, (unsigned long) order)
+			"num(knots) (%lu) %% order (%lu) != 0",
+			(unsigned long) n_knots, (unsigned long) order)
 	}
 
 	knots = ts_int_bspline_access_knots(spline);
@@ -518,14 +518,14 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 	}
 	if (num_knots > TS_MAX_NUM_KNOTS) {
 		TS_RETURN_2(status, TS_NUM_KNOTS,
-			   "unsupported number of knots: %lu > %i",
-			    (unsigned long) num_knots, TS_MAX_NUM_KNOTS)
+			"unsupported number of knots: %lu > %i",
+			(unsigned long) num_knots, TS_MAX_NUM_KNOTS)
 	}
 	if (degree >= num_control_points) {
 		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			   "degree (%lu) >= num(control_points) (%lu)",
-			    (unsigned long) degree,
-			    (unsigned long) num_control_points)
+			"degree (%lu) >= num(control_points) (%lu)",
+			(unsigned long) degree,
+			(unsigned long) num_control_points)
 	}
 
 	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
@@ -658,7 +658,7 @@ tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
 
 	if (dim == 0) {
 		TS_RETURN_0(status, TS_DIM_ZERO,
-			    "unsupported dimension: 0")
+			"unsupported dimension: 0")
 	}
 	if (num <= 1) {
 		TS_RETURN_1(status, TS_NUM_POINTS,
@@ -671,7 +671,7 @@ tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
 		/* Forward sweep. */
 		if (fabs(b[0]) <= fabs(c[0])) {
 			TS_THROW_2(try, err, status, TS_NO_RESULT,
-				   "error: |%f| <= |%f|", b[0], c[0])
+				"error: |%f| <= |%f|", b[0], c[0])
 		}
 		/* |b[i]| > |c[i]| implies that |b[i]| > 0. Thus, the following
 		 * statements cannot evaluate to division by zero.*/
@@ -681,8 +681,8 @@ tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
 		for (i = 1; i < num; i++) {
 			if (fabs(b[i]) <= fabs(a[i]) + fabs(c[i])) {
 				TS_THROW_3(try, err, status, TS_NO_RESULT,
-					   "error: |%f| <= |%f| + |%f|",
-					   b[i], a[i], c[i])
+					"error: |%f| <= |%f| + |%f|",
+					b[i], a[i], c[i])
 			}
 			/* |a[i]| < |b[i]| and cc[i - 1] < 1. Therefore, the
 			 * following statement cannot evaluate to division by
@@ -737,7 +737,7 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n <= 1) {
 		TS_RETURN_1(status, TS_NUM_POINTS,
-			   "num(points) (%lu) <= 1", (unsigned long) n)
+			"num(points) (%lu) <= 1", (unsigned long) n)
 	}
 	/* in the following n >= 2 applies */
 
@@ -753,7 +753,7 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 		s = (tsReal*) malloc(n * sof_ctrlp);
 		if (!s) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 
 		/* set s_0 to b_0 and s_n = b_n */
@@ -826,7 +826,7 @@ tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
 		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
 		if (!thomas) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		/* The system of linear equations is taken from:
 		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
@@ -889,9 +889,11 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	tsReal *cr_ctrlp; /**< The points to interpolate based on `points`. */
 	size_t i, d; /**< Used in for loops. */
 	tsError err; /**< Local error handling. */
-	/* https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline */
+	/* [https://en.wikipedia.org/wiki/
+	 * Centripetal_Catmull%E2%80%93Rom_spline] */
 	tsReal t0, t1, t2, t3; /**< Catmull-Rom knots. */
-	/* https://stackoverflow.com/questions/30748316/catmull-rom-interpolation-on-svg-paths/30826434#30826434 */
+	/* [https://stackoverflow.com/questions/30748316/
+	 * catmull-rom-interpolation-on-svg-paths/30826434#30826434] */
 	tsReal c1, c2, d1, d2, m1, m2; /**< Used to calculate derivatives. */
 	tsReal *p0, *p1, *p2, *p3; /**< Processed Catmull-Rom points. */
 
@@ -1039,17 +1041,17 @@ tsError ts_int_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
 	if (*k <= deg) {
 		/* u < u_min */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			    "knot (%f) < min(domain) (%f)", u, min)
+			"knot (%f) < min(domain) (%f)", u, min)
 	}
 	if (*k == num_knots && *s == 0) {
 		/* u > u_last */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			    "knot (%f) > max(domain) (%f)", u, max)
+			"knot (%f) > max(domain) (%f)", u, max)
 	}
 	if (*k > num_knots-deg + *s-1)  {
 		/* u > u_max */
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			    "knot (%f) > max(domain) (%f)", u, max)
+			"knot (%f) > max(domain) (%f)", u, max)
 	}
 	(*k)--; /* k+1 - 1 will never underflow */
 	TS_RETURN_SUCCESS(status)
@@ -1188,7 +1190,7 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 		*points = (tsReal *) malloc(sof_points);
 		if (!*points) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline,&net, status))
@@ -1257,9 +1259,9 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 
 	if (dim < index) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			    "dimension (%lu) <= index (%lu)",
-			    (unsigned long) dim,
-			    (unsigned long) index)
+			"dimension (%lu) <= index (%lu)",
+			(unsigned long) dim,
+			(unsigned long) index)
 	}
 	if(max_iter == 0)
 		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations")
@@ -1290,8 +1292,8 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 		} while (i++ < max_iter);
 		if (persnickety) {
 			TS_THROW_1(try, err, status, TS_NO_RESULT,
-				    "maximum iterations (%lu) exceeded",
-				    (unsigned long) max_iter)
+				"maximum iterations (%lu) exceeded",
+				(unsigned long) max_iter)
 		}
 	TS_CATCH(err)
 		ts_deboornet_free(net);
@@ -1453,15 +1455,17 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 				snd = fst + dim;
 				dist = ts_distance(fst, snd, dim);
 				if (epsilon >= 0.f && dist > epsilon) {
-					TS_THROW_1(try, err, status, TS_UNDERIVABLE,
-						   "spline is discontinuous at knot: %f",
-						   knots[i])
+					TS_THROW_1(try, err, status,
+						TS_UNDERIVABLE,
+						"discontinuity at knot: %f",
+						knots[i])
 				}
 				memmove(&knots[i], &knots[i+1],
 					(num_knots - (i+1)) * sof_real);
 				/* Preserve fst by copying it to snd. */
 				memcpy(snd, fst, sof_ctrlp);
-				memmove(fst, snd, (num_ctrlp - (i-deg)) * sof_ctrlp);
+				memmove(fst, snd,
+					(num_ctrlp - (i-deg)) * sof_ctrlp);
 				num_ctrlp--;
 				num_knots--;
 				i += deg-1;
@@ -1782,17 +1786,17 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		*value = json_value_init_object();
 		if (!*value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		ctrlp_value = json_value_init_array();
 		if (!ctrlp_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		knots_value = json_value_init_array();
 		if (!knots_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 
 		/* Although the following functions can't fail, that is, they
@@ -1803,37 +1807,37 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		spline_object = json_value_get_object(*value);
 		if (!spline_object) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 
 		/* Set degree and dimension. */
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "degree", (double) deg)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		if (JSONSuccess != json_object_set_number(
 				spline_object, "dimension", (double) dim)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 
 		/* Set control points. */
 		if (JSONSuccess != json_object_set_value(spline_object,
 				"control_points", ctrlp_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		ctrlp_array = json_array(ctrlp_value);
 		if (!ctrlp_array) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		for (i = 0; i < len_ctrlp; i++) {
 			if (JSONSuccess != json_array_append_number(
 					ctrlp_array, (double) ctrlp[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					   "out of memory")
+					"out of memory")
 			}
 		}
 
@@ -1841,18 +1845,18 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		if (JSONSuccess != json_object_set_value(
 				spline_object, "knots", knots_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		knots_array = json_array(knots_value);
 		if (!knots_array) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				   "out of memory")
+				"out of memory")
 		}
 		for (i = 0; i < len_knots; i++) {
 			if (JSONSuccess != json_array_append_number(
 					knots_array, (double) knots[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					   "out of memory")
+					"out of memory")
 			}
 		}
 	TS_CATCH(err)
@@ -1898,7 +1902,7 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 		TS_RETURN_0(status, TS_PARSE_ERROR, "degree is not a number")
 	if (json_value_get_number(deg_value) < -0.01f) {
 		TS_RETURN_1(status, TS_PARSE_ERROR, "degree (%f) < 0",
-			   json_value_get_number(deg_value))
+			json_value_get_number(deg_value))
 	}
 	deg = (size_t) json_value_get_number(deg_value);
 
@@ -1906,11 +1910,11 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 	dim_value = json_object_get_value(spline_object, "dimension");
 	if (json_value_get_type(dim_value) != JSONNumber) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			    "dimension is not a number")
+			"dimension is not a number")
 	}
 	if (json_value_get_number(dim_value) < 0.99f) {
 		TS_RETURN_1(status, TS_PARSE_ERROR, "dimension (%f) < 1",
-			   json_value_get_number(deg_value))
+			json_value_get_number(deg_value))
 	}
 	dim = (size_t) json_value_get_number(dim_value);
 
@@ -1918,21 +1922,21 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 	ctrlp_value = json_object_get_value(spline_object, "control_points");
 	if (json_value_get_type(ctrlp_value) != JSONArray) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			   "control_points is not an array")
+			"control_points is not an array")
 	}
 	ctrlp_array = json_value_get_array(ctrlp_value);
 	len_ctrlp = json_array_get_count(ctrlp_array);
 	if (len_ctrlp % dim != 0) {
 		TS_RETURN_2(status, TS_PARSE_ERROR,
-			   "len(control_points) (%lu) %% dimension (%lu) != 0",
-			    (unsigned long) len_ctrlp, (unsigned long) dim)
+			"len(control_points) (%lu) %% dimension (%lu) != 0",
+			(unsigned long) len_ctrlp, (unsigned long) dim)
 	}
 
 	/* Read number of knots. */
 	knots_value = json_object_get_value(spline_object, "knots");
 	if (json_value_get_type(knots_value) != JSONArray) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			   "knots is not an array")
+			"knots is not an array")
 	}
 	knots_array = json_value_get_array(knots_value);
 	num_knots = json_array_get_count(knots_array);
@@ -1943,9 +1947,9 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 				dim, deg, TS_CLAMPED, _spline_, status))
 		if (num_knots != ts_bspline_num_knots(_spline_))
 			TS_THROW_2(try, err, status, TS_NUM_KNOTS,
-				   "unexpected num(knots): (%lu) != (%lu)",
-				   (unsigned long) num_knots,
-				   (unsigned long) ts_bspline_num_knots(_spline_))
+				"unexpected num(knots): (%lu) != (%lu)",
+				(unsigned long) num_knots,
+				(unsigned long) ts_bspline_num_knots(_spline_))
 
 		/* Set control points. */
 		ctrlp = ts_int_bspline_access_ctrlp(_spline_);
@@ -1953,8 +1957,8 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 			real_value = json_array_get_value(ctrlp_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
 				TS_THROW_1(try, err, status, TS_PARSE_ERROR,
-					   "control_points: value at index %lu is not a number",
-					   (unsigned long) i)
+					"control_points: value at index %lu is not a number",
+					(unsigned long) i)
 			ctrlp[i] = (tsReal) json_value_get_number(real_value);
 		}
 		TS_CALL(try, err, ts_bspline_set_control_points(
@@ -1966,8 +1970,8 @@ tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
 			real_value = json_array_get_value(knots_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
 			TS_THROW_1(try, err, status, TS_PARSE_ERROR,
-				   "knots: value at index %lu is not a number",
-				   (unsigned long) i)
+				"knots: value at index %lu is not a number",
+				(unsigned long) i)
 			knots[i] = (tsReal) json_value_get_number(real_value);
 		}
 		TS_CALL(try, err, ts_bspline_set_knots(
@@ -2001,7 +2005,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
 		value = json_parse_string(json);
 		if (!value) {
 			TS_RETURN_0(status, TS_PARSE_ERROR,
-				   "invalid json input")
+				"invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_from_json(
 			value, spline, status))
@@ -2035,12 +2039,12 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 		file = fopen(path, "r");
 		if (!file) {
 			TS_THROW_0(try, err, status, TS_IO_ERROR,
-				   "unable to open file")
+				"unable to open file")
 		}
 		value = json_parse_file(path);
 		if (!value) {
 			TS_RETURN_0(status, TS_PARSE_ERROR,
-				   "invalid json input")
+				"invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_from_json(
 			value, spline, status))

@@ -31,8 +31,10 @@ void derive_sequence_of_four_points(CuTest *tc)
 			(int) ts_bspline_num_knots(&spline));
 		TS_CALL(try, status.code, ts_bspline_knots(
 			&spline, &knots, &status))
-		CuAssertDblEquals(tc, TS_MIN_KNOT_VALUE, knots[0], EPSILON);
-		CuAssertDblEquals(tc, TS_MAX_KNOT_VALUE, knots[1], EPSILON);
+		CuAssertDblEquals(tc,TS_DOMAIN_DEFAULT_MIN,
+			knots[0], EPSILON);
+		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
+			knots[1], EPSILON);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -121,8 +123,10 @@ void derive_single_line(CuTest *tc)
 			(int) ts_bspline_num_knots(&spline));
 		TS_CALL(try, status.code, ts_bspline_knots(
 			&spline, &knots, &status))
-		CuAssertDblEquals(tc, TS_MIN_KNOT_VALUE, knots[0], EPSILON);
-		CuAssertDblEquals(tc, TS_MAX_KNOT_VALUE, knots[1], EPSILON);
+		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
+			knots[0], EPSILON);
+		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
+			knots[1], EPSILON);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY

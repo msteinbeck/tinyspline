@@ -24,14 +24,16 @@ extern "C" {
 #define TS_MAX_NUM_KNOTS 10000
 
 /**
- * Default minimum of a spline's domain.
+ * Default minimum of a spline's domain. This constant is used when setting up
+ * new splines. Must be less than TS_DOMAIN_DEFAULT_MAX.
  */
-#define TS_MIN_KNOT_VALUE 0.0f
+#define TS_DOMAIN_DEFAULT_MIN 0.0f
 
 /**
- * Default maximum of a spline's domain.
+ * Default maximum of a spline's domain. This constant is used when setting up
+ * new splines. Must be greater than TS_DOMAIN_DEFAULT_MIN
  */
-#define TS_MAX_KNOT_VALUE 1.0f
+#define TS_DOMAIN_DEFAULT_MAX 1.0f
 
 /**
  * If the distance between two knots falls below this threshold, they are

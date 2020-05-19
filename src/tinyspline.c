@@ -470,29 +470,29 @@ tsError ts_int_bspline_generate_knots(const tsBSpline *spline,
 	knots = ts_int_bspline_access_knots(spline);
 
 	if (type == TS_OPENED) {
-		knots[0] = TS_MIN_KNOT_VALUE; /* n_knots >= 2 */
-		fac = (TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE)
+		knots[0] = TS_DOMAIN_DEFAULT_MIN; /* n_knots >= 2 */
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
 		      / (n_knots - 1); /* n_knots >= 2 */
 		for (i = 1; i < n_knots-1; i++)
-			knots[i] = TS_MIN_KNOT_VALUE + i*fac;
-		knots[i] = TS_MAX_KNOT_VALUE; /* n_knots >= 2 */
+			knots[i] = TS_DOMAIN_DEFAULT_MIN + i*fac;
+		knots[i] = TS_DOMAIN_DEFAULT_MAX; /* n_knots >= 2 */
 	} else if (type == TS_CLAMPED) {
 		/* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
-		fac = (TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE)
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
 		      / (n_knots - 2*deg - 1);
-		ts_arr_fill(knots, order, TS_MIN_KNOT_VALUE);
+		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
 		for (i = order ;i < n_knots-order; i++)
-			knots[i] = TS_MIN_KNOT_VALUE + (i-deg)*fac;
-		ts_arr_fill(knots + i, order, TS_MAX_KNOT_VALUE);
+			knots[i] = TS_DOMAIN_DEFAULT_MIN + (i-deg)*fac;
+		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
 	} else if (type == TS_BEZIERS) {
 		/* n_knots >= 2*order implies n_knots/order >= 2 */
-		fac = (TS_MAX_KNOT_VALUE - TS_MIN_KNOT_VALUE)
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
 		      / (n_knots/order - 1);
-		ts_arr_fill(knots, order, TS_MIN_KNOT_VALUE);
+		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
 		for (i = order; i < n_knots-order; i += order)
 			ts_arr_fill(knots + i, order,
-				    TS_MIN_KNOT_VALUE + (i/order)*fac);
-		ts_arr_fill(knots + i, order, TS_MAX_KNOT_VALUE);
+				    TS_DOMAIN_DEFAULT_MIN + (i/order)*fac);
+		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
 	}
 	TS_RETURN_SUCCESS(status)
 }

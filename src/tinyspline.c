@@ -1018,42 +1018,47 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 * :: Query Functions                                                          *
 *                                                                             *
 ******************************************************************************/
-tsError ts_int_bspline_find_u(const tsBSpline *spline, tsReal u, size_t *k,
-	size_t *s, tsStatus *status)
+tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
+	size_t *index, size_t *multiplicity, tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
 	const tsReal *knots = ts_int_bspline_access_knots(spline);
 	tsReal min, max;
+	size_t low, high;
 
-	*k = *s = 0;
-	for (; *k < num_knots; (*k)++) {
-		const tsReal uk = knots[*k];
-		if (ts_knots_equal(u, uk)) {
-			(*s)++;
-		} else if (u < uk) {
-			break;
+	ts_bspline_domain(spline, &min, &max);
+	if (knot < min && !ts_knots_equal(knot, min)) {
+		TS_RETURN_2(status, TS_U_UNDEFINED,
+			"knot (%f) < min(domain) (%f)", knot, min)
+	}
+	if (knot > max && !ts_knots_equal(knot, max)) {
+		TS_RETURN_2(status, TS_U_UNDEFINED,
+			"knot (%f) > max(domain) (%f)", knot, max)
+	}
+
+	if (ts_knots_equal(knot, knots[num_knots - 1])) {
+		*index = num_knots - 1;
+	} else {
+		low = 0;
+		high = num_knots - 1;
+		*index = (low+high) / 2;
+		while (knot < knots[*index] || knot >= knots[*index + 1]) {
+			if (knot < knots[*index])
+				high = *index;
+			else
+				low = *index;
+			*index = (low+high) / 2;
 		}
 	}
 
-	/* keep in mind that currently k is k+1 */
-	ts_bspline_domain(spline, &min, &max);
-	if (*k <= deg) {
-		/* u < u_min */
-		TS_RETURN_2(status, TS_U_UNDEFINED,
-			"knot (%f) < min(domain) (%f)", u, min)
+	*multiplicity = 0;
+	for (low = 0; low < deg+1; low++) {
+		if (ts_knots_equal(knot, knots[*index - deg + low])) {
+			(*multiplicity)++;
+		}
 	}
-	if (*k == num_knots && *s == 0) {
-		/* u > u_last */
-		TS_RETURN_2(status, TS_U_UNDEFINED,
-			"knot (%f) > max(domain) (%f)", u, max)
-	}
-	if (*k > num_knots-deg + *s-1)  {
-		/* u > u_max */
-		TS_RETURN_2(status, TS_U_UNDEFINED,
-			"knot (%f) > max(domain) (%f)", u, max)
-	}
-	(*k)--; /* k+1 - 1 will never underflow */
+
 	TS_RETURN_SUCCESS(status)
 }
 
@@ -1097,7 +1102,7 @@ tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
 
 	/* 1. */
 	k = s = 0;
-	TS_CALL_ROE(err, ts_int_bspline_find_u(
+	TS_CALL_ROE(err, ts_int_bspline_find_knot(
 		spline, u, &k, &s, status))
 
 	/* 2. */

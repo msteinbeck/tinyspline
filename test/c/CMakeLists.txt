@@ -20,7 +20,7 @@ target_link_libraries(tinyspline_tests
 ### Create code coverage.
 ###############################################################################
 if(TINYSPLINE_COVERAGE_AVAILABLE)
-	include_directories(${TINYSPLINE_INCLUDE_DIRS})
+	include_directories(${TINYSPLINE_C_INCLUDE_DIR})
 	add_executable(tinyspline_tests_coverage
 		EXCLUDE_FROM_ALL
 		${TINYSPLINE_TESTS_SOURCE_FILES}

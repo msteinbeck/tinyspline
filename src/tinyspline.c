@@ -1037,6 +1037,7 @@ tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
 			"knot (%f) > max(domain) (%f)", knot, max)
 	}
 
+	/* Based on 'The NURBS Book' (Les Piegl and Wayne Tiller). */
 	if (ts_knots_equal(knot, knots[num_knots - 1])) {
 		*index = num_knots - 1;
 	} else {
@@ -1050,6 +1051,12 @@ tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
 				low = *index;
 			*index = (low+high) / 2;
 		}
+	}
+
+	/* Handle floating point errors. */
+	while (*index < num_knots - 1 && /* there is a next knot */
+		ts_knots_equal(knot, knots[*index + 1])) {
+		(*index)++;
 	}
 
 	*multiplicity = 0;

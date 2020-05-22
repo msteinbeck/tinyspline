@@ -1059,11 +1059,10 @@ tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
 		(*index)++;
 	}
 
-	*multiplicity = 0;
-	for (low = 0; low < deg+1; low++) {
-		if (ts_knots_equal(knot, knots[*index - deg + low])) {
-			(*multiplicity)++;
-		}
+	/* Calculate knot's multiplicity. */
+	for (*multiplicity = deg + 1; *multiplicity > 0 ; (*multiplicity)--) {
+		if (ts_knots_equal(knot, knots[*index - (*multiplicity-1)]))
+			break;
 	}
 
 	TS_RETURN_SUCCESS(status)

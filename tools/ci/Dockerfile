@@ -41,6 +41,33 @@ RUN apt-get update &&                          \
         ./autogen.sh && \
         ./configure && \
         make && \
+        make install && \
+    wget -P /usr/local/src/python36 \
+        https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz && \
+    tar -xf /usr/local/src/python36/Python-3.6.12.tar.xz \
+        -C /usr/local/src/python36 \
+        --strip 1 && \
+    cd /usr/local/src/python36 && \
+        ./configure --prefix=/opt/linux/python36 && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/python37 \
+        https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tar.xz && \
+    tar -xf /usr/local/src/python37/Python-3.7.9.tar.xz \
+        -C /usr/local/src/python37 \
+        --strip 1 && \
+    cd /usr/local/src/python37 && \
+        ./configure --prefix=/opt/linux/python37 && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/python38 \
+        https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tar.xz && \
+    tar -xf /usr/local/src/python38/Python-3.8.5.tar.xz \
+        -C /usr/local/src/python38 \
+        --strip 1 && \
+    cd /usr/local/src/python38 && \
+        ./configure --prefix=/opt/linux/python38 && \
+        make && \
         make install
 
 # Install macosx build tools (osxcross) and libraries (macports).
@@ -51,6 +78,7 @@ RUN export SDK_VERSION=10.13 &&                               \
     cd /opt &&                                                \
     git clone https://github.com/tpoechtrager/osxcross.git && \
     cd osxcross &&                                            \
+    git checkout 1b731164dfd56de2ff20b530ec70c7a88a7b6ea6 &&  \
     wget -P tarballs https://github.com/phracker/MacOSX-SDKs/releases/download/${SDK_VERSION}/MacOSX${SDK_VERSION}.sdk.tar.xz && \
     ./build.sh &&                                             \
     osxcross-macports install                                 \

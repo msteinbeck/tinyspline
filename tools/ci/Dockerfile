@@ -16,6 +16,7 @@ RUN apt-get update &&                          \
         flex                                   \
         gcc-arm-linux-gnueabihf                \
         git                                    \
+        libtool                                \
         lua5.1 liblua5.1-dev                   \
         lua5.2 liblua5.2-dev                   \
         lua5.3 liblua5.3-dev                   \
@@ -23,12 +24,13 @@ RUN apt-get update &&                          \
         maven                                  \
         mingw-w64                              \
         mono-mcs mono-reference-assemblies-2.0 \
-        libtool                                \
+        nuget                                  \
         octave liboctave-dev                   \
         php-dev                                \
         pkg-config                             \
-        python                                 \
+        python python-dev python3-dev          \
         r-base r-cran-rcpp                     \
+        ruby ruby-dev                          \
         texinfo                                \
         wget                                   \
         zip &&                                 \
@@ -68,6 +70,42 @@ RUN apt-get update &&                          \
     cd /usr/local/src/python38 && \
         ./configure --prefix=/opt/linux/python38 && \
         make && \
+        make install && \
+    wget -P /usr/local/src/ruby24 \
+        https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
+    tar -xf /usr/local/src/ruby24/ruby-2.4.10.tar.gz \
+        -C /usr/local/src/ruby24 \
+        --strip 1 && \
+    cd /usr/local/src/ruby24 && \
+        ./configure --prefix=/opt/linux/ruby24 && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/ruby25 \
+        https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.8.tar.gz && \
+    tar -xf /usr/local/src/ruby25/ruby-2.5.8.tar.gz \
+        -C /usr/local/src/ruby25 \
+        --strip 1 && \
+    cd /usr/local/src/ruby25 && \
+        ./configure --prefix=/opt/linux/ruby25 && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/ruby26 \
+        https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz && \
+    tar -xf /usr/local/src/ruby26/ruby-2.6.6.tar.gz \
+        -C /usr/local/src/ruby26 \
+        --strip 1 && \
+    cd /usr/local/src/ruby26 && \
+        ./configure --prefix=/opt/linux/ruby26 && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/ruby27 \
+        https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.1.tar.gz && \
+    tar -xf /usr/local/src/ruby27/ruby-2.7.1.tar.gz \
+        -C /usr/local/src/ruby27 \
+        --strip 1 && \
+    cd /usr/local/src/ruby27 && \
+        ./configure --prefix=/opt/linux/ruby27 && \
+        make && \
         make install
 
 # Install macosx build tools (osxcross) and libraries (macports).
@@ -93,7 +131,8 @@ RUN export SDK_VERSION=10.13 &&                               \
 	python38                                              \
 	ruby24                                                \
 	ruby25                                                \
-	ruby26
+	ruby26                                                \
+	ruby27
 
 # Install windows build tools (mingw) and libraries.
 RUN mkdir -p /opt/wincross/archives                && \

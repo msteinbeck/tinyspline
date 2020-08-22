@@ -120,19 +120,19 @@ RUN export SDK_VERSION=10.13 &&                               \
     wget -P tarballs https://github.com/phracker/MacOSX-SDKs/releases/download/${SDK_VERSION}/MacOSX${SDK_VERSION}.sdk.tar.xz && \
     ./build.sh &&                                             \
     osxcross-macports install                                 \
-	lua51                                                 \
-	lua52                                                 \
-	lua                                                   \
-	openjdk8                                              \
-	python27                                              \
-	python35                                              \
-	python36                                              \
-	python37                                              \
-	python38                                              \
-	ruby24                                                \
-	ruby25                                                \
-	ruby26                                                \
-	ruby27
+        lua51                                                 \
+        lua52                                                 \
+        lua                                                   \
+        openjdk8                                              \
+        python27                                              \
+        python35                                              \
+        python36                                              \
+        python37                                              \
+        python38                                              \
+        ruby24                                                \
+        ruby25                                                \
+        ruby26                                                \
+        ruby27
 
 # Install windows build tools (mingw) and libraries.
 RUN mkdir -p /opt/wincross/archives                && \

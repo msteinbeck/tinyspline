@@ -28,12 +28,15 @@ RUN apt-get update &&                          \
         octave liboctave-dev                   \
         php-dev                                \
         pkg-config                             \
-        python python-dev python3-dev          \
+        python python-dev python-pip           \
+        python3-dev python3-pip                \
         r-base r-cran-rcpp                     \
         ruby ruby-dev                          \
         texinfo                                \
         wget                                   \
         zip &&                                 \
+    python2 -m pip install setuptools wheel && \
+    python3 -m pip install setuptools wheel && \
     wget -P /usr/local/src/swig \
         http://prdownloads.sourceforge.net/swig/swig-4.0.1.tar.gz && \
     tar -xf /usr/local/src/swig/swig-4.0.1.tar.gz \
@@ -53,6 +56,7 @@ RUN apt-get update &&                          \
         ./configure --prefix=/opt/linux/python36 && \
         make && \
         make install && \
+        /opt/linux/python36/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/python37 \
         https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tar.xz && \
     tar -xf /usr/local/src/python37/Python-3.7.9.tar.xz \
@@ -62,6 +66,7 @@ RUN apt-get update &&                          \
         ./configure --prefix=/opt/linux/python37 && \
         make && \
         make install && \
+        /opt/linux/python37/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/python38 \
         https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tar.xz && \
     tar -xf /usr/local/src/python38/Python-3.8.5.tar.xz \
@@ -71,6 +76,7 @@ RUN apt-get update &&                          \
         ./configure --prefix=/opt/linux/python38 && \
         make && \
         make install && \
+        /opt/linux/python38/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/ruby24 \
         https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
     tar -xf /usr/local/src/ruby24/ruby-2.4.10.tar.gz \

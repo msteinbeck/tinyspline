@@ -106,7 +106,8 @@ RUN apt-get update &&                          \
     cd /usr/local/src/ruby27 && \
         ./configure --prefix=/opt/linux/ruby27 && \
         make && \
-        make install
+        make install && \
+    cd /usr/local/src && rm -rf ..?* .[!.]* *
 
 # Install macosx build tools (osxcross) and libraries (macports).
 ENV PATH /opt/osxcross/target/bin:${PATH}

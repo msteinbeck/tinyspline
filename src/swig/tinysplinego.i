@@ -13,8 +13,7 @@
 #cgo LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-rpath,${SRCDIR}
 %}
 
-// Simplify API so one can call a function without explicit type cast
-// (from int to int64).
+// Simplifies the API (no type cast required).
 %typemap(gotype) size_t "int"
 
 #ifdef TINYSPLINE_FLOAT_PRECISION
@@ -23,7 +22,7 @@
 	%typemap(gotype) std::vector<tinyspline::real> * "[]float64"
 #endif
 
-// Map std::vector<tinyspline::real> to Go slice (do not free $1).
+// Map std::vector<tinyspline::real> to Go slice.
 %typemap(out) std::vector<tinyspline::real> * {
 	size_t size = $1->size() * sizeof(tinyspline::real);
 	tinyspline::real *data = (tinyspline::real *)malloc(size);

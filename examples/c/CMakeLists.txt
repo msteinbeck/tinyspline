@@ -17,6 +17,7 @@ endif()
 ###############################################################################
 ### Setup OpenGL.
 ###############################################################################
+set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL)
 if(OPENGL_FOUND)
 	include_directories(${OPENGL_INCLUDE_DIRS})

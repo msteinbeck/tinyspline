@@ -711,6 +711,9 @@ include(CMakePackageConfigHelpers)
 
 # C library
 add_library(tinyspline ${TINYSPLINE_C_SOURCE_FILES})
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(tinyspline PUBLIC TINYSPLINE_STATIC)
+endif()
 set_target_properties(tinyspline PROPERTIES
 	OUTPUT_NAME "${TINYSPLINE_C_LIBRARIES_OUTPUT_NAME}"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
@@ -754,6 +757,9 @@ install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
 	add_library(tinysplinecxx ${TINYSPLINE_CXX_SOURCE_FILES})
+    if(NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(tinysplinecxx PUBLIC TINYSPLINECXX_STATIC)
+    endif()
 	set_target_properties(tinysplinecxx PROPERTIES
 		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"

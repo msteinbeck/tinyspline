@@ -4,6 +4,14 @@
 #include <vector>
 #include <string>
 
+#ifdef TINYSPLINECXX_STATIC
+# define TINYSPLINECXX_API
+#elif defined(tinysplinecxx_EXPORTS)
+# define TINYSPLINECXX_API TINYSPLINE_SHARED_EXPORT
+#else
+# define TINYSPLINECXX_API TINYSPLINE_SHARED_IMPORT
+#endif
+
 #ifdef SWIG
 #define std_real_vector_in std::vector<tinyspline::real> *
 #define std_real_vector_out std::vector<tinyspline::real> *
@@ -17,7 +25,7 @@ namespace tinyspline {
 typedef tsReal real;
 class BSpline;
 
-class DeBoorNet {
+class TINYSPLINECXX_API DeBoorNet {
 public:
 	/* Constructors & Destructors */
 	DeBoorNet(const DeBoorNet &other);
@@ -48,7 +56,7 @@ private:
 	friend class BSpline;
 };
 
-class Domain {
+class TINYSPLINECXX_API Domain {
 public:
 	/* Constructors & Destructors */
 	Domain(tsReal min, tsReal max);
@@ -69,7 +77,7 @@ private:
     real _max;
 };
 
-class BSpline {
+class TINYSPLINECXX_API BSpline {
 public:
 	typedef tsBSplineType type;
 
@@ -142,7 +150,7 @@ private:
 	tsBSpline spline;
 };
 
-class Utils {
+class TINYSPLINECXX_API Utils {
 public:
 	static bool knotsEqual(real x, real y);
 

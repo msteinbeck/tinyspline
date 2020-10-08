@@ -15,6 +15,8 @@ add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
 	PRIVATE tinyspline)
 
+add_test(tinyspline_tests tinyspline_tests)
+
 ###############################################################################
 ### Create code coverage.
 ###############################################################################

@@ -285,6 +285,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 # TINYSPLINE_INSTALL_LIBRARY_DIR
 #   Installation directory of library files.
 #
+# TINYSPLINE_INSTALL_BINARY_DIR
+#   Installation directory of binary files.
+#
 # TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR
 #   Installation directory of CMake config files.
 #
@@ -325,6 +328,8 @@ if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 			CACHE STRING "Autodetected." FORCE)
 	endif()
 endif()
+
+set(TINYSPLINE_INSTALL_BINARY_DIR "bin" CACHE STRING "Installation directory of binary files (relative to CMAKE_INSTALL_PREFIX).")
 
 set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "cmake" CACHE STRING "Installation directory of CMake config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
@@ -705,28 +710,19 @@ list(APPEND TINYSPLINE_CXX_SOURCE_FILES
 include(CMakePackageConfigHelpers)
 
 # C library
-add_library(tinyspline_shared SHARED ${TINYSPLINE_C_SOURCE_FILES})
-set_target_properties(tinyspline_shared PROPERTIES
+add_library(tinyspline ${TINYSPLINE_C_SOURCE_FILES})
+set_target_properties(tinyspline PROPERTIES
 	OUTPUT_NAME "${TINYSPLINE_C_LIBRARIES_OUTPUT_NAME}"
 	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
-install(TARGETS tinyspline_shared
+install(TARGETS tinyspline
 	LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
 	ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
-	RUNTIME DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-target_include_directories(tinyspline_shared
-	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
-add_library(tinyspline_static STATIC ${TINYSPLINE_C_SOURCE_FILES})
-set_target_properties(tinyspline_static PROPERTIES
-	OUTPUT_NAME "${TINYSPLINE_C_LIBRARIES_OUTPUT_NAME}"
-	DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-	PREFIX "lib"
-	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}")
-install(TARGETS tinyspline_static
-	LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
-	ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-target_include_directories(tinyspline_static
-	PUBLIC ${TINYSPLINE_C_INCLUDE_DIR})
+	RUNTIME DESTINATION ${TINYSPLINE_INSTALL_BINARY_DIR})
+target_include_directories(tinyspline
+	PUBLIC
+	    $<BUILD_INTERFACE:${TINYSPLINE_C_INCLUDE_DIR}>
+	    $<INSTALL_INTERFACE:${TINYSPLINE_INSTALL_INCLUDE_DIR}>)
 install(FILES tinyspline.h
 	DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
 configure_package_config_file(
@@ -735,6 +731,7 @@ configure_package_config_file(
 	INSTALL_DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinyspline"
 	PATH_VARS
 		TINYSPLINE_INSTALL_INCLUDE_DIR
+		TINYSPLINE_INSTALL_BINARY_DIR
 		TINYSPLINE_INSTALL_LIBRARY_DIR)
 write_basic_package_version_file(
 	"tinyspline-config-version.cmake"
@@ -751,28 +748,19 @@ install(FILES ${CMAKE_BINARY_DIR}/src/tinyspline.pc
 
 # C++ library
 if(TINYSPLINE_ENABLE_CXX)
-	add_library(tinysplinecxx_shared SHARED ${TINYSPLINE_CXX_SOURCE_FILES})
-	set_target_properties(tinysplinecxx_shared PROPERTIES
+	add_library(tinysplinecxx ${TINYSPLINE_CXX_SOURCE_FILES})
+	set_target_properties(tinysplinecxx PROPERTIES
 		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
 		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
 		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
-	install(TARGETS tinysplinecxx_shared
+	install(TARGETS tinysplinecxx
 		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
 		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
-		RUNTIME DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-	target_include_directories(tinysplinecxx_shared
-			PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
-	add_library(tinysplinecxx_static STATIC ${TINYSPLINE_CXX_SOURCE_FILES})
-	set_target_properties(tinysplinecxx_static PROPERTIES
-		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARIES_OUTPUT_NAME}"
-		DEBUG_POSTFIX "${TINYSPLINE_DEBUG_POSTFIX}"
-		PREFIX "lib"
-		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
-	install(TARGETS tinysplinecxx_static
-		LIBRARY DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR}
-		ARCHIVE DESTINATION ${TINYSPLINE_INSTALL_LIBRARY_DIR})
-	target_include_directories(tinysplinecxx_static
-		PUBLIC ${TINYSPLINE_CXX_INCLUDE_DIR})
+		RUNTIME DESTINATION ${TINYSPLINE_INSTALL_BINARY_DIR})
+	target_include_directories(tinysplinecxx
+			PUBLIC
+			    $<BUILD_INTERFACE:${TINYSPLINE_CXX_INCLUDE_DIR}>
+			    $<INSTALL_INTERFACE:${TINYSPLICE_INSTALL_INCLUDE_DIR}>)
 	install(FILES tinysplinecxx.h
 		DESTINATION ${TINYSPLINE_INSTALL_INCLUDE_DIR})
 	configure_package_config_file(
@@ -780,6 +768,7 @@ if(TINYSPLINE_ENABLE_CXX)
 		"tinysplinecxx-config.cmake"
 		INSTALL_DESTINATION "${TINYSPLINE_INSTALL_LIBRARY_DIR}/${TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR}/tinysplinecxx"
 		PATH_VARS
+			TINYSPLINE_INSTALL_BINARY_DIR
 			TINYSPLINE_INSTALL_INCLUDE_DIR
 			TINYSPLINE_INSTALL_LIBRARY_DIR)
 	write_basic_package_version_file(

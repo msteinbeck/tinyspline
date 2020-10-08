@@ -13,7 +13,7 @@ file(GLOB_RECURSE TINYSPLINE_TESTS_SOURCE_FILES "*.c")
 include_directories(cutest)
 add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
-	LINK_PUBLIC tinyspline_static
+	LINK_PUBLIC tinyspline
 	${TINYSPLINE_C_STATIC_LIBRARIES})
 
 ###############################################################################

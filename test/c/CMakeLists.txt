@@ -13,8 +13,9 @@ file(GLOB_RECURSE TINYSPLINE_TESTS_SOURCE_FILES "*.c")
 include_directories(cutest)
 add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
-	LINK_PUBLIC tinyspline_static
-	${TINYSPLINE_C_STATIC_LIBRARIES})
+	PRIVATE tinyspline)
+
+add_test(tinyspline_tests tinyspline_tests)
 
 ###############################################################################
 ### Create code coverage.
@@ -28,8 +29,7 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 	set_target_properties(tinyspline_tests_coverage PROPERTIES
 		COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS})
 	target_link_libraries(tinyspline_tests_coverage
-		${TINYSPLINE_C_STATIC_LIBRARIES}
-		${TINYSPLINE_COVERAGE_C_LIBRARIES})
+		PRIVATE ${TINYSPLINE_COVERAGE_C_LIBRARIES})
 	set(TINYSPLINE_COVERAGE_INFO_FILE coverage.info)
 	add_custom_target(tinyspline_coverage
 		COMMAND ${TINYSPLINE_LCOV}

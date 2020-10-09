@@ -5,6 +5,22 @@
 
 #include <stddef.h>
 
+#ifdef _WIN32
+#define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
+#define TINYSPLINE_SHARED_IMPORT __declspec(dllexport)
+#else
+#define TINYSPLINE_SHARED_EXPORT
+#define TINYSPLINE_SHARED_IMPORT
+#endif
+
+#ifdef TINYSPLINE_STATIC
+#define TINYSPLINE_API
+#elif defined(tinyspline_EXPORTS)
+#define TINYSPLINE_API TINYSPLINE_SHARED_EXPORT
+#else
+#define TINYSPLINE_API TINYSPLINE_SHARED_IMPORT
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -389,7 +405,7 @@ typedef struct
  * @return
  * 	The degree of \p spline.
  */
-size_t ts_bspline_degree(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_degree(const tsBSpline *spline);
 
 /**
  * Sets the degree of \p spline.
@@ -405,7 +421,7 @@ size_t ts_bspline_degree(const tsBSpline *spline);
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= ts_bspline_get_control_points(spline).
  */
-tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status);
+tsError TINYSPLINE_API ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status);
 
 /**
  * Returns the order (degree + 1) of \p spline.
@@ -415,7 +431,7 @@ tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status);
  * @return
  * 	The order of \p spline.
  */
-size_t ts_bspline_order(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_order(const tsBSpline *spline);
 
 /**
  * Sets the order (degree + 1) of \p spline.
@@ -433,7 +449,7 @@ size_t ts_bspline_order(const tsBSpline *spline);
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
  * 	which always is >= ts_bspline_get_control_points(spline) ).
  */
-tsError ts_bspline_set_order(tsBSpline *spline, size_t order,
+tsError TINYSPLINE_API  ts_bspline_set_order(tsBSpline *spline, size_t order,
 	tsStatus *status);
 
 /**
@@ -447,7 +463,7 @@ tsError ts_bspline_set_order(tsBSpline *spline, size_t order,
  * @return
  * 	The dimension of \p spline.
  */
-size_t ts_bspline_dimension(const tsBSpline *spline);
+size_t TINYSPLINE_API  ts_bspline_dimension(const tsBSpline *spline);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
@@ -473,7 +489,7 @@ size_t ts_bspline_dimension(const tsBSpline *spline);
  * @return TS_LCTRLP_DIM_MISMATCH
  * 	If len_control_points(spline) % \p dim != 0
  */
-tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
+tsError TINYSPLINE_API  ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 	tsStatus *status);
 
 /**
@@ -484,7 +500,7 @@ tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
  * @return
  * 	The length of the control point array of \p spline.
  */
-size_t ts_bspline_len_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API  ts_bspline_len_control_points(const tsBSpline *spline);
 
 /**
  * Returns the number of control points of \p spline.
@@ -494,7 +510,7 @@ size_t ts_bspline_len_control_points(const tsBSpline *spline);
  * @return
  * 	The number of control points of \p spline.
  */
-size_t ts_bspline_num_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_num_control_points(const tsBSpline *spline);
 
 /**
  * Returns the size of the control point array of \p spline. This function may
@@ -505,7 +521,7 @@ size_t ts_bspline_num_control_points(const tsBSpline *spline);
  * @return
  * 	The size of the control point array of \p spline.
  */
-size_t ts_bspline_sof_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_sof_control_points(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the control points of \p spline.
@@ -521,7 +537,7 @@ size_t ts_bspline_sof_control_points(const tsBSpline *spline);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
+tsError TINYSPLINE_API ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
 	tsStatus *status);
 
 /**
@@ -542,7 +558,7 @@ tsError ts_bspline_control_points(const tsBSpline *spline, tsReal **ctrlp,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
+tsError TINYSPLINE_API ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
 	tsReal **ctrlp, tsStatus *status);
 
 /**
@@ -557,7 +573,7 @@ tsError ts_bspline_control_point_at(const tsBSpline *spline, size_t index,
  * @return TS_SUCCESS
  * 	On success.
  */
-tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
+tsError TINYSPLINE_API ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
 	tsStatus *status);
 
 /**
@@ -577,7 +593,7 @@ tsError ts_bspline_set_control_points(tsBSpline *spline, const tsReal *ctrlp,
  * @return TS_INDEX_ERROR
  * 	If \p index is out of range.
  */
-tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
+tsError TINYSPLINE_API ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
 	const tsReal *ctrlp, tsStatus *status);
 
 /**
@@ -588,7 +604,7 @@ tsError ts_bspline_set_control_point_at(tsBSpline *spline, size_t index,
  * @return
  * 	The number of knots of \p spline.
  */
-size_t ts_bspline_num_knots(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_num_knots(const tsBSpline *spline);
 
 /**
  * Returns the size of the knot array of \p spline. This function may be useful
@@ -599,7 +615,7 @@ size_t ts_bspline_num_knots(const tsBSpline *spline);
  * @return TS_SUCCESS
  * 	The size of the knot array of \p spline.
  */
-size_t ts_bspline_sof_knots(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_sof_knots(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the knots of \p spline.
@@ -615,7 +631,7 @@ size_t ts_bspline_sof_knots(const tsBSpline *spline);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
+tsError TINYSPLINE_API ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
 	tsStatus *status);
 
 /**
@@ -634,7 +650,7 @@ tsError ts_bspline_knots(const tsBSpline *spline, tsReal **knots,
  * @return TS_INDEX_ERROR
  * 	If \p index is out of range.
  */
-tsError ts_bspline_knot_at(const tsBSpline *spline, size_t index, tsReal *knot,
+tsError TINYSPLINE_API ts_bspline_knot_at(const tsBSpline *spline, size_t index, tsReal *knot,
 	tsStatus *status);
 
 /**
@@ -653,7 +669,7 @@ tsError ts_bspline_knot_at(const tsBSpline *spline, size_t index, tsReal *knot,
  * @return TS_MULTIPLICITY
  * 	If there is a knot with multiplicity > order
  */
-tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
+tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	tsStatus *status);
 
 /**
@@ -677,7 +693,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
  * 	If setting the knot at \p index results in a knot vector containing
  * 	\p knot with multiplicity greater than the order of \p spline.
  */
-tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
+tsError TINYSPLINE_API ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 	tsStatus *status);
 
 /* ------------------------------------------------------------------------- */
@@ -690,7 +706,7 @@ tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
  * @return
  * 	The knot of \p net.
  */
-tsReal ts_deboornet_knot(const tsDeBoorNet *net);
+tsReal TINYSPLINE_API ts_deboornet_knot(const tsDeBoorNet *net);
 
 /**
  * Returns the index [u_k, u_k+1) with u being the knot of \p net.
@@ -700,7 +716,7 @@ tsReal ts_deboornet_knot(const tsDeBoorNet *net);
  * @return
  * 	The index [u_k, u_k+1) with u being the knot of \p net.
  */
-size_t ts_deboornet_index(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_index(const tsDeBoorNet *net);
 
 /**
  * Returns the multiplicity of the knot of \p net.
@@ -710,7 +726,7 @@ size_t ts_deboornet_index(const tsDeBoorNet *net);
  * @return
  * 	The multiplicity of the knot of \p net.
  */
-size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_multiplicity(const tsDeBoorNet *net);
 
 /**
  * Returns the number of insertion that were necessary to evaluate the knot of
@@ -722,7 +738,7 @@ size_t ts_deboornet_multiplicity(const tsDeBoorNet *net);
  * 	The number of insertions that were necessary to evaluate the knot of \p
  * 	net.
  */
-size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_num_insertions(const tsDeBoorNet *net);
 
 /**
  * Returns the dimension of \p net. The dimension of a net describes the number
@@ -735,7 +751,7 @@ size_t ts_deboornet_num_insertions(const tsDeBoorNet *net);
  * @return
  * 	The dimension of \p net.
  */
-size_t ts_deboornet_dimension(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_dimension(const tsDeBoorNet *net);
 
 /**
  * Returns the length of the point array of \p net.
@@ -745,7 +761,7 @@ size_t ts_deboornet_dimension(const tsDeBoorNet *net);
  * @return
  * 	The length of the point array of \p net.
  */
-size_t ts_deboornet_len_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_len_points(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points of \p net.
@@ -755,7 +771,7 @@ size_t ts_deboornet_len_points(const tsDeBoorNet *net);
  * @return
  * 	The number of points of \p net.
  */
-size_t ts_deboornet_num_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_num_points(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the point array of \p net. This function may be useful
@@ -766,7 +782,7 @@ size_t ts_deboornet_num_points(const tsDeBoorNet *net);
  * @return
  * 	The size of the point array of \p net.
  */
-size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_sof_points(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the points of \p net.
@@ -782,7 +798,7 @@ size_t ts_deboornet_sof_points(const tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points,
+tsError TINYSPLINE_API ts_deboornet_points(const tsDeBoorNet *net, tsReal **points,
 	tsStatus *status);
 
 /**
@@ -793,7 +809,7 @@ tsError ts_deboornet_points(const tsDeBoorNet *net, tsReal **points,
  * @return
  * 	The length of the result array of \p net.
  */
-size_t ts_deboornet_len_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_len_result(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points in the result array of \p net
@@ -804,7 +820,7 @@ size_t ts_deboornet_len_result(const tsDeBoorNet *net);
  * @return
  * 	The number of points in the result array of \p net.
  */
-size_t ts_deboornet_num_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_num_result(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the result array of \p net. This function may be useful
@@ -815,7 +831,7 @@ size_t ts_deboornet_num_result(const tsDeBoorNet *net);
  * @return TS_SUCCESS
  * 	The size of the result array of \p net.
  */
-size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API ts_deboornet_sof_result(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the result of \p net.
@@ -831,7 +847,7 @@ size_t ts_deboornet_sof_result(const tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
+tsError TINYSPLINE_API ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
 	tsStatus *status);
 
 
@@ -847,7 +863,7 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
  * @return
  * 	A new spline whose data points to NULL.
  */
-tsBSpline ts_bspline_init();
+tsBSpline TINYSPLINE_API ts_bspline_init();
 
 /**
  * Creates a new spline and stores the result in \p spline.
@@ -876,7 +892,7 @@ tsBSpline ts_bspline_init();
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_new(size_t num_control_points, size_t dimension,
+tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points, size_t dimension,
 	size_t degree, tsBSplineType type, tsBSpline *spline,
 	tsStatus *status);
 
@@ -895,7 +911,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
+tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
 	tsStatus *status);
 
 /**
@@ -908,7 +924,7 @@ tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
  * @param[out] dest
  * 	The spline that receives the values of \p src.
  */
-void ts_bspline_move(tsBSpline *src, tsBSpline *dest);
+void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
 
 /**
  * Frees the data of \p spline. After calling this function, the data of
@@ -917,7 +933,7 @@ void ts_bspline_move(tsBSpline *src, tsBSpline *dest);
  * @param[out] spline
  * 	The spline to free.
  */
-void ts_bspline_free(tsBSpline *spline);
+void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
 
 /* ------------------------------------------------------------------------- */
 
@@ -927,7 +943,7 @@ void ts_bspline_free(tsBSpline *spline);
  * @return
  * 	A new net whose data points to NULL.
  */
-tsDeBoorNet ts_deboornet_init();
+tsDeBoorNet TINYSPLINE_API ts_deboornet_init();
 
 /**
  * Creates a deep copy of \p src and stores the copied values in \p dest. Does
@@ -944,7 +960,7 @@ tsDeBoorNet ts_deboornet_init();
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
+tsError TINYSPLINE_API ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
 	tsStatus *status);
 
 /**
@@ -957,7 +973,7 @@ tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
  * @param[out] dest
  * 	The net that receives the values of \p src.
  */
-void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
+void TINYSPLINE_API ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
 
 /**
  * Frees the data of \p net. After calling this function, the data of \p net
@@ -966,7 +982,7 @@ void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
  * @param[out] net
  * 	The net to free.
  */
-void ts_deboornet_free(tsDeBoorNet *net);
+void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
 
 
 
@@ -1014,7 +1030,7 @@ void ts_deboornet_free(tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
+tsError TINYSPLINE_API ts_bspline_interpolate_cubic_natural(const tsReal *points,
 	size_t num_points, size_t dimension, tsBSpline *spline,
 	tsStatus *status);
 
@@ -1067,7 +1083,7 @@ tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
+tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
 	const tsReal *last, tsReal epsilon, tsBSpline *spline,
 	tsStatus *status);
@@ -1098,7 +1114,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
+tsError TINYSPLINE_API ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
 	tsStatus *status);
 
 /**
@@ -1130,7 +1146,7 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
+tsError TINYSPLINE_API ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 	size_t num, tsReal **points, tsStatus *status);
 
 /**
@@ -1164,7 +1180,7 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
+tsError TINYSPLINE_API ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 	size_t *actual_num, tsStatus *status);
 
 /**
@@ -1222,7 +1238,7 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
+tsError TINYSPLINE_API ts_bspline_bisect(const tsBSpline *spline, tsReal value,
 	tsReal epsilon, int persnickety, size_t index, int ascending,
 	size_t max_iter,  tsDeBoorNet *net, tsStatus *status);
 
@@ -1236,7 +1252,7 @@ tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
  * @param[out] max
  * 	The upper bound of the domain of \p spline.
  */
-void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
+void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
 
 /**
  * Checks whether the distance of the endpoints of \p spline is less than or
@@ -1256,7 +1272,7 @@ void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
+tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	int *closed, tsStatus *status);
 
 
@@ -1372,7 +1388,7 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
+tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	tsBSpline *derivative, tsStatus *status);
 
 /**
@@ -1398,7 +1414,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
+tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
 	tsBSpline *result, size_t *k, tsStatus *status);
 
 /**
@@ -1424,7 +1440,7 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
+tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
 	size_t *k, tsStatus *status);
 
 /**
@@ -1456,7 +1472,7 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
+tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 	tsBSpline *out, tsStatus *status);
 
 /**
@@ -1475,7 +1491,7 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
+tsError TINYSPLINE_API ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 	tsStatus *status);
 
 
@@ -1503,7 +1519,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
+tsError TINYSPLINE_API ts_bspline_to_json(const tsBSpline *spline, char **_json_,
 	tsStatus *status);
 
 /**
@@ -1535,7 +1551,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **_json_,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
+tsError TINYSPLINE_API ts_bspline_from_json(const char *json, tsBSpline *spline,
 	tsStatus *status);
 
 /**
@@ -1554,7 +1570,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_save(const tsBSpline *spline, const char *path,
+tsError TINYSPLINE_API ts_bspline_save(const tsBSpline *spline, const char *path,
 	tsStatus *status);
 
 /**
@@ -1588,7 +1604,7 @@ tsError ts_bspline_save(const tsBSpline *spline, const char *path,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status);
+tsError TINYSPLINE_API ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status);
 
 
 
@@ -1614,7 +1630,7 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status);
  * @return 0
  * 	If \p x and \p y are not equal.
  */
-int ts_knots_equal(tsReal x, tsReal y);
+int TINYSPLINE_API ts_knots_equal(tsReal x, tsReal y);
 
 /**
  * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num
@@ -1627,7 +1643,7 @@ int ts_knots_equal(tsReal x, tsReal y);
  * @param[in] val
  * 	The value to fill into \p arr.
  */
-void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
+void TINYSPLINE_API  ts_arr_fill(tsReal *arr, size_t num, tsReal val);
 
 /**
  * Returns the euclidean distance of the points \p x and \p y.
@@ -1641,7 +1657,7 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val);
  * @return
  * 	The euclidean distance of \p x and \p y.
  */
-tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension);
+tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y, size_t dimension);
 
 
 

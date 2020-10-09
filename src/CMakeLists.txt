@@ -295,6 +295,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 # TINYSPLINE_FLOAT_PRECISION - default: OFF
 #   Build with float instead of double precision.
 #
+# TINYSPLINE_WARNINGS_AS_ERRORS - default: ON
+#   Treat compiler warnings as errors by adding /WX or -Werror to the compiler flags.
+#
 # TINYSPLINE_CSHARP_FRAMEWORK_VERSION
 #   The .NET framework version that is used to compile the C# DLL.
 #

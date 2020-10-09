@@ -11,8 +11,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Add additional CMake modules.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-option(TINYSPLINE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
-
 ###############################################################################
 ### Project-related constants.
 #
@@ -336,6 +334,8 @@ set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "cmake" CACHE STRING "Installation direc
 set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "pkgconfig" CACHE STRING "Installation directory of pkg-config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
+
+option(TINYSPLINE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 
 set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "" CACHE STRING "Sets the .NET framework version that is used to compile the C# DLL (e.g. 3.5). If empty, the version is determined automatically.")
 

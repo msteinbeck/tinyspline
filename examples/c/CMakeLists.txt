@@ -17,6 +17,7 @@ endif()
 ###############################################################################
 ### Setup OpenGL.
 ###############################################################################
+# https://cmake.org/cmake/help/latest/module/FindOpenGL.html#linux-specific
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL)
 if(OPENGL_FOUND)

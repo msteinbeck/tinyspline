@@ -6,19 +6,19 @@
 #include <stddef.h>
 
 #ifdef _WIN32
-# define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
-# define TINYSPLINE_SHARED_IMPORT __declspec(dllexport)
+#define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
+#define TINYSPLINE_SHARED_IMPORT __declspec(dllexport)
 #else
-# define TINYSPLINE_SHARED_EXPORT
-# define TINYSPLINE_SHARED_IMPORT
+#define TINYSPLINE_SHARED_EXPORT
+#define TINYSPLINE_SHARED_IMPORT
 #endif
 
 #ifdef TINYSPLINE_STATIC
-# define TINYSPLINE_API
+#define TINYSPLINE_API
 #elif defined(tinyspline_EXPORTS)
-# define TINYSPLINE_API TINYSPLINE_SHARED_EXPORT
+#define TINYSPLINE_API TINYSPLINE_SHARED_EXPORT
 #else
-# define TINYSPLINE_API TINYSPLINE_SHARED_IMPORT
+#define TINYSPLINE_API TINYSPLINE_SHARED_IMPORT
 #endif
 
 #ifdef	__cplusplus
@@ -742,7 +742,7 @@ size_t TINYSPLINE_API ts_deboornet_num_insertions(const tsDeBoorNet *net);
 
 /**
  * Returns the dimension of \p net. The dimension of a net describes the number
- * of components for each point in TINYSPLINE_API ts_bspline_get_points(spline).
+ * of components for each point in ts_bspline_get_points(spline).
  * One-dimensional nets are possible, albeit their benefit might be
  * questionable.
  *

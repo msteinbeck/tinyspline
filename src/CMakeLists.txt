@@ -11,6 +11,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Add additional CMake modules.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+
+
 ###############################################################################
 ### Project-related constants.
 #
@@ -38,27 +40,49 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # TINYSPLINE_DESCRIPTION
 #   The long describtion.
 ###############################################################################
-set(TINYSPLINE_PACKAGE_NAME "tinyspline" CACHE INTERNAL "")
+set(TINYSPLINE_PACKAGE_NAME
+	"tinyspline"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_AUTHOR "Marcel Steinbeck" CACHE INTERNAL "")
+set(TINYSPLINE_AUTHOR
+	"Marcel Steinbeck"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_MAIL "tinyspline@retux.de" CACHE INTERNAL "")
+set(TINYSPLINE_MAIL
+	"tinyspline@retux.de"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_URL "https://github.com/msteinbeck/tinyspline" CACHE INTERNAL "")
+set(TINYSPLINE_URL
+	"https://github.com/msteinbeck/tinyspline"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_SCM "scm:git:git://github.com/msteinbeck/tinyspline.git" CACHE INTERNAL "")
+set(TINYSPLINE_SCM
+	"scm:git:git://github.com/msteinbeck/tinyspline.git"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_SCM_CONNECTION "scm:git:git@github.com:msteinbeck/tinyspline.git" CACHE INTERNAL "")
+set(TINYSPLINE_SCM_CONNECTION
+	"scm:git:git@github.com:msteinbeck/tinyspline.git"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_LICENSE "MIT" CACHE INTERNAL "")
+set(TINYSPLINE_LICENSE
+	"MIT"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_LICENSE_URL "https://opensource.org/licenses/mit-license" CACHE INTERNAL "")
+set(TINYSPLINE_LICENSE_URL
+	"https://opensource.org/licenses/mit-license"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_VERSION "0.3.0" CACHE INTERNAL "")
+set(TINYSPLINE_VERSION
+	"0.3.0"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_SUMMARY "Spline Library for a Multitude of Programming Languages" CACHE INTERNAL "")
+set(TINYSPLINE_SUMMARY
+	"Spline Library for a Multitude of Programming Languages"
+	CACHE INTERNAL "")
 
-set(TINYSPLINE_DESCRIPTION "TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and Ruby." CACHE INTERNAL "")
+set(TINYSPLINE_DESCRIPTION
+	"TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and Ruby."
+	CACHE INTERNAL "")
 
 
 
@@ -140,9 +164,6 @@ set(TINYSPLINE_JAVA_SOURCE_DIRECTORY
 set(TINYSPLINE_LUA_SOURCE_DIRECTORY
 	"${CMAKE_CURRENT_BINARY_DIR}/lua"
 	CACHE INTERNAL "")
-set(TINYSPLINE_NODEJS_SOURCE_DIRECTORY
-	"${CMAKE_CURRENT_BINARY_DIR}/nodejs"
-	CACHE INTERNAL "")
 set(TINYSPLINE_OCTAVE_SOURCE_DIRECTORY
 	"${CMAKE_CURRENT_BINARY_DIR}/octave"
 	CACHE INTERNAL "")
@@ -198,7 +219,6 @@ list(APPEND TINYSPLINE_ADDITIONAL_MAKE_CLEAN_FILES
 	${TINYSPLINE_JAVA_SOURCE_DIRECTORY}
 	${TINYSPLINE_JAVA_INTERFACE_FILE}
 	${TINYSPLINE_LUA_SOURCE_DIRECTORY}
-	${TINYSPLINE_NODEJS_SOURCE_DIRECTORY}
 	${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY}
 	${TINYSPLINE_PHP_SOURCE_DIRECTORY}
 	${TINYSPLINE_PHP_INTERFACE_FILE}
@@ -265,7 +285,6 @@ set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
 set(TINYSPLINE_GO_CMAKE_TARGET "tinysplinego" CACHE INTERNAL "")
 set(TINYSPLINE_JAVA_CMAKE_TARGET "tinysplinejava" CACHE INTERNAL "")
 set(TINYSPLINE_LUA_CMAKE_TARGET "tinysplinelua" CACHE INTERNAL "")
-set(TINYSPLINE_NODEJS_CMAKE_TARGET "tinysplinenodejs" CACHE INTERNAL "")
 set(TINYSPLINE_OCTAVE_CMAKE_TARGET "tinysplineoctave" CACHE INTERNAL "")
 set(TINYSPLINE_PHP_CMAKE_TARGET "tinysplinephp" CACHE INTERNAL "")
 set(TINYSPLINE_PYTHON_CMAKE_TARGET "tinysplinepython" CACHE INTERNAL "")
@@ -299,7 +318,8 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   Build with float instead of double precision.
 #
 # TINYSPLINE_WARNINGS_AS_ERRORS - default: ON
-#   Treat compiler warnings as errors by adding /WX or -Werror to the compiler flags.
+#   Treat compiler warnings as errors by adding /WX or -Werror to the compiler
+#   flags.
 #
 # TINYSPLINE_CSHARP_FRAMEWORK_VERSION
 #   The .NET framework version that is used to compile the C# DLL.
@@ -322,9 +342,11 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 ###############################################################################
 option(BUILD_SHARED_LIBS "Build the C/C++ interface as shared library." FALSE)
 
-set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files (relative to CMAKE_INSTALL_PREFIX).")
+set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING
+	"Installation directory of header files (relative to CMAKE_INSTALL_PREFIX).")
 
-set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files (relative to CMAKE_INSTALL_PREFIX). If empty, the directory is determined automatically.")
+set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING
+	"Installation directory of library files (relative to CMAKE_INSTALL_PREFIX). If empty, the directory is determined automatically.")
 if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(TINYSPLINE_INSTALL_LIBRARY_DIR "lib64"
@@ -335,21 +357,27 @@ if(TINYSPLINE_INSTALL_LIBRARY_DIR STREQUAL "")
 	endif()
 endif()
 
-set(TINYSPLINE_INSTALL_BINARY_DIR "bin" CACHE STRING "Installation directory of binary files (relative to CMAKE_INSTALL_PREFIX).")
+set(TINYSPLINE_INSTALL_BINARY_DIR "bin" CACHE STRING
+	"Installation directory of binary files (relative to CMAKE_INSTALL_PREFIX).")
 
-set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "cmake" CACHE STRING "Installation directory of CMake config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
+set(TINYSPLINE_INSTALL_CMAKE_CONFIG_DIR "cmake" CACHE STRING
+	"Installation directory of CMake config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
-set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "pkgconfig" CACHE STRING "Installation directory of pkg-config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
+set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "pkgconfig" CACHE STRING
+	"Installation directory of pkg-config files (relative to TINYSPLINE_INSTALL_LIBRARY_DIR).")
 
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
 option(TINYSPLINE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 
-set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "" CACHE STRING "Sets the .NET framework version that is used to compile the C# DLL (e.g. 3.5). If empty, the version is determined automatically.")
+set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "" CACHE STRING
+	"Sets the .NET framework version that is used to compile the C# DLL (e.g. 3.5). If empty, the version is determined automatically.")
 
-set(TINYSPLINE_CSHARP_FRAMEWORK_NAME "" CACHE STRING "Name of the directory located in the 'lib' directory of the .nupkg archive (e.g. net35). If empty, the name is determined automatically.")
+set(TINYSPLINE_CSHARP_FRAMEWORK_NAME "" CACHE STRING
+	"Name of the directory located in the 'lib' directory of the .nupkg archive (e.g. net35). If empty, the name is determined automatically.")
 
-set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING "Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
+set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING
+	"Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
 
 option(TINYSPLINE_ENABLE_CXX "Enable the C++ interface." TRUE)
 option(TINYSPLINE_ENABLE_CSHARP "Enable the C# interface." FALSE)
@@ -357,7 +385,6 @@ option(TINYSPLINE_ENABLE_DLANG "Enable the D interface." FALSE)
 option(TINYSPLINE_ENABLE_GO "Enable the Go interface." FALSE)
 option(TINYSPLINE_ENABLE_JAVA "Enable the Java interface." FALSE)
 option(TINYSPLINE_ENABLE_LUA "Enable the Lua interface." FALSE)
-option(TINYSPLINE_ENABLE_NODEJS "Enable the Javascript (Node.js) interface." FALSE)
 option(TINYSPLINE_ENABLE_OCTAVE "Enable the Octave interface." FALSE)
 option(TINYSPLINE_ENABLE_PHP "Enable the PHP interface." FALSE)
 option(TINYSPLINE_ENABLE_PYTHON "Enable the Python interface." FALSE)
@@ -372,7 +399,6 @@ if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 	set(TINYSPLINE_ENABLE_GO TRUE)
 	set(TINYSPLINE_ENABLE_JAVA TRUE)
 	set(TINYSPLINE_ENABLE_LUA TRUE)
-	set(TINYSPLINE_ENABLE_NODEJS TRUE)
 	set(TINYSPLINE_ENABLE_OCTAVE TRUE)
 	set(TINYSPLINE_ENABLE_PHP TRUE)
 	set(TINYSPLINE_ENABLE_PYTHON TRUE)
@@ -380,7 +406,8 @@ if (TINYSPLINE_ENABLE_ALL_INTERFACES)
 	set(TINYSPLINE_ENABLE_RUBY TRUE)
 endif()
 
-set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH "Compiler specific runtime libraries that must be included into distribution artifacts. If empty, the necessary files are determined automatically.")
+set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH
+	"Compiler specific runtime libraries that must be included into distribution artifacts. If empty, the necessary files are determined automatically.")
 
 
 
@@ -406,7 +433,8 @@ if(NOT TINYSPLINE_FLOAT_PRECISION AND DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
 	set(TINYSPLINE_FLOAT_PRECISION $ENV{TINYSPLINE_FLOAT_PRECISION})
 endif()
 
-if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY" AND DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
+if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY" AND
+		DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
 	message(STATUS "Using environment variable 'TINYSPLINE_PYTHON_VERSION'")
 	set(TINYSPLINE_PYTHON_VERSION $ENV{TINYSPLINE_PYTHON_VERSION})
 endif()
@@ -521,24 +549,23 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	# TINYSPLINE_LIBRARY_C_FLAGS
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
-		set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
+		set(TINYSPLINE_LIBRARY_C_FLAGS
+			"${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
 	endif()
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wall")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wextra")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wfloat-equal")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -pedantic")
+	set(TINYSPLINE_LIBRARY_C_FLAGS
+		"${TINYSPLINE_LIBRARY_C_FLAGS} -Wall -Wextra -Wfloat-equal -pedantic")
 
 	# TINYSPLINE_LIBRARY_CXX_FLAGS
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
-		set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
+		set(TINYSPLINE_LIBRARY_CXX_FLAGS
+			"${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
 	endif()
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall")
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wextra")
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wfloat-equal")
+	set(TINYSPLINE_LIBRARY_CXX_FLAGS
+		"${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall -Wextra -Wfloat-equal")
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -w")
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -DSWIG")
+	set(TINYSPLINE_BINDING_CXX_FLAGS
+		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10408849/how-can-i-use-c-11-features-in-clang
@@ -561,24 +588,23 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	# TINYSPLINE_LIBRARY_C_FLAGS
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
-		set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
+		set(TINYSPLINE_LIBRARY_C_FLAGS
+			"${TINYSPLINE_LIBRARY_C_FLAGS} -Werror")
 	endif()
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wall")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wextra")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -Wfloat-equal")
-	set(TINYSPLINE_LIBRARY_C_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS} -pedantic")
+	set(TINYSPLINE_LIBRARY_C_FLAGS
+		"${TINYSPLINE_LIBRARY_C_FLAGS} -Wall -Wextra -Wfloat-equal -pedantic")
 
 	# TINYSPLINE_LIBRARY_CXX_FLAGS
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
-		set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
+		set(TINYSPLINE_LIBRARY_CXX_FLAGS
+			"${TINYSPLINE_LIBRARY_CXX_FLAGS} -Werror")
 	endif()
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall")
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wextra")
-	set(TINYSPLINE_LIBRARY_CXX_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wfloat-equal")
+	set(TINYSPLINE_LIBRARY_CXX_FLAGS
+		"${TINYSPLINE_LIBRARY_CXX_FLAGS} -Wall -Wextra -Wfloat-equal")
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -w")
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -DSWIG")
+	set(TINYSPLINE_BINDING_CXX_FLAGS
+		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# TINYSPLINE_CXX11_COMPLIANT
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
@@ -601,8 +627,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	endif()
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} /w")
-	set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} /DSWIG")
+	set(TINYSPLINE_BINDING_CXX_FLAGS
+		"${TINYSPLINE_BINDING_CXX_FLAGS} /w /DSWIG")
 
 	# Used to automatically create a .def file with all the global symbols for
 	# a shared library.
@@ -852,7 +878,6 @@ if(${TINYSPLINE_ENABLE_CSHARP}
 		OR ${TINYSPLINE_ENABLE_GO}
 		OR ${TINYSPLINE_ENABLE_JAVA}
 		OR ${TINYSPLINE_ENABLE_LUA}
-		OR ${TINYSPLINE_ENABLE_NODEJS}
 		OR ${TINYSPLINE_ENABLE_OCTAVE}
 		OR ${TINYSPLINE_ENABLE_PHP}
 		OR ${TINYSPLINE_ENABLE_PYTHON}
@@ -956,7 +981,8 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			set(TINYSPLINE_CSHARP_HOME
 				"${TINYSPLINE_CSHARP_HOME}${TINYSPLINE_CSHARP_FRAMEWORK_VERSION}")
 			if(NOT EXISTS ${TINYSPLINE_CSHARP_HOME})
-				message(FATAL_ERROR "'${TINYSPLINE_CSHARP_HOME}' does not exist")
+				message(FATAL_ERROR
+					"'${TINYSPLINE_CSHARP_HOME}' does not exist")
 			endif()
 			find_program(TINYSPLINE_CSHARP_COMPILER
 				NAMES csc
@@ -1027,7 +1053,8 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			TARGET ${TINYSPLINE_GO_CMAKE_TARGET}
 			LANG go
 			OUTPUT ${TINYSPLINE_GO_SOURCE_DIRECTORY}
-			SWIG_ARGS -cgo -intgosize ${TINYSPLINE_GO_INTGOSIZE} -package tinyspline)
+			SWIG_ARGS -cgo -intgosize ${TINYSPLINE_GO_INTGOSIZE}
+				-package tinyspline)
 		add_custom_command(
 			TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
 			POST_BUILD
@@ -1120,31 +1147,6 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			LIBS ${LUA_LIBRARIES}
 			NAME ${TINYSPLINE_LUA_LIB_NAME}
 			SWIG_ARGS -module ${TINYSPLINE_LUA_LIB_NAME})
-	endif()
-
-	# Node.js
-	if(${TINYSPLINE_ENABLE_NODEJS})
-		find_path(TINYSPLINE_NODEJS_NODE_H_PATH
-				node.h
-				HINTS "/usr/include/node")
-		find_path(TINYSPLINE_NODEJS_V8_H_PATH
-				v8.h
-				HINTS "/usr/include/node")
-		if(NOT TINYSPLINE_NODEJS_NODE_H_PATH)
-			message(FATAL_ERROR "Missing node.h")
-		endif()
-		if(NOT TINYSPLINE_NODEJS_V8_H_PATH)
-			message(FATAL_ERROR "Missing v8.h")
-		endif()
-		include_directories(${TINYSPLINE_NODEJS_NODE_H_PATH}
-				${TINYSPLINE_NODEJS_V8_H_PATH})
-		tinyspline_add_swig_library(
-			TARGET ${TINYSPLINE_NODEJS_CMAKE_TARGET}
-			LANG javascript
-			OUTPUT ${TINYSPLINE_NODEJS_SOURCE_DIRECTORY}
-			LIBS ${LUA_LIBRARIES}
-			SWIG_ARGS -node
-			CXX11)
 	endif()
 
 	# Octave
@@ -1471,9 +1473,12 @@ endforeach()
 ###############################################################################
 ### Print summary.
 ###############################################################################
-string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_SUMMARY_C_FLAGS)
-string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_SUMMARY_CXX_FLAGS)
-string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_SUMMARY_BINDING_FLAGS)
+string(STRIP "${CMAKE_C_FLAGS} ${TINYSPLINE_LIBRARY_C_FLAGS}"
+	TINYSPLINE_SUMMARY_C_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_LIBRARY_CXX_FLAGS}"
+	TINYSPLINE_SUMMARY_CXX_FLAGS)
+string(STRIP "${CMAKE_CXX_FLAGS} ${TINYSPLINE_BINDING_CXX_FLAGS}"
+	TINYSPLINE_SUMMARY_BINDING_FLAGS)
 
 message(STATUS
 "

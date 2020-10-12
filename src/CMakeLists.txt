@@ -277,6 +277,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 ###############################################################################
 ### Add different options to this script.
 #
+# BUILD_SHARED_LIBS
+#   Build the C/C++ interface as shared library.
+#
 # TINYSPLINE_INSTALL_INCLUDE_DIR
 #   Installation directory of header files.
 #
@@ -317,6 +320,8 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   List of compiler specific runtime libraries that mus be included into
 #   distribution artifacts.
 ###############################################################################
+option(BUILD_SHARED_LIBS "Build the C/C++ interface as shared library." FALSE)
+
 set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING "Installation directory of header files (relative to CMAKE_INSTALL_PREFIX).")
 
 set(TINYSPLINE_INSTALL_LIBRARY_DIR "" CACHE STRING "Installation directory of library files (relative to CMAKE_INSTALL_PREFIX). If empty, the directory is determined automatically.")

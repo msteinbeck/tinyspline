@@ -29,7 +29,8 @@ if(TINYSPLINE_COVERAGE_AVAILABLE)
 	set_target_properties(tinyspline_tests_coverage PROPERTIES
 		COMPILE_FLAGS ${TINYSPLINE_COVERAGE_C_FLAGS})
 	target_link_libraries(tinyspline_tests_coverage
-		PRIVATE ${TINYSPLINE_COVERAGE_C_LIBRARIES})
+		PRIVATE ${TINYSPLINE_COVERAGE_C_LIBRARIES}
+		${TINYSPLINE_C_LINK_LIBRARIES})
 	set(TINYSPLINE_COVERAGE_INFO_FILE coverage.info)
 	add_custom_target(tinyspline_coverage
 		COMMAND ${TINYSPLINE_LCOV}

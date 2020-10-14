@@ -912,6 +912,8 @@ function (tinyspline_add_swig_library)
 			SOURCES "swig/${ARGS_TARGET}.i"
 			${TINYSPLINE_CXX_SOURCE_FILES})
 	endif()
+	target_compile_definitions(${ARGS_TARGET}
+		PUBLIC ${TINYSPLINE_DEFINITIONS})
 	# On Linux, we can (and for the sake of portability should) omit
 	# linking libraries.
 	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")

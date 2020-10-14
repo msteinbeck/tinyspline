@@ -9,7 +9,6 @@ option(TINYSPLINE_BUILD_TESTS "Build TinySpline tests." ON)
 option(TINYSPLINE_BUILD_DOCS "Build TinySpline documentation." ON)
 
 add_subdirectory(src)
-add_definitions("${TINYSPLINE_DEFINITIONS}")
 if(TINYSPLINE_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()

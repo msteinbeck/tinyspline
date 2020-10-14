@@ -54,7 +54,7 @@ target_link_libraries(json_export_c
 		PRIVATE tinyspline)
 set_target_properties(json_export_c PROPERTIES FOLDER "examples/c")
 
-if("${TINYSPLINE_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
+if("${TINYSPLINE_C_DEFINITIONS}" MATCHES "TINYSPLINE_FLOAT_PRECISION"
 		AND GLUT_FOUND AND OPENGL_FOUND)
 	add_executable(bspline bspline.c)
 	target_link_libraries(bspline

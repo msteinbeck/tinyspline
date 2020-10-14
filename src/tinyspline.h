@@ -7,7 +7,7 @@
 
 #ifdef _WIN32
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
-#define TINYSPLINE_SHARED_IMPORT __declspec(dllexport)
+#define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
 #else
 #define TINYSPLINE_SHARED_EXPORT
 #define TINYSPLINE_SHARED_IMPORT

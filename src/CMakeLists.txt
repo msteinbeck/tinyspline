@@ -410,6 +410,32 @@ set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH
 
 
 ###############################################################################
+### Map supported environment variables to CMake variables. The following
+### variables will be processed (only if the option's default value has been
+### selected).
+#
+# TINYSPLINE_FLOAT_PRECISION
+#   See corresponding option above.
+#
+# TINYSPLINE_PYTHON_VERSION
+#   See corresponding option above.
+###############################################################################
+if(NOT TINYSPLINE_FLOAT_PRECISION AND DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
+	message(STATUS
+		"Using environment variable 'TINYSPLINE_FLOAT_PRECISION'")
+	set(TINYSPLINE_FLOAT_PRECISION $ENV{TINYSPLINE_FLOAT_PRECISION})
+endif()
+
+if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY"
+		AND DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
+	message(STATUS
+		"Using environment variable 'TINYSPLINE_PYTHON_VERSION'")
+	set(TINYSPLINE_PYTHON_VERSION $ENV{TINYSPLINE_PYTHON_VERSION})
+endif()
+
+
+
+###############################################################################
 ### Setup compiler suite.
 #
 # TINYSPLINE_C_DEFINITIONS

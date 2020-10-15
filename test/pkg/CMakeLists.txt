@@ -79,8 +79,8 @@ endif()
 
 
 # Check if libraries can be linked using CMake targets.
-add_executable (test_target test.c)
-target_link_libraries(test_target tinyspline::tinyspline)
+add_executable (testc_target test.c)
+target_link_libraries(testc_target tinyspline::tinyspline)
 
 add_executable (testcxx_target test.cxx)
 target_link_libraries(testcxx_target tinysplinecxx::tinysplinecxx)
@@ -88,8 +88,17 @@ target_link_libraries(testcxx_target tinysplinecxx::tinysplinecxx)
 
 
 # Check if libraries can be linked using CMake variables.
-add_executable (test_variable test.c)
-target_link_libraries(test_variable ${TINYSPLINE_LIBRARIES})
+add_executable (testc_variable test.c)
+target_link_libraries(testc_variable ${TINYSPLINE_LIBRARIES})
 
 add_executable (testcxx_variable test.cxx)
 target_link_libraries(testcxx_variable ${TINYSPLINECXX_LIBRARIES})
+
+
+
+# Add executables as tests.
+enable_testing()
+add_test(testc_target testc_target)
+add_test(testcxx_target testcxx_target)
+add_test(testc_variable testc_variable)
+add_test(testcxx_variable testcxx_variable)

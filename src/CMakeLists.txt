@@ -905,8 +905,6 @@ function (tinyspline_add_swig_library)
 			SOURCES "swig/${ARGS_TARGET}.i"
 			${TINYSPLINE_CXX_SOURCE_FILES})
 	endif()
-	target_compile_definitions(${ARGS_TARGET}
-		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
 	# On Linux, we can (and for the sake of portability should) omit
 	# linking libraries.
 	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
@@ -921,6 +919,8 @@ function (tinyspline_add_swig_library)
 	set_target_properties(${ACTUAL_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
+	target_compile_definitions(${ACTUAL_TARGET}
+		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
 	if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
 		set_property(TARGET ${ACTUAL_TARGET}
 			APPEND PROPERTY TYPE MODULE_LIBRARY)

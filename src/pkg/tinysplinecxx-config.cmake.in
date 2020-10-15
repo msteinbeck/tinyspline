@@ -5,7 +5,7 @@ set(TINYSPLINECXX_VERSION "@TINYSPLINE_VERSION@")
 set(TINYSPLINECXX_DEFINITIONS "@TINYSPLINE_CXX_DEFINITIONS@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/tinysplinecxx-targets.cmake")
-set(TINYSPLINE_LIBRARIES tinysplinecxx::tinysplinecxx)
+set(TINYSPLINECXX_LIBRARIES tinysplinecxx::tinysplinecxx)
 
 mark_as_advanced(
 	TINYSPLINECXX_INCLUDE_DIRS

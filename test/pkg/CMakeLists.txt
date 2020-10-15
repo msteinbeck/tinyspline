@@ -1,79 +1,87 @@
 cmake_minimum_required(VERSION 3.4)
 project(test) 
 
-find_package(tinyspline)
-find_package(tinysplinecxx)
+find_package(tinyspline REQUIRED)
+find_package(tinysplinecxx REQUIRED)
 
 
 
-# Check CMake variables exported by the C interface.
+# Check CMake targets/variables exported by the C interface.
 # Note that TINYSPLINE_DEFINITIONS may be empty.
+if(NOT TARGET tinyspline::tinyspline)
+	message(SEND_ERROR "tinyspline::tinyspline is not defined")
+endif()
+
 if(NOT DEFINED TINYSPLINE_INCLUDE_DIRS)
-	message(FATAL_ERROR "TINYSPLINE_INCLUDE_DIRS is not defined")
+	message(SEND_ERROR "TINYSPLINE_INCLUDE_DIRS is not defined")
 endif()
 if(TINYSPLINE_INCLUDE_DIRS STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINE_INCLUDE_DIRS is empty")
+	message(SEND_ERROR "TINYSPLINE_INCLUDE_DIRS is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINE_LIBRARY_DIRS)
-	message(FATAL_ERROR "TINYSPLINE_LIBRARY_DIRS is not defined")
+	message(SEND_ERROR "TINYSPLINE_LIBRARY_DIRS is not defined")
 endif()
 if(TINYSPLINE_LIBRARY_DIRS STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINE_LIBRARY_DIRS is empty")
+	message(SEND_ERROR "TINYSPLINE_LIBRARY_DIRS is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINE_VERSION)
-	message(FATAL_ERROR "TINYSPLINE_VERSION is not defined")
+	message(SEND_ERROR "TINYSPLINE_VERSION is not defined")
 endif()
 if(TINYSPLINE_VERSION STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINE_VERSION is empty")
+	message(SEND_ERROR "TINYSPLINE_VERSION is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINE_DEFINITIONS) # may be empty
-	message(FATAL_ERROR "TINYSPLINE_DEFINITIONS is not defined")
+	message(SEND_ERROR "TINYSPLINE_DEFINITIONS is not defined")
 endif()
 
 if(NOT DEFINED TINYSPLINE_LIBRARIES)
-	message(FATAL_ERROR "TINYSPLINE_LIBRARIES is not defined")
+	message(SEND_ERROR "TINYSPLINE_LIBRARIES is not defined")
 endif()
 if(TINYSPLINE_LIBRARIES STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINE_LIBRARIES is empty")
+	message(SEND_ERROR "TINYSPLINE_LIBRARIES is empty")
 endif()
 
 
 
-# Check CMake variables exported by the C++ interface.
+# Check CMake targets/variables exported by the C++ interface.
 # Note that TINYSPLINECXX_DEFINITIONS may be empty.
+if(NOT TARGET tinysplinecxx::tinysplinecxx)
+	message(SEND_ERROR "tinysplinecxx::tinysplinecxx is not defined")
+endif()
+
 if(NOT DEFINED TINYSPLINECXX_INCLUDE_DIRS)
-	message(FATAL_ERROR "TINYSPLINECXX_INCLUDE_DIRS is not defined")
+	message(SEND_ERROR "TINYSPLINECXX_INCLUDE_DIRS is not defined")
 endif()
 if(TINYSPLINECXX_INCLUDE_DIRS STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINECXX_INCLUDE_DIRS is empty")
+	message(SEND_ERROR "TINYSPLINECXX_INCLUDE_DIRS is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINECXX_LIBRARY_DIRS)
-	message(FATAL_ERROR "TINYSPLINECXX_LIBRARY_DIRS is not defined")
+	message(SEND_ERROR "TINYSPLINECXX_LIBRARY_DIRS is not defined")
 endif()
 if(TINYSPLINECXX_LIBRARY_DIRS STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINECXX_LIBRARY_DIRS is empty")
+	message(SEND_ERROR "TINYSPLINECXX_LIBRARY_DIRS is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINECXX_VERSION)
-	message(FATAL_ERROR "TINYSPLINECXX_VERSION is not defined")
+	message(SEND_ERROR "TINYSPLINECXX_VERSION is not defined")
 endif()
 if(TINYSPLINECXX_VERSION STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINECXX_VERSION is empty")
+	message(SEND_ERROR "TINYSPLINECXX_VERSION is empty")
 endif()
 
 if(NOT DEFINED TINYSPLINECXX_DEFINITIONS) # may be empty
-	message(FATAL_ERROR "TINYSPLINECXX_DEFINITIONS is not defined")
+	message(SEND_ERROR "TINYSPLINECXX_DEFINITIONS is not defined")
 endif()
 
 if(NOT DEFINED TINYSPLINECXX_LIBRARIES)
-	message(FATAL_ERROR "TINYSPLINECXX_LIBRARIES is not defined")
+	message(SEND_ERROR "TINYSPLINECXX_LIBRARIES is not defined")
 endif()
 if(TINYSPLINECXX_LIBRARIES STREQUAL "")
-	message(FATAL_ERROR "TINYSPLINECXX_LIBRARIES is empty")
+	message(SEND_ERROR "TINYSPLINECXX_LIBRARIES is empty")
 endif()
 
 

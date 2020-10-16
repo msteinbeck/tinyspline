@@ -410,9 +410,10 @@ set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH
 
 
 ###############################################################################
-### Map supported environment variables to CMake variables. The following
-### variables will be processed (only if the option's default value has been
-### selected).
+### Map supported environment variables to CMake variables.
+#
+# BUILD_SHARED_LIBS
+#   See corresponding option above.
 #
 # TINYSPLINE_FLOAT_PRECISION
 #   See corresponding option above.
@@ -420,14 +421,19 @@ set(TINYSPLINE_RUNTIME_LIBRARIES "" CACHE FILEPATH
 # TINYSPLINE_PYTHON_VERSION
 #   See corresponding option above.
 ###############################################################################
-if(NOT TINYSPLINE_FLOAT_PRECISION AND DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
+if(DEFINED ENV{BUILD_SHARED_LIBS})
+	message(STATUS
+		"Using environment variable 'BUILD_SHARED_LIBS'")
+	set(BUILD_SHARED_LIBS $ENV{BUILD_SHARED_LIBS})
+endif()
+
+if(DEFINED ENV{TINYSPLINE_FLOAT_PRECISION})
 	message(STATUS
 		"Using environment variable 'TINYSPLINE_FLOAT_PRECISION'")
 	set(TINYSPLINE_FLOAT_PRECISION $ENV{TINYSPLINE_FLOAT_PRECISION})
 endif()
 
-if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY"
-		AND DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
+if(DEFINED ENV{TINYSPLINE_PYTHON_VERSION})
 	message(STATUS
 		"Using environment variable 'TINYSPLINE_PYTHON_VERSION'")
 	set(TINYSPLINE_PYTHON_VERSION $ENV{TINYSPLINE_PYTHON_VERSION})
@@ -1507,6 +1513,7 @@ Platform:
   Id: ${TINYSPLINE_PLATFORM}
 
 Interface Configuration:
+  [C/C++] Shared libraries (default: OFF): ${BUILD_SHARED_LIBS}
   With single precision  (default: OFF): ${TINYSPLINE_FLOAT_PRECISION}
 
 Compiler Configuration:

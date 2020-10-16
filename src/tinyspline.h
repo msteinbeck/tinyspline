@@ -5,7 +5,7 @@
 
 #include <stddef.h>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
 #else
@@ -13,12 +13,14 @@
 #define TINYSPLINE_SHARED_IMPORT
 #endif
 
-#ifdef TINYSPLINE_STATIC
-#define TINYSPLINE_API
-#elif defined(tinyspline_EXPORTS)
+#ifdef TINYSPLINE_SHARED
+#ifdef TINYSPLINE_EXPORT
 #define TINYSPLINE_API TINYSPLINE_SHARED_EXPORT
 #else
 #define TINYSPLINE_API TINYSPLINE_SHARED_IMPORT
+#endif
+#else
+#define TINYSPLINE_API
 #endif
 
 #ifdef	__cplusplus

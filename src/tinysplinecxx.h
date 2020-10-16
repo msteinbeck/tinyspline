@@ -4,12 +4,14 @@
 #include <vector>
 #include <string>
 
-#ifdef TINYSPLINECXX_STATIC
-#define TINYSPLINECXX_API
-#elif defined(tinysplinecxx_EXPORTS)
+#ifdef TINYSPLINECXX_SHARED
+#ifdef TINYSPLINECXX_EXPORT
 #define TINYSPLINECXX_API TINYSPLINE_SHARED_EXPORT
 #else
 #define TINYSPLINECXX_API TINYSPLINE_SHARED_IMPORT
+#endif
+#else
+#define TINYSPLINECXX_API
 #endif
 
 #ifdef SWIG

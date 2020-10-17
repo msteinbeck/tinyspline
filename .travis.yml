@@ -27,8 +27,11 @@ install:
 script:
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 .; fi;
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then cmake -G "Visual Studio 15 2017" -A x64 .; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=C:/tinyspline .; fi;
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake .; fi;
   - cmake --build .
+  - cmake --build . --target install
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then set PATH=C:/tinyspline/bin;%PATH%; fi;
   - cmake --build . --target tests
 
 jobs:

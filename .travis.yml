@@ -31,7 +31,7 @@ script:
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=~/tinyspline .; fi;
   - cmake --build .
   - cmake --build . --target install
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then export PATH=C:/tinyspline/bin:$PATH; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then export PATH="C:/tinyspline/bin;":$PATH; fi;
   - cmake --build . --target tests
 
 jobs:

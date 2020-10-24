@@ -16,6 +16,10 @@ target_link_libraries(tinyspline_tests
 	PRIVATE tinyspline)
 
 add_test(tinyspline_tests tinyspline_tests)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	set_tests_properties(tinyspline_tests PROPERTIES
+		ENVIRONMENT "PATH=${TINYSPLINE_OUTPUT_DIRECTORY};$ENV{PATH}")
+endif()
 
 ###############################################################################
 ### Create code coverage.

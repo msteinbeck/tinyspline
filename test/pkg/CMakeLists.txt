@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(test) 
+project(test)
 
 find_package(tinyspline REQUIRED)
 find_package(tinysplinecxx REQUIRED)
@@ -110,3 +110,13 @@ add_test(testc_target testc_target)
 add_test(testcxx_target testcxx_target)
 add_test(testc_variable testc_variable)
 add_test(testcxx_variable testcxx_variable)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	set_tests_properties(testc_target PROPERTIES
+		ENVIRONMENT "PATH=${TINYSPLINE_BINARY_DIRS};$ENV{PATH}")
+	set_tests_properties(testcxx_target PROPERTIES
+		ENVIRONMENT "PATH=${TINYSPLINECXX_BINARY_DIRS};$ENV{PATH}")
+	set_tests_properties(testc_variable PROPERTIES
+		ENVIRONMENT "PATH=${TINYSPLINE_BINARY_DIRS};$ENV{PATH}")
+	set_tests_properties(testcxx_variable PROPERTIES
+		ENVIRONMENT "PATH=${TINYSPLINECXX_BINARY_DIRS};$ENV{PATH}")
+endif()

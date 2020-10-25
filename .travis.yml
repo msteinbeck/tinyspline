@@ -37,13 +37,13 @@ script:
   - pushd test/pkg
   - mkdir build
   - pushd build
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
-  - if [ "$TRAVIS_OS_NAME" != "windows" ]; cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..; fi;
   - cmake --build .
   - ctest
   - popd
-  - if [ "$TRAVIS_OS_NAME" != "windows" ]; PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make; fi;
-  - if [ "$TRAVIS_OS_NAME" != "windows" ]; LD_LIBRARY_PATH=~/tinyspline/lib64 make test; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then LD_LIBRARY_PATH=~/tinyspline/lib64 make test; fi;
   - popd
 
 jobs:

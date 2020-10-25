@@ -25,13 +25,26 @@ install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update && sudo apt-get install -y cmake; fi;
   - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install cmake; fi;
 script:
+  # Build, test, and install library
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 .; fi;
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then cmake -G "Visual Studio 15 2017" -A x64 .; fi;
   - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=C:/tinyspline .; fi;
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=~/tinyspline .; fi;
   - cmake --build .
-  - cmake --build . --target install
   - ctest
+  - cmake --build . --target install
+  # Test installed files
+  - pushd test/pkg
+  - mkdir build
+  - pushd build
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..; fi;
+  - cmake --build .
+  - ctest
+  - popd
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; LD_LIBRARY_PATH=~/tinyspline/lib64 make test; fi;
+  - popd
 
 jobs:
   include:

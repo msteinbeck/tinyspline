@@ -37,7 +37,8 @@ script:
   - pushd test/pkg
   - mkdir build
   - pushd build
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_PREFIX_PATH=C:/tinyspline ..; fi;
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..; fi;
   - cmake --build .
   - ctest

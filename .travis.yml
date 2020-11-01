@@ -28,7 +28,7 @@ script:
   # Build, test, and install library
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "gcc" ]; then cmake -G "Visual Studio 15 2017" -A Win32 .; fi;
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then cmake -G "Visual Studio 15 2017" -A x64 .; fi;
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=C:/tinyspline .; fi;
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=C:/tinyspline -DTINYSPLINE_INSTALL_LIBRARY_DIR=lib .; fi;
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then cmake -DCMAKE_INSTALL_PREFIX=~/tinyspline .; fi;
   - cmake --build .
   - ctest

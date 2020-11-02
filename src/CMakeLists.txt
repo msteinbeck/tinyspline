@@ -485,29 +485,26 @@ endif()
 # TINYSPLINE_C_DEFINITIONS
 # TINYSPLINE_CXX_DEFINITIONS
 if(BUILD_SHARED_LIBS)
-	# TINYSPLINE_SHARED and TINYSPLINECXX_SHARED are used to export and
-	# import the symbols of the shared C/C++ library when being built with
-	# MSVC. The export of symbols (required to build the shared libraries)
-	# is activated by additionally supplying TINYSPLINE_EXPORT and
-	# TINYSPLINECXX_EXPORT. If missing, the symbols of the shared libraries
-	# are automatically imported (required to link against the shared
-	# libraries). Note that TINYSPLINE_EXPORT and TINYSPLINECXX_EXPORT
-	# should not be added to the following lists. Otherwise, they will be
-	# added to install targets (CMake, pkg-config etc.) so that targets
-	# linking against the C/C++ library forcibly reuse these definitions
-	# (which means that symbols are supposed to be exported although they
-	# must be imported). Instead, TINYSPLINE_EXPORT and
-	# TINYSPLINECXX_EXPORT are added to the compile flags of the
-	# corresponding CMake targets (see below).
 	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		# Enables the export/import of the symbols of the shared C and
+		# C++ library. The export of symbols (which is required to
+		# build the shared libraries) is enabled by additionally
+		# supplying TINYSPLINE_EXPORT. If missing, symbols are
+		# automatically imported (which is required to link against the
+		# shared libraries). By default, TINYSPLINE_SHARED also
+		# specifies the behavior of the C++ interface. However, it can
+		# be configures independently by defining TINYSPLINECXX_API as
+		# __declspec(dllexport) (export) or __declspec(dllimport)
+		# (import). Note that TINYSPLINE_EXPORT should not be added to
+		# the following lists. Otherwise, it will be added to install
+		# targets (CMake, pkg-config etc.) so that targets linking
+		# against the C/C++ library forcibly reuse this definition
+		# (which means that symbols are supposed to be exported
+		# although they must be imported). Instead, TINYSPLINE_EXPORT
+		# is added to the compile flags of the corresponding CMake
+		# targets (see below).
 		list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_SHARED")
-		# When building the C++ interface with this CMake script, the
-		# symbols of the C interface, for the sake of convenience, are
-		# exported too. If, on the other hand, TinySpline is built
-		# externally, it's up the user whether TINYSPLINE_SHARED should
-		# be defined when building the C++ interface.
 		list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_SHARED")
-		list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINECXX_SHARED")
 	endif()
 endif()
 if(TINYSPLINE_FLOAT_PRECISION)

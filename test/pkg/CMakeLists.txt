@@ -6,8 +6,22 @@ find_package(tinysplinecxx REQUIRED)
 
 
 
+# Checks for each path listed in ${list_of_dirs} whether it exists and is a
+# directory. Errors are reported with message(SEND_ERROR ...).
+function(check_directories list_of_dirs)
+	foreach(dir ${list_of_dirs})
+		if(NOT EXISTS ${dir})
+			message(SEND_ERROR "'${dir}' does not exist")
+			return()
+		endif()
+		if(NOT IS_DIRECTORY ${dir})
+			message(SEND_ERROR "'${dir}' is not a dirctory")
+		endif()
+	endforeach()
+endfunction()
+
 # Check CMake targets/variables exported by the C interface.
-# Note that TINYSPLINE_DEFINITIONS may be empty.
+# Note that TINYSPLINE_DEFINITIONS and TINYSPLINE_BINARY_DIRS may be empty.
 if(NOT TARGET tinyspline::tinyspline)
 	message(SEND_ERROR "tinyspline::tinyspline is not defined")
 endif()
@@ -18,6 +32,7 @@ endif()
 if(TINYSPLINE_INCLUDE_DIRS STREQUAL "")
 	message(SEND_ERROR "TINYSPLINE_INCLUDE_DIRS is empty")
 endif()
+check_directories(${TINYSPLINE_INCLUDE_DIRS})
 
 if(NOT DEFINED TINYSPLINE_LIBRARY_DIRS)
 	message(SEND_ERROR "TINYSPLINE_LIBRARY_DIRS is not defined")
@@ -25,6 +40,12 @@ endif()
 if(TINYSPLINE_LIBRARY_DIRS STREQUAL "")
 	message(SEND_ERROR "TINYSPLINE_LIBRARY_DIRS is empty")
 endif()
+check_directories(${TINYSPLINE_LIBRARY_DIRS})
+
+if(NOT DEFINED TINYSPLINE_BINARY_DIRS) # may be empty
+	message(SEND_ERROR "TINYSPLINE_BINARY_DIRS is not defined")
+endif()
+#check_directories(${TINYSPLINE_BINARY_DIRS}) # may not exist
 
 if(NOT DEFINED TINYSPLINE_VERSION)
 	message(SEND_ERROR "TINYSPLINE_VERSION is not defined")
@@ -47,7 +68,7 @@ endif()
 
 
 # Check CMake targets/variables exported by the C++ interface.
-# Note that TINYSPLINECXX_DEFINITIONS may be empty.
+# Note that TINYSPLINECXX_DEFINITIONS TINYSPLINECXX_BINARY_DIRS may be empty.
 if(NOT TARGET tinysplinecxx::tinysplinecxx)
 	message(SEND_ERROR "tinysplinecxx::tinysplinecxx is not defined")
 endif()
@@ -58,6 +79,7 @@ endif()
 if(TINYSPLINECXX_INCLUDE_DIRS STREQUAL "")
 	message(SEND_ERROR "TINYSPLINECXX_INCLUDE_DIRS is empty")
 endif()
+check_directories(${TINYSPLINECXX_INCLUDE_DIRS})
 
 if(NOT DEFINED TINYSPLINECXX_LIBRARY_DIRS)
 	message(SEND_ERROR "TINYSPLINECXX_LIBRARY_DIRS is not defined")
@@ -65,6 +87,12 @@ endif()
 if(TINYSPLINECXX_LIBRARY_DIRS STREQUAL "")
 	message(SEND_ERROR "TINYSPLINECXX_LIBRARY_DIRS is empty")
 endif()
+check_directories(${TINYSPLINECXX_LIBRARY_DIRS})
+
+if(NOT DEFINED TINYSPLINECXX_BINARY_DIRS) # may be empty
+	message(SEND_ERROR "TINYSPLINECXX_BINARY_DIRS is not defined")
+endif()
+#check_directories(${TINYSPLINECXX_BINARY_DIRS}) # may not exist
 
 if(NOT DEFINED TINYSPLINECXX_VERSION)
 	message(SEND_ERROR "TINYSPLINECXX_VERSION is not defined")

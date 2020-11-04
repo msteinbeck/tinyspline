@@ -238,7 +238,8 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #   'macosx', 'windows', and 'uwp' (Universal Windows Platform).
 #
 # TINYSPLINE_PLATFORM_ARCH
-#   Architecture of target platform. Supported values are: 'x86' and 'x86_64'.
+#   Architecture of target platform. Supported values are: 'arm', 'arm64',
+#   'x86', 'x86_64', and 'ia64'.
 #
 # TINYSPLINE_PLATFORM
 #   Platform (target) specific identifier, e.g. 'linux-x86_64'.
@@ -255,11 +256,13 @@ else()
 	message(FATAL_ERROR
 		"Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
 endif()
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set(TINYSPLINE_PLATFORM_ARCH "x86_64" CACHE INTERNAL "")
-else()
-	set(TINYSPLINE_PLATFORM_ARCH "x86" CACHE INTERNAL "")
+
+include(TargetArch)
+target_architecture(TINYSPLINE_PLATFORM_ARCH)
+if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
+	message(FATAL_ERROR "Unknown target architecture")
 endif()
+
 set(TINYSPLINE_PLATFORM
 	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"
 	CACHE INTERNAL "")
@@ -1429,7 +1432,11 @@ if(${TINYSPLINE_WITH_CSHARP})
 	else()
 		message(FATAL_ERROR "Unable to determine Nuget RID (platform)")
 	endif()
-	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")
+	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm")
+		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm")
+	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm64")
+		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm64")
+	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x64")
 	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x86")

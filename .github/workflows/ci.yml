@@ -78,7 +78,7 @@ jobs:
             PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make test
         fi
 
-  windows:
+  python:
     needs: build
     runs-on: windows-latest
     strategy:
@@ -102,7 +102,7 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{runner.workspace}}/python${{ matrix.python }}
       run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=${{ matrix.python }}
 
     - name: Build

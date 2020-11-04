@@ -97,15 +97,15 @@ jobs:
         python -m pip install wheel
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/python
+      run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/python
+      working-directory: ${{runner.workspace}}/build
       run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=${{ matrix.python }}
 
     - name: Build
-      working-directory: ${{runner.workspace}}/python
+      working-directory: ${{runner.workspace}}/build
       shell: bash
       run: python setup.py bdist_wheel
 
@@ -113,7 +113,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: python${{ matrix.python }}-win_amd64
-        path: ${{runner.workspace}}/python/dist/*.whl
+        path: ${{runner.workspace}}/build/dist/*.whl
         if-no-files-found: error
 
   uwp:
@@ -130,6 +130,7 @@ jobs:
       shell: bash
       run: |
         choco install swig
+        choco install nuget.commandline
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -137,9 +138,18 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION="10.0"
+      run: cmake $GITHUB_WORKSPACE -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION="10.0" -DTINYSPLINE_ENABLE_CSHARP=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: |
+        cmake --build . --config $BUILD_TYPE
+        nuget pack
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: uwp_${{ matrix.arch }}
+        path: ${{runner.workspace}}/build/*.nupkg
+        if-no-files-found: error

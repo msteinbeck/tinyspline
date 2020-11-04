@@ -59,12 +59,10 @@ jobs:
       working-directory: ${{runner.workspace}}/test/pkg
       shell: bash
       run: |
-        mkdir build
-        cd build
         if [ "$RUNNER_OS" == "Windows" ]; then
-            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..
+            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline .
         else
-            cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..
+            cmake -DCMAKE_PREFIX_PATH=~/tinyspline .
         fi
         cmake --build .
         ctest

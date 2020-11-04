@@ -56,13 +56,14 @@ jobs:
       run: cmake --build . --target install
 
     - name: Test CMake Installation
-      working-directory: ${{runner.workspace}}/test/pkg
       shell: bash
       run: |
+        mkdir $GITHUB_WORKSPACE/test/pkg/build
+        cd $GITHUB_WORKSPACE/test/pkg/build
         if [ "$RUNNER_OS" == "Windows" ]; then
-            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline .
+            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..
         else
-            cmake -DCMAKE_PREFIX_PATH=~/tinyspline .
+            cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..
         fi
         cmake --build .
         ctest

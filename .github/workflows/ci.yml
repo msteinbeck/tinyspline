@@ -113,5 +113,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: python${{ matrix.python }}-win_amd64
-        path: python/dist/*.whl
+        path: ${{runner.workspace}}/python/dist/*.whl
         if-no-files-found: error

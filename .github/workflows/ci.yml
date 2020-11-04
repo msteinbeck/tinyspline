@@ -115,3 +115,31 @@ jobs:
         name: python${{ matrix.python }}-win_amd64
         path: ${{runner.workspace}}/python/dist/*.whl
         if-no-files-found: error
+
+  uwp:
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [ARM, ARM64, x64]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        choco install swig
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION="10.0"
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE

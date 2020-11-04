@@ -235,7 +235,7 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #
 # TINYSPLINE_PLATFORM_NAME
 #   Name of target platform in lowercase. Supported values are: 'linux',
-#   'macosx', and 'windows'.
+#   'macosx', 'windows', and 'uwp' (Universal Windows Platform).
 #
 # TINYSPLINE_PLATFORM_ARCH
 #   Architecture of target platform. Supported values are: 'x86' and 'x86_64'.
@@ -249,6 +249,8 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	set(TINYSPLINE_PLATFORM_NAME "macosx" CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
+	set(TINYSPLINE_PLATFORM_NAME "uwp" CACHE INTERNAL "")
 else()
 	message(FATAL_ERROR
 		"Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
@@ -1422,6 +1424,8 @@ if(${TINYSPLINE_WITH_CSHARP})
 		set(TINYSPLINE_NUGET_RID "osx")
 	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "windows")
 		set(TINYSPLINE_NUGET_RID "win")
+	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "uwp")
+		set(TINYSPLINE_NUGET_RID "win10")
 	else()
 		message(FATAL_ERROR "Unable to determine Nuget RID (platform)")
 	endif()

@@ -77,3 +77,35 @@ jobs:
         elif [ "$RUNNER_OS" == "macOS" ]; then
             PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make test
         fi
+
+  windows:
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python: [2, 3]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        choco install swig
+        choco install python${{ matrix.python }}
+        python -m pip install -U pip setuptools
+        python -m pip install wheel
+
+    - name: Create Build Environment
+      run: |
+        cmake -E make_directory ${{runner.workspace}}/python${{ matrix.python }}
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=${{ matrix.python }}
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/python${{ matrix.python }}
+      shell: bash
+      run: python setup.py bdist_wheel

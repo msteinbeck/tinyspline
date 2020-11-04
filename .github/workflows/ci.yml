@@ -97,15 +97,20 @@ jobs:
         python -m pip install wheel
 
     - name: Create Build Environment
-      run: |
-        cmake -E make_directory ${{runner.workspace}}/python${{ matrix.python }}
+      run: cmake -E make_directory ${{runner.workspace}}/python
 
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/python${{ matrix.python }}
+      working-directory: ${{runner.workspace}}/python
       run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=${{ matrix.python }}
 
     - name: Build
-      working-directory: ${{runner.workspace}}/python${{ matrix.python }}
+      working-directory: ${{runner.workspace}}/python
       shell: bash
       run: python setup.py bdist_wheel
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: python${{ matrix.python }}-win_amd64
+        path: python/*.whl

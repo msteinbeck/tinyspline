@@ -67,3 +67,13 @@ jobs:
         fi
         cmake --build .
         ctest
+
+    - name: Test Pkg-config Installation
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/test/pkg
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            PKG_CONFIG_PATH=~/tinyspline/lib/pkgconfig make test
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make test
+        fi

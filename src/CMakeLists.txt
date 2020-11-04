@@ -237,6 +237,9 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #   Name of target platform in lowercase. Supported values are: 'linux',
 #   'macosx', 'windows', and 'uwp' (Universal Windows Platform).
 #
+# TINYSPLINE_PLATFORM_IS_WINDOWS
+#   True if target platform is Windows. False otherwise.
+#
 # TINYSPLINE_PLATFORM_ARCH
 #   Architecture of target platform. Supported values are: 'arm', 'arm64',
 #   'x86', 'x86_64', and 'ia64'.
@@ -246,12 +249,16 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 ###############################################################################
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	set(TINYSPLINE_PLATFORM_NAME "macosx" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(TINYSPLINE_PLATFORM_NAME "windows" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS True CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 	set(TINYSPLINE_PLATFORM_NAME "uwp" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS True CACHE INTERNAL "")
 else()
 	message(FATAL_ERROR
 		"Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
@@ -1446,9 +1453,15 @@ if(${TINYSPLINE_WITH_CSHARP})
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
 target=\"lib/${TINYSPLINE_CSHARP_FRAMEWORK_NAME}\" />")
-	set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
+	if(${TINYSPLINE_PLATFORM_IS_WINDOWS})
+		set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
+src=\"${TINYSPLINE_LIB_DIR}\\*${TINYSPLINE_CSHARP_CMAKE_TARGET}*dll\" \
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
+	else()
+		set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
 target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
+	endif()
 	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
 		set(TINYSPLINE_NUGET_FILES
 			"${TINYSPLINE_NUGET_FILES}\n\t\t<file \

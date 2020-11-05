@@ -23,7 +23,7 @@ RUN apt-get update &&                          \
         luarocks                               \
         maven                                  \
         mingw-w64                              \
-        mono-mcs mono-reference-assemblies-2.0 \
+        mono-mcs mono-reference-assemblies-*   \
         nuget                                  \
         octave liboctave-dev                   \
         php-dev                                \
@@ -53,7 +53,10 @@ RUN apt-get update &&                          \
         -C /usr/local/src/python36 \
         --strip 1 && \
     cd /usr/local/src/python36 && \
-        ./configure --prefix=/opt/linux/python36 && \
+        ./configure \
+            --prefix=/opt/linux/python36 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python36/lib && \
         make && \
         make install && \
         /opt/linux/python36/bin/python3 -m pip install wheel && \
@@ -63,27 +66,49 @@ RUN apt-get update &&                          \
         -C /usr/local/src/python37 \
         --strip 1 && \
     cd /usr/local/src/python37 && \
-        ./configure --prefix=/opt/linux/python37 && \
+        ./configure \
+            --prefix=/opt/linux/python37 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python37/lib && \
         make && \
         make install && \
         /opt/linux/python37/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/python38 \
-        https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tar.xz && \
-    tar -xf /usr/local/src/python38/Python-3.8.5.tar.xz \
+        https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tar.xz && \
+    tar -xf /usr/local/src/python38/Python-3.8.6.tar.xz \
         -C /usr/local/src/python38 \
         --strip 1 && \
     cd /usr/local/src/python38 && \
-        ./configure --prefix=/opt/linux/python38 && \
+        ./configure \
+            --prefix=/opt/linux/python38 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python38/lib && \
         make && \
         make install && \
         /opt/linux/python38/bin/python3 -m pip install wheel && \
+    wget -P /usr/local/src/python39 \
+        https://www.python.org/ftp/python/3.9.0/Python-3.9.0.tar.xz && \
+    tar -xf /usr/local/src/python39/Python-3.9.0.tar.xz \
+        -C /usr/local/src/python39 \
+        --strip 1 && \
+    cd /usr/local/src/python39 && \
+        ./configure \
+            --prefix=/opt/linux/python39 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python39/lib && \
+        make && \
+        make install && \
+        /opt/linux/python39/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/ruby24 \
         https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
     tar -xf /usr/local/src/ruby24/ruby-2.4.10.tar.gz \
         -C /usr/local/src/ruby24 \
         --strip 1 && \
     cd /usr/local/src/ruby24 && \
-        ./configure --prefix=/opt/linux/ruby24 && \
+        ./configure \
+            --prefix=/opt/linux/ruby24 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby24/lib && \
         make && \
         make install && \
     wget -P /usr/local/src/ruby25 \
@@ -92,7 +117,10 @@ RUN apt-get update &&                          \
         -C /usr/local/src/ruby25 \
         --strip 1 && \
     cd /usr/local/src/ruby25 && \
-        ./configure --prefix=/opt/linux/ruby25 && \
+        ./configure \
+            --prefix=/opt/linux/ruby25 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby25/lib && \
         make && \
         make install && \
     wget -P /usr/local/src/ruby26 \
@@ -101,16 +129,22 @@ RUN apt-get update &&                          \
         -C /usr/local/src/ruby26 \
         --strip 1 && \
     cd /usr/local/src/ruby26 && \
-        ./configure --prefix=/opt/linux/ruby26 && \
+        ./configure \
+            --prefix=/opt/linux/ruby26 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby26/lib && \
         make && \
         make install && \
     wget -P /usr/local/src/ruby27 \
-        https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.1.tar.gz && \
-    tar -xf /usr/local/src/ruby27/ruby-2.7.1.tar.gz \
+        https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.2.tar.gz && \
+    tar -xf /usr/local/src/ruby27/ruby-2.7.2.tar.gz \
         -C /usr/local/src/ruby27 \
         --strip 1 && \
     cd /usr/local/src/ruby27 && \
-        ./configure --prefix=/opt/linux/ruby27 && \
+        ./configure \
+            --prefix=/opt/linux/ruby27 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby27/lib && \
         make && \
         make install && \
     cd /usr/local/src && rm -rf ..?* .[!.]* *
@@ -136,6 +170,7 @@ RUN export SDK_VERSION=10.13 &&                               \
         python36                                              \
         python37                                              \
         python38                                              \
+        python39                                              \
         ruby24                                                \
         ruby25                                                \
         ruby26                                                \

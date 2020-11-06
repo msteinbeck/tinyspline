@@ -20,7 +20,7 @@ docker run \
 	${IMAGE_NAME} /bin/bash -c \
 	"mkdir -p ${STORAGE}/linux64 && \
 	 chown $(id -u):$(id -g) ${STORAGE}/linux64 && \
-	 	mkdir linux64 && cd linux64 && \
+		mkdir linux64 && pushd linux64 && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
@@ -121,6 +121,106 @@ docker run \
 				-DPYTHON_LIBRARY=/opt/linux/python39/lib/libpython3.9.so && \
 			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
-				cp -a dist/*.whl ${STORAGE}/linux64"
+				cp -a dist/*.whl ${STORAGE}/linux64 && \
+		popd && \
+	mkdir -p ${STORAGE}/macosx64 && \
+	chown $(id -u):$(id -g) ${STORAGE}/macosx64 && \
+		mkdir macosx64 && pushd macosx64 && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_CSHARP=True \
+				-DTINYSPLINE_ENABLE_DLANG=True \
+				-DTINYSPLINE_ENABLE_GO=True \
+				-DTINYSPLINE_ENABLE_JAVA=True && \
+			cmake --build . --target tinysplinecsharp && \
+				nuget pack && \
+				chown $(id -u):$(id -g) *.nupkg && \
+				cp -a *.nupkg ${STORAGE}/macosx64 && \
+			dub build && \
+				tar czf tinysplinedlang.tar.gz dub && \
+				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
+				cp -a tinysplinedlang.tar.gz ${STORAGE}/macosx64 && \
+			cmake --build . --target tinysplinego && \
+			mvn package && \
+				chown $(id -u):$(id -g) target/*.jar && \
+				cp -a target/*.jar ${STORAGE}/macosx64 && \
+				chown $(id -u):$(id -g) pom.xml && \
+				cp -a pom.xml ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include/lua-5.1 \
+				-DLUA_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/lib/lua-5.1/liblua-5.1.dylib \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/macosx64 && \
+			python2 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include/lua-5.2 \
+				-DLUA_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/lib/lua-5.1/liblua-5.2.dylib \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Python && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/macosx64 && \
+			python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include \
+				-DLUA_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/lib/liblua.5.3.dylib \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Python && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/macosx64 && \
+			/opt/linux/python36/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Python && \
+			/opt/linux/python37/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Python && \
+			/opt/linux/python38/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Headers \
+				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Python && \
+			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		popd"
 
 docker rmi ${IMAGE_NAME}

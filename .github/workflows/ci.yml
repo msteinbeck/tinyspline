@@ -102,7 +102,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DTINYSPLINE_PYTHON_VERSION=$(echo ${{ matrix.python }} | head -c  1)
+      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPython_ROOT_DIR=C:/Python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.')
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

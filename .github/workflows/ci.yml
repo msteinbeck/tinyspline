@@ -83,16 +83,18 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: [2.7.18, 3.5.4, 3.6.8, 3.7.9, 3.8.6, 3.9.0]
+        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
 
     - name: Install Dependencies
       shell: bash
       run: |
         choco install swig
-        choco install python$(echo ${{ matrix.python }} | head -c  1) --version=${{ matrix.python }}
         python -m pip install -U pip setuptools
         python -m pip install wheel
 
@@ -102,12 +104,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: |
-        if [ -d "C:/Python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.')" ]; then
-            cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR=C:/Python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.')/include -DPYTHON_LIBRARY=C:/Python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.')/python$(echo ${{ matrix.python }} | head -c  1).dll
-        else
-            cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR=C:/hostedtoolcache/windows/Python/${{ matrix.python }}/x64/include -DPYTHON_LIBRARY=C:/hostedtoolcache/windows/Python/${{ matrix.python }}/x64/python$(echo ${{ matrix.python }} | head -c  1).dll
-        fi
+      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -117,7 +114,7 @@ jobs:
     - name: Deploy
       uses: actions/upload-artifact@v2
       with:
-        name: python${{ matrix.python }}-win_amd64
+        name: python-${{ matrix.python }}-win_amd64
         path: ${{runner.workspace}}/build/dist/*.whl
         if-no-files-found: error
 

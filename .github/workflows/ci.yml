@@ -83,7 +83,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        python: [3.5, 3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -104,7 +104,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True
+      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))")"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

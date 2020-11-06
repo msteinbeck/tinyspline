@@ -126,7 +126,7 @@ docker run \
 	mkdir -p ${STORAGE}/macosx64 && \
 	chown $(id -u):$(id -g) ${STORAGE}/macosx64 && \
 		mkdir macosx64 && pushd macosx64 && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
 				-DTINYSPLINE_ENABLE_DLANG=True \
@@ -140,14 +140,13 @@ docker run \
 				tar czf tinysplinedlang.tar.gz dub && \
 				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
 				cp -a tinysplinedlang.tar.gz ${STORAGE}/macosx64 && \
-			cmake --build . --target tinysplinego && \
 			mvn package && \
 				chown $(id -u):$(id -g) target/*.jar && \
 				cp -a target/*.jar ${STORAGE}/macosx64 && \
 				chown $(id -u):$(id -g) pom.xml && \
 				cp -a pom.xml ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include/lua-5.1 \
@@ -155,6 +154,7 @@ docker run \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				chown $(id -u):$(id -g) *.rock && \
@@ -163,14 +163,15 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include/lua-5.2 \
-				-DLUA_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/lib/lua-5.1/liblua-5.2.dylib \
+				-DLUA_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/lib/lua-5.2/liblua-5.2.dylib \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Python && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				chown $(id -u):$(id -g) *.rock && \
@@ -179,7 +180,7 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/include \
@@ -187,6 +188,7 @@ docker run \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Python && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				chown $(id -u):$(id -g) *.rock && \
@@ -195,7 +197,7 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Headers \
@@ -204,7 +206,7 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Headers \
@@ -213,7 +215,7 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			x86_64-apple-darwin17-cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Headers \

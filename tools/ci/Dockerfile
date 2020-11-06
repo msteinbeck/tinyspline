@@ -47,6 +47,15 @@ RUN apt-get update &&                          \
         ./configure && \
         make && \
         make install && \
+    wget -P /usr/local/src/cmake \
+        https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz && \
+    tar -xf /usr/local/src/cmake/cmake-3.18.4.tar.gz \
+        -C /usr/local/src/cmake \
+        --strip 1 && \
+    cd /usr/local/src/cmake && \
+        ./configure && \
+        make && \
+        make install && \
     wget -P /usr/local/src/python36 \
         https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz && \
     tar -xf /usr/local/src/python36/Python-3.6.12.tar.xz \

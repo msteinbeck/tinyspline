@@ -104,7 +104,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")/../libs/python3.lib"
+      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

@@ -14,6 +14,10 @@ docker build -t ${IMAGE_NAME} -f - "${ROOT_DIR}" <<-END
 	WORKDIR /tinyspline
 END
 
+MINGW_LIBS="\
+/usr/lib/gcc/x86_64-w64-mingw32/6.3-win32/libstdc++-6.dll\
+\;/usr/lib/gcc/x86_64-w64-mingw32/6.3-win32/libgcc_s_seh-1.dll"
+
 docker run \
 	--rm \
 	--volume "${VOLUME}:${STORAGE}" \
@@ -223,6 +227,35 @@ docker run \
 			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
+		popd && \
+	mkdir -p ${STORAGE}/windows64 && \
+	chown $(id -u):$(id -g) ${STORAGE}/windows64 && \
+		mkdir windows64 && pushd windows64 && \
+			CC=x86_64-w64-mingw32-gcc-win32 \
+			CXX=x86_64-w64-mingw32-g++-win32 \
+			JAVA_HOME=/opt/wincross/java \
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME=Windows \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
+				-DTINYSPLINE_ENABLE_CSHARP=True \
+				-DTINYSPLINE_ENABLE_DLANG=True \
+				-DTINYSPLINE_ENABLE_JAVA=True \
+				-DJava_JAVAC_EXECUTABLE=/usr/bin/javac \
+				-DJava_JAR_EXECUTABLE=/usr/bin/jar && \
+			cmake --build . --target tinysplinecsharp && \
+				nuget pack && \
+				chown $(id -u):$(id -g) *.nupkg && \
+				cp -a *.nupkg ${STORAGE}/windows64 && \
+			dub build && \
+				tar czf tinysplinedlang.tar.gz dub && \
+				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
+				cp -a tinysplinedlang.tar.gz ${STORAGE}/windows64 && \
+			mvn package && \
+				chown $(id -u):$(id -g) target/*.jar && \
+				cp -a target/*.jar ${STORAGE}/windows64 && \
+				chown $(id -u):$(id -g) pom.xml && \
+				cp -a pom.xml ${STORAGE}/windows64 && \
 		popd"
 
 docker rmi ${IMAGE_NAME}

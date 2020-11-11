@@ -898,6 +898,17 @@ function (tinyspline_add_swig_library)
 				"$<TARGET_FILE_NAME:${ACTUAL_TARGET}>"
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
 	endif()
+	if(EXISTS "${TINYSPLINE_MACOSX_RELINK_SCRIPT}")
+		add_custom_command(
+			TARGET ${ACTUAL_TARGET}
+			POST_BUILD
+			COMMAND
+				${CMAKE_COMMAND} -E echo
+				"Relinking $<TARGET_FILE_NAME:${ACTUAL_TARGET}>"
+			COMMAND
+				${TINYSPLINE_MACOSX_RELINK_SCRIPT}
+				"$<TARGET_FILE:${ACTUAL_TARGET}>")
+	endif()
 endfunction()
 
 if(${TINYSPLINE_BINDING_REQUESTED})
@@ -926,9 +937,11 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 					CACHE FILEPATH "otool")
 			endif()
 		endif()
+		set(TINYSPLINE_MACOSX_RELINK_SCRIPT
+			"${CMAKE_BINARY_DIR}/macosx-relink.sh")
 		configure_file(
 			"${CMAKE_CURRENT_SOURCE_DIR}/pkg/macosx-relink.sh.in"
-			"${CMAKE_BINARY_DIR}/macosx-relink.sh"
+			${TINYSPLINE_MACOSX_RELINK_SCRIPT}
 			@ONLY)
 	endif()
 

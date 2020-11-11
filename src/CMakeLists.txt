@@ -905,6 +905,33 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 	include(${SWIG_USE_FILE})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+	if(CMAKE_INSTALL_NAME_TOOL)
+		if(NOT CMAKE_OTOOL)
+			message(STATUS "Found install_name_tool without otool")
+			message(STATUS "Trying to find corresponding otool")
+			get_filename_component(CMAKE_OTOOL
+				${CMAKE_INSTALL_NAME_TOOL} NAME)
+			string(REPLACE "-" ";" CMAKE_OTOOL ${CMAKE_OTOOL})
+			list(REMOVE_AT CMAKE_OTOOL -1)
+			list(APPEND CMAKE_OTOOL "otool")
+			list(JOIN CMAKE_OTOOL "-" CMAKE_OTOOL)
+			get_filename_component(CMAKE_OTOOL_HINTS
+				${CMAKE_INSTALL_NAME_TOOL} DIRECTORY)
+			find_program(CMAKE_OTOOL "${CMAKE_OTOOL}"
+				HINTS CMAKE_OTOOL_HINTS)
+			if(NOT CMAKE_OTOOL)
+				message(FATAL_ERROR "Cannot find otool")
+			else()
+				set(CMAKE_OTOOL ${CMAKE_OTOOL}
+					CACHE FILEPATH "otool")
+			endif()
+		endif()
+		configure_file(
+			"${CMAKE_CURRENT_SOURCE_DIR}/pkg/macosx-relink.sh.in"
+			"${CMAKE_BINARY_DIR}/macosx-relink.sh"
+			@ONLY)
+	endif()
+
 	# C#
 	if(${TINYSPLINE_ENABLE_CSHARP})
 		tinyspline_add_swig_library(

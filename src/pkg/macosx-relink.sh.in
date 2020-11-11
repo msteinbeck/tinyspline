@@ -1,0 +1,16 @@
+#!/bin/bash
+
+LIBS=($(@CMAKE_OTOOL@ -L ${1} | tail -n +2 | cut -d' ' -f1))
+for LIB in "${LIBS[@]}"
+do
+	if [[ ${LIB} == /opt/local/* || ${LIB} == @@HOMEBREW_PREFIX@@* || \
+		${LIB} == @@HOMEBREW_CELLAR@@* ]]
+	then
+		LIB_DIR=$(dirname ${LIB})
+		LIB_NAME=$(basename ${LIB})
+		@CMAKE_INSTALL_NAME_TOOL@ \
+			-change ${LIB} @rpath/${LIB_NAME} ${1}
+		@CMAKE_INSTALL_NAME_TOOL@ \
+			-add_rpath ${LIB_DIR} ${1}
+	fi
+done

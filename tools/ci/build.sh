@@ -166,6 +166,7 @@ docker run \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target _tinysplinepython && \
@@ -200,6 +201,7 @@ docker run \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target _tinysplinepython && \
@@ -237,6 +239,7 @@ docker run \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target _tinysplinepython && \

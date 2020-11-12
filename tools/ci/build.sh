@@ -159,6 +159,10 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python && \
 			cmake --build . --target tinysplinelua && \
+				find lib -name '*tinysplinelua*' \
+					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
+						@@HOMEBREW_PREFIX@@/opt/lua@5.1/lib \
+						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
@@ -189,6 +193,10 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Python && \
 			cmake --build . --target tinysplinelua && \
+				find lib -name '*tinysplinelua*' \
+					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
+						@@HOMEBREW_PREFIX@@/opt/lua@5.2/lib \
+						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
@@ -219,6 +227,13 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Python && \
 			cmake --build . --target tinysplinelua && \
+				find lib -name '*tinysplinelua*' \
+					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
+						@@HOMEBREW_PREFIX@@/opt/lua@5.3/lib \
+						{} \\; \
+					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
+						@@HOMEBREW_PREFIX@@/opt/lua/lib \
+						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \

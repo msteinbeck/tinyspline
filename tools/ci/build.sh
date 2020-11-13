@@ -169,7 +169,7 @@ docker run \
 				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/2.7 \
@@ -204,7 +204,7 @@ docker run \
 				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.5 \
@@ -242,7 +242,7 @@ docker run \
 				for r in ./*.rock; do mv \$r \${r/linux/macosx}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.6 \
@@ -263,7 +263,7 @@ docker run \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Python && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.7 \
@@ -284,7 +284,7 @@ docker run \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Python && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.8 \
@@ -305,7 +305,7 @@ docker run \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Python && \
-			cmake --build . --target _tinysplinepython && \
+			cmake --build . --target tinysplinepython && \
 				find lib -name '*tinysplinepython*' \
 					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
 						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.9 \

@@ -1,7 +1,7 @@
 ###############################################################################
 ### General CMake setup.
 ###############################################################################
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 project(tinyspline)
 
 # Turn on folders.
@@ -924,6 +924,16 @@ endif()
 # TINYSPLINE_BINDING_REQUESTED
 #   At least one binding should be created.
 ###############################################################################
+# Pass ``-module`` option to ``SWIG`` compiler if ``SWIG_MODULE_NAME`` is
+# specified. Although this script passes the ``-module`` option explicitly (see
+# ``SWIG_ARGS`` in ``tinyspline_add_swig_library``), we enable the new behavior
+# as the old one will be removed in future releases of CMake.
+cmake_policy(SET CMP0086 NEW)
+
+# Generate standard names for SWIG targets, i.e., the actual name of a SWIG
+# target corresponds to the name passed to ``swig_add_library``.
+cmake_policy(SET CMP0078 NEW)
+
 # TINYSPLINE_BINDINGS_FOLDER_NAME
 set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")
 
@@ -969,48 +979,42 @@ function (tinyspline_add_swig_library)
 	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
 		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
 	endif()
-	# For some reasons Python's make target starts with '_'.
-	set(ACTUAL_TARGET ${ARGS_TARGET})
-	if(${ARGS_LANG} STREQUAL python)
-		set(ACTUAL_TARGET _${ACTUAL_TARGET})
-	endif()
-	set(TINYSPLINE_SWIG_CMAKE_TARGET ${ACTUAL_TARGET} PARENT_SCOPE)
-	set_target_properties(${ACTUAL_TARGET} PROPERTIES
+	set_target_properties(${ARGS_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
-	target_compile_definitions(${ACTUAL_TARGET}
+	target_compile_definitions(${ARGS_TARGET}
 		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
 	if(${ARGS_CXX11})
-		set_property(TARGET ${ACTUAL_TARGET}
+		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY CXX_STANDARD 11)
-		set_property(TARGET ${ACTUAL_TARGET}
+		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY CXX_STANDARD_REQUIRED ON)
-		set_property(TARGET ${ACTUAL_TARGET}
+		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY CXX_EXTENSIONS OFF)
 	endif()
 	if (NOT ${ARGS_NAME} STREQUAL "")
-		set_property(TARGET ${ACTUAL_TARGET}
+		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}")
 	endif()
 	if (CMAKE_STRIP)
 		add_custom_command(
-			TARGET ${ACTUAL_TARGET}
+			TARGET ${ARGS_TARGET}
 			POST_BUILD
 			COMMAND
 				"${CMAKE_STRIP}" --strip-unneeded
-				"$<TARGET_FILE_NAME:${ACTUAL_TARGET}>"
+				"$<TARGET_FILE_NAME:${ARGS_TARGET}>"
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
 	endif()
 	if(EXISTS "${TINYSPLINE_MACOSX_RELINK_SCRIPT}")
 		add_custom_command(
-			TARGET ${ACTUAL_TARGET}
+			TARGET ${ARGS_TARGET}
 			POST_BUILD
 			COMMAND
 				${CMAKE_COMMAND} -E echo
-				"Relinking $<TARGET_FILE_NAME:${ACTUAL_TARGET}>"
+				"Relinking $<TARGET_FILE_NAME:${ARGS_TARGET}>"
 			COMMAND
 				${TINYSPLINE_MACOSX_RELINK_SCRIPT}
-				"$<TARGET_FILE:${ACTUAL_TARGET}>")
+				"$<TARGET_FILE:${ARGS_TARGET}>")
 	endif()
 endfunction()
 
@@ -1091,7 +1095,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc.exe$")
 				# csc does not support '/' in 'recursive'.
 				add_custom_command(
-					TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+					TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
 					POST_BUILD
 					COMMAND
 						${TINYSPLINE_CSHARP_COMPILER}
@@ -1100,7 +1104,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 						/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs")
 			else()
 				add_custom_command(
-					TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+					TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
 					POST_BUILD
 					COMMAND
 						${TINYSPLINE_CSHARP_COMPILER}
@@ -1121,7 +1125,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			SWIG_ARGS -d2 -wrapperlibrary ${TINYSPLINE_DLANG_CMAKE_TARGET}
 				-module ${TINYSPLINE_PACKAGE_NAME})
 		add_custom_command(
-			TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+			TARGET ${TINYSPLINE_DLANG_CMAKE_TARGET}
 			POST_BUILD
 			COMMAND
 				${CMAKE_COMMAND}
@@ -1145,7 +1149,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			SWIG_ARGS -cgo -intgosize ${TINYSPLINE_GO_INTGOSIZE}
 				-package tinyspline)
 		add_custom_command(
-			TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+			TARGET ${TINYSPLINE_GO_CMAKE_TARGET}
 			POST_BUILD
 			COMMAND
 			${CMAKE_COMMAND} -E copy
@@ -1196,7 +1200,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 		if(${Java_Development_FOUND})
 			include(UseJava)
 			add_custom_command(
-				TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+				TARGET ${TINYSPLINE_JAVA_CMAKE_TARGET}
 				POST_BUILD
 				COMMAND
 					${CMAKE_COMMAND}
@@ -1282,7 +1286,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 				OUTPUT ${TINYSPLINE_PHP_SOURCE_DIRECTORY}
 				FLAGS ${PHP_INCLUDE_DIRS})
 			add_custom_command(
-				TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+				TARGET ${TINYSPLINE_PHP_CMAKE_TARGET}
 				POST_BUILD
 				COMMAND
 					${CMAKE_COMMAND}
@@ -1319,7 +1323,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			LIBS ${PYTHON_LIBRARIES}
 			SWIG_ARGS ${TINYSPLINE_PYTHON_DEFINES})
 		add_custom_command(
-			TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+			TARGET ${TINYSPLINE_PYTHON_CMAKE_TARGET}
 			POST_BUILD
 			COMMAND
 				${CMAKE_COMMAND} -E copy
@@ -1337,7 +1341,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			OUTPUT ${TINYSPLINE_R_SOURCE_DIRECTORY}
 			LIBS ${R_LIBRARIES})
 		add_custom_command(
-			TARGET ${TINYSPLINE_SWIG_CMAKE_TARGET}
+			TARGET ${TINYSPLINE_R_CMAKE_TARGET}
 			POST_BUILD
 			COMMAND
 				${CMAKE_COMMAND}

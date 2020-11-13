@@ -950,28 +950,20 @@ function (tinyspline_add_swig_library)
 		"TARGET;LANG;OUTPUT;LIBS;NAME"
 		"SWIG_ARGS;FLAGS"
 		${ARGN})
-	if(TINYSPLINE_FLOAT_PRECISION)
-		list(APPEND TINYSPLINE_SWIG_DEFINES
-			-DTINYSPLINE_FLOAT_PRECISION)
-	endif()
 	set_source_files_properties("swig/${ARGS_TARGET}.i"
 		PROPERTIES CPLUSPLUS ON)
-	set(CMAKE_SWIG_FLAGS ${ARGS_SWIG_ARGS} -O ${TINYSPLINE_SWIG_DEFINES})
-	set(CMAKE_SWIG_OUTDIR ${ARGS_OUTPUT})
-	if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		swig_add_module(
-			${ARGS_TARGET}
-			${ARGS_LANG}
-			"swig/${ARGS_TARGET}.i"
-			${TINYSPLINE_CXX_SOURCE_FILES})
-	else()
-		swig_add_library(
-			${ARGS_TARGET}
-			TYPE MODULE
-			LANGUAGE ${ARGS_LANG}
-			SOURCES "swig/${ARGS_TARGET}.i"
-			${TINYSPLINE_CXX_SOURCE_FILES})
+	list(APPEND CMAKE_SWIG_FLAGS ${ARGS_SWIG_ARGS})
+	list(APPEND CMAKE_SWIG_FLAGS -O) # enable optimization
+	if(TINYSPLINE_FLOAT_PRECISION)
+		list(APPEND CMAKE_SWIG_FLAGS -DTINYSPLINE_FLOAT_PRECISION)
 	endif()
+	swig_add_library(
+		${ARGS_TARGET}
+		TYPE MODULE
+		LANGUAGE ${ARGS_LANG}
+		OUTPUT_DIR ${ARGS_OUTPUT}
+		SOURCES "swig/${ARGS_TARGET}.i"
+			${TINYSPLINE_CXX_SOURCE_FILES})
 	# On Linux, we can (and for the sake of portability should) omit
 	# linking libraries.
 	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
@@ -988,10 +980,6 @@ function (tinyspline_add_swig_library)
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
 	target_compile_definitions(${ACTUAL_TARGET}
 		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
-	if (${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		set_property(TARGET ${ACTUAL_TARGET}
-			APPEND PROPERTY TYPE MODULE_LIBRARY)
-	endif()
 	if(${ARGS_CXX11})
 		set_property(TARGET ${ACTUAL_TARGET}
 			APPEND PROPERTY CXX_STANDARD 11)

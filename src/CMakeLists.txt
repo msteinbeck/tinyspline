@@ -957,11 +957,14 @@ endif()
 function (tinyspline_add_swig_library)
 	cmake_parse_arguments(ARGS
 		"CXX11"
-		"TARGET;LANG;OUTPUT;LIBS;NAME"
+		"TARGET;TYPE;LANG;OUTPUT;LIBS;NAME"
 		"SWIG_ARGS;FLAGS"
 		${ARGN})
 	set_source_files_properties("swig/${ARGS_TARGET}.i"
 		PROPERTIES CPLUSPLUS ON)
+	if (NOT DEFINED ARGS_TYPE)
+		set(ARGS_TYPE MODULE)
+	endif()
 	list(APPEND CMAKE_SWIG_FLAGS ${ARGS_SWIG_ARGS})
 	list(APPEND CMAKE_SWIG_FLAGS -O) # enable optimization
 	if(TINYSPLINE_FLOAT_PRECISION)
@@ -969,7 +972,7 @@ function (tinyspline_add_swig_library)
 	endif()
 	swig_add_library(
 		${ARGS_TARGET}
-		TYPE MODULE
+		TYPE ${ARGS_TYPE}
 		LANGUAGE ${ARGS_LANG}
 		OUTPUT_DIR ${ARGS_OUTPUT}
 		SOURCES "swig/${ARGS_TARGET}.i"
@@ -1144,6 +1147,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 		math(EXPR TINYSPLINE_GO_INTGOSIZE "${CMAKE_SIZEOF_VOID_P} * 8")
 		tinyspline_add_swig_library(
 			TARGET ${TINYSPLINE_GO_CMAKE_TARGET}
+			TYPE STATIC
 			LANG go
 			OUTPUT ${TINYSPLINE_GO_SOURCE_DIRECTORY}
 			SWIG_ARGS -cgo -intgosize ${TINYSPLINE_GO_INTGOSIZE}

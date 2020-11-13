@@ -987,6 +987,15 @@ function (tinyspline_add_swig_library)
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
 	target_compile_definitions(${ARGS_TARGET}
 		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
+	# Fix library prefix for non-windows platforms.
+	if(NOT ${TINYSPLINE_PLATFORM_IS_WINDOWS})
+		if(${ARGS_LANG} STREQUAL "csharp"
+				OR ${ARGS_LANG} STREQUAL "d"
+				OR ${ARGS_LANG} STREQUAL "go")
+			set_property(TARGET ${ARGS_TARGET}
+				APPEND PROPERTY PREFIX "lib")
+		endif()
+	endif()
 	if(${ARGS_CXX11})
 		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY CXX_STANDARD 11)

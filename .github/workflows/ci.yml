@@ -165,5 +165,6 @@ jobs:
 
     - name: Build Packages
       shell: bash
-      working-directory: ${{runner.workspace}}/tools/ci
-      run: ./build.sh
+      run: |
+        cd $GITHUB_WORKSPACE/tools/ci
+        ./build.sh

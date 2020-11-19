@@ -172,7 +172,7 @@ jobs:
     - name: Download Packages
       uses: actions/download-artifact@v2
       with:
-        path: $GITHUB_WORKSPACE/tools/ci/build/actions
+        path: tools/ci/build/actions
 
     - name: Prepare Downloaded Packages
       shell: bash

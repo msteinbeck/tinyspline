@@ -72,7 +72,7 @@ cmake --build .
 
 You will find the libraries and packages in `tinyspline/build/lib`.
 
-#### Python 2 vs. Python 3
+### Python 2 vs. Python 3
 While generating the Python binding, Swig needs to distinguish between Python 2
 and Python 3. That is, Swig uses the command line parameter `-py` to generate
 Python 2 compatible code and `-py3` to generate Python 3 compatible code.
@@ -89,7 +89,7 @@ Python 3:
 cmake -DTINYSPLINE_PYTHON_VERSION=2 ..
 ```
 
-#### Install the C and C++ Interfaces
+### Install the C and C++ Interfaces
 The following command installs the C and C++ (if enabled) interface to your
 system:
 
@@ -113,7 +113,7 @@ that they have prefix `TINYSPLINECXX`, e.g., `TINYSPLINECXX_INCLUDE_DIRS`.
 Use the CMake commands `find_package(tinyspline)` (C) and
 `find_package(tinysplinecxx)` (C++) to include TinySpline into your project.
 
-#### Install the Bindings
+### Install the Bindings
 Depending on your build configuration, binding-related distribution files are
 generated within the root of your build directory. For example, the file
 `setup.py` is generated if Python is enabled. Currently, the following build

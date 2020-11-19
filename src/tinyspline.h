@@ -452,7 +452,7 @@ size_t TINYSPLINE_API ts_bspline_order(const tsBSpline *spline);
  * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
  * 	which always is >= ts_bspline_get_control_points(spline) ).
  */
-tsError TINYSPLINE_API  ts_bspline_set_order(tsBSpline *spline, size_t order,
+tsError TINYSPLINE_API ts_bspline_set_order(tsBSpline *spline, size_t order,
 	tsStatus *status);
 
 /**
@@ -466,7 +466,7 @@ tsError TINYSPLINE_API  ts_bspline_set_order(tsBSpline *spline, size_t order,
  * @return
  * 	The dimension of \p spline.
  */
-size_t TINYSPLINE_API  ts_bspline_dimension(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_dimension(const tsBSpline *spline);
 
 /**
  * Sets the dimension of \p spline. The following conditions must be satisfied:
@@ -492,7 +492,7 @@ size_t TINYSPLINE_API  ts_bspline_dimension(const tsBSpline *spline);
  * @return TS_LCTRLP_DIM_MISMATCH
  * 	If len_control_points(spline) % \p dim != 0
  */
-tsError TINYSPLINE_API  ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
+tsError TINYSPLINE_API ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
 	tsStatus *status);
 
 /**
@@ -503,7 +503,7 @@ tsError TINYSPLINE_API  ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
  * @return
  * 	The length of the control point array of \p spline.
  */
-size_t TINYSPLINE_API  ts_bspline_len_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API ts_bspline_len_control_points(const tsBSpline *spline);
 
 /**
  * Returns the number of control points of \p spline.
@@ -1648,7 +1648,7 @@ int TINYSPLINE_API ts_knots_equal(tsReal x, tsReal y);
  * @param[in] val
  * 	The value to fill into \p arr.
  */
-void TINYSPLINE_API  ts_arr_fill(tsReal *arr, size_t num, tsReal val);
+void TINYSPLINE_API ts_arr_fill(tsReal *arr, size_t num, tsReal val);
 
 /**
  * Returns the euclidean distance of the points \p x and \p y.

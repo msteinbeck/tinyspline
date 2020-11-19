@@ -35,15 +35,16 @@ int main(int argc, char **argv)
 
 /* ------------------------------------------------------------------------- */
 /* TinySpline includes a powerful, system-independent, and thread-safe error
- * handling system in the form of easy-to-use macros. All you need to do is to
- * embed your code into TS_TRY/TS_END_TRY and use TS_CALL when calling a
- * TinySpline function. Likewise, you can use any of the TS_THROW macros to
- * raise an error if an external function (e.g. malloc) failed.
+ * handling system. Embed your code into a TS_TRY/TS_END_TRY block and use
+ * TS_CALL when calling a TinySpline function. Likewise, you can use any of
+ * the TS_THROW macros to raise an error if an external function (e.g.,
+ * malloc) failed.
  *
- * Errors can be handled in TS_CATCH. TS_FINALLY contains code that is executed
- * in any case, therefore being perfectly suitable for cleaning up resources.
- * Yet, error handling is entirely optional. You may omit TS_TRY, TS_CALL, and
- * TS_THROW and pass NULL instead of a pointer to a tsStatus object. */
+ * Errors can be handled with TS_CATCH. TS_FINALLY contains code that is
+ * executed in any case, therefore being perfectly suitable for cleaning up
+ * resources. That said, error handling is entirely optional. You may omit
+ * TS_TRY/TS_END_TRY, TS_CALL, and TS_THROW and pass NULL instead of a pointer
+ * to a tsStatus object. */
 
 	spline = ts_bspline_init();
 	beziers = ts_bspline_init();
@@ -87,7 +88,8 @@ int main(int argc, char **argv)
 
 		/* Derive `spline` ... */
 		TS_CALL(try, status.code, ts_bspline_derive(
-			&spline, 1, &beziers, &status))
+			&spline, 1, TS_CONTROL_POINT_EPSILON,
+			&beziers, &status))
 		/* ... and subdivide it into a sequence of Bezier curves. */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&beziers, &beziers, &status))

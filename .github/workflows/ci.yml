@@ -168,3 +168,27 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/tools/ci
         ./build.sh
+        
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: $GITHUB_WORKSPACE/tools/ci/build/actions
+
+    - name: Prepare Downloaded Packages
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/tools/ci/build
+        find actions -name '*.whl' -exec cp {} windows64 \;
+
+    - name: Create Releases
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/tools/ci
+        ./package.sh
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: tinyspline
+        path: ${{runner.workspace}}/tools/ci/tinyspline/
+        if-no-files-found: error

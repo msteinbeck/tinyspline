@@ -191,5 +191,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: tinyspline
-        path: ${{runner.workspace}}/tools/ci/tinyspline/
+        path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/tinyspline/
         if-no-files-found: error

@@ -10,7 +10,9 @@
 %rename (string) tinyspline::Domain::toString;
 
 %insert(cgo_comment_typedefs) %{
-#cgo LDFLAGS: -L${SRCDIR} -lm -lstdc++ -ltinysplinego
+#cgo !windows LDFLAGS: -L${SRCDIR} -lm -lstdc++ -ltinysplinego
+#cgo windows,!stdcxxshared LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-Bstatic -lstdc++
+#cgo windows,stdcxxshared LDFLAGS: -L${SRCDIR} -lstdc++-6 -ltinysplinego
 %}
 
 // Simplifies the API (no type cast required).

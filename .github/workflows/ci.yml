@@ -183,6 +183,7 @@ jobs:
     - name: Create Releases
       shell: bash
       run: |
+        sudo apt-get install luarocks
         cd $GITHUB_WORKSPACE/tools/ci
         ./package.sh
 

@@ -155,3 +155,15 @@ jobs:
         name: uwp_${{ matrix.arch }}
         path: ${{runner.workspace}}/build/*.nupkg
         if-no-files-found: error
+
+  package:
+    needs: [python, uwp]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Packages
+      shell: bash
+      working-directory: ${{runner.workspace}}/tools/ci
+      run: ./build.sh

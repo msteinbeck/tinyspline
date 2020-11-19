@@ -231,7 +231,10 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 
 
 ###############################################################################
-### Platform-related constants.
+### Host- and platform-related constants.
+#
+# TINYSPLINE_HOST_IS_WINDOWS
+#   True if host is Windows. False otherwise.
 #
 # TINYSPLINE_PLATFORM_NAME
 #   Name of target platform in lowercase. Supported values are: 'linux',
@@ -247,6 +250,15 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 # TINYSPLINE_PLATFORM
 #   Platform (target) specific identifier, e.g. 'linux-x86_64'.
 ###############################################################################
+# Host
+if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
+	set(TINYSPLINE_HOST_IS_WINDOWS True CACHE INTERNAL "")
+elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "WindowsStore")
+	set(TINYSPLINE_HOST_IS_WINDOWS True CACHE INTERNAL "")
+else()
+	set(TINYSPLINE_HOST_IS_WINDOWS False CACHE INTERNAL "")
+endif()
+# Platform
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
@@ -1471,7 +1483,7 @@ if(${TINYSPLINE_WITH_LUA})
 		@ONLY)
 endif()
 
-# Nuget
+# NuGet
 file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
 if(${TINYSPLINE_WITH_CSHARP})
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
@@ -1486,7 +1498,7 @@ if(${TINYSPLINE_WITH_CSHARP})
 	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "uwp")
 		set(TINYSPLINE_NUGET_RID "win10")
 	else()
-		message(FATAL_ERROR "Unable to determine Nuget RID (platform)")
+		message(FATAL_ERROR "Unable to determine NuGet RID (platform)")
 	endif()
 	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm")
@@ -1497,12 +1509,12 @@ if(${TINYSPLINE_WITH_CSHARP})
 	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x86")
 	else()
-		message(FATAL_ERROR "Unable to determine Nuget RID (arch)")
+		message(FATAL_ERROR "Unable to determine NuGet RID (arch)")
 	endif()
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
 target=\"lib/${TINYSPLINE_CSHARP_FRAMEWORK_NAME}\" />")
-	if(${TINYSPLINE_PLATFORM_IS_WINDOWS})
+	if(${TINYSPLINE_HOST_IS_WINDOWS})
 		set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}\\*${TINYSPLINE_CSHARP_CMAKE_TARGET}*dll\" \
 target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")

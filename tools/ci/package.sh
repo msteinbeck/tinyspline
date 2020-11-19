@@ -4,17 +4,17 @@ set -e
 SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
 
 ### Check build directories.
-LINUX_X86_64="${SCRIPT_DIR}/build.linux-x86_64"
+LINUX_X86_64="${SCRIPT_DIR}/build/linux64"
 if [ ! -d "${LINUX_X86_64}" ]; then
 	echo "Linux (x86_64) is missing.  Aborting."
 	exit 1
 fi
-MACOSX_X86_64="${SCRIPT_DIR}/build.macosx-x86_64"
+MACOSX_X86_64="${SCRIPT_DIR}/build/macosx64"
 if [ ! -d "${MACOSX_X86_64}" ]; then
 	echo "MacOSX (x86_64) is missing.  Aborting."
 	exit 1
 fi
-WINDOWS_X86_64="${SCRIPT_DIR}/build.windows-x86_64"
+WINDOWS_X86_64="${SCRIPT_DIR}/build/windows64"
 if [ ! -d "${WINDOWS_X86_64}" ]; then
 	echo "Windows (x86_64) is missing.  Aborting."
 	exit 1
@@ -152,6 +152,8 @@ done
 find "${LINUX_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
 find "${MACOSX_X86_64}" -name '*.whl' -print0 | \
+	xargs -0 -I{} cp {} "${OUTPUT}"
+find "${WINDOWS_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
 
 # Ruby

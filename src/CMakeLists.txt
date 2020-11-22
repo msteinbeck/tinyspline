@@ -120,7 +120,10 @@ set(TINYSPLINE_DESCRIPTION
 # TINYSPLINE_DLANG_INTERMEDIATE_FILE
 #   Full path of D intermediate file.
 ###############################################################################
-set(TINYSPLINE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "")
+if(NOT DEFINED TINYSPLINE_OUTPUT_DIRECTORY)
+	set(TINYSPLINE_OUTPUT_DIRECTORY
+		${CMAKE_CURRENT_BINARY_DIR}/lib CACHE INTERNAL "")
+endif()
 
 # Generic no-config case (e.g. MinGW)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_BACKUP ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
@@ -1587,11 +1590,11 @@ endif()
 ###############################################################################
 ### Restore output directories.
 ###############################################################################
-# First for the generic no-config case (e.g. with MinGW)
+# Multi-config builds (e.g. MSVC)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_BACKUP})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_BACKUP})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_BACKUP})
-# Second, for multi-config builds (e.g. MSVC)
+# Generic no-config case (e.g. MinGW)
 foreach(TINYSPLINE_CONFIG ${CMAKE_CONFIGURATION_TYPES})
 	string(TOUPPER ${TINYSPLINE_CONFIG} TINYSPLINE_CONFIG)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${TINYSPLINE_CONFIG}

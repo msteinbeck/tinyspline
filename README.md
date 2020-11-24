@@ -13,6 +13,33 @@ Ruby.
 ### License
 MIT License - see the LICENSE file in the source distribution.
 
+### Installation
+
+#### Prebuilt Binaries
+
+Releases are available at
+[releases](https://github.com/msteinbeck/tinyspline/releases).
+
+You can also obtain package from the following package manager:
+
+PyPI:
+```bash
+python -m pip install tinyspline
+```
+
+Maven:
+```
+<dependency>
+   <groupId>org.tinyspline</groupId>
+   <artifactId>tinyspline</artifactId>
+   <version>0.3.0-1</version>
+</dependency>
+```
+
+#### Compiling From Source
+
+See [BUILD.md](BUILD.md)
+
 ### Getting Started
 The following listing uses the ANSI C interface:
 
@@ -162,17 +189,6 @@ int main(int argc, char **argv)
 	return 0;
 }
 ```
-
-### Installation
-
-#### Prebuilt Binaries
-
-Releases are available at
-[releases](https://github.com/msteinbeck/tinyspline/releases).
-
-#### Compiling From Source
-
-See [BUILD.md](BUILD.md)
 
 ### Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html) is a very good starting point for B-Splines.

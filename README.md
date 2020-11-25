@@ -15,7 +15,7 @@ MIT License - see the LICENSE file in the source distribution.
 
 ### Installation
 
-#### Prebuilt Binaries
+#### Pre-built Binaries
 
 Releases can be downloaded from the 
 [releases](https://github.com/msteinbeck/tinyspline/releases) page.

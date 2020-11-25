@@ -17,10 +17,10 @@ MIT License - see the LICENSE file in the source distribution.
 
 #### Prebuilt Binaries
 
-Releases are available at
-[releases](https://github.com/msteinbeck/tinyspline/releases).
+Releases can be downloaded from the 
+[releases](https://github.com/msteinbeck/tinyspline/releases) page.
 
-You can also obtain package from the following package manager:
+You can also obtain packages from the following repositories:
 
 PyPI:
 ```bash
@@ -32,7 +32,7 @@ Maven:
 <dependency>
    <groupId>org.tinyspline</groupId>
    <artifactId>tinyspline</artifactId>
-   <version>0.3.0-1</version>
+   <version>0.3.0-2</version>
 </dependency>
 ```
 

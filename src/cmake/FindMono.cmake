@@ -17,6 +17,9 @@
 #   http://gdcm.svn.sf.net/viewvc/gdcm/trunk/CMake/FindMono.cmake
 # Copyright (c) 2006-2010 Mathieu Malaterre <mathieu.malaterre@gmail.com>
 #
+# Changes:
+#   Replace if( WIN32 ) with if( ${TINYSPLINE_HOST_IS_WINDOWS} )
+#
 
 set( csharp_mono_valid 1 )
 if( DEFINED CSHARP_MONO_FOUND )
@@ -32,7 +35,7 @@ if( DEFINED CSHARP_MONO_FOUND )
 endif( DEFINED CSHARP_MONO_FOUND )
 
 unset( CSHARP_MONO_VERSIONS CACHE ) # Clear versions
-if( WIN32 )
+if( ${TINYSPLINE_HOST_IS_WINDOWS} )
   # Search for Mono on Win32 systems
   # See http://mono-project.com/OldReleases and http://www.go-mono.com/mono-downloads/download.html
   set( csharp_mono_bin_dirs )

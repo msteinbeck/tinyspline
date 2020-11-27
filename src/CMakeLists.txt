@@ -1079,7 +1079,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			OUTPUT ${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}
 			SWIG_ARGS -namespace TinySpline)
 		# DLL
-		find_package(CSharp REQUIRED)
+		find_package(CSharp)
 		if(CSHARP_FOUND)
 			if(${CSHARP_TYPE} STREQUAL ".NET")
 				string(SUBSTRING ${CSHARP_DOTNET_VERSION} 1 3
@@ -1607,6 +1607,7 @@ Available Interfaces:
 
   C\#:           ${TINYSPLINE_WITH_CSHARP}
     Compiler:  ${CSHARP_COMPILER}
+    Framework: ${TINYSPLINE_CSHARP_FRAMEWORK_VERSION}
 
   D:            ${TINYSPLINE_WITH_DLANG}
 

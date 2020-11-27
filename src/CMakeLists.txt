@@ -346,12 +346,6 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 #   Treat compiler warnings as errors by adding /WX or -Werror to the compiler
 #   flags.
 #
-# TINYSPLINE_CSHARP_FRAMEWORK_VERSION
-#   The .NET framework version that is used to compile the C# DLL.
-#
-# TINYSPLINE_CSHARP_FRAMEWORK_NAME
-#   Name of the directory located in the 'lib' directory of the .nupkg archive.
-#
 # TINYSPLINE_PYTHON_VERSION - default: ANY
 #   Force Python version.
 #
@@ -394,12 +388,6 @@ set(TINYSPLINE_INSTALL_PKGCONFIG_DIR "pkgconfig" CACHE STRING
 option(TINYSPLINE_FLOAT_PRECISION "Build TinySpline with float precision." OFF)
 
 option(TINYSPLINE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
-
-set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "" CACHE STRING
-	"Sets the .NET framework version that is used to compile the C# DLL (e.g. 3.5). If empty, the version is determined automatically.")
-
-set(TINYSPLINE_CSHARP_FRAMEWORK_NAME "" CACHE STRING
-	"Name of the directory located in the 'lib' directory of the .nupkg archive (e.g. net35). If empty, the name is determined automatically.")
 
 set(TINYSPLINE_PYTHON_VERSION "ANY" CACHE STRING
 	"Force Python version. Supported values are: '2', '3', and 'ANY' (fallback for unknown values).")
@@ -1091,55 +1079,28 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			OUTPUT ${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}
 			SWIG_ARGS -namespace TinySpline)
 		# DLL
-		if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-			if(TINYSPLINE_CSHARP_FRAMEWORK_VERSION STREQUAL "")
-				set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION
-					"3.5" CACHE STRING "Autodetected." FORCE)
-			endif()
-			if(TINYSPLINE_CSHARP_FRAMEWORK_NAME STREQUAL "")
-				set(TINYSPLINE_CSHARP_FRAMEWORK_NAME
-					"net35" CACHE STRING "Autodetected." FORCE)
-			endif()
-			set(TINYSPLINE_CSHARP_HOME
-				"C:/Windows/Microsoft.NET/Framework/v")
-			set(TINYSPLINE_CSHARP_HOME
-				"${TINYSPLINE_CSHARP_HOME}${TINYSPLINE_CSHARP_FRAMEWORK_VERSION}")
-			if(NOT EXISTS ${TINYSPLINE_CSHARP_HOME})
-				message(FATAL_ERROR
-					"'${TINYSPLINE_CSHARP_HOME}' does not exist")
-			endif()
-			find_program(TINYSPLINE_CSHARP_COMPILER
-				NAMES csc
-				PATHS "${TINYSPLINE_CSHARP_HOME}")
-		else()
-			if(TINYSPLINE_CSHARP_FRAMEWORK_VERSION STREQUAL "")
-				set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION
-					"2" CACHE STRING "Autodetected." FORCE)
-			endif()
-			if(TINYSPLINE_CSHARP_FRAMEWORK_NAME STREQUAL "")
-				set(TINYSPLINE_CSHARP_FRAMEWORK_NAME
-					"net20" CACHE STRING "Autodetected." FORCE)
-			endif()
-			find_program(TINYSPLINE_CSHARP_COMPILER  NAMES mcs)
-		endif()
-		if(TINYSPLINE_CSHARP_COMPILER)
-			if(${TINYSPLINE_CSHARP_COMPILER} MATCHES "csc.exe$")
+		find_package(CSharp REQUIRED)
+		if(CSHARP_FOUND)
+			if(${CSHARP_TYPE} STREQUAL ".NET")
+				string(SUBSTRING ${CSHARP_DOTNET_VERSION} 1 3
+					TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 				# csc does not support '/' in 'recursive'.
 				add_custom_command(
 					TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
 					POST_BUILD
 					COMMAND
-						${TINYSPLINE_CSHARP_COMPILER}
+						${CSHARP_COMPILER}
 						/target:library
 						/out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
 						/recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}\\*.cs")
 			else()
+				set(TINYSPLINE_CSHARP_FRAMEWORK_VERSION "4.5")
 				add_custom_command(
 					TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
 					POST_BUILD
 					COMMAND
-						${TINYSPLINE_CSHARP_COMPILER}
-						-sdk:${TINYSPLINE_CSHARP_FRAMEWORK_VERSION}
+						${CSHARP_COMPILER}
+						-sdk:4.5
 						-target:library
 						-out:"${TINYSPLINE_CSHARP_INTERFACE_FILE}"
 						-recurse:"${TINYSPLINE_CSHARP_SOURCE_DIRECTORY}/*.cs")
@@ -1514,6 +1475,8 @@ if(${TINYSPLINE_WITH_CSHARP})
 	else()
 		message(FATAL_ERROR "Unable to determine NuGet RID (arch)")
 	endif()
+	string(REPLACE "." "" TINYSPLINE_CSHARP_FRAMEWORK_NAME
+		${TINYSPLINE_CSHARP_FRAMEWORK_VERSION})
 	set(TINYSPLINE_NUGET_FILES "<file \
 src=\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_NUGET_INTERFACE_FILE}\" \
 target=\"lib/${TINYSPLINE_CSHARP_FRAMEWORK_NAME}\" />")
@@ -1643,7 +1606,7 @@ Available Interfaces:
   C++:          ${TINYSPLINE_WITH_CXX}
 
   C\#:           ${TINYSPLINE_WITH_CSHARP}
-    Compiler: ${TINYSPLINE_CSHARP_COMPILER}
+    Compiler:  ${CSHARP_COMPILER}
 
   D:            ${TINYSPLINE_WITH_DLANG}
 

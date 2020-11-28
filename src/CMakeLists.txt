@@ -821,7 +821,7 @@ install(EXPORT tinyspline
 	NAMESPACE "tinyspline::"
 	FILE "${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-targets.cmake")
 configure_package_config_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline-config.cmake.in"
+	"pkg/tinyspline-config.cmake.in"
 	"${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-config.cmake"
 	INSTALL_DESTINATION "${TINYSPLINE_C_INSTALL_CMAKE_CONFIG_DIR}"
 	PATH_VARS
@@ -833,8 +833,8 @@ write_basic_package_version_file(
 	VERSION ${TINYSPLINE_VERSION}
 	COMPATIBILITY ExactVersion)
 install(FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-config.cmake"
-	"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-config-version.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-config.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}-config-version.cmake"
 	DESTINATION "${TINYSPLINE_C_INSTALL_CMAKE_CONFIG_DIR}")
 list(APPEND TINYSPLINE_PKGCONFIG_C_LINK_LIBRARIES
 	"${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}")
@@ -846,9 +846,10 @@ list(JOIN TINYSPLINE_PKGCONFIG_C_LINK_LIBRARIES " -l"
 	TINYSPLINE_PKGCONFIG_C_LINK_LIBRARIES)
 set(TINYSPLINE_PKGCONFIG_C_LINK_LIBRARIES
 	"-l${TINYSPLINE_PKGCONFIG_C_LINK_LIBRARIES}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.pc.in"
+configure_file("pkg/tinyspline.pc.in"
 	"${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}.pc" @ONLY)
-install(FILES "${CMAKE_BINARY_DIR}/src/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}.pc"
+install(FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}.pc"
 	DESTINATION "${TINYSPLINE_INSTALL_PKGCONFIG_PATH}")
 
 # C++ library
@@ -884,7 +885,7 @@ if(TINYSPLINE_ENABLE_CXX)
 		NAMESPACE "tinysplinecxx::"
 		FILE "${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-targets.cmake")
 	configure_package_config_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx-config.cmake.in"
+		"pkg/tinysplinecxx-config.cmake.in"
 		"${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-config.cmake"
 		INSTALL_DESTINATION "${TINYSPLINE_CXX_INSTALL_CMAKE_CONFIG_DIR}"
 		PATH_VARS
@@ -896,8 +897,8 @@ if(TINYSPLINE_ENABLE_CXX)
 		VERSION ${TINYSPLINE_VERSION}
 		COMPATIBILITY ExactVersion)
 	install(FILES
-		"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-config.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-config-version.cmake"
+			"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-config.cmake"
+			"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}-config-version.cmake"
 		DESTINATION "${TINYSPLINE_CXX_INSTALL_CMAKE_CONFIG_DIR}")
 	list(APPEND TINYSPLINE_PKGCONFIG_CXX_LINK_LIBRARIES
 		"${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}")
@@ -909,9 +910,10 @@ if(TINYSPLINE_ENABLE_CXX)
 		TINYSPLINE_PKGCONFIG_CXX_LINK_LIBRARIES)
 	set(TINYSPLINE_PKGCONFIG_CXX_LINK_LIBRARIES
 		"-l${TINYSPLINE_PKGCONFIG_CXX_LINK_LIBRARIES}")
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinysplinecxx.pc.in"
+	configure_file("pkg/tinysplinecxx.pc.in"
 		"${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}.pc" @ONLY)
-	install(FILES "${CMAKE_BINARY_DIR}/src/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}.pc"
+	install(FILES
+			"${CMAKE_CURRENT_BINARY_DIR}/${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}.pc"
 		DESTINATION "${TINYSPLINE_INSTALL_PKGCONFIG_PATH}")
 endif()
 
@@ -1064,11 +1066,9 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			endif()
 		endif()
 		set(TINYSPLINE_MACOSX_RELINK_SCRIPT
-			"${CMAKE_BINARY_DIR}/macosx-relink.sh")
-		configure_file(
-			"${CMAKE_CURRENT_SOURCE_DIR}/pkg/macosx-relink.sh.in"
-			${TINYSPLINE_MACOSX_RELINK_SCRIPT}
-			@ONLY)
+			"${CMAKE_CURRENT_BINARY_DIR}/macosx-relink.sh")
+		configure_file("pkg/macosx-relink.sh.in"
+			${TINYSPLINE_MACOSX_RELINK_SCRIPT} @ONLY)
 	endif()
 
 	# C#
@@ -1402,7 +1402,7 @@ tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
 get_filename_component(TINYSPLINE_LIB_DIR ${TINYSPLINE_OUTPUT_DIRECTORY} NAME)
 
 # Dub
-file(REMOVE "${CMAKE_BINARY_DIR}/dub.json")
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/dub.json")
 if(${TINYSPLINE_WITH_DLANG})
 	set(TINYSPLINE_DUB_COPY_FILES "\"${TINYSPLINE_LIB_DIR}/*.d\"")
 	set(TINYSPLINE_DUB_COPY_FILES "${TINYSPLINE_DUB_COPY_FILES}\
@@ -1411,10 +1411,8 @@ if(${TINYSPLINE_WITH_DLANG})
 		set(TINYSPLINE_DUB_COPY_FILES "${TINYSPLINE_DUB_COPY_FILES}\
 , \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/dub.json.in"
-		"${CMAKE_BINARY_DIR}/dub.json"
-		@ONLY)
+	configure_file("pkg/dub.json.in"
+		"dub.json" @ONLY)
 endif()
 
 # Luarocks
@@ -1441,14 +1439,12 @@ if(${TINYSPLINE_WITH_LUA})
 		"${TINYSPLINE_LUAROCKS_SPEC}-${TINYSPLINE_VERSION}-1")
 	set(TINYSPLINE_LUAROCKS_SPEC
 		"tinyspline${TINYSPLINE_LUAROCKS_SPEC}.rockspec")
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.rockspec.in"
-		"${CMAKE_BINARY_DIR}/${TINYSPLINE_LUAROCKS_SPEC}"
-		@ONLY)
+	configure_file("pkg/tinyspline.rockspec.in"
+		"${TINYSPLINE_LUAROCKS_SPEC}" @ONLY)
 endif()
 
 # NuGet
-file(REMOVE "${CMAKE_BINARY_DIR}/.nuspec")
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/.nuspec")
 if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
 		${TINYSPLINE_CSHARP_INTERFACE_FILE}
@@ -1498,23 +1494,19 @@ target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
 src=\"${TINYSPLINE_LIB_DIR}/${lib}\" \
 target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
 	endforeach()
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/.nuspec.in"
-		"${CMAKE_BINARY_DIR}/.nuspec"
-		@ONLY)
+	configure_file("pkg/.nuspec.in"
+		".nuspec" @ONLY)
 endif()
 
 # Maven
-file(REMOVE "${CMAKE_BINARY_DIR}/pom.xml")
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/pom.xml")
 if(${TINYSPLINE_WITH_JAVA})
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/pom.xml.in"
-		"${CMAKE_BINARY_DIR}/pom.xml"
-		@ONLY)
+	configure_file("pkg/pom.xml.in"
+		"pom.xml" @ONLY)
 endif()
 
 # Distutils
-file(REMOVE "${CMAKE_BINARY_DIR}/setup.py")
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
 if(${TINYSPLINE_WITH_PYTHON})
 	get_filename_component(TINYSPLINE_SETUP_INTERFACE_FILE
 		${TINYSPLINE_PYTHON_INTERFACE_FILE}
@@ -1528,14 +1520,12 @@ if(${TINYSPLINE_WITH_PYTHON})
 , \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
 	set(TINYSPLINE_SETUP_FILE_ARRAY "[${TINYSPLINE_SETUP_FILE_ARRAY}]")
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/setup.py.in"
-		"${CMAKE_BINARY_DIR}/setup.py"
-		@ONLY)
+	configure_file("pkg/setup.py.in"
+		"setup.py" @ONLY)
 endif()
 
 # Gem
-file(REMOVE "${CMAKE_BINARY_DIR}/tinyspline.gemspec")
+file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
 	set(TINYSPLINE_RUBY_REQ_VERSION
 			"${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}")
@@ -1545,10 +1535,8 @@ if(${TINYSPLINE_WITH_RUBY})
 		set(TINYSPLINE_GEM_FILES "${TINYSPLINE_GEM_FILES} \
 << \"${TINYSPLINE_LIB_DIR}/${lib}\"")
 	endforeach()
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/pkg/tinyspline.gemspec.in"
-		"${CMAKE_BINARY_DIR}/tinyspline.gemspec"
-		@ONLY)
+	configure_file("pkg/tinyspline.gemspec.in"
+		"tinyspline.gemspec" @ONLY)
 endif()
 
 

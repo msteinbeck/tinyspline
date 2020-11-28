@@ -153,7 +153,7 @@ else( UNIX )
   # Remove temp variable from cache
   unset( csharp_mono_compiler CACHE )
 
-endif( WIN32 )
+endif( ${TINYSPLINE_HOST_IS_WINDOWS} )
 
 if( CSHARP_MONO_FOUND )
   # Report the found versions

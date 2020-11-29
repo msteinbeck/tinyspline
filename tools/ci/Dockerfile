@@ -11,11 +11,13 @@ RUN apt-get update &&                          \
         cmake                                  \
         curl                                   \
         default-jdk                            \
+        doxygen                                \
         dub                                    \
         file                                   \
         flex                                   \
         gcc-arm-linux-gnueabihf                \
         git                                    \
+        graphviz                               \
         libtool                                \
         lua5.1 liblua5.1-dev                   \
         lua5.2 liblua5.2-dev                   \

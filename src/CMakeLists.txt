@@ -1443,7 +1443,7 @@ if(${TINYSPLINE_WITH_LUA})
 		"${TINYSPLINE_LUAROCKS_SPEC}" @ONLY)
 endif()
 
-# NuGet
+# Nuget
 file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/.nuspec")
 if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 	get_filename_component(TINYSPLINE_NUGET_INTERFACE_FILE
@@ -1458,7 +1458,7 @@ if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "uwp")
 		set(TINYSPLINE_NUGET_RID "win10")
 	else()
-		message(FATAL_ERROR "Unable to determine NuGet RID (platform)")
+		message(FATAL_ERROR "Unable to determine Nuget RID (platform)")
 	endif()
 	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm")
@@ -1469,7 +1469,7 @@ if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 	elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
 		set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-x86")
 	else()
-		message(FATAL_ERROR "Unable to determine NuGet RID (arch)")
+		message(FATAL_ERROR "Unable to determine Nuget RID (arch)")
 	endif()
 	string(REPLACE "." "" TINYSPLINE_CSHARP_FRAMEWORK_NAME
 		${TINYSPLINE_CSHARP_FRAMEWORK_VERSION})
@@ -1482,11 +1482,11 @@ target=\"lib/${TINYSPLINE_CSHARP_FRAMEWORK_NAME}\" />")
 	if(${TINYSPLINE_HOST_IS_WINDOWS})
 		set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}\\*${TINYSPLINE_CSHARP_CMAKE_TARGET}*dll\" \
-target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/native\" />")
 	else()
 		set(TINYSPLINE_NUGET_FILES "${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/*${TINYSPLINE_CSHARP_CMAKE_TARGET}.*\" \
-target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/native\" />")
 	endif()
 	foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
 		set(TINYSPLINE_NUGET_FILES

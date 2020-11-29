@@ -48,8 +48,7 @@ set(archdetect_c_code "
 ")
 
 function(target_architecture output_var)
-	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/arch.c"
-		"${archdetect_c_code}")
+	file(WRITE "${TINYSPLINE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
 
 	enable_language(C)
 
@@ -65,8 +64,8 @@ function(target_architecture output_var)
 	try_run(
 		run_result_unused
 		compile_result_unused
-		"${CMAKE_CURRENT_BINARY_DIR}"
-		"${CMAKE_CURRENT_BINARY_DIR}/arch.c"
+		"${TINYSPLINE_BINARY_DIR}"
+		"${TINYSPLINE_BINARY_DIR}/arch.c"
 		COMPILE_OUTPUT_VARIABLE ARCH
 	)
 

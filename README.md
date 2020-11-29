@@ -20,20 +20,25 @@ MIT License - see the LICENSE file in the source distribution.
 Releases can be downloaded from the 
 [releases](https://github.com/msteinbeck/tinyspline/releases) page.
 
-You can also obtain packages from the following repositories:
+Packages can also be obtained from the following repositories:
 
-PyPI:
+Luarocks (Lua; currently only Linux and macOS):
 ```bash
-python -m pip install tinyspline
+luarocks install --server=https://msteinbeck.github.io/tinyspline/luarocks tinyspline
 ```
 
-Maven:
-```
+Maven (Java):
+```xml
 <dependency>
    <groupId>org.tinyspline</groupId>
    <artifactId>tinyspline</artifactId>
    <version>0.3.0-2</version>
 </dependency>
+```
+
+PyPI (Python):
+```bash
+python -m pip install tinyspline
 ```
 
 #### Compiling From Source

@@ -43,7 +43,7 @@ python -m pip install tinyspline
 
 #### Compiling From Source
 
-See [BUILD.md](BUILD.md)
+See [BUILD.md](BUILD.md).
 
 ### Getting Started
 The following listing uses the ANSI C interface:

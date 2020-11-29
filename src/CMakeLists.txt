@@ -1072,7 +1072,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 			endif()
 		endif()
 		set(TINYSPLINE_MACOSX_RELINK_SCRIPT
-			"${TINYSPLINE_BINARY_DIR}/${CMAKE_CURRENT_BINARY_DIR}/macosx-relink.sh")
+			"${TINYSPLINE_BINARY_DIR}/macosx-relink.sh")
 		configure_file("pkg/macosx-relink.sh.in"
 			${TINYSPLINE_MACOSX_RELINK_SCRIPT} @ONLY)
 	endif()

@@ -9,7 +9,7 @@ Language | Dependencies to Generate Source | (Relative) Output Directory
 C#       |                                 | csharp
 D        | -                               | dlang
 Golang   | -                               | go
-Java     | Java Development Kit            | org/tinyspline
+Java     | Java Development Kit            | java/org/tinyspline
 Lua      | Lua headers                     | lua
 Octave   | Octave headers                  | octave
 PHP      | PHP (Zend) headers *            | php

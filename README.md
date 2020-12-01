@@ -20,7 +20,7 @@ MIT License - see the LICENSE file in the source distribution.
 Releases can be downloaded from the 
 [releases](https://github.com/msteinbeck/tinyspline/releases) page.
 
-Packages can also be obtained from the following repositories:
+In addition, the following package manager are supported:
 
 Luarocks (Lua; currently only Linux and macOS):
 ```bash

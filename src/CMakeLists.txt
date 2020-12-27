@@ -247,14 +247,15 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #
 # TINYSPLINE_PLATFORM_NAME
 #   Name of target platform in lowercase. Supported values are: 'linux',
-#   'macosx', 'windows', and 'uwp' (Universal Windows Platform).
+#   'macosx', 'windows', 'uwp' (Universal Windows Platform), and 'wasm'
+#   (webassembly).
 #
 # TINYSPLINE_PLATFORM_IS_WINDOWS
 #   True if target platform is Windows. False otherwise.
 #
 # TINYSPLINE_PLATFORM_ARCH
 #   Architecture of target platform. Supported values are: 'arm', 'arm64',
-#   'x86', 'x86_64', and 'ia64'.
+#   'x86', 'x86_64', 'ia64', and 'any' (usually only with 'wasm').
 #
 # TINYSPLINE_PLATFORM
 #   Platform (target) specific identifier, e.g. 'linux-x86_64'.
@@ -280,6 +281,9 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
 	set(TINYSPLINE_PLATFORM_NAME "uwp" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS True CACHE INTERNAL "")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+	set(TINYSPLINE_PLATFORM_NAME "wasm" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 else()
 	message(FATAL_ERROR
 		"Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
@@ -614,8 +618,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		"${TINYSPLINE_CXX_LINK_LIBRARIES} m")
 
 	# TINYSPLINE_LIBRARY_C_FLAGS
+	if(EMSCRIPTEN)
+		# error: 'long long' is an extension when C99 mode is not
+		# enabled [-Werror,-Wlong-long] (from Parson)
+		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-std=c99")
+	else()
+		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-std=c89")
+	endif()
 	list(APPEND TINYSPLINE_LIBRARY_C_FLAGS
-		"-std=c89"
 		"-pedantic"
 		"-Wall"
 		"-Wextra"

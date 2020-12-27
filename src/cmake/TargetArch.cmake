@@ -42,6 +42,8 @@ set(archdetect_c_code "
 	#error cmake_ARCH x86_64
 #elif defined(__ia64) || defined(__ia64__) || defined(_M_IA64)
 	#error cmake_ARCH ia64
+#elif defined(__EMSCRIPTEN__)
+	#error cmake_ARCH any
 #endif
 
 #error cmake_ARCH unknown

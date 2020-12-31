@@ -319,6 +319,7 @@ set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
 set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
 set(TINYSPLINE_GO_CMAKE_TARGET "tinysplinego" CACHE INTERNAL "")
 set(TINYSPLINE_JAVA_CMAKE_TARGET "tinysplinejava" CACHE INTERNAL "")
+set(TINYSPLINE_JS_CMAKE_TARGET "tinysplinejs" CACHE INTERNAL "")
 set(TINYSPLINE_LUA_CMAKE_TARGET "tinysplinelua" CACHE INTERNAL "")
 set(TINYSPLINE_OCTAVE_CMAKE_TARGET "tinysplineoctave" CACHE INTERNAL "")
 set(TINYSPLINE_PHP_CMAKE_TARGET "tinysplinephp" CACHE INTERNAL "")
@@ -877,15 +878,46 @@ if(TINYSPLINE_ENABLE_CXX)
 	list(JOIN TINYSPLINE_CXX_INSTALL_CMAKE_CONFIG_DIR "/"
 		TINYSPLINE_CXX_INSTALL_CMAKE_CONFIG_DIR)
 
-	add_library(tinysplinecxx ${TINYSPLINE_CXX_SOURCE_FILES})
-	target_compile_definitions(tinysplinecxx
-		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
-	set_target_properties(tinysplinecxx PROPERTIES
-		OUTPUT_NAME "${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}"
-		COMPILE_FLAGS "${TINYSPLINE_LIBRARY_CXX_FLAGS}"
-		PUBLIC_HEADER "tinysplinecxx.h")
-	target_link_libraries(tinysplinecxx
-		PRIVATE ${TINYSPLINE_CXX_LINK_LIBRARIES})
+	function (tinyspline_add_cxx_library)
+		cmake_parse_arguments(ARGS "EMSCRIPTEN" "" "" ${ARGN})
+		set(target "tinysplinecxx")
+		set(name "${TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME}")
+		set(flags "${TINYSPLINE_LIBRARY_CXX_FLAGS}")
+		if(${ARGS_EMSCRIPTEN})
+			set(target "${TINYSPLINE_JS_CMAKE_TARGET}")
+			set(name "${TINYSPLINE_JS_CMAKE_TARGET}")
+			set(flags "${flags} -DTINYSPLINE_EMSCRIPTEN")
+		endif()
+		add_library(${target} ${TINYSPLINE_CXX_SOURCE_FILES})
+		target_compile_definitions(${target}
+			PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
+		set_target_properties(${target} PROPERTIES
+			OUTPUT_NAME ${name}
+			COMPILE_FLAGS ${flags})
+		if(NOT ${ARGS_EMSCRIPTEN})
+			set_property(TARGET ${target} APPEND PROPERTY
+				PUBLIC_HEADER "tinysplinecxx.h")
+		endif()
+		target_link_libraries(${target}
+			PRIVATE ${TINYSPLINE_CXX_LINK_LIBRARIES})
+	endfunction()
+
+	tinyspline_add_cxx_library()
+	if(EMSCRIPTEN)
+		tinyspline_add_cxx_library(EMSCRIPTEN)
+		add_custom_command(TARGET ${TINYSPLINE_JS_CMAKE_TARGET}
+			POST_BUILD
+			COMMENT "Generating Javascript Interface (C++)"
+			COMMAND "${CMAKE_C_COMPILER}"
+				--bind
+				-o tinyspline.js
+				-Wl,--whole-archive $<TARGET_FILE_NAME:${TINYSPLINE_JS_CMAKE_TARGET}>
+				-Wl,--no-whole-archive
+			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}"
+			BYPRODUCTS
+				"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.js"
+				"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.wasm")
+	endif()
 
 	target_include_directories(tinysplinecxx PUBLIC
 		$<BUILD_INTERFACE:${TINYSPLINE_CXX_INCLUDE_DIR}>

@@ -47,9 +47,26 @@ private:
 	tsDeBoorNet net;
 
 	/* Constructors & Destructors */
-	DeBoorNet();
+	explicit DeBoorNet(tsDeBoorNet &src);
 
 	friend class BSpline;
+
+#ifdef TINYSPLINE_EMSCRIPTEN
+	#include <stdexcept>
+public:
+	DeBoorNet() : net(ts_deboornet_init()) {}
+	void setKnot(real) { raise_exception(); }
+	void setIndex(size_t) { raise_exception(); }
+	void setMultiplicity(size_t) { raise_exception(); }
+	void setNumInsertions(size_t) { raise_exception(); }
+	void setDimension(size_t) { raise_exception(); }
+	void setPoints(std::vector<real>) { raise_exception(); }
+	void setResult(std::vector<real>) { raise_exception(); }
+private:
+	void inline raise_exception() {
+		throw std::runtime_error("cannot write read-only property");
+	}
+#endif
 };
 
 class TINYSPLINECXX_API Domain {
@@ -71,6 +88,18 @@ public:
 private:
     real _min;
     real _max;
+
+#ifdef TINYSPLINE_EMSCRIPTEN
+	#include <stdexcept>
+public:
+	Domain() : _min(TS_DOMAIN_DEFAULT_MIN), _max(TS_DOMAIN_DEFAULT_MAX) {}
+	void setMin(real) { raise_exception(); }
+	void setMax(real) { raise_exception(); }
+private:
+	void inline raise_exception() {
+		throw std::runtime_error("cannot write read-only property");
+	}
+#endif
 };
 
 class TINYSPLINECXX_API BSpline {
@@ -155,3 +184,43 @@ private:
 };
 
 }
+
+#ifdef TINYSPLINE_EMSCRIPTEN
+// https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
+// https://emscripten.org/docs/api_reference/bind.h.html
+#include <emscripten/bind.h>
+using namespace emscripten;
+using namespace tinyspline;
+EMSCRIPTEN_BINDINGS(tinyspline) {
+	value_object<DeBoorNet>("DeBoorNet")
+	        .field("knot", &DeBoorNet::knot, &DeBoorNet::setKnot)
+	        .field("index", &DeBoorNet::index, &DeBoorNet::setIndex)
+	        .field("multiplicity", &DeBoorNet::multiplicity,
+	        	&DeBoorNet::setMultiplicity)
+	        .field("numInsertions", &DeBoorNet::numInsertions,
+	        	&DeBoorNet::setNumInsertions)
+	        .field("dimension", &DeBoorNet::dimension,
+	        	&DeBoorNet::setDimension)
+	        .field("points", &DeBoorNet::points, &DeBoorNet::setPoints)
+	        .field("result", &DeBoorNet::result, &DeBoorNet::setResult)
+	;
+
+	value_object<Domain>("Domain")
+	        .field("min", &Domain::min, &Domain::setMin)
+	        .field("max", &Domain::max, &Domain::setMax)
+	;
+
+	class_<BSpline>("BSpline")
+	        .constructor<size_t>()
+	        .constructor<size_t, size_t>()
+	        .constructor<size_t, size_t, size_t>()
+	        .constructor<size_t, size_t, size_t, BSpline::type>()
+	        .function("eval", &BSpline::eval)
+	        .function("toJson", &BSpline::toJson)
+	        .property("degree", &BSpline::degree)
+	        .property("knots", &BSpline::knots)
+	;
+
+	emscripten::register_vector<tinyspline::real>("VectorReal");
+}
+#endif

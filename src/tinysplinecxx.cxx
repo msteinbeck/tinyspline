@@ -36,12 +36,14 @@
 * DeBoorNet                                                                   *
 *                                                                             *
 ******************************************************************************/
-tinyspline::DeBoorNet::DeBoorNet()
+tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &src)
+: net(ts_deboornet_init())
 {
-	net = ts_deboornet_init();
+	ts_deboornet_move(&src, &net);
 }
 
 tinyspline::DeBoorNet::DeBoorNet(const tinyspline::DeBoorNet &other)
+: net(ts_deboornet_init())
 {
 	tsStatus status;
 	if (ts_deboornet_copy(&other.net, &net, &status))
@@ -193,6 +195,7 @@ std::string tinyspline::Domain::toString() const
 *                                                                             *
 ******************************************************************************/
 tinyspline::BSpline::BSpline()
+: spline(ts_bspline_init())
 {
 	tsReal ctrlp[3] = { 0, 0, 0 };
 	tsStatus status;
@@ -203,6 +206,7 @@ tinyspline::BSpline::BSpline()
 }
 
 tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
+: spline(ts_bspline_init())
 {
 	tsStatus status;
 	if (ts_bspline_copy(&other.spline, &spline, &status))
@@ -211,6 +215,7 @@ tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
 
 tinyspline::BSpline::BSpline(size_t numControlPoints, size_t dimension,
 	size_t degree, tinyspline::BSpline::type type)
+: spline(ts_bspline_init())
 {
 	tsStatus status;
 	if (ts_bspline_new(numControlPoints, dimension, degree, type, &spline,
@@ -379,11 +384,11 @@ size_t tinyspline::BSpline::numControlPoints() const
 
 tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 {
-	tinyspline::DeBoorNet deBoorNet;
+	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	if (ts_bspline_eval(&spline, u, deBoorNet.data(), &status))
+	if (ts_bspline_eval(&spline, u, &net, &status))
 		throw std::runtime_error(status.message);
-	return deBoorNet;
+	return tinyspline::DeBoorNet(net);
 }
 
 std_real_vector_out tinyspline::BSpline::evalAll(
@@ -422,12 +427,12 @@ tinyspline::DeBoorNet tinyspline::BSpline::bisect(tinyspline::real value,
 	tinyspline::real epsilon, bool persnickety, size_t index,
 	bool ascending, size_t maxIter) const
 {
-	tinyspline::DeBoorNet net;
+	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
 	if (ts_bspline_bisect(&spline, value, epsilon, persnickety, index,
-			      ascending, maxIter, net.data(), &status))
+			ascending, maxIter, &net, &status))
 		throw std::runtime_error(status.message);
-	return net;
+	return DeBoorNet(net);
 }
 
 tinyspline::Domain tinyspline::BSpline::domain() const

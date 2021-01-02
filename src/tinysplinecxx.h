@@ -211,16 +211,94 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	;
 
 	class_<BSpline>("BSpline")
+	        .constructor<>()
+	        //.constructor<BSpline>()
 	        .constructor<size_t>()
 	        .constructor<size_t, size_t>()
 	        .constructor<size_t, size_t, size_t>()
 	        .constructor<size_t, size_t, size_t, BSpline::type>()
-	        .function("eval", &BSpline::eval)
-	        .function("toJson", &BSpline::toJson)
+
+	        .class_function("interpolateCubicNatural",
+			&BSpline::interpolateCubicNatural)
+	        .class_function("interpolateCatmullRom",
+			&BSpline::interpolateCatmullRom,
+			allow_raw_pointers())
+	        .class_function("fromJson", &BSpline::fromJson)
+
 	        .property("degree", &BSpline::degree)
-	        .property("knots", &BSpline::knots)
+	        .property("order", &BSpline::order)
+	        .property("dimension", &BSpline::dimension)
+	        .property("controlPoints", &BSpline::controlPoints,
+			&BSpline::setControlPoints)
+	        .property("knots", &BSpline::knots, &BSpline::setKnots)
+
+	        /* Property by index */
+	        .function("controlPointAt", &BSpline::controlPointAt)
+	        .function("setControlPointAt", &BSpline::setControlPointAt)
+	        .function("knotAt", &BSpline::knotAt)
+	        .function("setKnotAt", &BSpline::setKnotAt)
+
+	        /* Query */
+	        .function("numControlPoints", &BSpline::numControlPoints)
+	        .function("eval", &BSpline::eval)
+	        .function("evalAll", &BSpline::evalAll)
+	        .function("sample", &BSpline::sample)
+	        .function("bisect", &BSpline::bisect)
+	        .function("domain", &BSpline::domain)
+	        .function("isClosed", &BSpline::isClosed)
+
+		/* Serialization */
+	        .function("toJson", &BSpline::toJson)
+
+	        /* Transformations */
+	        .function("insertKnot", &BSpline::insertKnot)
+	        .function("split", &BSpline::split)
+	        .function("tension", &BSpline::tension)
+	        .function("toBeziers", &BSpline::toBeziers)
+	        .function("derive", &BSpline::derive)
+
+	        /* Debug */
+	        .function("toString", &BSpline::toString)
 	;
 
-	emscripten::register_vector<tinyspline::real>("VectorReal");
+	enum_<BSpline::type>("BSplineType")
+	        .value("OPENED", BSpline::type::TS_OPENED)
+	        .value("CLAMPED", BSpline::type::TS_CLAMPED)
+	        .value("BEZIERS", BSpline::type::TS_BEZIERS)
+	;
 }
+
+// Map: std::vector <--> JS array
+// https://github.com/emscripten-core/emscripten/issues/11070#issuecomment-717675128
+namespace emscripten {
+namespace internal {
+	template <typename T, typename Allocator>
+	struct BindingType<std::vector<T, Allocator>> {
+		using ValBinding = BindingType<val>;
+		using WireType = ValBinding::WireType;
+
+		static WireType toWireType(
+				const std::vector<T, Allocator> &vec) {
+			return ValBinding::toWireType(val::array(vec));
+		}
+
+		static std::vector<T, Allocator> fromWireType(WireType value) {
+			return vecFromJSArray<T>(
+				ValBinding::fromWireType(value));
+		}
+	};
+
+	template <typename T>
+	struct TypeID<T,
+		typename std::enable_if_t<std::is_same<
+		        typename Canonicalized<T>::type,
+		std::vector<typename Canonicalized<T>::type::value_type,
+		typename Canonicalized<T>::type::allocator_type>>::value>> {
+
+		static constexpr TYPEID get() {
+			return TypeID<val>::get();
+		}
+	};
+}  // namespace internal
+}  // namespace emscripten
 #endif

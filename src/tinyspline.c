@@ -356,7 +356,6 @@ tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 	TS_END_TRY_RETURN(err)
 }
 
-
 /* ------------------------------------------------------------------------- */
 
 tsReal ts_deboornet_knot(const tsDeBoorNet *net)

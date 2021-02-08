@@ -120,7 +120,7 @@ void insert_knot_once(CuTest *tc)
 			free(sval);
 			free(rval);
 			sval = rval = NULL;
-			}
+		}
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -246,7 +246,7 @@ void insert_knot_twice(CuTest *tc)
 			free(sval);
 			free(rval);
 			sval = rval = NULL;
-			}
+		}
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY

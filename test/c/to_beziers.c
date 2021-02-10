@@ -9,6 +9,7 @@ void to_beziers_issue143(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline beziers = ts_bspline_init();
 	tsStatus status;
+
 	tsReal ctrlp[32] = {
 		-8837.0980824304952,
 		5410.0643332926420,
@@ -43,6 +44,7 @@ void to_beziers_issue143(CuTest *tc)
 		-8837.0980824304952,
 		5410.0643332926420
 	};
+
 	tsReal knots[20] = {
 		-0.19999998770654204,
 		-0.19999998770654204,
@@ -67,7 +69,7 @@ void to_beziers_issue143(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
-		/* ========================= Given ========================= */
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			16, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
@@ -75,11 +77,11 @@ void to_beziers_issue143(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_knots(
 			&spline, knots, &status))
 
-		/* ========================= When ========================== */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&spline, &beziers, &status))
 
-		/* ========================= Then ========================== */
+/* ================================= Then ================================== */
 		CuAssertTrue(tc, 1); /* no error */
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
@@ -109,18 +111,17 @@ void to_beziers_clamped(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
-		/* ========================= Given ========================= */
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			7, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
-		/* ========================= When ========================== */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&spline, &beziers, &status))
 
-		/* ========================= Then ========================== */
-
+/* ================================= Then ================================== */
 		/* Check knot vector of beziers. */
 		TS_CALL(try, status.code, ts_bspline_knots(
 			&beziers, &sval, &status))
@@ -214,18 +215,17 @@ void to_beziers_opened(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
-		/* ========================= Given ========================= */
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			7, 2, 3, TS_OPENED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
-		/* ========================= When ========================== */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&spline, &beziers, &status))
 
-		/* ========================= Then ========================== */
-
+/* ================================= Then ================================== */
 		/* Check if spline and beziers have same domain. */
 		ts_bspline_domain(&spline, &min, &max);
 		CuAssertDblEquals(tc, 0.3f, min, TS_KNOT_EPSILON);

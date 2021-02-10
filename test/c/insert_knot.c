@@ -19,6 +19,7 @@ void insert_knot_once(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			NUM_CTRLP, DIMENSION, DEGREE,
 			TS_CLAMPED, &spline, &status))
@@ -66,11 +67,13 @@ void insert_knot_once(CuTest *tc)
 		free(sval);
 		sval = NULL;
 
+/* ================================= When ================================== */
 		/* Insert knot once. */
 		TS_CALL(try, status.code, ts_bspline_insert_knot(
 			&spline, knot_to_insert, num_insertions,
 			&result, &k, &status))
 
+/* ================================= Then ================================== */
 		/* Check resulting knots and index k. */
 		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
 				  (int)ts_bspline_num_knots(&result));
@@ -144,6 +147,7 @@ void insert_knot_twice(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			NUM_CTRLP, DIMENSION, DEGREE,
 			TS_CLAMPED, &spline, &status))
@@ -191,11 +195,13 @@ void insert_knot_twice(CuTest *tc)
 		free(sval);
 		sval = NULL;
 
+/* ================================= When ================================== */
 		/* Insert knot twice. */
 		TS_CALL(try, status.code, ts_bspline_insert_knot(
 			&spline, knot_to_insert, num_insertions,
 			&result, &k, &status))
 
+/* ================================= Then ================================== */
 		/* Check resulting knots and index k. */
 		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
 				  (int)ts_bspline_num_knots(&result));
@@ -270,6 +276,7 @@ void insert_knot_three_times(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		TS_CALL(try, status.code, ts_bspline_new(
 			NUM_CTRLP, DIMENSION, DEGREE,
 			TS_CLAMPED, &spline, &status))
@@ -317,11 +324,13 @@ void insert_knot_three_times(CuTest *tc)
 		free(sval);
 		sval = NULL;
 
+/* ================================= When ================================== */
 		/* Insert knot three times. */
 		TS_CALL(try, status.code, ts_bspline_insert_knot(
 			&spline, knot_to_insert, num_insertions,
 			&result, &k, &status))
 
+/* ================================= Then ================================== */
 		/* Check resulting knots and index k. */
 		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
 			(int)ts_bspline_num_knots(&result));

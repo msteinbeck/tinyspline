@@ -24,11 +24,13 @@ void interpolation_cubic_natural(CuTest *tc)
 	points[9] =  5.0;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_interpolate_cubic_natural(
-			points, 5, 2, &spline, &status));
+			points, 5, 2, &spline, &status))
 
+/* ================================= Then ================================== */
 		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status));
+			&spline, &ctrlp, &status))
 		CuAssertIntEquals(tc, 16,
 			(int) ts_bspline_num_control_points(&spline));
 		CuAssertDblEquals(tc,  1.0, ctrlp[0],  EPSILON);
@@ -65,7 +67,7 @@ void interpolation_cubic_natural(CuTest *tc)
 		CuAssertDblEquals(tc,  5.0, ctrlp[31], EPSILON);
 
 		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &knots, &status));
+			&spline, &knots, &status))
 		CuAssertDblEquals(tc,  0.0,  knots[0],  EPSILON);
 		CuAssertDblEquals(tc,  0.0,  knots[1],  EPSILON);
 		CuAssertDblEquals(tc,  0.0,  knots[2],  EPSILON);
@@ -111,11 +113,13 @@ void interpolation_issue32(CuTest *tc)
 	points[5] =  3.0;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_interpolate_cubic_natural(
-			points, 3, 2, &spline, &status));
+			points, 3, 2, &spline, &status))
 
+/* ================================= Then ================================== */
 		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status));
+			&spline, &ctrlp, &status))
 		CuAssertIntEquals(tc, 8,
 			(int) ts_bspline_num_control_points(&spline));
 		CuAssertDblEquals(tc, -1.0,    ctrlp[0],  EPSILON);
@@ -136,7 +140,7 @@ void interpolation_issue32(CuTest *tc)
 		CuAssertDblEquals(tc,  3.0,    ctrlp[15], EPSILON);
 
 		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &knots, &status));
+			&spline, &knots, &status))
 		CuAssertDblEquals(tc,  0.0,  knots[0],  EPSILON);
 		CuAssertDblEquals(tc,  0.0,  knots[1],  EPSILON);
 		CuAssertDblEquals(tc,  0.0,  knots[2],  EPSILON);

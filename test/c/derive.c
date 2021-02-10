@@ -11,13 +11,17 @@ void derive_sequence_of_four_points(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create derivative. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 0, TS_CLAMPED, &spline, &status))
+
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Check control points of derivative. */
 		CuAssertIntEquals(tc, 1,
 			(int) ts_bspline_num_control_points(&spline));
@@ -51,6 +55,7 @@ void derive_sequence_of_two_point_with_custom_knots(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create derivative with custom knots. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			2, 3, 0, TS_CLAMPED, &spline, &status))
@@ -58,10 +63,13 @@ void derive_sequence_of_two_point_with_custom_knots(CuTest *tc)
 			&spline, 0, -10.f, &status))
 		TS_CALL(try, status.code, ts_bspline_set_knot_at(
 			&spline, 2, 10.f, &status))
+
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Check control points of derivative. */
 		CuAssertIntEquals(tc, 1,
 			(int) ts_bspline_num_control_points(&spline));
@@ -93,6 +101,7 @@ void derive_single_line(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			2, 2, 1, TS_CLAMPED, &spline, &status))
@@ -105,11 +114,12 @@ void derive_single_line(CuTest *tc)
 		free(ctrlp);
 		ctrlp = NULL;
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Check control points of derivative. */
 		CuAssertIntEquals(tc, 1,
 			(int) ts_bspline_num_control_points(&spline));
@@ -144,6 +154,7 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			2, 2, 1, TS_CLAMPED, &spline, &status))
@@ -187,13 +198,15 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 					result[1], EPSILON);
 			ts_deboornet_free(&net);
 			free(result);
+			result = NULL;
 		}
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Check control points of derivative. */
 		CuAssertIntEquals(tc, 1,
 			(int) ts_bspline_num_control_points(&spline));
@@ -217,7 +230,6 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 			&net, &result, &status))
 		CuAssertDblEquals(tc, slope[0], result[0], EPSILON);
 		CuAssertDblEquals(tc, slope[1], result[1], EPSILON);
-
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -257,6 +269,7 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 	knots[5] = knots[0] + span;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points and custom knots. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			3, 1, degree, TS_CLAMPED, &spline, &status))
@@ -280,11 +293,12 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 					result[0], EPSILON);
 		}
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Eval derivative. */
 		for(size_t i = 0; i < nsamples; ++i) {
 			TS_CALL(try, status.code, ts_bspline_eval(
@@ -293,7 +307,6 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 				&net, &result, &status))
 			CuAssertDblEquals(tc,  slope, result[0], EPSILON);
 		}
-
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
@@ -323,6 +336,7 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 	ctrlp[12] =  0.5;  ctrlp[13] =  0.0;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create base spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			7, 2, 3, TS_CLAMPED, &spline, &status))
@@ -330,6 +344,7 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 			&spline, ctrlp, &status))
 		ts_bspline_domain(&spline, &min, &max);
 
+/* ================================= When ================================== */
 		/* Create beziers (to_beziers => derive). */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&spline, &beziers, &status))
@@ -344,6 +359,7 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
 			&derivative, &derivative, &status))
 
+/* ================================= Then ================================== */
 		/* Check that beziers and derivative are different splines. */
 		CuAssertTrue(tc, beziers.pImpl != derivative.pImpl);
 
@@ -356,14 +372,14 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 			TS_CALL(try, status.code, ts_bspline_eval(
 				&beziers, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &result_beziers, &status));
+				&net, &result_beziers, &status))
 			ts_deboornet_free(&net);
 
 			/* Eval derivative. */
 			TS_CALL(try, status.code, ts_bspline_eval(
 				&derivative, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &result_derivative, &status));
+				&net, &result_derivative, &status))
 			ts_deboornet_free(&net);
 
 			/* Compare results. */
@@ -380,7 +396,7 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_eval(
 			&beziers, 0.3, &net, &status))
 		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result_beziers, &status));
+			&net, &result_beziers, &status))
 		CuAssertIntEquals(tc, 1,
 			(int) ts_deboornet_num_result(&net));
 		CuAssertDblEquals(tc, 0.7, result_beziers[0], EPSILON);
@@ -418,6 +434,7 @@ void derive_discontinuous_lines_exceeding_epsilon(CuTest *tc)
 	knots[5] = 1;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points and knots. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 1, TS_CLAMPED, &spline, &status))
@@ -426,8 +443,11 @@ void derive_discontinuous_lines_exceeding_epsilon(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_knots(
 			&spline, knots, &status))
 
+/* ================================= When ================================== */
 		/* Check if derive fails. */
 		err = ts_bspline_derive(&spline, 1, EPSILON, &spline, NULL);
+
+/* ================================= Then ================================== */
 		CuAssertIntEquals(tc, TS_UNDERIVABLE, err);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
@@ -459,6 +479,7 @@ void derive_discontinuous_lines_ignoring_epsilon(CuTest *tc)
 	knots[5] = 1;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points and knots. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 1, TS_CLAMPED, &spline, &status))
@@ -467,8 +488,10 @@ void derive_discontinuous_lines_ignoring_epsilon(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_knots(
 			&spline, knots, &status))
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		err = ts_bspline_derive(&spline, 1, -1.f, &spline, NULL);
+
+/* ================================= Then ================================== */
 		CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 		/* Eval derivative. */
@@ -510,17 +533,19 @@ void derive_continuous_spline(CuTest *tc)
 	ctrlp[18] =  2.5;  ctrlp[19] =  1.0;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			10, 2, 2, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Eval derivative. */
 		TS_CALL(try, status.code, ts_bspline_eval(
 			&spline, 0.8, &net, &status))
@@ -572,6 +597,7 @@ void derive_continuous_spline_with_custom_knots(CuTest *tc)
 	knots[12] = 10.f;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points and custom knots. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			10, 2, 2, TS_CLAMPED, &spline, &status))
@@ -580,11 +606,12 @@ void derive_continuous_spline_with_custom_knots(CuTest *tc)
 		TS_CALL(try, status.code, ts_bspline_set_knots(
 			&spline, knots, &status))
 
-		/* Create derivative. */
+/* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 1, TS_CONTROL_POINT_EPSILON, &spline,
 			&status))
 
+/* ================================= Then ================================== */
 		/* Eval derivative. */
 		TS_CALL(try, status.code, ts_bspline_eval(
 			&spline, 8.4, &net, &status))
@@ -618,25 +645,28 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 	ctrlp[1] = 4.f; ctrlp[0] = 0.f;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
-			4, 2, 3, TS_OPENED, &spline, &status));
+			4, 2, 3, TS_OPENED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 		ts_bspline_domain(&spline, &min, &max);
 
+/* ================================= When ================================== */
 		/* Create third (derive with n = 3). */
 		TS_CALL(try, status.code, ts_bspline_derive(
 			&spline, 3, EPSILON, &third, &status))
 
 		/* Create three (derive three times). */
 		TS_CALL(try, status.code, ts_bspline_derive(
-			&spline, 1, EPSILON, &three, &status));
+			&spline, 1, EPSILON, &three, &status))
 		TS_CALL(try, status.code, ts_bspline_derive(
-			&three, 1, EPSILON, &three, &status));
+			&three, 1, EPSILON, &three, &status))
 		TS_CALL(try, status.code, ts_bspline_derive(
-			&three, 1, EPSILON, &three, &status));
+			&three, 1, EPSILON, &three, &status))
 
+/* ================================= Then ================================== */
 		/* Check that third and three are different splines. */
 		CuAssertTrue(tc, third.pImpl != three.pImpl);
 
@@ -646,14 +676,14 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 
 			/* Eval third. */
 			TS_CALL(try, status.code, ts_bspline_eval(
-				&third, knot, &net, &status));
+				&third, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &result_third, &status))
 			ts_deboornet_free(&net);
 
 			/* Eval three. */
 			TS_CALL(try, status.code, ts_bspline_eval(
-				&three, knot, &net, &status));
+				&three, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &result_three, &status))
 			ts_deboornet_free(&net);

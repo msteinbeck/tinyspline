@@ -20,15 +20,19 @@ void sample_num_1(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status));
+			&spline, ctrlp, &status))
 
+/* ================================= When ================================== */
 		/* Check sample with num = 1. */
 		TS_CALL(try, status.code, ts_bspline_sample(
 			&spline, 1, &points, &num, &status))
+
+/* ================================= Then ================================== */
 		CuAssertTrue(tc, num == 1);
 		dist = ts_distance(points, ctrlp,
 			ts_bspline_dimension(&spline));
@@ -58,15 +62,19 @@ void sample_num_2(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status));
+			&spline, ctrlp, &status))
 
+/* ================================= When ================================== */
 		/* Check sample with num = 2. */
 		TS_CALL(try, status.code, ts_bspline_sample(
 			&spline, 2, &points, &num, &status))
+
+/* ================================= Then ================================== */
 		CuAssertTrue(tc, num == 2);
 		dist = ts_distance(points, ctrlp,
 			ts_bspline_dimension(&spline));
@@ -102,11 +110,12 @@ void sample_num_3(CuTest *tc)
 	};
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			4, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status));
+			&spline, ctrlp, &status))
 		ts_bspline_domain(&spline, &min, &max);
 
 		/* Eval middle point. */
@@ -115,9 +124,12 @@ void sample_num_3(CuTest *tc)
 		TS_CALL(try, status.code, ts_deboornet_result(
 			&net, &middle, &status))
 
+/* ================================= When ================================== */
 		/* Check sample with num = 3. */
 		TS_CALL(try, status.code, ts_bspline_sample(
 			&spline, 3, &points, &num, &status))
+
+/* ================================= Then ================================== */
 		CuAssertTrue(tc, num == 3);
 		dist = ts_distance(points, ctrlp,
 			ts_bspline_dimension(&spline));
@@ -162,16 +174,19 @@ void sample_compare_with_bisect(CuTest *tc)
 	ctrlp[12] =  0.5;  ctrlp[13] =  0.0;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create spline with control points. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			7, 2, 3, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
 
+/* ================================= When ================================== */
 		/* Sample points. */
 		TS_CALL(try, status.code, ts_bspline_sample(
 			&spline, 100, &points, &num, &status))
 
+/* ================================= Then ================================== */
 		/* Compare sampled points with bisect. */
 		for (i = 0; i < num; i++) {
 			point = points + i * ts_bspline_dimension(&spline);
@@ -206,13 +221,17 @@ void sample_default_num(CuTest *tc)
 	tsStatus status;
 
 	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
 		/* Create arbitrary spline. */
 		TS_CALL(try, status.code, ts_bspline_new(
 			14, 3, 6, TS_OPENED, &spline, &status))
 
+/* ================================= When ================================== */
 		/* Eval sample with default num. */
 		TS_CALL(try, status.code, ts_bspline_sample(
 			&spline, 0, &points, &num, &status))
+
+/* ================================= Then ================================== */
 		CuAssertTrue(tc, num > 0);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);

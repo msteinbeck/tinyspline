@@ -5,6 +5,7 @@
 #include <math.h>   /* fabs, sqrt */
 #include <string.h> /* memcpy, memmove, strcmp */
 #include <stdio.h>  /* FILE, fopen */
+#include <stdarg.h> /* varargs */
 
 /* Suppress some useless MSVC warnings. */
 #ifdef _MSC_VER
@@ -332,6 +333,33 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	TS_RETURN_SUCCESS(status)
 }
 
+tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
+	tsStatus *status, tsReal knot0, tsReal knot1, ...)
+{
+	tsReal *values = NULL;
+	va_list argp;
+	size_t idx;
+	tsError err;
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_bspline_knots(
+			spline, &values, status))
+
+		values[0] = knot0;
+		values[1] = knot1;
+		va_start(argp, knot1);
+		for (idx = 2; idx < ts_bspline_num_knots(spline); idx++)
+			values[idx] = (tsReal) va_arg(argp, double);
+		va_end(argp);
+
+		TS_CALL(try, err, ts_bspline_set_knots(
+			spline, values, status))
+	TS_FINALLY
+		if (values)
+			free(values);
+	TS_END_TRY_RETURN(err)
+}
+
 tsError ts_bspline_set_knot_at(tsBSpline *spline, size_t index, tsReal knot,
 	tsStatus *status)
 {
@@ -542,6 +570,34 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
+}
+
+tsError TINYSPLINE_API ts_bspline_new_with_control_points(
+	size_t num_control_points, size_t dimension, size_t degree,
+	tsBSplineType type, tsBSpline *spline, tsStatus *status,
+	tsReal first, ...)
+{
+	tsReal *ctrlp = NULL;
+	va_list argp;
+	size_t i;
+	tsError err;
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_bspline_new(
+			num_control_points, dimension, degree, type, spline,
+			status))
+	TS_CATCH(err)
+		ts_bspline_free(spline);
+	TS_END_TRY_ROE(err)
+	ctrlp = ts_int_bspline_access_ctrlp(spline);
+
+	ctrlp[0] = first;
+	va_start(argp, first);
+	for (i = 1; i < ts_bspline_len_control_points(spline); i++)
+		ctrlp[i] = (tsReal) va_arg(argp, double);
+	va_end(argp);
+
+	TS_RETURN_SUCCESS(status)
 }
 
 tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,

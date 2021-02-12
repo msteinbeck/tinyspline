@@ -570,7 +570,7 @@ tsError TINYSPLINE_API ts_bspline_control_point_at(const tsBSpline *spline,
  * @param[out] spline
  * 	The spline whose control points are set.
  * @param[in] ctrlp
- * 	The values to deep copy.
+ * 	The control points to be set.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -662,7 +662,7 @@ tsError TINYSPLINE_API ts_bspline_knot_at(const tsBSpline *spline,
  * @param[out] spline
  * 	The spline whose knots are set.
  * @param[in] knots
- * 	The values to deep copy and scale.
+ * 	The knots to be set.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -674,6 +674,32 @@ tsError TINYSPLINE_API ts_bspline_knot_at(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline,
 	const tsReal *knots, tsStatus *status);
+
+/**
+ * Sets the knots of \p spline supplied as varargs. As all splines have at
+ * least two knots, the first two knots have an explicit parameter.
+ *
+ * @param[out] spline
+ *	The spline whose knots are set.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @param[in] knot0
+ * 	The first knot to be set.
+ * @param[in] knot1
+ * 	the second knot to be set.
+ * @param[in] ...
+ * 	The remaining knots to be set.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ * @return TS_KNOTS_DECR
+ * 	If the knot vector is decreasing.
+ * @return TS_MULTIPLICITY
+ * 	If there is a knot with multiplicity > order
+ */
+tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
+	tsStatus *status, tsReal knot0, tsReal knot1, ...);
 
 /**
  * Sets the knot of \p spline at \p index.
@@ -898,6 +924,45 @@ tsBSpline TINYSPLINE_API ts_bspline_init();
 tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
 	size_t dimension, size_t degree, tsBSplineType type, tsBSpline *spline,
 	tsStatus *status);
+
+/**
+ * Creates a new spline with given control points (varargs) and stores the
+ * result in \p spline. As all splines have at least one control point (with
+ * minimum dimensionality one), the first component of the first control point
+ * has an explicit parameter.
+ *
+ * @param[in] num_control_points
+ * 	The number of control points of \p spline.
+ * @param[in] dimension
+ * 	The dimension of each control point of \p spline.
+ * @param[in] degree
+ * 	The degree of \p spline.
+ * @param[in] type
+ * 	How to setup the knot vector of \p spline.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @param[in] first
+ * 	The first component of the first control point to be set.
+ * @param[in] ...
+ * 	The remaining components (control points).
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension == 0.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p degree >= \p num_control_points.
+ * @return TS_NUM_KNOTS
+ * 	If \p type == ::TS_BEZIERS and
+ * 	(\p num_control_points % \p degree + 1) != 0.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError TINYSPLINE_API ts_bspline_new_with_control_points(
+	size_t num_control_points, size_t dimension, size_t degree,
+	tsBSplineType type, tsBSpline *spline, tsStatus *status,
+	tsReal first, ...);
 
 /**
  * Creates a deep copy of \p src and stores the copied values in \p dest. Does

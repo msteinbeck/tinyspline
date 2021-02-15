@@ -334,7 +334,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 }
 
 tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
-	tsStatus *status, tsReal knot0, tsReal knot1, ...)
+	tsStatus *status, tsReal knot0, double knot1, ...)
 {
 	tsReal *values = NULL;
 	va_list argp;
@@ -575,7 +575,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 tsError TINYSPLINE_API ts_bspline_new_with_control_points(
 	size_t num_control_points, size_t dimension, size_t degree,
 	tsBSplineType type, tsBSpline *spline, tsStatus *status,
-	tsReal first, ...)
+	double first, ...)
 {
 	tsReal *ctrlp = NULL;
 	va_list argp;

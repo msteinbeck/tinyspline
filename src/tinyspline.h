@@ -677,7 +677,9 @@ tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline,
 
 /**
  * Sets the knots of \p spline supplied as varargs. As all splines have at
- * least two knots, the first two knots have an explicit parameter.
+ * least two knots, the first two knots have a named parameter. Note that, by
+ * design of varargs in C, the last named parameter must not be float. Thus,
+ * \p knot1 is of type double instead of tsReal.
  *
  * @param[out] spline
  *	The spline whose knots are set.
@@ -699,7 +701,7 @@ tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline,
  * 	If there is a knot with multiplicity > order
  */
 tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
-	tsStatus *status, tsReal knot0, tsReal knot1, ...);
+	tsStatus *status, tsReal knot0, double knot1, ...);
 
 /**
  * Sets the knot of \p spline at \p index.
@@ -929,7 +931,9 @@ tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
  * Creates a new spline with given control points (varargs) and stores the
  * result in \p spline. As all splines have at least one control point (with
  * minimum dimensionality one), the first component of the first control point
- * has an explicit parameter.
+ * has a named parameter. Note that, by design of varargs in C, the last named
+ * parameter must not be float. Thus, \p first is of type double instead of
+ * tsReal.
  *
  * @param[in] num_control_points
  * 	The number of control points of \p spline.
@@ -962,7 +966,7 @@ tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
 tsError TINYSPLINE_API ts_bspline_new_with_control_points(
 	size_t num_control_points, size_t dimension, size_t degree,
 	tsBSplineType type, tsBSpline *spline, tsStatus *status,
-	tsReal first, ...);
+	double first, ...);
 
 /**
  * Creates a deep copy of \p src and stores the copied values in \p dest. Does

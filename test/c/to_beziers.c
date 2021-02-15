@@ -100,22 +100,17 @@ void to_beziers_clamped(CuTest *tc)
 	tsReal *sval = NULL, *bval = NULL;
 	tsStatus status;
 
-	tsReal ctrlp[14] = {
-		100, 0,
-		200, -10,
-		500, 40,
-		300, 260,
-		-50, 200,
-		-80, 130,
-		-100, 0
-	};
-
 	TS_TRY(try, status.code, &status)
 /* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+		TS_CALL(try, status.code, ts_bspline_new_with_control_points(
+			7, 2, 3, TS_CLAMPED, &spline, &status,
+			100.0, 0.0,
+			200.0, -10.0,
+			500.0, 40.0,
+			300.0, 260.0,
+			-50.0, 200.0,
+			-80.0, 130.0,
+			-100.0, 0.0))
 
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
@@ -176,8 +171,9 @@ void to_beziers_clamped(CuTest *tc)
 			ts_deboornet_free(&net);
 
 			/* Compare results. */
-			CuAssertDblEquals(tc, sval[0], bval[0], CTRLP_EPSILON);
-			CuAssertDblEquals(tc, sval[1], bval[1], CTRLP_EPSILON);
+			CuAssertDblEquals(tc, 0.0,
+				ts_distance(sval, bval, 2),
+				CTRLP_EPSILON);
 			free(sval);
 			free(bval);
 			sval = bval = NULL;
@@ -204,22 +200,17 @@ void to_beziers_opened(CuTest *tc)
 	size_t i;
 	tsStatus status;
 
-	tsReal ctrlp[14] = {
-		100, 0,
-		200, -10,
-		500, 40,
-		300, 260,
-		-50, 200,
-		-80, 130,
-		-100, 0
-	};
-
 	TS_TRY(try, status.code, &status)
 /* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_OPENED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+		TS_CALL(try, status.code, ts_bspline_new_with_control_points(
+			7, 2, 3, TS_OPENED, &spline, &status,
+			100.0, 0.0,
+			200.0, -10.0,
+			500.0, 40.0,
+			300.0, 260.0,
+			-50.0, 200.0,
+			-80.0, 130.0,
+			-100.0, 0.0))
 
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_to_beziers(
@@ -290,8 +281,9 @@ void to_beziers_opened(CuTest *tc)
 			ts_deboornet_free(&net);
 
 			/* Compare results. */
-			CuAssertDblEquals(tc, sval[0], bval[0], CTRLP_EPSILON);
-			CuAssertDblEquals(tc, sval[1], bval[1], CTRLP_EPSILON);
+			CuAssertDblEquals(tc, 0.0,
+				ts_distance(sval, bval, 2),
+				CTRLP_EPSILON);
 			free(sval);
 			free(bval);
 			sval = bval = NULL;

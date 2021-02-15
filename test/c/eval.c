@@ -398,14 +398,6 @@ void eval_near_miss_knot(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	tsReal knots[6];
-
-	knots[0] = 0.1;
-	knots[1] = 0.2;
-	knots[2] = 0.3;
-	knots[3] = 0.3;
-	knots[4] = 0.4;
-	knots[5] = 0.6;
 
 	TS_TRY(try, status.code, &status)
 /* ================================= Given ================================= */
@@ -413,8 +405,9 @@ void eval_near_miss_knot(CuTest *tc)
 			3, 4, 2, TS_CLAMPED, &spline, &status))
 		CuAssertIntEquals(tc, 6, ts_bspline_num_knots(&spline));
 
-		TS_CALL(try, status.code, ts_bspline_set_knots(
-			&spline, knots, &status))
+		TS_CALL(try, status.code, ts_bspline_set_knots_varargs(
+			&spline, &status,
+			0.1, 0.2, 0.3, 0.3, 0.4, 0.6))
 
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_eval(
@@ -423,7 +416,7 @@ void eval_near_miss_knot(CuTest *tc)
 /* ================================= Then ================================== */
 		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
 		CuAssertIntEquals(tc, 4, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, knots[2], ts_deboornet_knot(&net), 0);
+		CuAssertDblEquals(tc, 0.3, ts_deboornet_knot(&net), 0);
 		CuAssertDblEquals(tc, 3, ts_deboornet_index(&net), EPSILON);
 		CuAssertDblEquals(tc, 2, ts_deboornet_multiplicity(&net),
 			EPSILON);

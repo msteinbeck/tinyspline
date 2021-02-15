@@ -346,7 +346,7 @@ tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
 			spline, &values, status))
 
 		values[0] = knot0;
-		values[1] = knot1;
+		values[1] = (tsReal) knot1;
 		va_start(argp, knot1);
 		for (idx = 2; idx < ts_bspline_num_knots(spline); idx++)
 			values[idx] = (tsReal) va_arg(argp, double);
@@ -591,7 +591,7 @@ tsError TINYSPLINE_API ts_bspline_new_with_control_points(
 	TS_END_TRY_ROE(err)
 	ctrlp = ts_int_bspline_access_ctrlp(spline);
 
-	ctrlp[0] = first;
+	ctrlp[0] = (tsReal) first;
 	va_start(argp, first);
 	for (i = 1; i < ts_bspline_len_control_points(spline); i++)
 		ctrlp[i] = (tsReal) va_arg(argp, double);

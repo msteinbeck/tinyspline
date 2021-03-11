@@ -22,6 +22,9 @@ Releases can be downloaded from the
 
 In addition, the following package manager are supported:
 
+Conan (C/C++):  
+https://conan.io/center/tinyspline
+
 Luarocks (Lua; currently only Linux and macOS):
 ```bash
 luarocks install --server=https://msteinbeck.github.io/tinyspline/luarocks tinyspline

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./tinyspline"
+	"examples/tinyspline"
 	"fmt"
 )
 

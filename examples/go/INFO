@@ -1,0 +1,4 @@
+Compile:
+  - Create the sub-directory tinyspline.
+  - Copy tinyspline.go and its native library into tinyspline.
+  - go build quickstart.go

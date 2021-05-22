@@ -1601,6 +1601,16 @@ if(${TINYSPLINE_WITH_RUBY})
 		"${TINYSPLINE_BINARY_DIR}/tinyspline.gemspec" @ONLY)
 endif()
 
+# NPM
+file(REMOVE "${TINYSPLINE_BINARY_DIR}/package.json")
+if(${EMSCRIPTEN})
+	set(TINYSPLINE_NPM_FILES
+"\"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_JS_LIBRARY_OUTPUT_NAME}.js\",\
+ \"${TINYSPLINE_LIB_DIR}/${TINYSPLINE_JS_LIBRARY_OUTPUT_NAME}.wasm\"")
+	configure_file("pkg/package.json.in"
+		"${TINYSPLINE_BINARY_DIR}/package.json" @ONLY)
+endif()
+
 
 
 ###############################################################################

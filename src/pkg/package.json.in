@@ -1,0 +1,22 @@
+{
+	"name": "@TINYSPLINE_PACKAGE_NAME@",
+	"description": "@TINYSPLINE_SUMMARY@",
+	"version": "@TINYSPLINE_VERSION@",
+	"scripts": {
+		"prepack": "@CMAKE_COMMAND@ --build . --target @TINYSPLINE_JS_CMAKE_TARGET@"
+	},
+	"files": [
+		@TINYSPLINE_NPM_FILES@
+	],
+	"repository": {
+		"type": "git",
+		"url": "@TINYSPLINE_REPOSITORY@"
+	},
+	"keywords": [],
+	"author": "@TINYSPLINE_AUTHOR@",
+	"license": "@TINYSPLINE_LICENSE@",
+	"bugs": {
+		"url": "@TINYSPLINE_ISSUE_TRACKER@"
+	},
+	"homepage": "@TINYSPLINE_URL@"
+}

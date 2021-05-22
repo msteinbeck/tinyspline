@@ -26,13 +26,19 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 #   Contact email address.
 #
 # TINYSPLINE_URL
-#   URL of the repository containing the source files.
+#   URL of homepage.
+#
+# TINYSPLINE_ISSUE_TRACKER
+#   URL of issue tracker.
+#
+# TINYSPLINE_REPOSITORY
+#   URL of repository.
 #
 # TINYSPLINE_LICENSE
 #   TinySpline's license.
 #
 # TINYSPLINE_VERSION
-#   The current version of TinySpline.
+#   Current version.
 #
 # TINYSPLINE_SUMMARY
 #   Short describtion.
@@ -54,6 +60,14 @@ set(TINYSPLINE_MAIL
 
 set(TINYSPLINE_URL
 	"https://github.com/msteinbeck/tinyspline"
+	CACHE INTERNAL "")
+
+set(TINYSPLINE_ISSUE_TRACKER
+	"https://github.com/msteinbeck/tinyspline/issues"
+	CACHE INTERNAL "")
+
+set(TINYSPLINE_REPOSITORY
+	"https://github.com/msteinbeck/tinyspline.git"
 	CACHE INTERNAL "")
 
 set(TINYSPLINE_SCM

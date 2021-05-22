@@ -324,11 +324,15 @@ set(TINYSPLINE_PLATFORM
 # TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME
 #   Output name of the C++ library without prefix/postfix.
 #
+# TINYSPLINE_JS_LIBRARY_OUTPUT_NAME
+#   Output name of the JavaScript library without prefix/postfix.
+#
 # TINYSPLINE_<LANG>_CMAKE_TARGET
 #   CMake build target of binding <LANG>.
 ###############################################################################
 set(TINYSPLINE_C_LIBRARY_OUTPUT_NAME "tinyspline")
 set(TINYSPLINE_CXX_LIBRARY_OUTPUT_NAME "tinysplinecxx")
+set(TINYSPLINE_JS_LIBRARY_OUTPUT_NAME "tinyspline")
 set(TINYSPLINE_CSHARP_CMAKE_TARGET "tinysplinecsharp" CACHE INTERNAL "")
 set(TINYSPLINE_DLANG_CMAKE_TARGET "tinysplinedlang" CACHE INTERNAL "")
 set(TINYSPLINE_GO_CMAKE_TARGET "tinysplinego" CACHE INTERNAL "")
@@ -920,13 +924,13 @@ if(TINYSPLINE_ENABLE_CXX)
 			COMMENT "Generating Javascript Interface (C++)"
 			COMMAND "${CMAKE_C_COMPILER}"
 				--bind
-				-o tinyspline.js
+				-o ${TINYSPLINE_JS_LIBRARY_OUTPUT_NAME}.js
 				-Wl,--whole-archive $<TARGET_FILE_NAME:${TINYSPLINE_JS_CMAKE_TARGET}>
 				-Wl,--no-whole-archive
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}"
 			BYPRODUCTS
-				"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.js"
-				"${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.wasm")
+				"${TINYSPLINE_OUTPUT_DIRECTORY}/${TINYSPLINE_JS_LIBRARY_OUTPUT_NAME}.js"
+				"${TINYSPLINE_OUTPUT_DIRECTORY}/${TINYSPLINE_JS_LIBRARY_OUTPUT_NAME}.wasm")
 	endif()
 
 	target_include_directories(tinysplinecxx PUBLIC

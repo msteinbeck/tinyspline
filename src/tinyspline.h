@@ -1555,7 +1555,7 @@ tsError TINYSPLINE_API ts_bspline_to_json(const tsBSpline *spline, char **json,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_from_json(const char *json,
+tsError TINYSPLINE_API ts_bspline_parse_json(const char *json,
 	tsBSpline *spline, tsStatus *status);
 
 /**

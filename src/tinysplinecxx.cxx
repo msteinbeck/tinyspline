@@ -271,11 +271,11 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 	return bspline;
 }
 
-tinyspline::BSpline tinyspline::BSpline::fromJson(std::string json)
+tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
 {
 	tinyspline::BSpline bspline;
 	tsStatus status;
-	if (ts_bspline_from_json(json.c_str(), bspline.data(), &status))
+	if (ts_bspline_parse_json(json.c_str(), bspline.data(), &status))
 		throw std::runtime_error(status.message);
 	return bspline;
 }

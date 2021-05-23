@@ -122,7 +122,7 @@ public:
 		std::vector<tinyspline::real> *first = NULL,
 		std::vector<tinyspline::real> *last = NULL,
 		tsReal epsilon = TS_CONTROL_POINT_EPSILON);
-	static BSpline fromJson(std::string json);
+	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
 
 	/* Operators */
@@ -223,7 +223,7 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .class_function("interpolateCatmullRom",
 			&BSpline::interpolateCatmullRom,
 			allow_raw_pointers())
-	        .class_function("fromJson", &BSpline::fromJson)
+	        .class_function("parseJson", &BSpline::parseJson)
 
 	        .property("degree", &BSpline::degree)
 	        .property("order", &BSpline::order)

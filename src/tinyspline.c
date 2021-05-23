@@ -1878,7 +1878,7 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_int_bspline_from_json(const JSON_Value *spline_value,
+tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
 	tsBSpline *_spline_, tsStatus *status)
 {
 	size_t deg, dim, len_ctrlp, num_knots;
@@ -2003,7 +2003,7 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **json,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
+tsError ts_bspline_parse_json(const char *json, tsBSpline *spline,
 	tsStatus *status)
 {
 	tsError err;
@@ -2015,7 +2015,7 @@ tsError ts_bspline_from_json(const char *json, tsBSpline *spline,
 			TS_RETURN_0(status, TS_PARSE_ERROR,
 				"invalid json input")
 		}
-		TS_CALL(try, err, ts_int_bspline_from_json(
+		TS_CALL(try, err, ts_int_bspline_parse_json(
 			value, spline, status))
 	TS_FINALLY
 		if (value)
@@ -2054,7 +2054,7 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 			TS_RETURN_0(status, TS_PARSE_ERROR,
 				"invalid json input")
 		}
-		TS_CALL(try, err, ts_int_bspline_from_json(
+		TS_CALL(try, err, ts_int_bspline_parse_json(
 			value, spline, status))
 	TS_FINALLY
 		if (file)

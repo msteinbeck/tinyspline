@@ -119,7 +119,8 @@ do
 		done
 		luas=$(find * -iname '*.lua' | sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
-		libs=$(find * -iname '*.so' | sed 's/.*/"&",/g' \
+		libs=$(find * -iname '*.so' -or -iname '*.dll' \
+			| sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
 		sed -i "s/${pkgn}${pkgv}/${pkgn}/g" ./*.rockspec
 		sed -i '/supported_platforms/,/}/d' ./*.rockspec

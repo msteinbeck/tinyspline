@@ -22,7 +22,8 @@ docker run \
 	--rm \
 	--volume "${VOLUME}:${STORAGE}" \
 	${IMAGE_NAME} /bin/bash -c \
-	"mkdir -p ${STORAGE}/linux64 && \
+	"source ~/.bashrc && \
+	 mkdir -p ${STORAGE}/linux64 && \
 	 chown $(id -u):$(id -g) ${STORAGE}/linux64 && \
 		mkdir linux64 && pushd linux64 && \
 			cmake .. \
@@ -102,9 +103,16 @@ docker run \
 		rm -rf ..?* .[!.]* * && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/linux/lua54/include \
+				-DLUA_LIBRARY=/opt/linux/lua54/liblua54.so \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/linux/python37/include/python3.7m \
 				-DPYTHON_LIBRARY=/opt/linux/python37/lib/libpython3.7m.so && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/linux64 && \
 			/opt/linux/python37/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
@@ -126,6 +134,16 @@ docker run \
 			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
+		popd && \
+	mkdir -p ${STORAGE}/emsdk && \
+	chown $(id -u):$(id -g) ${STORAGE}/emsdk && \
+		mkdir emsdk && pushd emsdk && \
+			PYTHON=/opt/linux/python39/bin/python3 emcmake cmake .. && \
+			PYTHON=/opt/linux/python39/bin/python3 cmake --build .
+			chown $(id -u):$(id -g) lib/*.js && \
+			cp -a lib/*.js ${STORAGE}/emsdk && \
+			chown $(id -u):$(id -g) lib/*.wasm && \
+			cp -a lib/*.wasm ${STORAGE}/emsdk && \
 		popd && \
 	mkdir -p ${STORAGE}/macosx64 && \
 	chown $(id -u):$(id -g) ${STORAGE}/macosx64 && \
@@ -349,6 +367,70 @@ docker run \
 				cp -a target/*.jar ${STORAGE}/windows64 && \
 				chown $(id -u):$(id -g) pom.xml && \
 				cp -a pom.xml ${STORAGE}/windows64 && \
+		rm -rf ..?* .[!.]* * && \
+			CC=x86_64-w64-mingw32-gcc-win32 \
+			CXX=x86_64-w64-mingw32-g++-win32 \
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME=Windows \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/wincross/lua51/include \
+				-DLUA_LIBRARY=/opt/wincross/lua51/lua5.1.dll && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/windows64 && \
+		rm -rf ..?* .[!.]* * && \
+			CC=x86_64-w64-mingw32-gcc-win32 \
+			CXX=x86_64-w64-mingw32-g++-win32 \
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME=Windows \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/wincross/lua52/include \
+				-DLUA_LIBRARY=/opt/wincross/lua52/lua52.dll && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/windows64 && \
+		rm -rf ..?* .[!.]* * && \
+			CC=x86_64-w64-mingw32-gcc-win32 \
+			CXX=x86_64-w64-mingw32-g++-win32 \
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME=Windows \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/wincross/lua53/include \
+				-DLUA_LIBRARY=/opt/wincross/lua53/lua53.dll && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/windows64 && \
+		rm -rf ..?* .[!.]* * && \
+			CC=x86_64-w64-mingw32-gcc-win32 \
+			CXX=x86_64-w64-mingw32-g++-win32 \
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME=Windows \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/wincross/lua54/include \
+				-DLUA_LIBRARY=/opt/wincross/lua54/lua54.dll && \
+			sed -i '/supported_platforms/,/}/d' *.rockspec && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/windows64 && \
 		popd"
 
 docker rmi ${IMAGE_NAME}

@@ -58,6 +58,11 @@ RUN apt-get update &&                          \
         ./configure && \
         make && \
         make install && \
+    git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk && \
+    cd /opt/emsdk && \
+        ./emsdk install 2.0.20 && \
+        ./emsdk activate 2.0.20 && \
+        echo "source $(pwd)/emsdk_env.sh" >> $HOME/.bashrc && \
     wget -P /usr/local/src/python36 \
         https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz && \
     tar -xf /usr/local/src/python36/Python-3.6.12.tar.xz \
@@ -158,6 +163,11 @@ RUN apt-get update &&                          \
             LDFLAGS=-Wl,-rpath=/opt/linux/ruby27/lib && \
         make && \
         make install && \
+    wget -P /usr/local/src/lua54 \
+        https://sourceforge.net/projects/luabinaries/files/5.4.2/Linux%20Libraries/lua-5.4.2_Linux54_64_lib.tar.gz && \
+    mkdir -p /opt/linux/lua54 && \
+    tar -xf /usr/local/src/lua54/lua-5.4.2_Linux54_64_lib.tar.gz \
+        -C /opt/linux/lua54 && \
     cd /usr/local/src && rm -rf ..?* .[!.]* *
 
 # Install macosx build tools (osxcross) and libraries (macports).
@@ -201,8 +211,11 @@ RUN mkdir -p /opt/wincross/archives                && \
     wget -O archives/lua52.zip https://sourceforge.net/projects/luabinaries/files/5.2.4/Windows%20Libraries/Dynamic/lua-5.2.4_Win64_dllw6_lib.zip && \
     unzip -d lua52 archives/lua52.zip              && \
     mkdir lua53                                    && \
-    wget -O archives/lua53.zip https://sourceforge.net/projects/luabinaries/files/5.3.5/Windows%20Libraries/Dynamic/lua-5.3.5_Win64_dllw6_lib.zip && \
+    wget -O archives/lua53.zip https://sourceforge.net/projects/luabinaries/files/5.3.6/Windows%20Libraries/Dynamic/lua-5.3.6_Win64_dllw6_lib.zip && \
     unzip -d lua53 archives/lua53.zip              && \
+    mkdir lua54                                    && \
+    wget -O archives/lua54.zip https://sourceforge.net/projects/luabinaries/files/5.4.2/Windows%20Libraries/Dynamic/lua-5.4.2_Win64_dllw6_lib.zip && \
+    unzip -d lua54 archives/lua54.zip              && \
     rm -rf archives
 
 # Run environment.

@@ -135,15 +135,13 @@ docker run \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
 		popd && \
-	mkdir -p ${STORAGE}/emsdk && \
-	chown $(id -u):$(id -g) ${STORAGE}/emsdk && \
+	mkdir -p ${STORAGE}/wasm && \
+	chown $(id -u):$(id -g) ${STORAGE}/wasm && \
 		mkdir emsdk && pushd emsdk && \
 			PYTHON=/opt/linux/python39/bin/python3 emcmake cmake .. && \
-			PYTHON=/opt/linux/python39/bin/python3 cmake --build .
-			chown $(id -u):$(id -g) lib/*.js && \
-			cp -a lib/*.js ${STORAGE}/emsdk && \
-			chown $(id -u):$(id -g) lib/*.wasm && \
-			cp -a lib/*.wasm ${STORAGE}/emsdk && \
+			PYTHON=/opt/linux/python39/bin/python3 npm pack && \
+			chown $(id -u):$(id -g) *.tgz && \
+			cp -a *.tgz ${STORAGE}/wasm && \
 		popd && \
 	mkdir -p ${STORAGE}/macosx64 && \
 	chown $(id -u):$(id -g) ${STORAGE}/macosx64 && \

@@ -19,6 +19,11 @@ if [ ! -d "${WINDOWS_X86_64}" ]; then
 	echo "Windows (x86_64) is missing.  Aborting."
 	exit 1
 fi
+WASM="${SCRIPT_DIR}/build/wasm"
+if [ ! -d "${WASM}" ]; then
+	echo "WebAssembly is missing.  Aborting."
+	exit 1
+fi
 
 ### Prepare output directory.
 OUTPUT="${SCRIPT_DIR}/tinyspline"
@@ -91,6 +96,9 @@ popd
 pushd "${JAVA_ZIP_TMP_DIR}"
 	zip -r "${OUTPUT}/tinyspline-java.zip" ./*
 popd
+
+# Javascript
+cp -a ${WASM}/*.tgz ${OUTPUT}
 
 # Lua
 LUAROCKS_TMP_DIR="${SCRIPT_DIR}/luarocks"

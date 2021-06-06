@@ -139,7 +139,7 @@ docker run \
 	chown $(id -u):$(id -g) ${STORAGE}/wasm && \
 		mkdir emsdk && pushd emsdk && \
 			PYTHON=/opt/linux/python39/bin/python3 emcmake cmake .. && \
-			PYTHON=/opt/linux/python39/bin/python3 npm pack && \
+			PYTHON=/opt/linux/python39/bin/python3 npm pack --unsafe-perm && \
 			chown $(id -u):$(id -g) *.tgz && \
 			cp -a *.tgz ${STORAGE}/wasm && \
 		popd && \

@@ -84,6 +84,7 @@
 				spline = tmp;
 
 				// Restore spline from JSON string.
+				spline.delete();
 				spline = Module.BSpline.parseJson(json);
 
 				// Draw spline using bezier curves.

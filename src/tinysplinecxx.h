@@ -243,6 +243,7 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .property("controlPoints", &BSpline::controlPoints,
 			&BSpline::setControlPoints)
 	        .property("knots", &BSpline::knots, &BSpline::setKnots)
+	        .property("domain", &BSpline::domain)
 
 	        /* Property by index */
 	        .function("controlPointAt", &BSpline::controlPointAt)
@@ -262,7 +263,6 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 			(&BSpline::sample1))
 	        .function("sample", &BSpline::sample)
 	        .function("bisect", &BSpline::bisect)
-	        .function("domain", &BSpline::domain)
 	        .function("isClosed", &BSpline::isClosed)
 
 		/* Serialization */

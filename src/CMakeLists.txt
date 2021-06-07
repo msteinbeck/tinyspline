@@ -95,7 +95,7 @@ set(TINYSPLINE_SUMMARY
 	CACHE INTERNAL "")
 
 set(TINYSPLINE_DESCRIPTION
-	"TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is implemented in ANSI C (C89) and provides a wrapper for C++ along with auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and Ruby."
+	"TinySpline is a small, yet powerful library for interpolating, transforming, and querying arbitrary NURBS, B-Splines, and Bézier curves. The core of the library is written in ANSI C (C89) with a C++ wrapper for an object-oriented programming model. Based on the C++ wrapper, auto-generated bindings for C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby are provided."
 	CACHE INTERNAL "")
 
 

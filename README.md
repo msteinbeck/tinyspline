@@ -5,10 +5,10 @@ TinySpline
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/msteinbeck/tinyspline.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/msteinbeck/tinyspline/context:cpp)
 
 TinySpline is a small, yet powerful library for interpolating, transforming,
-and querying arbitrary NURBS, B-Splines, and Bézier curves. The library is
-implemented in ANSI C (C89) and provides a wrapper for C++ along with
-auto-generated bindings for C#, D, Go, Java, Lua, Octave, PHP, Python, R, and
-Ruby.
+and querying arbitrary NURBS, B-Splines, and Bézier curves. The core of the
+library is written in ANSI C (C89) with a C++ wrapper for an object-oriented
+programming model. Based on the C++ wrapper, auto-generated bindings for C#, D,
+Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby are provided.
 
 ### License
 MIT License - see the LICENSE file in the source distribution.

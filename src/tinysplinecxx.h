@@ -16,6 +16,17 @@
 #define std_real_vector_out std::vector<tinyspline::real>
 #endif
 
+#ifdef TINYSPLINE_EMSCRIPTEN
+#include <stdexcept>
+void inline cannotWrite() {
+	throw std::runtime_error("cannot write read-only property");
+}
+
+std::string exceptionMessage(int ptr) {
+	return std::string(reinterpret_cast<std::exception *>(ptr)->what());
+}
+#endif
+
 namespace tinyspline {
 
 typedef tsReal real;
@@ -52,20 +63,15 @@ private:
 	friend class BSpline;
 
 #ifdef TINYSPLINE_EMSCRIPTEN
-	#include <stdexcept>
 public:
 	DeBoorNet() : net(ts_deboornet_init()) {}
-	void setKnot(real) { raise_exception(); }
-	void setIndex(size_t) { raise_exception(); }
-	void setMultiplicity(size_t) { raise_exception(); }
-	void setNumInsertions(size_t) { raise_exception(); }
-	void setDimension(size_t) { raise_exception(); }
-	void setPoints(std::vector<real>) { raise_exception(); }
-	void setResult(std::vector<real>) { raise_exception(); }
-private:
-	void inline raise_exception() {
-		throw std::runtime_error("cannot write read-only property");
-	}
+	void setKnot(real) { cannotWrite(); }
+	void setIndex(size_t) { cannotWrite(); }
+	void setMultiplicity(size_t) { cannotWrite(); }
+	void setNumInsertions(size_t) { cannotWrite(); }
+	void setDimension(size_t) { cannotWrite(); }
+	void setPoints(std::vector<real>) { cannotWrite(); }
+	void setResult(std::vector<real>) { cannotWrite(); }
 #endif
 };
 
@@ -90,15 +96,10 @@ private:
     real _max;
 
 #ifdef TINYSPLINE_EMSCRIPTEN
-	#include <stdexcept>
 public:
 	Domain() : _min(TS_DOMAIN_DEFAULT_MIN), _max(TS_DOMAIN_DEFAULT_MAX) {}
-	void setMin(real) { raise_exception(); }
-	void setMax(real) { raise_exception(); }
-private:
-	void inline raise_exception() {
-		throw std::runtime_error("cannot write read-only property");
-	}
+	void setMin(real) { cannotWrite(); }
+	void setMax(real) { cannotWrite(); }
 #endif
 };
 
@@ -173,6 +174,15 @@ public:
 
 private:
 	tsBSpline spline;
+
+#ifdef TINYSPLINE_EMSCRIPTEN
+public:
+	std_real_vector_out sample0() const { return sample(); }
+	std_real_vector_out sample1(size_t num) const { return sample(num); }
+	BSpline derive0() const { return derive(); }
+	BSpline derive1(size_t n) const { return derive(n); }
+	BSpline derive2(size_t n, real eps) const { return derive(n, eps); }
+#endif
 };
 
 class TINYSPLINECXX_API Utils {
@@ -192,6 +202,8 @@ private:
 using namespace emscripten;
 using namespace tinyspline;
 EMSCRIPTEN_BINDINGS(tinyspline) {
+	function("exceptionMessage", &exceptionMessage);
+
 	value_object<DeBoorNet>("DeBoorNet")
 	        .field("knot", &DeBoorNet::knot, &DeBoorNet::setKnot)
 	        .field("index", &DeBoorNet::index, &DeBoorNet::setIndex)
@@ -242,6 +254,12 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .function("numControlPoints", &BSpline::numControlPoints)
 	        .function("eval", &BSpline::eval)
 	        .function("evalAll", &BSpline::evalAll)
+	        .function("sample",
+			select_overload<std_real_vector_out() const>
+			(&BSpline::sample0))
+	        .function("sample",
+			select_overload<std_real_vector_out(size_t) const>
+			(&BSpline::sample1))
 	        .function("sample", &BSpline::sample)
 	        .function("bisect", &BSpline::bisect)
 	        .function("domain", &BSpline::domain)
@@ -255,7 +273,15 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .function("split", &BSpline::split)
 	        .function("tension", &BSpline::tension)
 	        .function("toBeziers", &BSpline::toBeziers)
-	        .function("derive", &BSpline::derive)
+	        .function("derive",
+			select_overload<BSpline() const>
+			(&BSpline::derive0))
+	        .function("derive",
+			select_overload<BSpline(size_t) const>
+			(&BSpline::derive1))
+	        .function("derive",
+			select_overload<BSpline(size_t, real) const>
+			(&BSpline::derive2))
 
 	        /* Debug */
 	        .function("toString", &BSpline::toString)

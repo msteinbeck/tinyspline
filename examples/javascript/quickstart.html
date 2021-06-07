@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Quickstart</title>
+	</head>
+	<body>
+		<p id="domain"></p>
+		<p id="json"></p>
+		<p id="eval1"></p>
+		<p id="eval2"></p>
+		<p>
+			<canvas id="canvas" width="700" height="500"
+				style="border:1px solid #d3d3d3;">
+				Your browser doesn't support HTML5 canvas.
+			</canvas>
+		</p>
+	</body>
+	<script>
+		var Module = {onRuntimeInitialized: function() {
+			var spline, tmp; // << Required to avoid memory leaks.
+			try {
+				// Create a cubic spline with 7 control points
+				// in 2D and a clamped knot vector. This call
+				// is equivalent to:
+				//     new Module.BSpline(7, 2, 3,
+				//       Module.BSplineType.CLAMPED);
+				spline = new Module.BSpline(7);
+
+				// Set up control points.
+				spline.controlPoints = [
+					 25,  50, // P1
+					150, 700, // P2
+					350,  30, // P3
+					650, 200, // P4
+					630, 600, // P5
+					400, 250, // P6
+					200, 200, // P7
+				]
+
+				// Print domain of spline.
+				document.getElementById("domain").innerHTML =
+					"Domain: [" + spline.domain.min +
+					", " + spline.domain.max + "]";
+
+				// Print spline as JSON string.
+				var json = spline.toJson();
+				document.getElementById("json")
+					.innerHTML = json;
+
+				// Change the tension of spline.
+				tmp = spline.tension(0.75);
+				spline.delete();
+				spline = tmp;
+
+				// Evaluate spline at knot: 0.4.
+				var result = spline.eval(0.4).result;
+				document.getElementById("eval1").innerHTML =
+					`x = ${result[0]}, y = ${result[1]}`;
+
+				// Derive spline...
+				tmp = spline.derive();
+				spline.delete();
+				// ... and decompose the derivative into a
+				// sequence of Bezier curves. Store the result
+				// in spline.
+				spline = tmp.toBeziers();
+				tmp.delete();
+
+				// Evaluate the result of the applied
+				// transformations (derive/toBeziers) at knot:
+				// 0.6.
+				var result = spline.eval(0.6).result;
+				document.getElementById("eval2").innerHTML =
+					`x = ${result[0]}, y = ${result[1]}`;
+
+				// Create a cubic spline that interpolates the
+				// control points of 'spline'. Store the result
+				// in spline.
+				tmp = Module.BSpline
+					.interpolateCubicNatural(
+						spline.controlPoints,
+						spline.dimension);
+				spline.delete();
+				spline = tmp;
+
+				// Restore spline from JSON string.
+				spline = Module.BSpline.parseJson(json);
+
+				// Draw spline using bezier curves.
+				tmp = spline.toBeziers();
+				spline = tmp;
+				var ctrlps = spline.controlPoints;
+				var offset = spline.order * spline.dimension;
+				var ctx = document
+					.getElementById("canvas")
+					.getContext("2d");
+				ctx.beginPath();
+				for (var n = 0; n < ctrlps.length/offset; n++) {
+					ctx.moveTo(
+						ctrlps[n * offset],
+						ctrlps[n * offset + 1]);
+					ctx.bezierCurveTo(
+						ctrlps[n * offset + 2],
+						ctrlps[n * offset + 3],
+						ctrlps[n * offset + 4],
+						ctrlps[n * offset + 5],
+						ctrlps[n * offset + 6],
+						ctrlps[n * offset + 7]);
+				}
+				ctx.stroke();
+			} catch(e) {
+				var ps = document.getElementsByTagName("p");
+				for (var i = 0;i < ps.length; i++){
+					ps[i].innerHTML = ""
+				}
+				ps[0].innerHTML = Module.exceptionMessage(e);
+			} finally {
+				if (typeof spline !== 'undefined') {
+					spline.delete();
+				}
+				if (typeof tmp !== 'undefined') {
+					tmp.delete();
+				}
+			}
+		}};
+	</script>
+	<script src="tinyspline.js"></script>
+</html>

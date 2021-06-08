@@ -28,7 +28,7 @@
 
 				// Set up control points.
 				spline.controlPoints = [
-					 25,  50, // P1
+					 40,  50, // P1
 					150, 700, // P2
 					350,  30, // P3
 					650, 200, // P4
@@ -37,7 +37,7 @@
 					200, 200, // P7
 				]
 
-				// Print domain of spline.
+				// Print the domain of spline.
 				document.getElementById("domain").innerHTML =
 					"Domain: [" + spline.domain.min +
 					", " + spline.domain.max + "]";
@@ -46,11 +46,6 @@
 				var json = spline.toJson();
 				document.getElementById("json")
 					.innerHTML = json;
-
-				// Change the tension of spline.
-				tmp = spline.tension(0.75);
-				spline.delete();
-				spline = tmp;
 
 				// Evaluate spline at knot: 0.4.
 				var result = spline.eval(0.4).result;
@@ -72,16 +67,6 @@
 				var result = spline.eval(0.6).result;
 				document.getElementById("eval2").innerHTML =
 					`x = ${result[0]}, y = ${result[1]}`;
-
-				// Create a cubic spline that interpolates the
-				// control points of 'spline'. Store the result
-				// in spline.
-				tmp = Module.BSpline
-					.interpolateCubicNatural(
-						spline.controlPoints,
-						spline.dimension);
-				spline.delete();
-				spline = tmp;
 
 				// Restore spline from JSON string.
 				spline.delete();

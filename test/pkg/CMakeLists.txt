@@ -20,7 +20,9 @@ function(check_directories list_of_dirs)
 	endforeach()
 endfunction()
 
-# Check CMake targets/variables exported by the C interface.
+
+
+# Check the CMake targets/variables exported by the C interface.
 # Note that TINYSPLINE_DEFINITIONS and TINYSPLINE_BINARY_DIRS may be empty.
 if(NOT TARGET tinyspline::tinyspline)
 	message(SEND_ERROR "tinyspline::tinyspline is not defined")
@@ -67,7 +69,7 @@ endif()
 
 
 
-# Check CMake targets/variables exported by the C++ interface.
+# Check the CMake targets/variables exported by the C++ interface.
 # Note that TINYSPLINECXX_DEFINITIONS TINYSPLINECXX_BINARY_DIRS may be empty.
 if(NOT TARGET tinysplinecxx::tinysplinecxx)
 	message(SEND_ERROR "tinysplinecxx::tinysplinecxx is not defined")

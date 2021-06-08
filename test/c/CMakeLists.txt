@@ -2,9 +2,11 @@
 ### Setup compiler suite.
 ###############################################################################
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# disable sprintf warning occurring in CuTest
+	# Disable the warnings about sprintf in CuTest.
 	add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 endif()
+
+
 
 ###############################################################################
 ### Create unit tests.
@@ -15,11 +17,18 @@ add_executable(tinyspline_tests ${TINYSPLINE_TESTS_SOURCE_FILES})
 target_link_libraries(tinyspline_tests
 	PRIVATE tinyspline)
 
-add_test(tinyspline_tests tinyspline_tests)
+if(EMSCRIPTEN)
+	add_test(NAME tinyspline_tests
+		COMMAND $ENV{EMSDK_NODE} tinyspline_tests)
+else()
+	add_test(tinyspline_tests tinyspline_tests)
+endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set_tests_properties(tinyspline_tests PROPERTIES
 		ENVIRONMENT "PATH=${TINYSPLINE_OUTPUT_DIRECTORY};$ENV{PATH}")
 endif()
+
+
 
 ###############################################################################
 ### Create code coverage.

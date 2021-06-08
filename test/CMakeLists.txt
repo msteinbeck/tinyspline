@@ -16,8 +16,8 @@
 #   genhtml executable.
 #
 # TINYSPLINE_COVERAGE_OUTPUT_DIRECTORY
-#   Root directory of genhtml output. Each target generating code coverage
-#   should store results in a separate subdirectory.
+#   Root directory of genhtml output. Each target that generates code coverage
+#   should store its results in a separate subdirectory.
 #
 # TINYSPLINE_COVERAGE_C_FLAGS
 #   C flags for coverage executables.
@@ -58,10 +58,14 @@ set(TINYSPLINE_COVERAGE_C_LIBRARIES
 	"-lgcov"
 )
 
+
+
 ###############################################################################
 ### Add subdirectories containing the actual unit tests.
 ###############################################################################
 add_subdirectory(c)
+
+
 
 ###############################################################################
 ### Add custom targets that are supposed to subsume unit tests and coverage.

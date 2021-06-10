@@ -473,7 +473,7 @@ tsError ts_deboornet_result(const tsDeBoorNet *net, tsReal **result,
 tsBSpline ts_bspline_init()
 {
 	tsBSpline spline;
-	spline.pImpl = NULL;
+	ts_int_bspline_init(&spline);
 	return spline;
 }
 
@@ -635,7 +635,7 @@ void ts_bspline_free(tsBSpline *spline)
 tsDeBoorNet ts_deboornet_init()
 {
 	tsDeBoorNet net;
-	net.pImpl = NULL;
+	ts_int_deboornet_init(&net);
 	return net;
 }
 

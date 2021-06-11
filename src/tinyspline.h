@@ -178,13 +178,13 @@ typedef enum {
 	/* Points have dimensionality 0. */
 	TS_DIM_ZERO = -2,
 
-	 /* degree >= num(control_points). */
+	/* degree >= num(control_points). */
 	TS_DEG_GE_NCTRLP = -3,
 
 	/* Knot is not within the domain. */
 	TS_U_UNDEFINED = -4,
 
-	 /* multiplicity(knot) > order */
+	/* multiplicity(knot) > order */
 	TS_MULTIPLICITY = -5,
 
 	/* Decreasing knot vector. */

@@ -39,12 +39,12 @@ extern "C" {
 ******************************************************************************/
 /**
  * The maximum number of knots a spline can have. This constant is strongly
- * related to TS_KNOT_EPSILON. The larger TS_MAX_NUM_KNOTS is, the less precise
- * TS_KNOT_EPSILON has to be (i.e., knots with greater distance are considered
- * equal). Likewise, the more precise TS_KNOTS_EPSILON is (i.e., knots with
- * smaller distance are considered equal), the less TS_MAX_NUM_KNOTS has to
- * be. By default, the relation between TS_MAX_NUM_KNOTS and TS_KNOT_EPSILON is
- * as follows:
+ * related to TS_KNOT_EPSILON in that the larger TS_MAX_NUM_KNOTS is, the less
+ * precise TS_KNOT_EPSILON has to be (i.e., knots with greater distance are
+ * considered equal). Likewise, the more precise TS_KNOTS_EPSILON is (i.e.,
+ * knots with smaller distance are considered equal), the less TS_MAX_NUM_KNOTS
+ * has to be. By default, the relation between TS_MAX_NUM_KNOTS and
+ * TS_KNOT_EPSILON is as follows:
  *
  *     TS_MAX_NUM_KNOTS = 1 / TS_KNOTS_EPSILON
  */
@@ -67,11 +67,11 @@ extern "C" {
 /**
  * If the distance between two knots falls below this threshold, they are
  * considered equal. Must be positive ( > 0 ). This constant is strongly
- * related to TS_MAX_NUM_KNOTS. The more precise TS_KNOT_EPSILON is (i.e.,
- * knots with smaller distance are considered equal), the less TS_MAX_NUM_KNOTS
- * has to be. Likewise, the larger TS_MAX_NUM_KNOTS is, the less precise
- * TS_KNOT_EPSILON has to be (i.e., knots with greater distance are considered
- * equal). By default, the relation between TS_KNOT_EPSILON and
+ * related to TS_MAX_NUM_KNOTS in that the more precise TS_KNOT_EPSILON is
+ * (i.e., knots with smaller distance are considered equal), the less
+ * TS_MAX_NUM_KNOTS has to be. Likewise, the larger TS_MAX_NUM_KNOTS is, the
+ * less precise TS_KNOT_EPSILON has to be (i.e., knots with greater distance
+ * are considered equal). By default, the relation between TS_KNOT_EPSILON and
  * TS_MAX_NUM_KNOTS is as follows:
  *
  *     TS_KNOT_EPSILON = 1 / TS_MAX_NUM_KNOTS
@@ -101,7 +101,27 @@ extern "C" {
 *                                                                             *
 * :: API Configuration                                                        *
 *                                                                             *
+* In the following section, different aspects of TinySpline's API can be      *
+* configured. It is recommended to configure the API by supplying the         *
+* corresponding preprocessor definition(s). That said, there is nothing wrong *
+* with editing the source code directly.                                      *
+*                                                                             *
 ******************************************************************************/
+/**
+ * Floating point numbers can be stored either in floats (single precision) or
+ * in doubles (double precision). By default, doubles are used. Note that this
+ * configuration affects the entire API (i.e., types are not mixed; all structs
+ * and functions rely only on tsReal). Float precision is primarily used in
+ * combination with GLUT because GLUT's API doesn't support doubles:
+ *
+ *     https://www.glprogramming.com/red/chapter12.html
+ *
+ * Generally, double precision is the right choice. Floats are mainly supported
+ * for legacy reasons. Yet, floats are not considered deprecated! If necessary,
+ * tsReal can also be typedefed to any other floating point representation. In
+ * this case, make sure to align TS_MAX_NUM_KNOTS and TS_KNOT_EPSILON
+ * (cf. Section "Predefined Constants").
+ */
 #ifdef TINYSPLINE_FLOAT_PRECISION
 typedef float tsReal;
 #else

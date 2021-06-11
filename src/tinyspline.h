@@ -169,29 +169,65 @@ typedef double tsReal;
  * Defines different error codes.
  */
 typedef enum {
-    TS_SUCCESS = 0, /**< No error. */
-    TS_MALLOC = -1, /**< Unable to allocate memory. */
-    TS_DIM_ZERO = -2, /**< Points with dimensionality 0. */
-    TS_DEG_GE_NCTRLP = -3, /**< degree >= num_control_points. */
-    TS_U_UNDEFINED = -4, /**< Undefined knot value. */
-    TS_MULTIPLICITY = -5, /**< multiplicity(u) > order */
-    TS_KNOTS_DECR = -6, /**< Decreasing knot vector. */
-    TS_NUM_KNOTS = -7, /**< Unexpected number of knots. */
-    TS_UNDERIVABLE = -8, /**< Spline is not derivable. */
-    TS_LCTRLP_DIM_MISMATCH = -10, /**< len_control_points % dim != 0. */
-    TS_IO_ERROR = -11, /**< Error while reading/writing a file. */
-    TS_PARSE_ERROR = -12, /**< Error while parsing a serialized entity. */
-    TS_INDEX_ERROR = -13, /**< Index does not exist. */
-    TS_NO_RESULT = -14, /**< Function returns without result. */
-    TS_NUM_POINTS = -15 /**< Unexpected number of points. */
+	/* No error. */
+	TS_SUCCESS = 0,
+
+	/* Memory cannot be allocated (malloc, realloc etc.). */
+	TS_MALLOC = -1,
+
+	/* Points have dimensionality 0. */
+	TS_DIM_ZERO = -2,
+
+	 /* degree >= num(control_points). */
+	TS_DEG_GE_NCTRLP = -3,
+
+	/* Knot is not within the domain. */
+	TS_U_UNDEFINED = -4,
+
+	 /* multiplicity(knot) > order */
+	TS_MULTIPLICITY = -5,
+
+	/* Decreasing knot vector. */
+	TS_KNOTS_DECR = -6,
+
+	/* Unexpected number of knots. */
+	TS_NUM_KNOTS = -7,
+
+	/* Spline is not derivable. */
+	TS_UNDERIVABLE = -8,
+
+	/* len(control_points) % dimension != 0. */
+	TS_LCTRLP_DIM_MISMATCH = -10,
+
+	/* Error while reading/writing a file. */
+	TS_IO_ERROR = -11,
+
+	/* Error while parsing a serialized entity. */
+	TS_PARSE_ERROR = -12,
+
+	/* Index does not exist (e.g., when accessing an array). */
+	TS_INDEX_ERROR = -13,
+
+	/* Function returns without result (e.g., approximations). */
+	TS_NO_RESULT = -14,
+
+	/* Unexpected number of points. */
+	TS_NUM_POINTS = -15
 } tsError;
 
 /**
- * Stores an error code (::tsError) as well as a corresponding error message.
+ * Stores an error code (::tsError) with a corresponding error message.
  */
 typedef struct {
-    tsError code; /**< The error code. */
-    char message[100]; /**< The corresponding error message. */
+	/* The error code. */
+	tsError code;
+
+	/*
+	 * The corresponding error message (encoded as c string). Memory is
+	 * allocated on stack in order to be able to provide a meaningful
+	 * message in the event of memory errors (see ::TS_MALLOC).
+	 */
+	char message[100];
 } tsStatus;
 
 #define TS_TRY(label, error, status)         \

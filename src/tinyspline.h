@@ -1,7 +1,7 @@
 /** @file */
 
 #ifndef TINYSPLINE_H
-#define	TINYSPLINE_H
+#define TINYSPLINE_H
 
 #include <stddef.h>
 

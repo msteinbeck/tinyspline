@@ -31,31 +31,57 @@ extern "C" {
 *                                                                             *
 * :: Predefined Constants                                                     *
 *                                                                             *
-* The following constants should only be changed with caution because         *
-* they have been aligned to maintain internal consistency. The default values *
-* should be suitable for almost all environments.                             *
+* The following constants have been aligned to maintain internal consistency  *
+* and should only be changed with great caution! Values have been chosen to   *
+* fit most environments. If changes should be necessary, please read the      *
+* documentation of constants beforehand.                                      *
 *                                                                             *
 ******************************************************************************/
 /**
- * Maximum number of knots of a spline.
+ * The maximum number of knots a spline can have. This constant is strongly
+ * related to TS_KNOT_EPSILON. The larger TS_MAX_NUM_KNOTS is, the less precise
+ * TS_KNOT_EPSILON has to be (i.e., knots with greater distance are considered
+ * equal). Likewise, the more precise TS_KNOTS_EPSILON is (i.e., knots with
+ * smaller distance are considered equal), the less TS_MAX_NUM_KNOTS has to
+ * be. By default, the relation between TS_MAX_NUM_KNOTS and TS_KNOT_EPSILON is
+ * as follows:
+ *
+ *     TS_MAX_NUM_KNOTS = 1 / TS_KNOTS_EPSILON
  */
 #define TS_MAX_NUM_KNOTS 10000
 
 /**
- * Default minimum of a spline's domain. This constant is used when setting up
- * new splines. Must be less than TS_DOMAIN_DEFAULT_MAX.
+ * The minimum of the domain of newly created splines. Must be less than
+ * TS_DOMAIN_DEFAULT_MAX. This constant is used only when creating new
+ * splines. After creation, the domain of a spline can be adjusted as needed.
  */
 #define TS_DOMAIN_DEFAULT_MIN 0.0f
 
 /**
- * Default maximum of a spline's domain. This constant is used when setting up
- * new splines. Must be greater than TS_DOMAIN_DEFAULT_MIN
+ * The maximum of the domain of newly created splines. Must be greater than
+ * TS_DOMAIN_DEFAULT_MIN. This constant is used only when creating new
+ * splines. After creation, the domain of a spline can be adjusted as needed.
  */
 #define TS_DOMAIN_DEFAULT_MAX 1.0f
 
 /**
  * If the distance between two knots falls below this threshold, they are
- * considered equal. Must be positive ( > 0 ).
+ * considered equal. Must be positive ( > 0 ). This constant is strongly
+ * related to TS_MAX_NUM_KNOTS. The more precise TS_KNOT_EPSILON is (i.e.,
+ * knots with smaller distance are considered equal), the less TS_MAX_NUM_KNOTS
+ * has to be. Likewise, the larger TS_MAX_NUM_KNOTS is, the less precise
+ * TS_KNOT_EPSILON has to be (i.e., knots with greater distance are considered
+ * equal). By default, the relation between TS_KNOT_EPSILON and
+ * TS_MAX_NUM_KNOTS is as follows:
+ *
+ *     TS_KNOT_EPSILON = 1 / TS_MAX_NUM_KNOTS
+ *
+ * It is recommended that TS_KNOT_EPSILON is aligned to the span of
+ * TS_DOMAIN_DEFAULT_MIN and TS_DOMAIN_DEFAULT_MAX. That is, adjacent floating
+ * point values in the domain [TS_DOMAIN_DEFAULT_MIN, TS_DOMAIN_DEFAULT_MAX]
+ * should not be equal according to TS_KNOT_EPSILON. This is in particular
+ * recommended when TS_KNOT_EPSILON and TS_MAX_NUN_KNOTS are related to each
+ * other as described above.
  */
 #define TS_KNOT_EPSILON 1e-4f
 
@@ -65,7 +91,7 @@ extern "C" {
  * any function of the C interface but is intended to provide a reasonable
  * default value for functions requiring an epsilon environment for comparing
  * control points (the C++ interface, for example, uses this as default value
- * for its optional parameters).
+ * for optional parameters).
  */
 #define TS_CONTROL_POINT_EPSILON 1e-6f
 

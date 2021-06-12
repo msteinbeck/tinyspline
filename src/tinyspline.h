@@ -39,12 +39,12 @@ extern "C" {
 ******************************************************************************/
 /**
  * The maximum number of knots a spline can have. This constant is strongly
- * related to TS_KNOT_EPSILON in that the larger TS_MAX_NUM_KNOTS is, the less
- * precise TS_KNOT_EPSILON has to be (i.e., knots with greater distance are
- * considered equal). Likewise, the more precise TS_KNOTS_EPSILON is (i.e.,
- * knots with smaller distance are considered equal), the less TS_MAX_NUM_KNOTS
- * has to be. By default, the relation between TS_MAX_NUM_KNOTS and
- * TS_KNOT_EPSILON is as follows:
+ * related to ::TS_KNOT_EPSILON in that the larger ::TS_MAX_NUM_KNOTS is, the
+ * less precise ::TS_KNOT_EPSILON has to be (i.e., knots with greater distance
+ * are considered equal). Likewise, the more precise ::TS_KNOT_EPSILON is
+ * (i.e., knots with smaller distance are considered equal), the less
+ * ::TS_MAX_NUM_KNOTS has to be. By default, the relation between
+ * ::TS_MAX_NUM_KNOTS and ::TS_KNOT_EPSILON is as follows:
  *
  *     TS_MAX_NUM_KNOTS = 1 / TS_KNOTS_EPSILON
  */
@@ -52,14 +52,14 @@ extern "C" {
 
 /**
  * The minimum of the domain of newly created splines. Must be less than
- * TS_DOMAIN_DEFAULT_MAX. This constant is used only when creating new
+ * ::TS_DOMAIN_DEFAULT_MAX. This constant is used only when creating new
  * splines. After creation, the domain of a spline can be adjusted as needed.
  */
 #define TS_DOMAIN_DEFAULT_MIN 0.0f
 
 /**
  * The maximum of the domain of newly created splines. Must be greater than
- * TS_DOMAIN_DEFAULT_MIN. This constant is used only when creating new
+ * ::TS_DOMAIN_DEFAULT_MIN. This constant is used only when creating new
  * splines. After creation, the domain of a spline can be adjusted as needed.
  */
 #define TS_DOMAIN_DEFAULT_MAX 1.0f
@@ -67,31 +67,30 @@ extern "C" {
 /**
  * If the distance between two knots falls below this threshold, they are
  * considered equal. Must be positive ( > 0 ). This constant is strongly
- * related to TS_MAX_NUM_KNOTS in that the more precise TS_KNOT_EPSILON is
+ * related to ::TS_MAX_NUM_KNOTS in that the more precise ::TS_KNOT_EPSILON is
  * (i.e., knots with smaller distance are considered equal), the less
- * TS_MAX_NUM_KNOTS has to be. Likewise, the larger TS_MAX_NUM_KNOTS is, the
- * less precise TS_KNOT_EPSILON has to be (i.e., knots with greater distance
- * are considered equal). By default, the relation between TS_KNOT_EPSILON and
- * TS_MAX_NUM_KNOTS is as follows:
+ * ::TS_MAX_NUM_KNOTS has to be. Likewise, the larger ::TS_MAX_NUM_KNOTS is,
+ * the less precise ::TS_KNOT_EPSILON has to be (i.e., knots with greater
+ * distance are considered equal). By default, the relation between
+ * ::TS_KNOT_EPSILON and ::TS_MAX_NUM_KNOTS is as follows:
  *
  *     TS_KNOT_EPSILON = 1 / TS_MAX_NUM_KNOTS
  *
- * It is recommended that TS_KNOT_EPSILON is aligned to the span of
- * TS_DOMAIN_DEFAULT_MIN and TS_DOMAIN_DEFAULT_MAX. That is, adjacent floating
- * point values in the domain [TS_DOMAIN_DEFAULT_MIN, TS_DOMAIN_DEFAULT_MAX]
- * should not be equal according to TS_KNOT_EPSILON. This is in particular
- * recommended when TS_KNOT_EPSILON and TS_MAX_NUN_KNOTS are related to each
- * other as described above.
+ * It is recommended that ::TS_KNOT_EPSILON is aligned to the span of
+ * ::TS_DOMAIN_DEFAULT_MIN and ::TS_DOMAIN_DEFAULT_MAX. That is, adjacent
+ * floating point values in the domain [::TS_DOMAIN_DEFAULT_MIN,
+ * ::TS_DOMAIN_DEFAULT_MAX] should not be equal according to
+ * ::TS_KNOT_EPSILON. This is in particular recommended when ::TS_KNOT_EPSILON
+ * and ::TS_MAX_NUM_KNOTS are related to each other as described above.
  */
 #define TS_KNOT_EPSILON 1e-4f
 
 /**
  * If the distance between two control points is less than or equal to this
- * threshold, they are considered equal. This constant is not used directly by
- * any function of the C interface but is intended to provide a reasonable
- * default value for functions requiring an epsilon environment for comparing
- * control points (the C++ interface, for example, uses this as default value
- * for optional parameters).
+ * threshold, they are considered equal. This constant is not used by the C
+ * interface. Rather, it is intended as reasonable default value for functions
+ * requiring an epsilon environment for comparing control points (the C++
+ * interface, for example, uses this as default value for optional parameters).
  */
 #define TS_CONTROL_POINT_EPSILON 1e-6f
 

@@ -59,9 +59,12 @@ tinyspline::DeBoorNet & tinyspline::DeBoorNet::operator=(
 	const tinyspline::DeBoorNet &other)
 {
 	if (&other != this) {
+		tsDeBoorNet data = ts_deboornet_init();
 		tsStatus status;
-		if (ts_deboornet_copy(&other.net, &net, &status))
+		if (ts_deboornet_copy(&other.net, &data, &status))
 			throw std::runtime_error(status.message);
+		ts_deboornet_free(&net);
+		ts_deboornet_move(&data, &net);
 	}
 	return *this;
 }
@@ -299,9 +302,12 @@ tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {
 	if (&other != this) {
+		tsBSpline data = ts_bspline_init();
 		tsStatus status;
-		if (ts_bspline_copy(&other.spline, &spline, &status))
+		if (ts_bspline_copy(&other.spline, &data, &status))
 			throw std::runtime_error(status.message);
+		ts_bspline_free(&spline);
+		ts_bspline_move(&data, &spline);
 	}
 	return *this;
 }

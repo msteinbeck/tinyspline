@@ -36,10 +36,10 @@
 * DeBoorNet                                                                   *
 *                                                                             *
 ******************************************************************************/
-tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &src)
+tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &data)
 : net(ts_deboornet_init())
 {
-	ts_deboornet_move(&src, &net);
+	ts_deboornet_move(&data, &net);
 }
 
 tinyspline::DeBoorNet::DeBoorNet(const tinyspline::DeBoorNet &other)

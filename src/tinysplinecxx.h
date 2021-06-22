@@ -58,7 +58,7 @@ private:
 	tsDeBoorNet net;
 
 	/* Constructors & Destructors */
-	explicit DeBoorNet(tsDeBoorNet &src);
+	explicit DeBoorNet(tsDeBoorNet &data);
 
 	friend class BSpline;
 

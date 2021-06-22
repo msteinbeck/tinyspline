@@ -197,10 +197,10 @@ std::string tinyspline::Domain::toString() const
 * BSpline                                                                     *
 *                                                                             *
 ******************************************************************************/
-tinyspline::BSpline::BSpline(tsBSpline *data)
+tinyspline::BSpline::BSpline(tsBSpline &data)
 : spline(ts_bspline_init())
 {
-	ts_bspline_move(data, &spline);
+	ts_bspline_move(&data, &spline);
 }
 
 tinyspline::BSpline::BSpline()
@@ -251,7 +251,7 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
 			std_real_vector_read(points)size()/dimension,
 			dimension, &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
@@ -277,7 +277,7 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 			dimension, alpha, fst, lst, epsilon, &data,
 			&status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
@@ -286,7 +286,7 @@ tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
 	tsStatus status;
 	if (ts_bspline_parse_json(json.c_str(), &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::load(std::string path)
@@ -295,7 +295,7 @@ tinyspline::BSpline tinyspline::BSpline::load(std::string path)
 	tsStatus status;
 	if (ts_bspline_load(path.c_str(), &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline & tinyspline::BSpline::operator=(
@@ -549,7 +549,7 @@ tinyspline::BSpline tinyspline::BSpline::insertKnot(tinyspline::real u,
 	tsStatus status;
 	if (ts_bspline_insert_knot(&spline, u, n, &data, &k, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::split(tinyspline::real u) const
@@ -559,7 +559,7 @@ tinyspline::BSpline tinyspline::BSpline::split(tinyspline::real u) const
 	tsStatus status;
 	if (ts_bspline_split(&spline, u, &data, &k, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::tension(
@@ -569,7 +569,7 @@ tinyspline::BSpline tinyspline::BSpline::tension(
 	tsStatus status;
 	if (ts_bspline_tension(&spline, tension, &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::toBeziers() const
@@ -578,7 +578,7 @@ tinyspline::BSpline tinyspline::BSpline::toBeziers() const
 	tsStatus status;
 	if (ts_bspline_to_beziers(&spline, &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
@@ -587,7 +587,7 @@ tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 	tsStatus status;
 	if (ts_bspline_derive(&spline, n, epsilon, &data, &status))
 		throw std::runtime_error(status.message);
-	return BSpline(&data);
+	return BSpline(data);
 }
 
 std::string tinyspline::BSpline::toString() const

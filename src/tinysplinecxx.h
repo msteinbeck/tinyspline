@@ -173,7 +173,9 @@ public:
 
 private:
 	tsBSpline spline;
-	explicit BSpline(tsBSpline *data);
+
+	/* Constructors & Destructors */
+	explicit BSpline(tsBSpline &data);
 
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:

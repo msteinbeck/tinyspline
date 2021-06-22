@@ -58,7 +58,7 @@ private:
 	tsDeBoorNet net;
 
 	/* Constructors & Destructors */
-	explicit DeBoorNet(tsDeBoorNet &src);
+	explicit DeBoorNet(tsDeBoorNet &data);
 
 	friend class BSpline;
 
@@ -138,7 +138,6 @@ public:
 	std_real_vector_out controlPointAt(size_t index) const;
 	std::vector<real> knots() const;
 	real knotAt(size_t index) const;
-	tsBSpline * data();
 
 	/* Query */
 	size_t numControlPoints() const;
@@ -174,6 +173,9 @@ public:
 
 private:
 	tsBSpline spline;
+
+	/* Constructors & Destructors */
+	explicit BSpline(tsBSpline &data);
 
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:

@@ -36,10 +36,10 @@
 * DeBoorNet                                                                   *
 *                                                                             *
 ******************************************************************************/
-tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &src)
+tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &data)
 : net(ts_deboornet_init())
 {
-	ts_deboornet_move(&src, &net);
+	ts_deboornet_move(&data, &net);
 }
 
 tinyspline::DeBoorNet::DeBoorNet(const tinyspline::DeBoorNet &other)
@@ -59,9 +59,12 @@ tinyspline::DeBoorNet & tinyspline::DeBoorNet::operator=(
 	const tinyspline::DeBoorNet &other)
 {
 	if (&other != this) {
+		tsDeBoorNet data = ts_deboornet_init();
 		tsStatus status;
-		if (ts_deboornet_copy(&other.net, &net, &status))
+		if (ts_deboornet_copy(&other.net, &data, &status))
 			throw std::runtime_error(status.message);
+		ts_deboornet_free(&net);
+		ts_deboornet_move(&data, &net);
 	}
 	return *this;
 }
@@ -194,6 +197,12 @@ std::string tinyspline::Domain::toString() const
 * BSpline                                                                     *
 *                                                                             *
 ******************************************************************************/
+tinyspline::BSpline::BSpline(tsBSpline &data)
+: spline(ts_bspline_init())
+{
+	ts_bspline_move(&data, &spline);
+}
+
 tinyspline::BSpline::BSpline()
 : spline(ts_bspline_init())
 {
@@ -235,14 +244,14 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
 		throw std::runtime_error("unsupported dimension: 0");
 	if (std_real_vector_read(points)size() % dimension != 0)
 		throw std::runtime_error("#points % dimension != 0");
-	tinyspline::BSpline bspline;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
 	if (ts_bspline_interpolate_cubic_natural(
 			std_real_vector_read(points)data(),
 			std_real_vector_read(points)size()/dimension,
-			dimension, bspline.data(), &status))
+			dimension, &data, &status))
 		throw std::runtime_error(status.message);
-	return bspline;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
@@ -260,42 +269,45 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 	tsReal *lst = NULL;
 	if (last && last->size() >= dimension)
 		lst = last->data();
-	tinyspline::BSpline bspline;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
 	if (ts_bspline_interpolate_catmull_rom(
 			std_real_vector_read(points)data(),
 			std_real_vector_read(points)size()/dimension,
-			dimension, alpha, fst, lst, epsilon, bspline.data(),
+			dimension, alpha, fst, lst, epsilon, &data,
 			&status))
 		throw std::runtime_error(status.message);
-	return bspline;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
 {
-	tinyspline::BSpline bspline;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_parse_json(json.c_str(), bspline.data(), &status))
+	if (ts_bspline_parse_json(json.c_str(), &data, &status))
 		throw std::runtime_error(status.message);
-	return bspline;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::load(std::string path)
 {
-	tinyspline::BSpline bspline;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_load(path.c_str(), bspline.data(), &status))
+	if (ts_bspline_load(path.c_str(), &data, &status))
 		throw std::runtime_error(status.message);
-	return bspline;
+	return BSpline(data);
 }
 
 tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {
 	if (&other != this) {
+		tsBSpline data = ts_bspline_init();
 		tsStatus status;
-		if (ts_bspline_copy(&other.spline, &spline, &status))
+		if (ts_bspline_copy(&other.spline, &data, &status))
 			throw std::runtime_error(status.message);
+		ts_bspline_free(&spline);
+		ts_bspline_move(&data, &spline);
 	}
 	return *this;
 }
@@ -370,11 +382,6 @@ tinyspline::real tinyspline::BSpline::knotAt(size_t index) const
 	if (ts_bspline_knot_at(&spline, index, &knot, &status))
 		throw std::runtime_error(status.message);
 	return knot;
-}
-
-tsBSpline * tinyspline::BSpline::data()
-{
-	return &spline;
 }
 
 size_t tinyspline::BSpline::numControlPoints() const
@@ -537,50 +544,50 @@ void tinyspline::BSpline::setKnotAt(size_t index, tinyspline::real knot)
 tinyspline::BSpline tinyspline::BSpline::insertKnot(tinyspline::real u,
 	size_t n) const
 {
-	tinyspline::BSpline bs;
+	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_insert_knot(&spline, u, n, &bs.spline, &k, &status))
+	if (ts_bspline_insert_knot(&spline, u, n, &data, &k, &status))
 		throw std::runtime_error(status.message);
-	return bs;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::split(tinyspline::real u) const
 {
-	tinyspline::BSpline bs;
+	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_split(&spline, u, &bs.spline, &k, &status))
+	if (ts_bspline_split(&spline, u, &data, &k, &status))
 		throw std::runtime_error(status.message);
-	return bs;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::tension(
 	tinyspline::real tension) const
 {
-	tinyspline::BSpline result;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_tension(&spline, tension, &result.spline, &status))
+	if (ts_bspline_tension(&spline, tension, &data, &status))
 		throw std::runtime_error(status.message);
-	return result;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::toBeziers() const
 {
-	tinyspline::BSpline bs;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_to_beziers(&spline, &bs.spline, &status))
+	if (ts_bspline_to_beziers(&spline, &data, &status))
 		throw std::runtime_error(status.message);
-	return bs;
+	return BSpline(data);
 }
 
 tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 {
-	tinyspline::BSpline bs;
+	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_derive(&spline, n, epsilon, &bs.spline, &status))
+	if (ts_bspline_derive(&spline, n, epsilon, &data, &status))
 		throw std::runtime_error(status.message);
-	return bs;
+	return BSpline(data);
 }
 
 std::string tinyspline::BSpline::toString() const

@@ -1573,9 +1573,11 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
+	const size_t order = ts_bspline_order(spline);
 	const size_t dim = ts_bspline_dimension(spline);
+	const tsReal knot = ts_deboornet_knot(deBoorNet);
 	const size_t k = ts_deboornet_index(deBoorNet);
-	const size_t s = ts_deboornet_multiplicity(deBoorNet);
+	const size_t mult = ts_deboornet_multiplicity(deBoorNet);
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
 
@@ -1592,8 +1594,15 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 
 	tsError err;
 
-	if (n == 0 || s+n > ts_bspline_order(spline))
+	INIT_OUT_BSPLINE(spline, result)
+	if (n == 0)
 		return ts_bspline_copy(spline, result, status);
+	if (mult + n > order) {
+		TS_RETURN_4(status, TS_MULTIPLICITY,
+			"multiplicity(%f) (%lu) + %lu > order (%lu)",
+			knot, (unsigned long) mult, (unsigned long) n,
+			(unsigned long) order)
+	}
 
 	TS_CALL_ROE(err, ts_int_bspline_resize(
 		spline, (int)n, 1, result, status))
@@ -1604,8 +1613,10 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	num_ctrlp_result = ts_bspline_num_control_points(result);
 	num_knots_result = ts_bspline_num_knots(result);
 
-	/* n > 0 implies s <= deg implies a regular evaluation implies h+1 is
-	 * valid. */
+	/* mult + n <= deg + 1 (order) with n >= 1
+	 * =>  mult <= deg
+	 * =>  regular evaluation
+	 * =>  N = h + 1 is valid */
 	N = ts_deboornet_num_insertions(deBoorNet) + 1;
 
 	/* 1. Copy all necessary control points and knots from
@@ -1653,9 +1664,12 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 
 	from -= dim;
 	to += (N-n)*dim;
-	/* N = h+1 with h = deg-s (ts_int_bspline_eval) implies
-	 * N = deg-s+1 = order-s. n <= order-s implies
-	 * N-n+1 >= order-s - order-s + 1 = 1. Thus, -(int)(N-n+1) <= -1. */
+	/* N = h+1 with h = deg-mult (ts_int_bspline_eval)
+	 * =>  N = deg-mult+1 = order-mult.
+	 *
+	 * n <= order-mult
+	 * =>  N-n+1 >= order-mult - order-mult + 1 = 1
+	 * =>  -(int)(N-n+1) <= -1. */
 	stride = -(int)(N-n+1) * (int)dim;
 
 	for (i = 0; i < n; i++) {                                      /* c) */
@@ -1667,7 +1681,7 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	/* copy knots */
 	to = knots_result + k+1;
 	for (i = 0; i < n; i++) {                                      /* d) */
-		*to = ts_deboornet_knot(deBoorNet);
+		*to = knot;
 		to++;
 	}
 	TS_RETURN_SUCCESS(status)

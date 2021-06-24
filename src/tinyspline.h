@@ -310,6 +310,15 @@ typedef struct {
 	return error;                                              \
 }
 
+#define TS_RETURN_4(status, error, msg, arg1, arg2, arg3, arg4)          \
+{                                                                        \
+	if ((status) != NULL) {                                          \
+		(status)->code = error;                                  \
+		sprintf((status)->message, msg, arg1, arg2, arg3, arg4); \
+	}                                                                \
+	return error;                                                    \
+}
+
 #define TS_THROW_0(label, error, status, val, msg) \
 {                                                  \
 	(error) = val;                             \
@@ -348,6 +357,16 @@ typedef struct {
 		sprintf((status)->message, msg, arg1, arg2, arg3);   \
 	}                                                            \
 	goto __ ## label ## __;                                      \
+}
+
+#define TS_THROW_4(label, error, status, val, msg, arg1, arg2, arg3, arg4) \
+{                                                                          \
+	(error) = val;                                                     \
+	if ((status) != NULL) {                                            \
+		(status)->code = val;                                      \
+		sprintf((status)->message, msg, arg1, arg2, arg3, arg4);   \
+	}                                                                  \
+	goto __ ## label ## __;                                            \
 }
 
 
@@ -1546,30 +1565,36 @@ tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsReal epsilon, tsBSpline *derivative, tsStatus *status);
 
 /**
- * Inserts the knot \p u up to \p num times into the knot vector of \p spline
- * and stores the result in \p result. Creates a deep copy of \p spline if
- * \p spline != \p result.
+ * Inserts \p knot \p num times into the knot vector of \p spline and stores
+ * the result in \p result. Creates a deep copy of \p spline if \p spline !=
+ * \p result. The operation fails if \p result would have an invalid knot
+ * vector ( i.e., multiplicity(\p knot) > order(\p result) ).
  * 
  * @param[in] spline
- * 	The spline with its knot vector into which \p u is inserted up to
- * 	\p num times.
- * @param[in] u
+ * 	The spline into which \p knot is inserted \p num times.
+ * @param[in] knot
  * 	The knot to insert.
  * @param[in] num
- * 	How many times \p u should be inserted.
+ * 	How many times \p knot should be inserted.
  * @param[out] result
  * 	The output spline.
  * @param[out] k
- * 	Stores the last index of \p u in \p result.
+ * 	Stores the last index of \p knot in \p result.
  * @param status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
+ * @return TS_U_UNDEFINED
+ * 	If \p knot is not within the domain of \p spline.
+ * @return TS_MULTIPLICITY
+ * 	If the multiplicity of \p knot in \p spline plus \p num is greater than
+ * 	the order of \p spline.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
 tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline,
-	tsReal u, size_t num, tsBSpline *result, size_t *k, tsStatus *status);
+	tsReal knot, size_t num, tsBSpline *result, size_t *k,
+	tsStatus *status);
 
 /**
  * Splits \p spline at knot value \p u and stores the result in \p split. That

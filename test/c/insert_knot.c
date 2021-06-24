@@ -394,11 +394,79 @@ void insert_knot_three_times(CuTest *tc)
 	TS_END_TRY
 }
 
+void insert_knot_too_many(CuTest *tc) {
+/* ================================= Set Up ================================ */
+	const size_t num_insertions = DEGREE + 1;
+	const tsReal knot_to_insert = 0.25f;
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline result = ts_bspline_init();
+	size_t k = 0;
+	tsStatus status;
+
+	TS_TRY(try, status.code, &status)
+
+/* ================================= Given ================================= */
+		TS_CALL(try, status.code, ts_bspline_new(
+			NUM_CTRLP, DIMENSION, DEGREE,
+			TS_CLAMPED, &spline, &status))
+
+/* ================================= When ================================== */
+		TS_CALL(try, status.code, ts_bspline_insert_knot(
+			&spline, knot_to_insert, num_insertions, &result, &k,
+			&status))
+
+/* ================================= Then ================================== */
+		CuFail(tc, "Expected TS_NUM_KNOTS but operation succeeded");
+	TS_CATCH(status.code)
+		CuAssertIntEquals(tc, TS_MULTIPLICITY, status.code);
+
+/* =============================== Tear Down =============================== */
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_bspline_free(&result);
+	TS_END_TRY
+}
+
+void insert_knot_way_too_many(CuTest *tc) {
+/* ================================= Set Up ================================ */
+	const size_t num_insertions = DEGREE + 1 + 5;
+	const tsReal knot_to_insert = 0.75f;
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline result = ts_bspline_init();
+	size_t k = 0;
+	tsStatus status;
+
+	TS_TRY(try, status.code, &status)
+
+/* ================================= Given ================================= */
+		TS_CALL(try, status.code, ts_bspline_new(
+			NUM_CTRLP, DIMENSION, DEGREE,
+			TS_CLAMPED, &spline, &status))
+
+/* ================================= When ================================== */
+		TS_CALL(try, status.code, ts_bspline_insert_knot(
+			&spline, knot_to_insert, num_insertions, &result, &k,
+			&status))
+
+/* ================================= Then ================================== */
+		CuFail(tc, "Expected TS_NUM_KNOTS but operation succeeded");
+	TS_CATCH(status.code)
+		CuAssertIntEquals(tc, TS_MULTIPLICITY, status.code);
+
+/* =============================== Tear Down =============================== */
+	TS_FINALLY
+		ts_bspline_free(&spline);
+		ts_bspline_free(&result);
+	TS_END_TRY
+}
+
 CuSuite* get_insert_knot_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, insert_knot_once);
 	SUITE_ADD_TEST(suite, insert_knot_twice);
 	SUITE_ADD_TEST(suite, insert_knot_three_times);
+	SUITE_ADD_TEST(suite, insert_knot_too_many);
+	SUITE_ADD_TEST(suite, insert_knot_way_too_many);
 	return suite;
 }

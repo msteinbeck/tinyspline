@@ -1832,6 +1832,66 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
+	tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
+{
+	const tsBSpline *smaller, *larger;
+	tsBSpline *smaller_out, *larger_out, worker;
+	size_t missing, inserts;
+	tsReal min, max, nextKnot;
+	tsDeBoorNet net;
+	tsError err;
+
+	INIT_OUT_BSPLINE(s1, s1_out)
+	INIT_OUT_BSPLINE(s2, s2_out)
+	ts_int_bspline_init(&worker);
+	TS_TRY(try, err, status)
+		/* TODO: Spline elevation */
+		if (ts_bspline_num_control_points(s1) <
+				ts_bspline_num_control_points(s2)) {
+			smaller = s1; smaller_out = s1_out;
+			larger  = s2; larger_out  = s2_out;
+
+		} else {
+			smaller = s2; smaller_out = s2_out;
+			larger  = s1; larger_out  = s1_out;
+		}
+		TS_CALL(try, err, ts_bspline_copy(
+			smaller, &worker, status))
+		TS_CALL(try, err, ts_bspline_copy(
+			larger, larger_out, status))
+		TS_CALL(try, err, ts_int_deboornet_new(
+			&worker, &net, status))
+
+		ts_bspline_domain(&worker, &min, &max);
+		nextKnot = min + 2*TS_KNOT_EPSILON;
+		missing = ts_bspline_num_control_points(larger) -
+			ts_bspline_num_control_points(&worker);
+		while (missing > 0) {
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				&worker, nextKnot, &net, status))
+			inserts = ts_deboornet_num_insertions(&net);
+			if (missing < inserts)
+				inserts = missing;
+			TS_CALL(try, err, ts_int_bspline_insert_knot(
+				&worker, &net, inserts, &worker, status))
+			missing -= inserts;
+			nextKnot += 2*TS_KNOT_EPSILON;
+		}
+
+		if (smaller == smaller_out)
+			ts_bspline_free(smaller_out);
+		ts_bspline_move(&worker, smaller_out);
+	TS_FINALLY
+		if (s1 != s1_out)
+			ts_bspline_free(s1_out);
+		if (s2 != s2_out)
+			ts_bspline_free(s2_out);
+		ts_bspline_free(&worker);
+		ts_deboornet_free(&net);
+	TS_END_TRY_RETURN(err)
+}
+
 
 
 /******************************************************************************

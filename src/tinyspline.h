@@ -1673,6 +1673,10 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
 tsError TINYSPLINE_API ts_bspline_to_beziers(const tsBSpline *spline,
 	tsBSpline *beziers, tsStatus *status);
 
+tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
+	const tsBSpline *s2, tsBSpline *s1_out, tsBSpline *s2_out,
+	tsStatus *status);
+
 
 
 /******************************************************************************

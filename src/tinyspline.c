@@ -1863,7 +1863,7 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 			 * this creates too many control points (due to
 			 * increasing degree), which are removed at the end of
 			 * this function. */
-			&worker, (num_beziers+1) * amount, 1, &worker,
+			&worker, (int) ((num_beziers+1) * amount), 1, &worker,
 			status));
 		dim = ts_bspline_dimension(&worker);
 		order = ts_bspline_order(&worker);

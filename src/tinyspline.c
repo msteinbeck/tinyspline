@@ -1839,7 +1839,7 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 	size_t dim, order;
 	tsReal *ctrlp, *knots;
 	size_t num_beziers, i, a, c, d, offset, idx;
-	tsReal f, f_hat;
+	tsReal f, f_hat, *first, *last;
 	tsError err;
 
 	/* Trivial case. */
@@ -2026,8 +2026,42 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 			order++;
 		}
 
+		/* Combine bezier curves. */
+		d = 0; /* Number of removed knots/control points. */
+		for (i = 0; i < num_beziers - 1; i++) {
+			/* Is the last control point of bezier curve `i' equal
+			 * to the first control point of bezier curve `i+1'? */
+			last = ctrlp + (
+				i * order /* base location of `i' */
+				- d /* minus the number of removed values */
+				+ (order - 1) /* jump to last control point */
+				) * dim;
+			first = last + dim; /* next control point */
+			if (ts_distance(last, first, dim) < 0.0001) {
+				/* Move control points. */
+				memmove(last, first, (num_beziers - 1 - i) *
+					order * dim * sizeof(tsReal));
+
+				/* Move knots. `last' is the last knot of the
+				 * second knot group of bezier curve `i'.
+				 * `first' is the first knot of the first knot
+				 * group of bezier curve `i+1'. The
+				 * calculations are quite similar to those for
+				 * the control points `last' and `first' (see
+				 * above). */
+				last = knots + i * order - d + (2 * order - 1);
+				first = last + 1;
+				memmove(last, first, (num_beziers - 1 - i) *
+					order * sizeof(tsReal));
+
+				/* Removed one knot/control point. */
+				d++;
+			}
+		}
+
 		/* Repair internal state. */
 		worker.pImpl->deg = order - 1;
+		worker.pImpl->n_knots -= d;
 		worker.pImpl->n_ctrlp = ts_bspline_num_knots(&worker) - order;
 		memmove(ts_int_bspline_access_knots(&worker),
 			knots, ts_bspline_sof_knots(&worker));

@@ -1923,20 +1923,28 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 				/* Location of current bezier curve. Each
 				 * elevation (`a') inserts an additional
 				 * control point into every bezier curve and
-				 * increases the degree (order) by one. The
+				 * increases the degree (`order') by one. The
 				 * location is thus made up of two parts:
 				 *
-				 * i) `i * order', which is the location with
-				 * respect to the increasing order but
+				 * i) `i * order', which is the location taking
+				 * into account the increasing order but
 				 * neglecting the control points that are to be
-				 * inserted before the current bezier curve.
+				 * inserted before the current bezier curve. It
+				 * can be seen as some sort of base location:
+				 * Where would the bezier curve be (with
+				 * respect to the current value of `order') if
+				 * no additional control points had to be
+				 * inserted?
 				 *
 				 * ii) `i * (amount - a)', which is the total
 				 * number of control points to be inserted
 				 * before the current bezier curve
-				 * (`i * amount') with respect to the
-				 * increasing order (subtracting `a' from
-				 * `amount'). */
+				 * (`i * amount') taking into account the
+				 * increasing order (`order' and `a' are
+				 * increased equally, thus, `a' compensates for
+				 * the increasing value of `order'). This part
+				 * adds the necessary offset to the base
+				 * location (`i * order'). */
 				offset = (i * order + i * (amount - a)) * dim;
 				/* Duplicate last control point to the new end
 				 * position (next control point). */
@@ -1979,20 +1987,28 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 				/* Location of current knot group. Each
 				 * elevation (`a') inserts an additional
 				 * knot into the knot vector of every bezier
-				 * curve and increases the degree (order) by
+				 * curve and increases the degree (`order') by
 				 * one. The location is thus made up of two
 				 * parts:
 				 *
-				 * i) `i * order', which is the location with
-				 * respect to the increasing order but
+				 * i) `i * order', which is the location taking
+				 * into account the increasing order but
 				 * neglecting the knots that are to be inserted
-				 * before the current knot group.
+				 * before the current knot group. It can be
+				 * seen as some sort of base location: Where
+				 * would the knot group be (with respect to the
+				 * current value of `order') if no additional
+				 * knots had to be inserted?
 				 *
 				 * ii) `i * (amount - a)', which is the total
 				 * number of knots to be inserted before the
-				 * current knot group (`i * amount') with
-				 * respect to the increasing order (subtracting
-				 * `a' from `amount'). */
+				 * current knot group (`i * amount') taking
+				 * into account the increasing order (`order'
+				 * and `a' are increased equally, thus, `a'
+				 * compensates for the increasing value of
+				 * `order'). This part adds the necessary
+				 * offset to the base location
+				 * (`i * order'). */
 				offset = i * order + i * (amount - a);
 				/* Duplicate knot. */
 				knots[offset + order] = knots[offset];

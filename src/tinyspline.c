@@ -2084,8 +2084,7 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
 {
-	const tsBSpline *smaller, *larger;
-	tsBSpline *smaller_out, *larger_out, worker;
+	tsBSpline *smaller, *larger, worker;
 	size_t missing, inserts;
 	tsReal min, max, nextKnot;
 	tsDeBoorNet net;
@@ -2093,27 +2092,48 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 
 	INIT_OUT_BSPLINE(s1, s1_out)
 	INIT_OUT_BSPLINE(s2, s2_out)
-	ts_int_bspline_init(&worker);
+	worker = ts_bspline_init();
+	smaller = larger = NULL;
 	TS_TRY(try, err, status)
-		/* TODO: Spline elevation */
-		if (ts_bspline_num_control_points(s1) <
-				ts_bspline_num_control_points(s2)) {
-			smaller = s1; smaller_out = s1_out;
-			larger  = s2; larger_out  = s2_out;
-
+		/* Elevate degree if necessary. After this, `s1_out' and
+		 * `s2_out' are set up. */
+		if (ts_bspline_degree(s1) < ts_bspline_degree(s2)) {
+			TS_CALL(try, err, ts_bspline_elevate_degree(s1,
+				ts_bspline_degree(s2) - ts_bspline_degree(s1),
+				s1_out, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s2, s2_out, status))
+		} else if (ts_bspline_degree(s2) < ts_bspline_degree(s1)) {
+			TS_CALL(try, err, ts_bspline_elevate_degree(s2,
+				ts_bspline_degree(s1) - ts_bspline_degree(s2),
+				s2_out, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s1, s1_out, status))
 		} else {
-			smaller = s2; smaller_out = s2_out;
-			larger  = s1; larger_out  = s1_out;
+			TS_CALL(try, err, ts_bspline_copy(
+				s1, s1_out, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s2, s2_out, status))
+		}
+
+		/* Set up `smaller', `larger', and `worker'. */
+		if (ts_bspline_num_control_points(s1_out) <
+				ts_bspline_num_control_points(s2_out)) {
+			smaller = s1_out;
+			larger  = s2_out;
+		} else {
+			smaller = s2_out;
+			larger  = s1_out;
 		}
 		TS_CALL(try, err, ts_bspline_copy(
 			smaller, &worker, status))
-		TS_CALL(try, err, ts_bspline_copy(
-			larger, larger_out, status))
 		TS_CALL(try, err, ts_int_deboornet_new(
 			&worker, &net, status))
 
+		/* Insert knots into `smaller' until it has the same number of
+		 * control points as `larger'. */
 		ts_bspline_domain(&worker, &min, &max);
-		nextKnot = min + 2*TS_KNOT_EPSILON;
+		nextKnot = ((max - min) / TS_MAX_NUM_KNOTS) + min;
 		missing = ts_bspline_num_control_points(larger) -
 			ts_bspline_num_control_points(&worker);
 		while (missing > 0) {
@@ -2125,17 +2145,22 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 			TS_CALL(try, err, ts_int_bspline_insert_knot(
 				&worker, &net, inserts, &worker, status))
 			missing -= inserts;
-			nextKnot += 2*TS_KNOT_EPSILON;
+			nextKnot += (max - min) / TS_MAX_NUM_KNOTS;
+			if (nextKnot > max) {
+				TS_THROW_0(try, err, status, TS_NO_RESULT,
+					"no more knots for insertion")
+			}
 		}
 
-		if (smaller == smaller_out)
-			ts_bspline_free(smaller_out);
-		ts_bspline_move(&worker, smaller_out);
-	TS_FINALLY
+		if (smaller == s1 || smaller == s2)
+			ts_bspline_free(smaller);
+		ts_bspline_move(&worker, smaller);
+	TS_CATCH(err)
 		if (s1 != s1_out)
 			ts_bspline_free(s1_out);
 		if (s2 != s2_out)
 			ts_bspline_free(s2_out);
+	TS_FINALLY
 		ts_bspline_free(&worker);
 		ts_deboornet_free(&net);
 	TS_END_TRY_RETURN(err)

@@ -36,7 +36,8 @@ void align_point_with_spline(CuTest *tc)
 		spline_ptr = spline.pImpl;
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&spline, &point, &spline, &point_aligned, &status))
+			&spline, &point, CTRLP_EPSILON, &spline,
+			&point_aligned, &status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, point.pImpl != point_aligned.pImpl);
 		CuAssertTrue(tc, spline.pImpl == spline_ptr);
@@ -71,7 +72,8 @@ void align_line_with_spline(CuTest *tc)
 		spline_ptr = spline.pImpl;
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&line, &spline, &line_aligned, &spline, &status))
+			&line, &spline, CTRLP_EPSILON, &line_aligned, &spline,
+			&status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, line.pImpl != line_aligned.pImpl);
 		CuAssertTrue(tc, spline.pImpl == spline_ptr);
@@ -101,7 +103,8 @@ void align_spline_to_itself(CuTest *tc)
 			&spline, &copy, &status))
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&spline, &spline, &spline, &spline, &status))
+			&spline, &spline, CTRLP_EPSILON, &spline, &spline,
+			&status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, spline.pImpl != copy.pImpl);
 		assert_equal_shape(tc, &spline, &copy);

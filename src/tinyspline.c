@@ -1833,7 +1833,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 }
 
 tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
-	tsBSpline *elevated, tsStatus * status)
+	tsReal epsilon, tsBSpline *elevated, tsStatus * status)
 {
 	tsBSpline worker;
 	size_t dim, order;
@@ -2037,7 +2037,7 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 				+ (order - 1) /* jump to last control point */
 				) * dim;
 			first = last + dim; /* next control point */
-			if (ts_distance(last, first, dim) < 0.0001) {
+			if (ts_distance(last, first, dim) <= epsilon) {
 				/* Move control points. */
 				memmove(last, first, (num_beziers - 1 - i) *
 					order * dim * sizeof(tsReal));
@@ -2082,7 +2082,7 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 }
 
 tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
-	tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
+	tsReal epsilon, tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
 {
 	tsBSpline *smaller, *larger, worker;
 	size_t missing, inserts;
@@ -2100,13 +2100,13 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 		if (ts_bspline_degree(s1) < ts_bspline_degree(s2)) {
 			TS_CALL(try, err, ts_bspline_elevate_degree(s1,
 				ts_bspline_degree(s2) - ts_bspline_degree(s1),
-				s1_out, status))
+				epsilon, s1_out, status))
 			TS_CALL(try, err, ts_bspline_copy(
 				s2, s2_out, status))
 		} else if (ts_bspline_degree(s2) < ts_bspline_degree(s1)) {
 			TS_CALL(try, err, ts_bspline_elevate_degree(s2,
 				ts_bspline_degree(s1) - ts_bspline_degree(s2),
-				s2_out, status))
+				epsilon, s2_out, status))
 			TS_CALL(try, err, ts_bspline_copy(
 				s1, s1_out, status))
 		} else {

@@ -91,6 +91,7 @@ void align_spline_to_itself(CuTest *tc)
 {
 /* ================================= Set Up ================================ */
 	tsBSpline spline = ts_bspline_init();
+	struct tsBSplineImpl *spline_ptr;
 	tsBSpline copy = ts_bspline_init();
 	tsStatus status;
 
@@ -101,17 +102,71 @@ void align_spline_to_itself(CuTest *tc)
 			15, 3, 7, TS_CLAMPED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_copy(
 			&spline, &copy, &status))
+		spline_ptr = spline.pImpl;
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
 			&spline, &spline, CTRLP_EPSILON, &spline, &spline,
 			&status))
 /* ================================= Then ================================== */
-		CuAssertTrue(tc, spline.pImpl != copy.pImpl);
+		CuAssertTrue(tc, spline.pImpl != spline_ptr);
 		assert_equal_shape(tc, &spline, &copy);
 		assert_compatible(tc, &spline, &copy);
 /* =============================== Tear Down =============================== */
 	TS_FINALLY
 		ts_bspline_free(&spline);
+		ts_bspline_free(&copy);
+	TS_END_TRY
+}
+
+void align_elevated_with_more_control_points(CuTest *tc)
+{
+/* ================================= Set Up ================================ */
+	tsBSpline more_control_points = ts_bspline_init();
+	struct tsBSplineImpl *more_control_points_ptr;
+	tsBSpline more_control_points_copy = ts_bspline_init();
+	tsBSpline less_control_points = ts_bspline_init();
+	struct tsBSplineImpl *less_control_points_ptr;
+	tsBSpline less_control_points_copy = ts_bspline_init();
+	tsStatus status;
+
+	TS_TRY(try, status.code, &status)
+/* ================================= Given ================================= */
+		TS_CALL(try, status.code, ts_bspline_new(
+			/* Arbitrary control points. */
+			45, 2, 3, TS_CLAMPED, &more_control_points, &status))
+		more_control_points_ptr = more_control_points.pImpl;
+		TS_CALL(try, status.code, ts_bspline_copy(
+			&more_control_points, &more_control_points_copy,
+			&status))
+		TS_CALL(try, status.code, ts_bspline_new(
+			/* Arbitrary control points. */
+			15, 2, 5, TS_CLAMPED, &less_control_points, &status))
+		less_control_points_ptr = less_control_points.pImpl;
+		TS_CALL(try, status.code, ts_bspline_copy(
+			&less_control_points, &less_control_points_copy,
+			&status))
+/* ================================= When ================================== */
+		TS_CALL(try, status.code, ts_bspline_align(
+			&more_control_points, &less_control_points,
+			CTRLP_EPSILON, &more_control_points,
+			&less_control_points, &status))
+/* ================================= Then ================================== */
+		CuAssertTrue(tc, more_control_points.pImpl !=
+			more_control_points_ptr);
+		CuAssertTrue(tc, less_control_points.pImpl !=
+			less_control_points_ptr);
+		assert_equal_shape(tc, &more_control_points,
+			&more_control_points_copy);
+		assert_equal_shape(tc, &less_control_points,
+			&less_control_points_copy);
+		assert_compatible(tc, &more_control_points,
+			&less_control_points);
+/* =============================== Tear Down =============================== */
+	TS_FINALLY
+		ts_bspline_free(&more_control_points);
+		ts_bspline_free(&more_control_points_copy);
+		ts_bspline_free(&less_control_points);
+		ts_bspline_free(&less_control_points_copy);
 	TS_END_TRY
 }
 
@@ -121,5 +176,6 @@ CuSuite* get_align_suite()
 	SUITE_ADD_TEST(suite, align_line_with_spline);
 	SUITE_ADD_TEST(suite, align_point_with_spline);
 	SUITE_ADD_TEST(suite, align_spline_to_itself);
+	SUITE_ADD_TEST(suite, align_elevated_with_more_control_points);
 	return suite;
 }

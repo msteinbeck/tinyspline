@@ -261,15 +261,16 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #
 # TINYSPLINE_PLATFORM_NAME
 #   Name of target platform in lowercase. Supported values are: 'linux',
-#   'macosx', 'windows', 'uwp' (Universal Windows Platform), and 'wasm'
-#   (webassembly).
+#   'macosx', 'windows', 'uwp' (Universal Windows Platform), 'wasm'
+#   (webassembly), and 'undefined' (fallback).
 #
 # TINYSPLINE_PLATFORM_IS_WINDOWS
 #   True if target platform is Windows. False otherwise.
 #
 # TINYSPLINE_PLATFORM_ARCH
 #   Architecture of target platform. Supported values are: 'arm', 'arm64',
-#   'x86', 'x86_64', 'ia64', and 'any' (usually only with 'wasm').
+#   'x86', 'x86_64', 'ia64', 'any' (usually only with 'wasm'), and 'unknown'
+#   (fallback).
 #
 # TINYSPLINE_PLATFORM
 #   Platform (target) specific identifier, e.g. 'linux-x86_64'.
@@ -299,15 +300,13 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 	set(TINYSPLINE_PLATFORM_NAME "wasm" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 else()
-	message(FATAL_ERROR
-		"Unsupported target platform: ${CMAKE_SYSTEM_NAME}")
+
+	set(TINYSPLINE_PLATFORM_NAME "undefined" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 endif()
 
 include(TargetArch)
 target_architecture(TINYSPLINE_PLATFORM_ARCH)
-if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
-	message(FATAL_ERROR "Unknown target architecture")
-endif()
 
 set(TINYSPLINE_PLATFORM
 	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"
@@ -1105,6 +1104,15 @@ function (tinyspline_add_swig_library)
 endfunction()
 
 if(${TINYSPLINE_BINDING_REQUESTED})
+	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "undefined")
+		message(FATAL_ERROR
+			"Cannot build bindings for undefined platform")
+	endif()
+	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
+		message(FATAL_ERROR
+			"Cannot build bindings for unknown architecture")
+	endif()
+
 	find_package(SWIG 3.0.1 REQUIRED)
 	include(${SWIG_USE_FILE})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR})

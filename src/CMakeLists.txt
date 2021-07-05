@@ -300,12 +300,18 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 	set(TINYSPLINE_PLATFORM_NAME "wasm" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 else()
+	message(WARNING "Undefined target name: ${CMAKE_SYSTEM_NAME}"
+		" -- Builds might be broken")
 	set(TINYSPLINE_PLATFORM_NAME "undefined" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 endif()
 
 include(TargetArch)
 target_architecture(TINYSPLINE_PLATFORM_ARCH)
+if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
+	message(WARNING "Unknown target architecture"
+		" -- Builds might be broken")
+endif()
 
 set(TINYSPLINE_PLATFORM
 	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"

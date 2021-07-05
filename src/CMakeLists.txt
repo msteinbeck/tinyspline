@@ -1111,7 +1111,7 @@ endfunction()
 if(${TINYSPLINE_BINDING_REQUESTED})
 	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "undefined")
 		message(FATAL_ERROR
-			"Cannot build bindings for undefined platform")
+			"Cannot build bindings for undefined platform name")
 	endif()
 	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
 		message(FATAL_ERROR

@@ -300,7 +300,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 	set(TINYSPLINE_PLATFORM_NAME "wasm" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 else()
-	message(WARNING "Undefined target name: ${CMAKE_SYSTEM_NAME}"
+	message(WARNING "Undefined platform name: ${CMAKE_SYSTEM_NAME}"
 		" -- Builds might be broken")
 	set(TINYSPLINE_PLATFORM_NAME "undefined" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
@@ -309,7 +309,7 @@ endif()
 include(TargetArch)
 target_architecture(TINYSPLINE_PLATFORM_ARCH)
 if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
-	message(WARNING "Unknown target architecture"
+	message(WARNING "Unknown platform architecture"
 		" -- Builds might be broken")
 endif()
 
@@ -1115,7 +1115,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 	endif()
 	if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "unknown")
 		message(FATAL_ERROR
-			"Cannot build bindings for unknown architecture")
+			"Cannot build bindings for unknown platform architecture")
 	endif()
 
 	find_package(SWIG 3.0.1 REQUIRED)

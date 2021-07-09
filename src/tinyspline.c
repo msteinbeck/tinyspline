@@ -2085,8 +2085,8 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	tsReal epsilon, tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
 {
 	tsBSpline *smaller, *larger, worker;
-	size_t missing, inserts;
-	tsReal min, max, nextKnot;
+	size_t i, missing, remaining;
+	tsReal min, max, shift, nextKnot;
 	tsDeBoorNet net;
 	tsError err;
 
@@ -2133,23 +2133,27 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 		/* Insert knots into `smaller' until it has the same number of
 		 * control points as `larger'. */
 		ts_bspline_domain(&worker, &min, &max);
-		nextKnot = ((max - min) / TS_MAX_NUM_KNOTS) + min;
-		missing = ts_bspline_num_control_points(larger) -
+		missing = remaining = ts_bspline_num_control_points(larger) -
 			ts_bspline_num_control_points(&worker);
-		while (missing > 0) {
+		shift = missing > 0 ? ((tsReal)1 / missing) * 0.5 : 0;
+		for (i = 0; remaining > 0; i++, remaining--) {
+			nextKnot = (max - min) * ((tsReal)i / missing) + min;
+			nextKnot += shift;
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
 				&worker, nextKnot, &net, status))
-			inserts = ts_deboornet_num_insertions(&net);
-			if (missing < inserts)
-				inserts = missing;
-			TS_CALL(try, err, ts_int_bspline_insert_knot(
-				&worker, &net, inserts, &worker, status))
-			missing -= inserts;
-			nextKnot += (max - min) / TS_MAX_NUM_KNOTS;
-			if (nextKnot > max) {
-				TS_THROW_0(try, err, status, TS_NO_RESULT,
-					"no more knots for insertion")
+			while (!ts_deboornet_num_insertions(&net)) {
+				/* Linear exploration for next knot. */
+				nextKnot += 5 * TS_KNOT_EPSILON;
+				if (nextKnot > max) {
+					TS_THROW_0(try, err, status,
+						TS_NO_RESULT,
+						"no more knots for insertion")
+				}
+				TS_CALL(try, err, ts_int_bspline_eval_woa(
+					&worker, nextKnot, &net, status))
 			}
+			TS_CALL(try, err, ts_int_bspline_insert_knot(
+				&worker, &net, 1, &worker, status))
 		}
 
 		if (smaller == s1 || smaller == s2)

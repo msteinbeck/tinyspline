@@ -2175,22 +2175,28 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
 	tsReal t, tsReal epsilon, tsBSpline *out, tsStatus *status)
 {
-	const tsReal t_hat = 1 - t;
-
 	tsBSpline start_al, end_al; /* aligned start and end */
-	tsReal *start_al_c, *start_al_k; /* control points and knots*/
+	tsReal *start_al_c, *start_al_k; /* control points and knots */
 	tsReal *end_al_c, *end_al_k; /* control points and knots */
 
 	/* Properties of `out'. */
 	size_t deg, dim, num_ctrlp, num_knots;
 	tsReal *ctrlp, *knots;
 
+	tsReal t_hat;
 	size_t i, offset, d;
 	tsError err;
 
 	start_al = ts_bspline_init();
 	end_al = ts_bspline_init();
 	TS_TRY(try, err, status)
+		/* Limit `t' to domain [0, 1] and set up `t_hat'. */
+		if (t < (tsReal) 0.0)
+			t = (tsReal) 0.0;
+		if (t > (tsReal) 1.0)
+			t = (tsReal) 1.0;
+		t_hat = (tsReal) 1.0 - t;
+
 		/* Set up `start_al' and `end_al'. */
 		/* Degree must be elevated... */
 		if (ts_bspline_degree(start) != ts_bspline_degree(end) ||

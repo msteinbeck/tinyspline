@@ -1673,13 +1673,111 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
 tsError TINYSPLINE_API ts_bspline_to_beziers(const tsBSpline *spline,
 	tsBSpline *beziers, tsStatus *status);
 
+/**
+ * Elevates the degree of \p spline by \p amount and stores the result in
+ * \p elevated. If \p spline != \p elevated, the internal state of \p spline is
+ * not modified, that is, \p elevated is a new, independent ::tsBSpline
+ * instance.
+ *
+ * @param[in] spline
+ * 	The spline to elevate.
+ * @param[in] amount
+ * 	How often to elevate the degree of \p spline.
+ * @param[in] epsilon
+ * 	In order to elevate the degree of a spline, it must be decomposed into
+ * 	a sequence of bezier curves (see ::ts_bspline_to_beziers). After degree
+ * 	elevation, the split points of the bezier curves are merged again. This
+ * 	parameter is used to distinguish between the split points of the
+ * 	decomposition process and the wanted discontinuity points. A viable
+ * 	default value is ::TS_CONTROL_POINT_EPSILON.
+ * @param[out] elevated
+ * 	The elevated spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
 tsError TINYSPLINE_API ts_bspline_elevate_degree(const tsBSpline *spline,
 	size_t amount, tsReal epsilon, tsBSpline *elevated, tsStatus *status);
 
+/**
+ * Modifies the splines \p s1 and \p s2 such that they have same degree and
+ * number of control points/knots (without modifying the shape of \p s1 and
+ * \p s2). The resulting splines are stored in \p s1_out and \p s2_out. If
+ * \p s1 != \p s1_out, the internal state of \p s1 is not modified, that is,
+ * \p s1_out is a new, independent ::tsBSpline instance. The same is true for
+ * \p s2 and \p s2_out.
+ *
+ * @param[in] s1
+ * 	The spline which is to be aligned with \p s2.
+ * @param[in] s2
+ * 	The spline which is to be aligned with \p s1.
+ * @param[int] epsilon
+ * 	Spline alignment relies on degree elevation. This parameter is used in
+ * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
+ * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
+ * 	is less than or equal to \p epsilon. A viable default value is
+ * 	::TS_CONTROL_POINT_EPSILON.
+ * @param[out] s1_out
+ * 	The aligned version of \p s1.
+ * @param[out] s2_out
+ * 	The aligned version of \p s2.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
 tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
 	const tsBSpline *s2, tsReal epsilon, tsBSpline *s1_out,
 	tsBSpline *s2_out, tsStatus *status);
 
+/**
+ * Interpolates between \p start and \p end with respect to the time parameter
+ * \p t (domain: [0, 1]). The resulting spline is stored in \p out. if \p t is
+ * less than 0, it is interpreted as 0. If \p t is greater than 1, it is
+ * interpreted as 1. That is, \p is limited to the domain [0, 1]. Because it is
+ * to be expected that this function is called several times in a row (e.g., to
+ * have a smooth transition from one spline to another), memory for \p out is
+ * allocated only if it points to NULL. This way, this function can be used as
+ * follows:
+ *
+ *     tsReal t;
+ *     tsBSpline start = ...
+ *     tsBSpline end = ...
+ *     tsBSpline morph = ts_bspline_init();
+ *     for (t = (tsReal) 0.0; t <= (tsReal) 1.0; t += (tsReal) 0.001)
+ *         ts_bspline_morph(&start, &end, t, ..., &morph, ...);
+ *     ts_bspline_free(&morph);
+ *
+ * It should be noted that this function aligns \p start and \p end using
+ * ::ts_bspline_align if necessary. In order to avoid the overhead of spline
+ * alignment, \p start and \p end should be aligned in advance.
+ *
+ * @param[in] start
+ * 	The origin spline.
+ * @param[in] end
+ * 	The target spline.
+ * @param[in] t
+ * 	The time parameter. If 0, \p out becomes \p start. If 1, \p out becomes
+ * 	\p end. The value of this parameter is automatically limited to the
+ * 	domain [0. 1].
+ * @param[in] epsilon
+ * 	If \p start and \p end must be aligned, this parameter is passed
+ * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
+ * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
+ * 	is less than or equal to \p epsilon. A viable default value is
+ * 	::TS_CONTROL_POINT_EPSILON.
+ * @param[out] out
+ * 	The resulting spline.
+ * @return[out] TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
 tsError TINYSPLINE_API ts_bspline_morph(const tsBSpline *start,
 	const tsBSpline *end, tsReal t, tsReal epsilon, tsBSpline *out,
 	tsStatus *status);

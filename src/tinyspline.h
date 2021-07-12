@@ -1680,6 +1680,10 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
 	const tsBSpline *s2, tsReal epsilon, tsBSpline *s1_out,
 	tsBSpline *s2_out, tsStatus *status);
 
+tsError TINYSPLINE_API ts_bspline_morph(const tsBSpline *start,
+	const tsBSpline *end, tsReal t, tsReal epsilon, tsBSpline *out,
+	tsStatus *status);
+
 
 
 /******************************************************************************

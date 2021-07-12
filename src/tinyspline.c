@@ -2170,6 +2170,79 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
+	tsReal t, tsReal epsilon, tsBSpline *out, tsStatus *status)
+{
+	const tsReal t_hat = 1 - t;
+
+	tsBSpline start_al, end_al; /* aligned start and end */
+	tsReal *start_al_c, *start_al_k; /* control points and knots*/
+	tsReal *end_al_c, *end_al_k; /* control points and knots */
+
+	/* Properties of `out'. */
+	size_t deg, dim, num_ctrlp, num_knots;
+	tsReal *ctrlp, *knots;
+
+	size_t i, offset, d;
+	tsError err;
+
+	start_al = ts_bspline_init();
+	end_al = ts_bspline_init();
+	TS_TRY(try, err, status)
+		/* Set up `start_al' and `end_al'. */
+		/* Degree must be elevated... */
+		if (ts_bspline_degree(start) != ts_bspline_degree(end) ||
+		/* .. or knots (and thus control points) must be inserted. */
+		ts_bspline_num_knots(start) != ts_bspline_num_knots(end)) {
+			TS_CALL(try, err, ts_bspline_align(
+				start, end, epsilon, &start_al, &end_al,
+				status));
+		} else {
+			/* Flat copy. */
+			start_al = *start;
+			end_al = *end;
+		}
+		start_al_c = ts_int_bspline_access_ctrlp(&start_al);
+		start_al_k = ts_int_bspline_access_knots(&start_al);
+		end_al_c = ts_int_bspline_access_ctrlp(&end_al);
+		end_al_k = ts_int_bspline_access_knots(&end_al);
+
+		/* Set up `out'. */
+		deg = ts_bspline_degree(&start_al);
+		num_ctrlp = ts_bspline_num_control_points(&start_al);
+		dim = ts_bspline_dimension(&start_al);
+		if (ts_bspline_dimension(&end_al) < dim)
+			dim = ts_bspline_dimension(&end_al);
+		if (out->pImpl == NULL) {
+			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
+				TS_OPENED /* doesn't matter */, out, status))
+		}
+		num_knots = ts_bspline_num_knots(out);
+		ctrlp = ts_int_bspline_access_ctrlp(out);
+		knots = ts_int_bspline_access_knots(out);
+
+		/* Interpolate control points. */
+		for (i = 0; i < num_ctrlp; i++) {
+			for (d = 0; d < dim; d++) {
+				offset = i * dim + d;
+				ctrlp[offset] = t * end_al_c[offset] +
+					t_hat * start_al_c[offset];
+			}
+		}
+
+		/* Interpolate knots. */
+		for (i = 0; i < num_knots; i++) {
+			knots[i] = t * end_al_k[i] +
+				t_hat * start_al_k[i];
+		}
+	TS_FINALLY
+		if (start->pImpl != start_al.pImpl)
+			ts_bspline_free(&start_al);
+		if (end->pImpl != end_al.pImpl)
+			ts_bspline_free(&end_al);
+	TS_END_TRY_RETURN(err)
+}
+
 
 
 /******************************************************************************

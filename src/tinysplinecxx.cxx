@@ -590,6 +590,16 @@ tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 	return BSpline(data);
 }
 
+tinyspline::BSpline tinyspline::BSpline::elevateDegree(
+	size_t amount, real eps) const
+{
+	tsBSpline data = ts_bspline_init();
+	tsStatus status;
+	if (ts_bspline_elevate_degree(&spline, amount, eps, &data, &status))
+		throw std::runtime_error(status.message);
+	return BSpline(data);
+}
+
 std::string tinyspline::BSpline::toString() const
 {
 	Domain d = domain();

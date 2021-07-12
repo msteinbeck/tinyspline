@@ -167,6 +167,8 @@ public:
 	BSpline toBeziers() const;
 	BSpline derive(size_t n = 1,
 		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	BSpline elevateDegree(size_t amount,
+		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;

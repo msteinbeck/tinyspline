@@ -2135,7 +2135,9 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 		ts_bspline_domain(&worker, &min, &max);
 		missing = remaining = ts_bspline_num_control_points(larger) -
 			ts_bspline_num_control_points(&worker);
-		shift = missing > 0 ? ((tsReal)1 / missing) * 0.5 : (tsReal)0;
+		shift = (tsReal) 0.0;
+		if (missing > 0)
+			shift = ( (tsReal) 1.0 / missing ) * (tsReal) 0.5;
 		for (i = 0; remaining > 0; i++, remaining--) {
 			nextKnot = (max - min) * ((tsReal)i / missing) + min;
 			nextKnot += shift;

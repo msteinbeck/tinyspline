@@ -19,7 +19,7 @@ void elevate_degree_point(CuTest *tc)
 		for (i = 1; i < 10; i++) {
 /* ================================= When ================================== */
 			TS_CALL(try, status.code, ts_bspline_elevate_degree(
-				&spline, i, CTRLP_EPSILON, &elevated, &status))
+				&spline, i, POINT_EPSILON, &elevated, &status))
 /* ================================= Then ================================== */
 			/* Elevated by `i'. */
 			CuAssertIntEquals(tc,
@@ -62,7 +62,7 @@ void elevate_degree_line(CuTest *tc)
 		for (i = 1; i < 10; i++) {
 /* ================================= When ================================== */
 			TS_CALL(try, status.code, ts_bspline_elevate_degree(
-				&spline, i, CTRLP_EPSILON, &elevated, &status))
+				&spline, i, POINT_EPSILON, &elevated, &status))
 /* ================================= Then ================================== */
 			/* Elevated by `i'. */
 			CuAssertIntEquals(tc,
@@ -107,7 +107,7 @@ void elevate_degree_bezier_curve(CuTest *tc)
 		for (i = 1; i < 10; i++) {
 /* ================================= When ================================== */
 			TS_CALL(try, status.code, ts_bspline_elevate_degree(
-				&spline, i, CTRLP_EPSILON, &elevated, &status))
+				&spline, i, POINT_EPSILON, &elevated, &status))
 /* ================================= Then ================================== */
 			/* Elevated by `i'. */
 			CuAssertIntEquals(tc,
@@ -153,7 +153,7 @@ void elevate_degree_bspline(CuTest *tc)
 		for (i = 1; i < 10; i++) {
 /* ================================= When ================================== */
 			TS_CALL(try, status.code, ts_bspline_elevate_degree(
-				&spline, i, CTRLP_EPSILON, &elevated, &status))
+				&spline, i, POINT_EPSILON, &elevated, &status))
 /* ================================= Then ================================== */
 			/* Elevated by `i'. */
 			CuAssertIntEquals(tc,

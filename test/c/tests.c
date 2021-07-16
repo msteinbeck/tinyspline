@@ -102,5 +102,5 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
 void
 assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 {
-	return assert_equal_shape_eps(tc, s1, s2, CTRLP_EPSILON);
+	return assert_equal_shape_eps(tc, s1, s2, POINT_EPSILON);
 }

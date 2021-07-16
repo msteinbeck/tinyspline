@@ -5,7 +5,7 @@
 #include <tinyspline.h>
 #include "CuTest.h"
 
-#define CTRLP_EPSILON TS_CONTROL_POINT_EPSILON
+#define POINT_EPSILON TS_CONTROL_POINT_EPSILON
 
 /**
  * Asserts that \p s1 and \p s2 have equal shape by evaluating them at

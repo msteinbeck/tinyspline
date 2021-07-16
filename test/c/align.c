@@ -42,7 +42,7 @@ void align_point_with_spline(CuTest *tc)
 			400.0, 550.0)) /* P10 */
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&spline, &point, CTRLP_EPSILON, &spline,
+			&spline, &point, POINT_EPSILON, &spline,
 			&point_aligned, &status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, point.pImpl != point_aligned.pImpl);
@@ -80,7 +80,7 @@ void align_line_with_spline(CuTest *tc)
 			-25.3, -200)) /* P5 */
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&line, &spline, CTRLP_EPSILON, &line_aligned, &spline,
+			&line, &spline, POINT_EPSILON, &line_aligned, &spline,
 			&status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, line.pImpl != line_aligned.pImpl);
@@ -127,7 +127,7 @@ void align_spline_to_itself(CuTest *tc)
 		spline_ptr = spline.pImpl;
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
-			&spline, &spline, CTRLP_EPSILON, &spline, &spline,
+			&spline, &spline, POINT_EPSILON, &spline, &spline,
 			&status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, spline.pImpl != spline_ptr);
@@ -228,7 +228,7 @@ void align_elevated_with_more_control_points(CuTest *tc)
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_align(
 			&more_control_points, &less_control_points,
-			CTRLP_EPSILON, &more_control_points,
+			POINT_EPSILON, &more_control_points,
 			&less_control_points, &status))
 /* ================================= Then ================================== */
 		CuAssertTrue(tc, more_control_points.pImpl !=

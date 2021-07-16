@@ -2084,57 +2084,58 @@ tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
 tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	tsReal epsilon, tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
 {
-	tsBSpline *smaller, *larger, worker;
+	tsBSpline s1_worker, s2_worker, *smaller, *larger;
+	tsDeBoorNet net; /* the net of `smaller'. */
 	size_t i, missing, remaining;
 	tsReal min, max, shift, nextKnot;
-	tsDeBoorNet net;
 	tsError err;
 
 	INIT_OUT_BSPLINE(s1, s1_out)
 	INIT_OUT_BSPLINE(s2, s2_out)
-	worker = ts_bspline_init();
+	s1_worker = ts_bspline_init();
+	s2_worker = ts_bspline_init();
 	smaller = larger = NULL;
 	TS_TRY(try, err, status)
-		/* Elevate degree if necessary. After this, `s1_out' and
-		 * `s2_out' are set up. */
+		/* Set up `s1_worker' and `s2_worker'. After this
+		 * if-elseif-else-block, `s1_worker' and `s2_worker' have same
+		 * degree. */
 		if (ts_bspline_degree(s1) < ts_bspline_degree(s2)) {
 			TS_CALL(try, err, ts_bspline_elevate_degree(s1,
 				ts_bspline_degree(s2) - ts_bspline_degree(s1),
-				epsilon, s1_out, status))
+				epsilon, &s1_worker, status))
 			TS_CALL(try, err, ts_bspline_copy(
-				s2, s2_out, status))
+				s2, &s2_worker, status))
 		} else if (ts_bspline_degree(s2) < ts_bspline_degree(s1)) {
 			TS_CALL(try, err, ts_bspline_elevate_degree(s2,
 				ts_bspline_degree(s1) - ts_bspline_degree(s2),
-				epsilon, s2_out, status))
+				epsilon, &s2_worker, status))
 			TS_CALL(try, err, ts_bspline_copy(
-				s1, s1_out, status))
+				s1, &s1_worker, status))
 		} else {
 			TS_CALL(try, err, ts_bspline_copy(
-				s1, s1_out, status))
+				s1, &s1_worker, status))
 			TS_CALL(try, err, ts_bspline_copy(
-				s2, s2_out, status))
+				s2, &s2_worker, status))
 		}
 
-		/* Set up `smaller', `larger', and `worker'. */
-		if (ts_bspline_num_control_points(s1_out) <
-				ts_bspline_num_control_points(s2_out)) {
-			smaller = s1_out;
-			larger  = s2_out;
+		/* Set up `smaller', `larger', and `net'. */
+		if (ts_bspline_num_knots(&s1_worker) <
+				ts_bspline_num_knots(&s2_worker)) {
+			smaller = &s1_worker;
+			larger  = &s2_worker;
 		} else {
-			smaller = s2_out;
-			larger  = s1_out;
+			smaller = &s2_worker;
+			larger  = &s1_worker;
 		}
-		TS_CALL(try, err, ts_bspline_copy(
-			smaller, &worker, status))
 		TS_CALL(try, err, ts_int_deboornet_new(
-			&worker, &net, status))
+			smaller, &net, status))
 
 		/* Insert knots into `smaller' until it has the same number of
-		 * control points as `larger'. */
-		ts_bspline_domain(&worker, &min, &max);
-		missing = remaining = ts_bspline_num_control_points(larger) -
-			ts_bspline_num_control_points(&worker);
+		 * knots (and therefore the same number of control points) as
+		 * `larger'. */
+		ts_bspline_domain(smaller, &min, &max);
+		missing = remaining = ts_bspline_num_knots(larger) -
+			ts_bspline_num_knots(smaller);
 		shift = (tsReal) 0.0;
 		if (missing > 0)
 			shift = ( (tsReal) 1.0 / missing ) * (tsReal) 0.5;
@@ -2142,7 +2143,7 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 			nextKnot = (max - min) * ((tsReal)i / missing) + min;
 			nextKnot += shift;
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				&worker, nextKnot, &net, status))
+				smaller, nextKnot, &net, status))
 			while (!ts_deboornet_num_insertions(&net)) {
 				/* Linear exploration for next knot. */
 				nextKnot += 5 * TS_KNOT_EPSILON;
@@ -2152,22 +2153,21 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 						"no more knots for insertion")
 				}
 				TS_CALL(try, err, ts_int_bspline_eval_woa(
-					&worker, nextKnot, &net, status))
+					smaller, nextKnot, &net, status))
 			}
 			TS_CALL(try, err, ts_int_bspline_insert_knot(
-				&worker, &net, 1, &worker, status))
+				smaller, &net, 1, smaller, status))
 		}
 
-		if (smaller == s1 || smaller == s2)
-			ts_bspline_free(smaller);
-		ts_bspline_move(&worker, smaller);
-	TS_CATCH(err)
-		if (s1 != s1_out)
+		if (s1 == s1_out)
 			ts_bspline_free(s1_out);
-		if (s2 != s2_out)
+		if (s2 == s2_out)
 			ts_bspline_free(s2_out);
+		ts_bspline_move(&s1_worker, s1_out);
+		ts_bspline_move(&s2_worker, s2_out);
 	TS_FINALLY
-		ts_bspline_free(&worker);
+		ts_bspline_free(&s1_worker);
+		ts_bspline_free(&s2_worker);
 		ts_deboornet_free(&net);
 	TS_END_TRY_RETURN(err)
 }

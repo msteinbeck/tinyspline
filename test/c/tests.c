@@ -50,7 +50,8 @@ int main()
 	return 0;
 }
 
-void assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
+void
+assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal *s1val = NULL, *s2val = NULL, dist;
@@ -82,7 +83,7 @@ void assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 
 			/* Compare results. */
 			dist = ts_distance(s1val, s2val, dim);
-			CuAssertDblEquals(tc, 0, dist, CTRLP_EPSILON);
+			CuAssertDblEquals(tc, 0, dist, eps);
 
 			/* Clean up. */
 			free(s1val);
@@ -96,4 +97,10 @@ void assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 		free(s1val);
 		free(s2val);
 	TS_END_TRY
+}
+
+void
+assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
+{
+	return assert_equal_shape_eps(tc, s1, s2, CTRLP_EPSILON);
 }

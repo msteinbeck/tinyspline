@@ -86,13 +86,18 @@ extern "C" {
 #define TS_KNOT_EPSILON 1e-4f
 
 /**
- * If the distance between two control points is less than or equal to this
- * threshold, they are considered equal. This constant is not used by the C
- * interface. Rather, it is intended as reasonable default value for functions
- * requiring an epsilon environment for comparing control points (the C++
- * interface, for example, uses this as default value for optional parameters).
+ * If the distance between two (control) points is less than or equal to this
+ * threshold, they are considered equal. This constant is not used directly by
+ * the C interface. Rather, it serves as a viable default value for functions
+ * that require an epsilon environment in order to decide whether two (control)
+ * points are equal or not. The C++ interface, for example, uses this as
+ * default value for optional parameters.
  */
-#define TS_CONTROL_POINT_EPSILON 1e-6f
+#ifdef TINYSPLINE_FLOAT_PRECISION
+#define TS_CONTROL_POINT_EPSILON 1e-3f
+#else
+#define TS_CONTROL_POINT_EPSILON 1e-5f
+#endif
 
 
 

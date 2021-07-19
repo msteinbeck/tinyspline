@@ -391,6 +391,8 @@ void eval_undefined_knot(CuTest *tc)
 		&spline, step * 9, &net, &status));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
 		&spline, TS_DOMAIN_DEFAULT_MAX, &net, &status));
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 }
 
 void eval_near_miss_knot(CuTest *tc)

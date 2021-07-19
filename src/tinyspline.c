@@ -2164,7 +2164,11 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 		if (s2 == s2_out)
 			ts_bspline_free(s2_out);
 		ts_bspline_move(&s1_worker, s1_out);
-		ts_bspline_move(&s2_worker, s2_out);
+		/* if `s1_out' == `s2_out', `s2_worker' must not be moved
+		 * because otherwise the memory of `s1_worker' is leaked
+		 * (`s2_worker' overrides `s1_worker'). */
+		if (s1_out != s2_out)
+			ts_bspline_move(&s2_worker, s2_out);
 	TS_FINALLY
 		ts_bspline_free(&s1_worker);
 		ts_bspline_free(&s2_worker);

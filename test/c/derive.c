@@ -200,6 +200,8 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 			free(result);
 			result = NULL;
 		}
+		free(ctrlp);
+		ctrlp = NULL;
 
 /* ================================= When ================================== */
 		TS_CALL(try, status.code, ts_bspline_derive(
@@ -291,6 +293,8 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 				&net, &result, &status))
 			CuAssertDblEquals(tc, ctrlp[0] + slope * (step * i),
 					result[0], EPSILON);
+			free(result);
+			result = NULL;
 		}
 
 /* ================================= When ================================== */
@@ -306,6 +310,8 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &result, &status))
 			CuAssertDblEquals(tc,  slope, result[0], EPSILON);
+			free(result);
+			result = NULL;
 		}
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);

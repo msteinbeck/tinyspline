@@ -54,7 +54,7 @@ void
 assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
 {
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *s1val = NULL, *s2val = NULL, dist;
+	tsReal min, max, knot, dist, *s1val = NULL, *s2val = NULL;
 	size_t k, dim;
 	tsStatus status;
 
@@ -66,17 +66,21 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
 	TS_TRY(try, status.code, &status)
 		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
 			/* Eval s1. */
+			ts_bspline_domain(s1, &min, &max);
+			knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+			knot = ( (max - min) * knot ) + min;
 			TS_CALL(try, status.code, ts_bspline_eval(
-				s1, (tsReal)k / TS_MAX_NUM_KNOTS, &net,
-				&status))
+				s1, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &s1val, &status))
 			ts_deboornet_free(&net);
 
 			/* Eval s2. */
+			ts_bspline_domain(s2, &min, &max);
+			knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+			knot = ( (max - min) * knot ) + min;
 			TS_CALL(try, status.code, ts_bspline_eval(
-				s2, (tsReal)k / TS_MAX_NUM_KNOTS, &net,
-				&status))
+				s2, knot, &net, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &s2val, &status))
 			ts_deboornet_free(&net);

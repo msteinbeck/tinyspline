@@ -618,6 +618,12 @@ tinyspline::BSpline tinyspline::BSpline::alignWith(
 	return BSpline(data);
 }
 
+tinyspline::Morphism tinyspline::BSpline::morphTo(
+	const BSpline &other, real epsilon) const
+{
+	return Morphism(*this, other, epsilon);
+}
+
 std::string tinyspline::BSpline::toString() const
 {
 	Domain d = domain();
@@ -630,6 +636,37 @@ std::string tinyspline::BSpline::toString() const
 	oss << ", knots: " << ts_bspline_num_knots(&spline);
 	oss << "}";
 	return oss.str();
+}
+
+
+
+/******************************************************************************
+*                                                                             *
+* Morphism                                                                    *
+*                                                                             *
+******************************************************************************/
+tinyspline::Morphism::Morphism(const tinyspline::BSpline &start,
+	const tinyspline::BSpline &end, real epsilon)
+: start(start), end(end), epsilon(epsilon)
+{
+	startAligned = start.alignWith(end, endAligned, epsilon);
+	// Make buffer compatible by copying one of the aligned splines.
+	buffer = startAligned;
+}
+
+tinyspline::BSpline tinyspline::Morphism::eval(real t)
+{
+	tsStatus status;
+	if (ts_bspline_morph(&startAligned.spline, &endAligned.spline, t,
+		epsilon, &buffer.spline, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	return buffer;
+}
+
+tinyspline::BSpline tinyspline::Morphism::operator()(real t)
+{
+	return eval(t);
 }
 
 

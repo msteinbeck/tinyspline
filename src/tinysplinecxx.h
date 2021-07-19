@@ -31,6 +31,7 @@ namespace tinyspline {
 
 typedef tsReal real;
 class BSpline;
+class Morphism;
 
 class TINYSPLINECXX_API DeBoorNet {
 public:
@@ -171,6 +172,8 @@ public:
 		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 	BSpline alignWith(const BSpline &other, BSpline &otherAligned,
 		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	Morphism morphTo(const BSpline &other,
+		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;
@@ -181,6 +184,9 @@ private:
 	/* Constructors & Destructors */
 	explicit BSpline(tsBSpline &data);
 
+	/* Needs to access ::spline. */
+	friend class Morphism;
+
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:
 	std_real_vector_out sample0() const { return sample(); }
@@ -189,6 +195,21 @@ public:
 	BSpline derive1(size_t n) const { return derive(n); }
 	BSpline derive2(size_t n, real eps) const { return derive(n, eps); }
 #endif
+};
+
+class TINYSPLINECXX_API Morphism {
+public:
+	/* Constructors & Destructors */
+	Morphism(const BSpline &start, const BSpline &end,
+		real epsilon = TS_CONTROL_POINT_EPSILON);
+
+	BSpline eval(real t);
+	BSpline operator()(real t);
+private:
+	BSpline start, end;
+	real epsilon;
+	BSpline startAligned, endAligned;
+	BSpline buffer;
 };
 
 class TINYSPLINECXX_API Utils {

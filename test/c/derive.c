@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <tinyspline.h>
 #include "CuTest.h"
+#include "utils.h"
 
 #define EPSILON 0.0001
 
@@ -293,6 +294,7 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 				&net, &result, &status))
 			CuAssertDblEquals(tc, ctrlp[0] + slope * (step * i),
 					result[0], EPSILON);
+			ts_deboornet_free(&net);
 			free(result);
 			result = NULL;
 		}
@@ -310,6 +312,7 @@ void derive_single_parabola_with_custom_knots(CuTest *tc)
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net, &result, &status))
 			CuAssertDblEquals(tc,  slope, result[0], EPSILON);
+			ts_deboornet_free(&net);
 			free(result);
 			result = NULL;
 		}
@@ -639,9 +642,6 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline third = ts_bspline_init();
 	tsBSpline three = ts_bspline_init();
-	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *result_third = NULL, *result_three = NULL;
-	tsReal min, max, knot, dist;
 	tsStatus status;
 
 	tsReal ctrlp[8];
@@ -657,7 +657,6 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 			4, 2, 3, TS_OPENED, &spline, &status))
 		TS_CALL(try, status.code, ts_bspline_set_control_points(
 			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
 
 /* ================================= When ================================== */
 		/* Create third (derive with n = 3). */
@@ -677,41 +676,13 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 		CuAssertTrue(tc, third.pImpl != three.pImpl);
 
 		/* Compare third and three. */
-		for (knot = min; knot < max;
-			knot += (max - min) / TS_MAX_NUM_KNOTS) {
-
-			/* Eval third. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&third, knot, &net, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &result_third, &status))
-			ts_deboornet_free(&net);
-
-			/* Eval three. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&three, knot, &net, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &result_three, &status))
-			ts_deboornet_free(&net);
-
-			/* Compare results. */
-			dist = ts_distance(result_third, result_three,
-				ts_bspline_dimension(&spline));
-			CuAssertDblEquals(tc, 0.f, dist, EPSILON);
-			free(result_third);
-			result_third = NULL;
-			free(result_three);
-			result_three = NULL;
-		}
+		assert_equal_shape(tc, &third, &three);
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
 		ts_bspline_free(&spline);
 		ts_bspline_free(&third);
 		ts_bspline_free(&three);
-		ts_deboornet_free(&net);
-		free(result_third);
-		free(result_three);
 	TS_END_TRY
 }
 

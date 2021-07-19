@@ -169,6 +169,8 @@ public:
 		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 	BSpline elevateDegree(size_t amount,
 		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	BSpline alignWith(const BSpline &other, BSpline &otherAligned,
+		real epsilon = TS_CONTROL_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;

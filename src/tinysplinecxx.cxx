@@ -591,12 +591,30 @@ tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 }
 
 tinyspline::BSpline tinyspline::BSpline::elevateDegree(
-	size_t amount, real eps) const
+	size_t amount, real epsilon) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_elevate_degree(&spline, amount, eps, &data, &status))
+	if (ts_bspline_elevate_degree(&spline, amount, epsilon,
+		&data, &status)) {
 		throw std::runtime_error(status.message);
+	}
+	return BSpline(data);
+}
+
+tinyspline::BSpline tinyspline::BSpline::alignWith(
+	const BSpline &other, BSpline &otherAligned, real epsilon) const
+{
+	tsBSpline data = ts_bspline_init();
+	tsBSpline deleteIf_Other_And_OtherAligned_AreDifferent =
+		otherAligned.spline;
+	tsStatus status;
+	if (ts_bspline_align(&spline, &other.spline, epsilon, &data,
+		&otherAligned.spline, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	if (&other != &otherAligned)
+		ts_bspline_free(&deleteIf_Other_And_OtherAligned_AreDifferent);
 	return BSpline(data);
 }
 

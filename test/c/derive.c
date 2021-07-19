@@ -645,10 +645,10 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 	tsStatus status;
 
 	tsReal ctrlp[8];
-	ctrlp[0] = 1.f; ctrlp[0] = 1.f;
-	ctrlp[1] = 2.f; ctrlp[0] = 4.f;
-	ctrlp[1] = 3.f; ctrlp[0] = 3.f;
-	ctrlp[1] = 4.f; ctrlp[0] = 0.f;
+	ctrlp[0] = 1.f; ctrlp[1] = 1.f;
+	ctrlp[2] = 2.f; ctrlp[3] = 4.f;
+	ctrlp[4] = 3.f; ctrlp[5] = 3.f;
+	ctrlp[6] = 4.f; ctrlp[7] = 0.f;
 
 	TS_TRY(try, status.code, &status)
 /* ================================= Given ================================= */

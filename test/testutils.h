@@ -1,5 +1,5 @@
-#ifndef TINYSPLINE_UTILS_H
-#define TINYSPLINE_UTILS_H
+#ifndef TINYSPLINE_TESTUTILS_H
+#define TINYSPLINE_TESTUTILS_H
 
 #include <stdlib.h>
 #include <tinyspline.h>
@@ -45,4 +45,4 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps);
 void
 assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2);
 
-#endif //TINYSPLINE_UTILS_H
+#endif	/* TINYSPLINE_TESTUTILS_H */

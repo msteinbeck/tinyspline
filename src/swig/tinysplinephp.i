@@ -4,6 +4,7 @@
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Morphism::operator();
 
 %rename (__toString) tinyspline::BSpline::toString;
 %rename (__toString) tinyspline::DeBoorNet::toString;

@@ -85,6 +85,7 @@ set(TINYSPLINE_COVERAGE_C_LIBRARIES
 ### Add subdirectories containing the actual unit tests.
 ###############################################################################
 add_subdirectory(c)
+add_subdirectory(cxx)
 
 
 
@@ -92,8 +93,8 @@ add_subdirectory(c)
 ### Subsume unit tests and code coverage with custom targets.
 ###############################################################################
 add_custom_target(tests
-	COMMAND tinyspline_tests
-	DEPENDS tinyspline_tests
+	COMMAND tinyspline_tests tinysplinecxx_tests
+	DEPENDS tinyspline_tests tinysplinecxx_tests
 )
 add_custom_target(coverage
 	DEPENDS tinyspline_coverage

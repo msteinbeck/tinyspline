@@ -1,5 +1,4 @@
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 void move_test_bspline_different_ptr(CuTest *tc)
 {

@@ -1,6 +1,4 @@
-#include <tinyspline.h>
-#include "CuTest.h"
-#include "utils.h"
+#include <testutils.h>
 
 void elevate_degree_point(CuTest *tc)
 {

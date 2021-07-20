@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 /* This epsilon environment can be chosen smaller than usual because the loss
  * of significance should be very small when serializing/deserializing floating

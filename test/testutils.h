@@ -1,9 +1,10 @@
 #ifndef TINYSPLINE_TESTUTILS_H
 #define TINYSPLINE_TESTUTILS_H
 
+#include <CuTest.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <tinyspline.h>
-#include "CuTest.h"
 
 #define POINT_EPSILON TS_CONTROL_POINT_EPSILON
 

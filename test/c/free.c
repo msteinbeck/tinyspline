@@ -1,5 +1,4 @@
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 void free_test_bspline(CuTest* tc)
 {

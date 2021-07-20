@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 #define NUM_CTRLP     7
 #define DIMENSION     2

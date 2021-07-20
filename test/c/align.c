@@ -1,6 +1,4 @@
-#include <tinyspline.h>
-#include "CuTest.h"
-#include "utils.h"
+#include <testutils.h>
 
 void assert_compatible(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 {

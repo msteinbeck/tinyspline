@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 #define CTRLP_EPSILON 0.001
 

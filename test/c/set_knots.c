@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
 void set_knots_custom_interval(CuTest *tc)
 {

@@ -1,4 +1,25 @@
 ###############################################################################
+### Build CuTest.
+###############################################################################
+add_library(cutest "cutest/CuTest.c")
+target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/cutest")
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+	# Disable the warnings about sprintf.
+	target_compile_definitions(cutest PRIVATE "/D_CRT_SECURE_NO_WARNINGS")
+endif()
+
+
+
+###############################################################################
+### Build testutils.
+###############################################################################
+add_library(testutils "testutils.c")
+target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(testutils PUBLIC cutest tinyspline)
+
+
+
+###############################################################################
 ### Check if code coverage is available. Coverage is measured and visualized
 ### with gcov, lcov, and genthml.
 #

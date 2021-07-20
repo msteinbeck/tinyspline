@@ -17,7 +17,7 @@ if(TINYSPLINE_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 if(TINYSPLINE_BUILD_TESTS)
-	enable_testing()
+	include(CTest) # Must be included in top-level CMakeLists.txt.
 	add_subdirectory(test)
 endif()
 if(TINYSPLINE_BUILD_DOCS)

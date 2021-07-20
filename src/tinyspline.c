@@ -1832,6 +1832,429 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError ts_bspline_elevate_degree(const tsBSpline *spline, size_t amount,
+	tsReal epsilon, tsBSpline *elevated, tsStatus * status)
+{
+	tsBSpline worker;
+	size_t dim, order;
+	tsReal *ctrlp, *knots;
+	size_t num_beziers, i, a, c, d, offset, idx;
+	tsReal f, f_hat, *first, *last;
+	tsError err;
+
+	/* Trivial case. */
+	if (amount == 0)
+		return ts_bspline_copy(spline, elevated, status);
+
+	/* An overview of this algorithm can be found at:
+	 * https://pages.mtu.edu/~shene/COURSES/cs3621/LAB/curve/elevation.html */
+	INIT_OUT_BSPLINE(spline, elevated);
+	worker = ts_bspline_init();
+	TS_TRY(try, err, status)
+		/* Decompose `spline' into a sequence of bezier curves and make
+		 * space for the additional control points and knots that are
+		 * to be inserted. Results are stored in `worker'. */
+		TS_CALL(try, err, ts_bspline_to_beziers(
+			spline, &worker, status));
+		num_beziers = ts_bspline_num_control_points(&worker) /
+			ts_bspline_order(&worker);
+		TS_CALL(try, err, ts_int_bspline_resize(
+			/* Resize by the number of knots to insert. Note that
+			 * this creates too many control points (due to
+			 * increasing degree), which are removed at the end of
+			 * this function. */
+			&worker, (int) ((num_beziers+1) * amount), 1, &worker,
+			status));
+		dim = ts_bspline_dimension(&worker);
+		order = ts_bspline_order(&worker);
+		ctrlp = ts_int_bspline_access_ctrlp(&worker);
+		knots = ts_int_bspline_access_knots(&worker);
+
+		/* Move all but the first bezier curve to their new location in
+		 * the control point array so that the additional control
+		 * points can be inserted without overwriting the others. Note
+		 * that iteration must run backwards. Otherwise, the moved
+		 * values overwrite each other. */
+		for (i = num_beziers - 1; i > 0; i--) {
+			/* `i' can be interpreted as the number of bezier
+			 * curves before the current bezier curve. */
+
+			/* Location of current bezier curve. */
+			offset = i * order * dim;
+			/* Each elevation inserts an additional control point
+			 * into every bezier curve. `i * amount' is the total
+			 * number of control points to be inserted before the
+			 * current bezier curve. */
+			memmove(ctrlp + offset + (i * amount * dim),
+				ctrlp + offset,
+				dim * order * sizeof(tsReal));
+		}
+
+		/* Move all but the first group of knots to their new location
+		 * in the knot vector so that the additional knots can be
+		 * inserted without overwriting the others. Note that iteration
+		 * must run backwards. Otherwise, the moved values overwrite
+		 * each other. */
+		for (i = num_beziers; i > 0; i--) {
+			/* Note that the number of knot groups is one more than
+			 * the number of bezier curves. `i' can be interpreted
+			 * as the number of knot groups before the current
+			 * group. */
+
+			/* Location of current knot group. */
+			offset = i * order;
+			/* Each elevation inserts an additional knot into every
+			 * group of knots. `i * amount' is the total number of
+			 * knots to be inserted before the current knot
+			 * group. */
+			memmove(knots + offset + (i * amount),
+				knots + offset,
+				order * sizeof(tsReal));
+		}
+
+		/* `worker' is now fully set up.
+		 * The following formulas are based on:
+		 * https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-elev.html */
+		for (a = 0; a < amount; a++) {
+			/* For each bezier curve... */
+			for (i = 0; i < num_beziers; i++) {
+				/* ... 1) Insert and update control points. */
+
+				/* Location of current bezier curve. Each
+				 * elevation (`a') inserts an additional
+				 * control point into every bezier curve and
+				 * increases the degree (`order') by one. The
+				 * location is thus made up of two parts:
+				 *
+				 * i) `i * order', which is the location taking
+				 * into account the increasing order but
+				 * neglecting the control points that are to be
+				 * inserted before the current bezier curve. It
+				 * can be seen as some sort of base location:
+				 * Where would the bezier curve be (with
+				 * respect to the current value of `order') if
+				 * no additional control points had to be
+				 * inserted?
+				 *
+				 * ii) `i * (amount - a)', which is the total
+				 * number of control points to be inserted
+				 * before the current bezier curve
+				 * (`i * amount') taking into account the
+				 * increasing order (`order' and `a' are
+				 * increased equally, thus, `a' compensates for
+				 * the increasing value of `order'). This part
+				 * adds the necessary offset to the base
+				 * location (`i * order'). */
+				offset = (i * order + i * (amount - a)) * dim;
+				/* Duplicate last control point to the new end
+				 * position (next control point). */
+				memmove(ctrlp + offset + ((order) * dim),
+					ctrlp + offset + ((order-1) * dim),
+					dim * sizeof(tsReal));
+				/* All but the outer control points must be
+				 * recalculated (domain: [1, order - 1]). By
+				 * traversing backwards, control points can be
+				 * modified in-place. */
+				for (c = order - 1; c > 0; c--) {
+					/* Location of current control point
+					 * within current bezier curve. */
+					idx = offset + c * dim;
+					f = (tsReal) c / (tsReal) (order);
+					f_hat = 1 - f;
+					for (d = 0; d < dim; d++) {
+						/* For the sake of space, we
+						 * increment idx by d and
+						 * decrement it at the end of
+						 * this loop. */
+						idx += d;
+						ctrlp[idx] =
+							f * ctrlp[idx - dim] +
+							f_hat * ctrlp[idx];
+						/* Reset idx. */
+						idx -= d;
+					}
+				}
+
+				/* ...2) Increase the multiplicity of the
+				 * second knot group (maximum of the domain of
+				 * the current bezier curve) by one. Note that
+				 * this loop misses the last knot group (the
+				 * group of the last bezier curve) as there is
+				 * one more knot group than bezier curves to
+				 * process. Thus, the last group must be
+				 * increased separately after this loop. */
+
+				/* Location of current knot group. Each
+				 * elevation (`a') inserts an additional
+				 * knot into the knot vector of every bezier
+				 * curve and increases the degree (`order') by
+				 * one. The location is thus made up of two
+				 * parts:
+				 *
+				 * i) `i * order', which is the location taking
+				 * into account the increasing order but
+				 * neglecting the knots that are to be inserted
+				 * before the current knot group. It can be
+				 * seen as some sort of base location: Where
+				 * would the knot group be (with respect to the
+				 * current value of `order') if no additional
+				 * knots had to be inserted?
+				 *
+				 * ii) `i * (amount - a)', which is the total
+				 * number of knots to be inserted before the
+				 * current knot group (`i * amount') taking
+				 * into account the increasing order (`order'
+				 * and `a' are increased equally, thus, `a'
+				 * compensates for the increasing value of
+				 * `order'). This part adds the necessary
+				 * offset to the base location
+				 * (`i * order'). */
+				offset = i * order + i * (amount - a);
+				/* Duplicate knot. */
+				knots[offset + order] = knots[offset];
+			}
+
+			/* Increase the multiplicity of the very last knot
+			 * group (the second group of the last bezier curve)
+			 * by one. For more details, see knot duplication in
+			 * previous loop. */
+			offset = num_beziers * order +
+				num_beziers * (amount - a);
+			knots[offset + order] = knots[offset];
+
+			/* Elevated by one. */
+			order++;
+		}
+
+		/* Combine bezier curves. */
+		d = 0; /* Number of removed knots/control points. */
+		for (i = 0; i < num_beziers - 1; i++) {
+			/* Is the last control point of bezier curve `i' equal
+			 * to the first control point of bezier curve `i+1'? */
+			last = ctrlp + (
+				i * order /* base location of `i' */
+				- d /* minus the number of removed values */
+				+ (order - 1) /* jump to last control point */
+				) * dim;
+			first = last + dim; /* next control point */
+			if (ts_distance(last, first, dim) <= epsilon) {
+				/* Move control points. */
+				memmove(last, first, (num_beziers - 1 - i) *
+					order * dim * sizeof(tsReal));
+
+				/* Move knots. `last' is the last knot of the
+				 * second knot group of bezier curve `i'.
+				 * `first' is the first knot of the first knot
+				 * group of bezier curve `i+1'. The
+				 * calculations are quite similar to those for
+				 * the control points `last' and `first' (see
+				 * above). */
+				last = knots + i * order - d + (2 * order - 1);
+				first = last + 1;
+				memmove(last, first, (num_beziers - 1 - i) *
+					order * sizeof(tsReal));
+
+				/* Removed one knot/control point. */
+				d++;
+			}
+		}
+
+		/* Repair internal state. */
+		worker.pImpl->deg = order - 1;
+		worker.pImpl->n_knots -= d;
+		worker.pImpl->n_ctrlp = ts_bspline_num_knots(&worker) - order;
+		memmove(ts_int_bspline_access_knots(&worker),
+			knots, ts_bspline_sof_knots(&worker));
+		worker.pImpl = realloc(worker.pImpl,
+			 ts_int_bspline_sof_state(&worker));
+		if (worker.pImpl == NULL) {
+			TS_THROW_0(try, err, status, TS_MALLOC,
+				"out of memory")
+		}
+
+		/* Move `worker' to output parameter. */
+		if (spline == elevated)
+			ts_bspline_free(elevated);
+		ts_bspline_move(&worker, elevated);
+	TS_FINALLY
+		ts_bspline_free(&worker);
+	TS_END_TRY_RETURN(err)
+}
+
+tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
+	tsReal epsilon, tsBSpline *s1_out, tsBSpline *s2_out, tsStatus *status)
+{
+	tsBSpline s1_worker, s2_worker, *smaller, *larger;
+	tsDeBoorNet net; /* the net of `smaller'. */
+	size_t i, missing, remaining;
+	tsReal min, max, shift, nextKnot;
+	tsError err;
+
+	INIT_OUT_BSPLINE(s1, s1_out)
+	INIT_OUT_BSPLINE(s2, s2_out)
+	s1_worker = ts_bspline_init();
+	s2_worker = ts_bspline_init();
+	smaller = larger = NULL;
+	TS_TRY(try, err, status)
+		/* Set up `s1_worker' and `s2_worker'. After this
+		 * if-elseif-else-block, `s1_worker' and `s2_worker' have same
+		 * degree. */
+		if (ts_bspline_degree(s1) < ts_bspline_degree(s2)) {
+			TS_CALL(try, err, ts_bspline_elevate_degree(s1,
+				ts_bspline_degree(s2) - ts_bspline_degree(s1),
+				epsilon, &s1_worker, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s2, &s2_worker, status))
+		} else if (ts_bspline_degree(s2) < ts_bspline_degree(s1)) {
+			TS_CALL(try, err, ts_bspline_elevate_degree(s2,
+				ts_bspline_degree(s1) - ts_bspline_degree(s2),
+				epsilon, &s2_worker, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s1, &s1_worker, status))
+		} else {
+			TS_CALL(try, err, ts_bspline_copy(
+				s1, &s1_worker, status))
+			TS_CALL(try, err, ts_bspline_copy(
+				s2, &s2_worker, status))
+		}
+
+		/* Set up `smaller', `larger', and `net'. */
+		if (ts_bspline_num_knots(&s1_worker) <
+				ts_bspline_num_knots(&s2_worker)) {
+			smaller = &s1_worker;
+			larger  = &s2_worker;
+		} else {
+			smaller = &s2_worker;
+			larger  = &s1_worker;
+		}
+		TS_CALL(try, err, ts_int_deboornet_new(
+			smaller, &net, status))
+
+		/* Insert knots into `smaller' until it has the same number of
+		 * knots (and therefore the same number of control points) as
+		 * `larger'. */
+		ts_bspline_domain(smaller, &min, &max);
+		missing = remaining = ts_bspline_num_knots(larger) -
+			ts_bspline_num_knots(smaller);
+		shift = (tsReal) 0.0;
+		if (missing > 0)
+			shift = ( (tsReal) 1.0 / missing ) * (tsReal) 0.5;
+		for (i = 0; remaining > 0; i++, remaining--) {
+			nextKnot = (max - min) * ((tsReal)i / missing) + min;
+			nextKnot += shift;
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				smaller, nextKnot, &net, status))
+			while (!ts_deboornet_num_insertions(&net)) {
+				/* Linear exploration for next knot. */
+				nextKnot += 5 * TS_KNOT_EPSILON;
+				if (nextKnot > max) {
+					TS_THROW_0(try, err, status,
+						TS_NO_RESULT,
+						"no more knots for insertion")
+				}
+				TS_CALL(try, err, ts_int_bspline_eval_woa(
+					smaller, nextKnot, &net, status))
+			}
+			TS_CALL(try, err, ts_int_bspline_insert_knot(
+				smaller, &net, 1, smaller, status))
+		}
+
+		if (s1 == s1_out)
+			ts_bspline_free(s1_out);
+		if (s2 == s2_out)
+			ts_bspline_free(s2_out);
+		ts_bspline_move(&s1_worker, s1_out);
+		/* if `s1_out' == `s2_out', `s2_worker' must not be moved
+		 * because otherwise the memory of `s1_worker' is leaked
+		 * (`s2_worker' overrides `s1_worker'). */
+		if (s1_out != s2_out)
+			ts_bspline_move(&s2_worker, s2_out);
+	TS_FINALLY
+		ts_bspline_free(&s1_worker);
+		ts_bspline_free(&s2_worker);
+		ts_deboornet_free(&net);
+	TS_END_TRY_RETURN(err)
+}
+
+tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
+	tsReal t, tsReal epsilon, tsBSpline *out, tsStatus *status)
+{
+	tsBSpline start_al, end_al; /* aligned start and end */
+	tsReal *start_al_c, *start_al_k; /* control points and knots */
+	tsReal *end_al_c, *end_al_k; /* control points and knots */
+
+	/* Properties of `out'. */
+	size_t deg, dim, num_ctrlp, num_knots;
+	tsReal *ctrlp, *knots;
+
+	tsReal t_hat;
+	size_t i, offset, d;
+	tsError err;
+
+	start_al = ts_bspline_init();
+	end_al = ts_bspline_init();
+	TS_TRY(try, err, status)
+		/* Limit `t' to domain [0, 1] and set up `t_hat'. */
+		if (t < (tsReal) 0.0)
+			t = (tsReal) 0.0;
+		if (t > (tsReal) 1.0)
+			t = (tsReal) 1.0;
+		t_hat = (tsReal) 1.0 - t;
+
+		/* Set up `start_al' and `end_al'. */
+		/* Degree must be elevated... */
+		if (ts_bspline_degree(start) != ts_bspline_degree(end) ||
+		/* .. or knots (and thus control points) must be inserted. */
+		ts_bspline_num_knots(start) != ts_bspline_num_knots(end)) {
+			TS_CALL(try, err, ts_bspline_align(
+				start, end, epsilon, &start_al, &end_al,
+				status));
+		} else {
+			/* Flat copy. */
+			start_al = *start;
+			end_al = *end;
+		}
+		start_al_c = ts_int_bspline_access_ctrlp(&start_al);
+		start_al_k = ts_int_bspline_access_knots(&start_al);
+		end_al_c = ts_int_bspline_access_ctrlp(&end_al);
+		end_al_k = ts_int_bspline_access_knots(&end_al);
+
+		/* Set up `out'. */
+		deg = ts_bspline_degree(&start_al);
+		num_ctrlp = ts_bspline_num_control_points(&start_al);
+		dim = ts_bspline_dimension(&start_al);
+		if (ts_bspline_dimension(&end_al) < dim)
+			dim = ts_bspline_dimension(&end_al);
+		if (out->pImpl == NULL) {
+			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
+				TS_OPENED /* doesn't matter */, out, status))
+		}
+		num_knots = ts_bspline_num_knots(out);
+		ctrlp = ts_int_bspline_access_ctrlp(out);
+		knots = ts_int_bspline_access_knots(out);
+
+		/* Interpolate control points. */
+		for (i = 0; i < num_ctrlp; i++) {
+			for (d = 0; d < dim; d++) {
+				offset = i * dim + d;
+				ctrlp[offset] = t * end_al_c[offset] +
+					t_hat * start_al_c[offset];
+			}
+		}
+
+		/* Interpolate knots. */
+		for (i = 0; i < num_knots; i++) {
+			knots[i] = t * end_al_k[i] +
+				t_hat * start_al_k[i];
+		}
+	TS_FINALLY
+		if (start->pImpl != start_al.pImpl)
+			ts_bspline_free(&start_al);
+		if (end->pImpl != end_al.pImpl)
+			ts_bspline_free(&end_al);
+	TS_END_TRY_RETURN(err)
+}
+
 
 
 /******************************************************************************

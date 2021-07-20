@@ -590,6 +590,40 @@ tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
 	return BSpline(data);
 }
 
+tinyspline::BSpline tinyspline::BSpline::elevateDegree(
+	size_t amount, real epsilon) const
+{
+	tsBSpline data = ts_bspline_init();
+	tsStatus status;
+	if (ts_bspline_elevate_degree(&spline, amount, epsilon,
+		&data, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	return BSpline(data);
+}
+
+tinyspline::BSpline tinyspline::BSpline::alignWith(
+	const BSpline &other, BSpline &otherAligned, real epsilon) const
+{
+	tsBSpline data = ts_bspline_init();
+	tsBSpline deleteIf_Other_And_OtherAligned_AreDifferent =
+		otherAligned.spline;
+	tsStatus status;
+	if (ts_bspline_align(&spline, &other.spline, epsilon, &data,
+		&otherAligned.spline, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	if (&other != &otherAligned)
+		ts_bspline_free(&deleteIf_Other_And_OtherAligned_AreDifferent);
+	return BSpline(data);
+}
+
+tinyspline::Morphism tinyspline::BSpline::morphTo(
+	const BSpline &other, real epsilon) const
+{
+	return Morphism(*this, other, epsilon);
+}
+
 std::string tinyspline::BSpline::toString() const
 {
 	Domain d = domain();
@@ -602,6 +636,37 @@ std::string tinyspline::BSpline::toString() const
 	oss << ", knots: " << ts_bspline_num_knots(&spline);
 	oss << "}";
 	return oss.str();
+}
+
+
+
+/******************************************************************************
+*                                                                             *
+* Morphism                                                                    *
+*                                                                             *
+******************************************************************************/
+tinyspline::Morphism::Morphism(const tinyspline::BSpline &start,
+	const tinyspline::BSpline &end, real epsilon)
+: start(start), end(end), epsilon(epsilon)
+{
+	startAligned = start.alignWith(end, endAligned, epsilon);
+	// Make buffer compatible by copying one of the aligned splines.
+	buffer = startAligned;
+}
+
+tinyspline::BSpline tinyspline::Morphism::eval(real t)
+{
+	tsStatus status;
+	if (ts_bspline_morph(&startAligned.spline, &endAligned.spline, t,
+		epsilon, &buffer.spline, &status)) {
+		throw std::runtime_error(status.message);
+	}
+	return buffer;
+}
+
+tinyspline::BSpline tinyspline::Morphism::operator()(real t)
+{
+	return eval(t);
 }
 
 

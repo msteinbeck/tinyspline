@@ -1,6 +1,6 @@
 ###############################################################################
 ### Check if code coverage is available. Coverage is measured and visualized
-### using gcov, lcov, and genthml.
+### with gcov, lcov, and genthml.
 #
 # TINYSPLINE_COVERAGE_AVAILABLE
 #   TRUE if the tools that are required to generate code coverage are
@@ -68,7 +68,7 @@ add_subdirectory(c)
 
 
 ###############################################################################
-### Add custom targets that are supposed to subsume unit tests and coverage.
+### Subsume unit tests and code coverage with custom targets.
 ###############################################################################
 add_custom_target(tests
 	COMMAND tinyspline_tests

@@ -4,6 +4,7 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Morphism::operator();
 
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
 %csmethodmodifiers tinyspline::DeBoorNet::toString "public override";

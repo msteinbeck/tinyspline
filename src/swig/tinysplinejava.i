@@ -4,6 +4,7 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Morphism::operator();
 
 %javamethodmodifiers tinyspline::BSpline::toString "@Override public";
 %javamethodmodifiers tinyspline::DeBoorNet::toString "@Override public";

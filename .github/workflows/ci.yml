@@ -18,13 +18,9 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install System Tools
+      if: runner.os == 'Linux'
       shell: bash
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo apt-get install valgrind
-        elif [ "$RUNNER_OS" == "macOS" ]; then
-            brew install valgrind
-        fi
+      run: sudo apt install -y valgrind
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -57,6 +53,7 @@ jobs:
       run: ctest -C $BUILD_TYPE
 
     - name: Memory Check
+      if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --target memcheck

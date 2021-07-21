@@ -47,7 +47,7 @@ jobs:
       shell: bash
       run: |
         ctest -C $BUILD_TYPE
-        cmake --build . --config $BUILD_TYPE --target memcheck
+        cmake --build . --target memcheck
 
     - name: Install
       working-directory: ${{runner.workspace}}/build

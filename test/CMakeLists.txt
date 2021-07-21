@@ -5,7 +5,7 @@ add_library(cutest STATIC "cutest/CuTest.c")
 target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/cutest")
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# Disable the warnings about sprintf.
-	target_compile_definitions(cutest PRIVATE "/D_CRT_SECURE_NO_WARNINGS")
+	target_compile_definitions(cutest PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
 

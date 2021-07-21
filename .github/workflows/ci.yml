@@ -45,8 +45,15 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build
       shell: bash
+      run: ctest -C $BUILD_TYPE
+
+    - name: Memory Check
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
       run: |
-        ctest -C $BUILD_TYPE
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get install valgrind
+        fi
         cmake --build . --target memcheck
 
     - name: Install

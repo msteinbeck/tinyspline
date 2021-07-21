@@ -1,7 +1,7 @@
 ###############################################################################
 ### Build CuTest.
 ###############################################################################
-add_library(cutest "cutest/CuTest.c")
+add_library(cutest STATIC "cutest/CuTest.c")
 target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/cutest")
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# Disable the warnings about sprintf.
@@ -13,7 +13,7 @@ endif()
 ###############################################################################
 ### Build testutils.
 ###############################################################################
-add_library(testutils "testutils.c")
+add_library(testutils STATIC "testutils.c")
 target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(testutils PUBLIC cutest tinyspline)
 

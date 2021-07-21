@@ -8,6 +8,14 @@
 
 #define POINT_EPSILON TS_CONTROL_POINT_EPSILON
 
+#define ___SETUP___ tsStatus status;
+#define ___GIVEN___ TS_TRY(try, status.code, &status)
+#define ___WHEN___
+#define ___THEN___
+#define ___TEARDOWN___ TS_FINALLY TS_END_TRY \
+	if (status.code) CuFail(tc, status.message);
+#define C(call) TS_CALL(try, status.code, (call))
+
 /**
  * Asserts that \p s1 and \p s2 have equal shape by evaluating them at
  * different knots and comparing the distance of the evaluated points with

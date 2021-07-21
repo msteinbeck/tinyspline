@@ -17,6 +17,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install System Tools
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get install valgrind
+        fi
+
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
@@ -50,11 +57,7 @@ jobs:
     - name: Memory Check
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo apt-get install valgrind
-        fi
-        cmake --build . --target memcheck
+      run: cmake --build . --target memcheck
 
     - name: Install
       working-directory: ${{runner.workspace}}/build

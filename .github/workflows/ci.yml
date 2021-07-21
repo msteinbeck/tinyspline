@@ -22,6 +22,8 @@ jobs:
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
             sudo apt-get install valgrind
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install valgrind
         fi
 
     - name: Create Build Environment

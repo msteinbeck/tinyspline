@@ -1,433 +1,303 @@
 #include <testutils.h>
 
-#define EPSILON 0.0001
-
 void eval_domain_min(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsReal min, max;
-	tsStatus status;
+	tsReal min, max, dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5f,  0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0f,  0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	ts_bspline_domain(&spline, &min, &max);
+	C(ts_bspline_eval(&spline, min, &net, &status))
 
-/* ================================= When ================================== */
-		ts_bspline_domain(&spline, &min, &max);
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, min, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 3, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 4, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 0, (int )ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, min, ts_deboornet_knot(&net), TS_KNOT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, min, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 3, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 4, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, -1.75, -1.0);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, -1.75f, result[0], EPSILON);
-		CuAssertDblEquals(tc, -1.0f, result[1], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_domain_max(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsReal min, max;
-	tsStatus status;
+	tsReal min, max, dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	ts_bspline_domain(&spline, &min, &max);
+	C(ts_bspline_eval(&spline, max, &net, &status))
 
-/* ================================= When ================================== */
-		ts_bspline_domain(&spline, &min, &max);
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, max, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 1,  (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2,  (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 10, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 4,  (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 0,  (int) ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, max, ts_deboornet_knot(&net), POINT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, max, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 10, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 4, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, 0.5, 0.0);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, 0.5f, result[0], EPSILON);
-		CuAssertDblEquals(tc, 0.0f, result[1], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_001(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsStatus status;
+	tsReal dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	C(ts_bspline_eval(&spline, 0.4, &net, &status))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.4f, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 4, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 0, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 3, (int) ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, 0.4, ts_deboornet_knot(&net), POINT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, 0.4f, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 4, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 3, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, -1.338333, 0.288333);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, -1.338333f, result[0], EPSILON);
-		CuAssertDblEquals(tc,  0.288333f, result[1], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_002(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsStatus status;
+	tsReal dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	C(ts_bspline_eval(&spline, 0.8, &net, &status))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.8f, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 6, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 0, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 3, (int) ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, 0.8, ts_deboornet_knot(&net), POINT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, 0.8f, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 6, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 3, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, -0.470667, 0.618667);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, -0.470667f, result[0], EPSILON);
-		CuAssertDblEquals(tc,  0.618667f, result[1], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_003(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsStatus status;
+	tsReal dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	C(ts_bspline_eval(&spline, 0.75, &net, &status))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.75f, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 6, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, 0.75, ts_deboornet_knot(&net), POINT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, 0.75f, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 6, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 1, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 2, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, -0.645833, 0.645833);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, -0.645833f, result[0], EPSILON);
-		CuAssertDblEquals(tc,  0.645833f, result[1], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_two_points(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *ctrlp = NULL, *result = NULL;
-	tsStatus status;
+	tsReal dist, *result = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			8, 2, 3, TS_BEZIERS, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		8, 2, 3, TS_BEZIERS, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5f, -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0,  /* P7 */
+		-0.3,  -1.0)) /* P8 */
 
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		ctrlp[14] = -0.3f;  /* x7 */
-		ctrlp[15] = -1.0f;  /* y7 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___
+	C(ts_bspline_eval(&spline, 0.5, &net, &status))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.5f, &net, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 7, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 4, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 0, (int) ts_deboornet_num_insertions(&net));
+	CuAssertDblEquals(tc, 0.5, ts_deboornet_knot(&net), POINT_EPSILON);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 2, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 2, ts_deboornet_dimension(&net));
-		CuAssertDblEquals(tc, 0.5f, ts_deboornet_knot(&net), EPSILON);
-		CuAssertDblEquals(tc, 7, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 4, ts_deboornet_multiplicity(&net),
-				  EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_num_insertions(&net),
-				  EPSILON);
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance_varargs(tc, 2, result, -1.25, 0.5);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 2, result + 2, -0.75, 0.75);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		CuAssertDblEquals(tc, -1.25, result[0], EPSILON);
-		CuAssertDblEquals(tc,  0.5f, result[1], EPSILON);
-		CuAssertDblEquals(tc, -0.75f, result[2], EPSILON);
-		CuAssertDblEquals(tc,  0.75f, result[3], EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(ctrlp);
-		ts_deboornet_free(&net);
-		free(result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
 }
 
 void eval_undefined_knot(CuTest *tc)
 {
-	const tsReal step = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN) /
-		(tsReal) 10.f; /* num(control_points) + degree */
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsStatus status;
+	tsReal step;
 
-/* ================================= Given ================================= */
-	CuAssertIntEquals(tc, TS_SUCCESS, ts_bspline_new(
-		7, 3, 3, TS_OPENED, &spline, &status));
+	___GIVEN___
+	C(ts_bspline_new(7, 3, 3, TS_OPENED, &spline, &status));
+	step = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN) /
+		(tsReal) (ts_bspline_num_control_points(&spline) +
+			ts_bspline_degree(&spline));
 
-/* =============================== When/Then =============================== */
+	___WHEN___ ___THEN___
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, TS_DOMAIN_DEFAULT_MIN, &net, &status));
+		&spline, TS_DOMAIN_DEFAULT_MIN, &net, NULL));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step, &net, &status));
+		&spline, step, &net, NULL));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 2, &net, &status));
+		&spline, step * 2, &net, NULL));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 8, &net, &status));
+		&spline, step * 8, &net, NULL));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 9, &net, &status));
+		&spline, step * 9, &net, NULL));
 	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, TS_DOMAIN_DEFAULT_MAX, &net, &status));
+		&spline, TS_DOMAIN_DEFAULT_MAX, &net, NULL));
+
+	___TEARDOWN___
 	ts_bspline_free(&spline);
 	ts_deboornet_free(&net);
 }
 
 void eval_near_miss_knot(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsStatus status;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			3, 4, 2, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, 6, ts_bspline_num_knots(&spline));
+	___GIVEN___
+	C(ts_bspline_new(3, 4, 2, TS_CLAMPED, &spline, &status))
+	CuAssertIntEquals(tc, 6, ts_bspline_num_knots(&spline));
 
-		TS_CALL(try, status.code, ts_bspline_set_knots_varargs(
-			&spline, &status,
-			0.1, 0.2, 0.3, 0.3, 0.4, 0.6))
+	C(ts_bspline_set_knots_varargs(&spline, &status,
+		0.1, 0.2, 0.3, 0.3, 0.4, 0.6))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.2999999f, &net, &status))
+	___WHEN___
+	C(ts_bspline_eval(&spline, 0.2999999, &net, &status))
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, 1, ts_deboornet_num_result(&net));
-		CuAssertIntEquals(tc, 4, ts_deboornet_dimension(&net));
-		CuAssertTrue(tc, ts_deboornet_knot(&net) >= (tsReal) 0.3);
-		CuAssertDblEquals(tc, 3, ts_deboornet_index(&net), EPSILON);
-		CuAssertDblEquals(tc, 2, ts_deboornet_multiplicity(&net),
-			EPSILON);
-		CuAssertDblEquals(tc, 0, ts_deboornet_num_insertions(&net),
-			EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-	TS_END_TRY
+	___THEN___
+	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
+	CuAssertIntEquals(tc, 4, (int) ts_deboornet_dimension(&net));
+	CuAssertIntEquals(tc, 3, (int) ts_deboornet_index(&net));
+	CuAssertIntEquals(tc, 2, (int) ts_deboornet_multiplicity(&net));
+	CuAssertIntEquals(tc, 0, (int) ts_deboornet_num_insertions(&net));
+	CuAssertTrue(tc, ts_deboornet_knot(&net) >= (tsReal) 0.3);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 }
 
 CuSuite* get_eval_suite()

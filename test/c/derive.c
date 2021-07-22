@@ -1,7 +1,5 @@
 #include <testutils.h>
 
-#define EPSILON 0.0001
-
 void derive_sequence_of_four_points(CuTest *tc)
 {
 	___SETUP___
@@ -164,8 +162,8 @@ void derive_single_line_with_custom_knots(CuTest *tc)
 	/* Check knots of derivative. */
 	CuAssertIntEquals(tc, 2, (int) ts_bspline_num_knots(&spline));
 	C(ts_bspline_knots(&spline, &knots, &status))
-	CuAssertDblEquals(tc, -1.0, knots[0], EPSILON);
-	CuAssertDblEquals(tc,  1.0, knots[1], EPSILON);
+	CuAssertDblEquals(tc, -1.0, knots[0], TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  1.0, knots[1], TS_KNOT_EPSILON);
 
 	/* Evaluate derivative at mid-span. */
 	C(ts_bspline_eval(&spline, (tsReal) (min + span / 2.0), &net, &status))
@@ -462,7 +460,7 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 
 	___WHEN___
 	/* Create third (derive with n = 3). */
-	C(ts_bspline_derive(&spline, 3, EPSILON, &third, &status))
+	C(ts_bspline_derive(&spline, 3, POINT_EPSILON, &third, &status))
 
 	/* Create three (derive three times). */
 	C(ts_bspline_derive(&spline, 1, POINT_EPSILON, &three, &status))

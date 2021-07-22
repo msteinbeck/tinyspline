@@ -99,7 +99,7 @@ void eval_001(CuTest *tc)
 		 0.5,   0.0)) /* P7 */
 
 	___WHEN___
-	C(ts_bspline_eval(&spline, 0.4, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.4, &net, &status))
 
 	___THEN___
 	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
@@ -138,7 +138,7 @@ void eval_002(CuTest *tc)
 		 0.5,   0.0)) /* P7 */
 
 	___WHEN___
-	C(ts_bspline_eval(&spline, 0.8, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.8, &net, &status))
 
 	___THEN___
 	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
@@ -177,7 +177,7 @@ void eval_003(CuTest *tc)
 		 0.5,   0.0)) /* P7 */
 
 	___WHEN___
-	C(ts_bspline_eval(&spline, 0.75, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.75, &net, &status))
 
 	___THEN___
 	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
@@ -217,7 +217,7 @@ void eval_two_points(CuTest *tc)
 		-0.3,  -1.0)) /* P8 */
 
 	___WHEN___
-	C(ts_bspline_eval(&spline, 0.5, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.5, &net, &status))
 
 	___THEN___
 	CuAssertIntEquals(tc, 2, (int) ts_deboornet_num_result(&net));
@@ -253,18 +253,18 @@ void eval_undefined_knot(CuTest *tc)
 			ts_bspline_degree(&spline));
 
 	___WHEN___ ___THEN___
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, TS_DOMAIN_DEFAULT_MIN, &net, NULL));
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step, &net, NULL));
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 2, &net, NULL));
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 8, &net, NULL));
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, step * 9, &net, NULL));
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, ts_bspline_eval(
-		&spline, TS_DOMAIN_DEFAULT_MAX, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, TS_DOMAIN_DEFAULT_MIN, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, step, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, step * 2, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, step * 8, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, step * 9, &net, NULL));
+	CuAssertIntEquals(tc, TS_U_UNDEFINED,
+		ts_bspline_eval(&spline, TS_DOMAIN_DEFAULT_MAX, &net, NULL));
 
 	___TEARDOWN___
 	ts_bspline_free(&spline);
@@ -279,13 +279,13 @@ void eval_near_miss_knot(CuTest *tc)
 
 	___GIVEN___
 	C(ts_bspline_new(3, 4, 2, TS_CLAMPED, &spline, &status))
-	CuAssertIntEquals(tc, 6, ts_bspline_num_knots(&spline));
+	CuAssertIntEquals(tc, 6, (int) ts_bspline_num_knots(&spline));
 
 	C(ts_bspline_set_knots_varargs(&spline, &status,
-		0.1, 0.2, 0.3, 0.3, 0.4, 0.6))
+		(tsReal) 0.1, 0.2, 0.3, 0.3, 0.4, 0.6))
 
 	___WHEN___
-	C(ts_bspline_eval(&spline, 0.2999999, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.2999999, &net, &status))
 
 	___THEN___
 	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));

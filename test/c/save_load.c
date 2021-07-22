@@ -35,15 +35,15 @@ void save_load_load_equals_save(CuTest *tc)
 
 	/* Check degree. */
 	CuAssertIntEquals(tc, ts_bspline_degree(&save),
-		ts_bspline_degree(&load));
+		(int) ts_bspline_degree(&load));
 
 	/* Check dimension. */
 	CuAssertIntEquals(tc, ts_bspline_dimension(&save),
-		ts_bspline_dimension(&load));
+		(int) ts_bspline_dimension(&load));
 
 	/* Check knots. */
 	CuAssertIntEquals(tc, ts_bspline_num_knots(&save),
-		ts_bspline_num_knots(&load));
+		(int) ts_bspline_num_knots(&load));
 	for (i = 0; i < ts_bspline_num_knots(&save); i++) {
 		C(ts_bspline_knot_at(&save, i, &knot[0], &status))
 		C(ts_bspline_knot_at(&load, i, &knot[1], &status))
@@ -52,8 +52,8 @@ void save_load_load_equals_save(CuTest *tc)
 
 	/* Check control points. */
 	CuAssertIntEquals(tc, ts_bspline_num_control_points(&save),
-		ts_bspline_num_control_points(&load));
-	CuAssertIntEquals(tc, 2, ts_bspline_dimension(&save));
+		(int) ts_bspline_num_control_points(&load));
+	CuAssertIntEquals(tc, 2, (int) ts_bspline_dimension(&save));
 	for (i = 0; i < ts_bspline_num_control_points(&save); i++) {
 		C(ts_bspline_control_point_at(&save, i, &svals, &status))
 		C(ts_bspline_control_point_at(&save, i, &lvals, &status))

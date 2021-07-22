@@ -75,7 +75,7 @@ void sample_num_3(CuTest *tc)
 		 1.25, -0.5))
 
 	ts_bspline_domain(&spline, &min, &max);
-	C(ts_bspline_eval(&spline, (max - min) / 2.0, &net, &status))
+	C(ts_bspline_eval(&spline, (max - min) / (tsReal) 2.0, &net, &status))
 	C(ts_deboornet_result(&net, &middle, &status))
 
 	___WHEN___

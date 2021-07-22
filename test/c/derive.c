@@ -281,7 +281,7 @@ void derive_discontinuous_and_compare_with_continuous(CuTest *tc)
 	assert_equal_shape(tc, &beziers, &derivative);
 
 	/* Eval known values. */
-	C(ts_bspline_eval(&beziers, 0.3, &net, &status))
+	C(ts_bspline_eval(&beziers, (tsReal) 0.3, &net, &status))
 	CuAssertIntEquals(tc, 1, (int) ts_deboornet_num_result(&net));
 	C(ts_deboornet_result(&net, &result, &status))
 	dist = ts_distance_varargs(tc, 2, result, 0.7, 2.3);
@@ -346,7 +346,7 @@ void derive_discontinuous_lines_ignoring_epsilon(CuTest *tc)
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
 	/* Eval derivative. */
-	C(ts_bspline_eval(&spline, 0.7, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.7, &net, &status))
 	CuAssertIntEquals(tc, 2, (int)ts_deboornet_num_result(&net));
 	C(ts_deboornet_result(&net, &result, &status))
 
@@ -387,7 +387,7 @@ void derive_continuous_spline(CuTest *tc)
 	C(ts_bspline_derive(&spline, 1, POINT_EPSILON, &spline, &status))
 
 	___THEN___
-	C(ts_bspline_eval(&spline, 0.8, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.8, &net, &status))
 	C(ts_deboornet_result(&net, &result, &status))
 	dist = ts_distance_varargs(tc, 2, result, 6.4, 5.6);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
@@ -426,7 +426,7 @@ void derive_continuous_spline_with_custom_knots(CuTest *tc)
 	C(ts_bspline_derive(&spline, 1, POINT_EPSILON, &spline, &status))
 
 	___THEN___
-	C(ts_bspline_eval(&spline, 8.4, &net, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 8.4, &net, &status))
 	C(ts_deboornet_result(&net, &result, &status))
 	dist = ts_distance_varargs(tc, 2, result, 0.8, 0.7);
 	CuAssertDblEquals(tc,  0, dist, POINT_EPSILON);

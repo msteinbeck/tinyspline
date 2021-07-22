@@ -20,17 +20,17 @@ void elevate_degree_point(CuTest *tc)
 		___THEN___
 		/* Elevated by `i'. */
 		CuAssertIntEquals(tc,
-			ts_bspline_degree(&spline) + i,
-			ts_bspline_degree(&elevated));
+			(int) ts_bspline_degree(&spline) + i,
+			(int) ts_bspline_degree(&elevated));
 		/* Each elevation inserts a control point. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&spline) + i,
-			ts_bspline_num_control_points(&elevated));
+			(int) ts_bspline_num_control_points(&spline) + i,
+			(int) ts_bspline_num_control_points(&elevated));
 		/* Check internal state. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&elevated)
-				+ ts_bspline_order(&elevated),
-			ts_bspline_num_knots(&elevated));
+			(int) (ts_bspline_num_control_points(&elevated)
+				+ ts_bspline_order(&elevated)),
+			(int) ts_bspline_num_knots(&elevated));
 		assert_equal_shape(tc, &spline, &elevated);
 
 		ts_bspline_free(&elevated);
@@ -62,17 +62,17 @@ void elevate_degree_line(CuTest *tc)
 		___THEN___
 		/* Elevated by `i'. */
 		CuAssertIntEquals(tc,
-			ts_bspline_degree(&spline) + i,
-			ts_bspline_degree(&elevated));
+			(int) ts_bspline_degree(&spline) + i,
+			(int) ts_bspline_degree(&elevated));
 		/* Each elevation inserts a control point. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&spline) + i,
-			ts_bspline_num_control_points(&elevated));
+			(int) ts_bspline_num_control_points(&spline) + i,
+			(int) ts_bspline_num_control_points(&elevated));
 		/* Check internal state. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&elevated)
-				+ ts_bspline_order(&elevated),
-			ts_bspline_num_knots(&elevated));
+			(int) (ts_bspline_num_control_points(&elevated)
+				+ ts_bspline_order(&elevated)),
+			(int) ts_bspline_num_knots(&elevated));
 		assert_equal_shape(tc, &spline, &elevated);
 
 		ts_bspline_free(&elevated);
@@ -106,17 +106,17 @@ void elevate_degree_bezier_curve(CuTest *tc)
 		___THEN___
 		/* Elevated by `i'. */
 		CuAssertIntEquals(tc,
-			ts_bspline_degree(&spline) + i,
-			ts_bspline_degree(&elevated));
+			(int) ts_bspline_degree(&spline) + i,
+			(int) ts_bspline_degree(&elevated));
 		/* Each elevation inserts a control point. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&spline) + i,
-			ts_bspline_num_control_points(&elevated));
+			(int) ts_bspline_num_control_points(&spline) + i,
+			(int) ts_bspline_num_control_points(&elevated));
 		/* Check internal state. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&elevated)
-				+ ts_bspline_order(&elevated),
-			ts_bspline_num_knots(&elevated));
+			(int) (ts_bspline_num_control_points(&elevated)
+				+ ts_bspline_order(&elevated)),
+			(int) ts_bspline_num_knots(&elevated));
 		assert_equal_shape(tc, &spline, &elevated);
 
 		ts_bspline_free(&elevated);
@@ -151,17 +151,17 @@ void elevate_degree_bspline(CuTest *tc)
 		___THEN___
 		/* Elevated by `i'. */
 		CuAssertIntEquals(tc,
-			ts_bspline_degree(&spline) + i,
-			ts_bspline_degree(&elevated));
+			(int) ts_bspline_degree(&spline) + i,
+			(int) ts_bspline_degree(&elevated));
 		/* Each elevation inserts at least one control point. */
 		CuAssertTrue(tc,
 			ts_bspline_num_control_points(&elevated) >
 			ts_bspline_num_control_points(&spline));
 		/* Check internal state. */
 		CuAssertIntEquals(tc,
-			ts_bspline_num_control_points(&elevated)
-				+ ts_bspline_order(&elevated),
-			ts_bspline_num_knots(&elevated));
+			(int) (ts_bspline_num_control_points(&elevated)
+				+ ts_bspline_order(&elevated)),
+			(int) ts_bspline_num_knots(&elevated));
 		assert_equal_shape(tc, &spline, &elevated);
 
 		ts_bspline_free(&elevated);

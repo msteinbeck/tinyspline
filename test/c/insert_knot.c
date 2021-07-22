@@ -1,461 +1,249 @@
 #include <testutils.h>
 
-#define NUM_CTRLP     7
-#define DIMENSION     2
-#define DEGREE        3
-#define CTRLP_EPSILON 0.001
-
 void insert_knot_once(CuTest *tc)
 {
-	const size_t num_insertions = 1;
-	const tsReal knot_to_insert = 0.3f;
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline result = ts_bspline_init();
-	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *sval = NULL, *rval = NULL;
-	size_t k = 0;
-	tsStatus status;
+	size_t k;
+	tsReal *knots = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			NUM_CTRLP, DIMENSION, DEGREE,
-			TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		/* Set control points. */
-		CuAssertIntEquals(tc, NUM_CTRLP, (int)
-			ts_bspline_num_control_points(&spline));
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &sval, &status))
-		sval[0]  = -1.75f; /* x0 */
-		sval[1]  = -1.0f;  /* y0 */
-		sval[2]  = -1.5f;  /* x1 */
-		sval[3]  = -0.5f;  /* y1 */
-		sval[4]  = -1.5f;  /* x2 */
-		sval[5]  =  0.0f;  /* y2 */
-		sval[6]  = -1.25f; /* x3 */
-		sval[7]  =  0.5f;  /* y3 */
-		sval[8]  = -0.75f; /* x4 */
-		sval[9]  =  0.75f; /* y4 */
-		sval[10] =  0.0f;  /* x5 */
-		sval[11] =  0.5f;  /* y5 */
-		sval[12] =  0.5f;  /* x6 */
-		sval[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, sval, &status))
-		free(sval);
-		sval = NULL;
+	/* Check initial knots. */
+	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
+	C(ts_bspline_knots(&spline, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10], TS_KNOT_EPSILON);
+	free(knots);
+	knots = NULL;
 
-		/* Check initial knots. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1, (int)
-			ts_bspline_num_knots(&spline));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		free(sval);
-		sval = NULL;
+	___WHEN___
+	C(ts_bspline_insert_knot(&spline,
+		(tsReal) 0.3, 1, &result, &k, &status))
 
-/* ================================= When ================================== */
-		/* Insert knot once. */
-		TS_CALL(try, status.code, ts_bspline_insert_knot(
-			&spline, knot_to_insert, num_insertions,
-			&result, &k, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 12, (int)ts_bspline_num_knots(&result));
+	C(ts_bspline_knots(&result, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.3,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10], TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[11], TS_KNOT_EPSILON);
+	CuAssertIntEquals(tc, 5, (int) k);
 
-/* ================================= Then ================================== */
-		/* Check resulting knots and index k. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
-				  (int)ts_bspline_num_knots(&result));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&result, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.3f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[11], TS_KNOT_EPSILON);
-		CuAssertIntEquals(tc, 5, (int) k);
-		free(sval);
-		sval = NULL;
+	assert_equal_shape(tc, &spline, &result);
 
-		/* Compare control points by evaluating spline and result. */
-		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
-			/* Eval spline. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-					  (int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &sval, &status))
-			ts_deboornet_free(&net);
-
-			/* Eval result. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&result, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-					  (int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &rval, &status))
-			ts_deboornet_free(&net);
-
-			/* Compare results. */
-			CuAssertDblEquals(tc, sval[0], rval[0], CTRLP_EPSILON);
-			CuAssertDblEquals(tc, sval[1], rval[1], CTRLP_EPSILON);
-			free(sval);
-			free(rval);
-			sval = rval = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&result);
-		ts_deboornet_free(&net);
-		free(sval);
-		free(rval);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&result);
+	free(knots);
 }
 
 void insert_knot_twice(CuTest *tc)
 {
-	const size_t num_insertions = 2;
-	const tsReal knot_to_insert = 0.6f;
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline result = ts_bspline_init();
-	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *sval = NULL, *rval = NULL;
-	size_t k = 0;
-	tsStatus status;
+	size_t k;
+	tsReal *knots = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			NUM_CTRLP, DIMENSION, DEGREE,
-			TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		/* Set control points. */
-		CuAssertIntEquals(tc, NUM_CTRLP, (int)
-			ts_bspline_num_control_points(&spline));
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &sval, &status))
-		sval[0]  = -1.75f; /* x0 */
-		sval[1]  = -1.0f;  /* y0 */
-		sval[2]  = -1.5f;  /* x1 */
-		sval[3]  = -0.5f;  /* y1 */
-		sval[4]  = -1.5f;  /* x2 */
-		sval[5]  =  0.0f;  /* y2 */
-		sval[6]  = -1.25f; /* x3 */
-		sval[7]  =  0.5f;  /* y3 */
-		sval[8]  = -0.75f; /* x4 */
-		sval[9]  =  0.75f; /* y4 */
-		sval[10] =  0.0f;  /* x5 */
-		sval[11] =  0.5f;  /* y5 */
-		sval[12] =  0.5f;  /* x6 */
-		sval[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, sval, &status))
-		free(sval);
-		sval = NULL;
+	/* Check initial knots. */
+	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
+	C(ts_bspline_knots(&spline, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10], TS_KNOT_EPSILON);
+	free(knots);
+	knots = NULL;
 
-		/* Check initial knots. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1, (int)
-			ts_bspline_num_knots(&spline));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		free(sval);
-		sval = NULL;
+	___WHEN___
+	C(ts_bspline_insert_knot(&spline,
+		(tsReal) 0.6, 2, &result, &k, &status))
 
-/* ================================= When ================================== */
-		/* Insert knot twice. */
-		TS_CALL(try, status.code, ts_bspline_insert_knot(
-			&spline, knot_to_insert, num_insertions,
-			&result, &k, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 13, (int)ts_bspline_num_knots(&result));
+	C(ts_bspline_knots(&result, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.6,  knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.6,  knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[11], TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[12], TS_KNOT_EPSILON);
+	CuAssertIntEquals(tc, 7, (int) k);
 
-/* ================================= Then ================================== */
-		/* Check resulting knots and index k. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
-				  (int)ts_bspline_num_knots(&result));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&result, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.6f,  sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.6f,  sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[11], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[12], TS_KNOT_EPSILON);
-		CuAssertIntEquals(tc, 7, (int) k);
-		free(sval);
-		sval = NULL;
+	assert_equal_shape(tc, &spline, &result);
 
-		/* Compare control points by evaluating spline and result. */
-		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
-			/* Eval spline. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-					  (int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &sval, &status))
-			ts_deboornet_free(&net);
-
-			/* Eval result. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&result, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-					  (int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &rval, &status))
-			ts_deboornet_free(&net);
-
-			/* Compare results. */
-			CuAssertDblEquals(tc, sval[0], rval[0], CTRLP_EPSILON);
-			CuAssertDblEquals(tc, sval[1], rval[1], CTRLP_EPSILON);
-			free(sval);
-			free(rval);
-			sval = rval = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&result);
-		ts_deboornet_free(&net);
-		free(sval);
-		free(rval);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&result);
+	free(knots);
 }
 
 void insert_knot_three_times(CuTest *tc)
 {
-	const size_t num_insertions = 3;
-	const tsReal knot_to_insert = 0.8f;
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline result = ts_bspline_init();
-	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *sval = NULL, *rval = NULL;
-	size_t k = 0;
-	tsStatus status;
+	size_t k;
+	tsReal *knots = NULL;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			NUM_CTRLP, DIMENSION, DEGREE,
-			TS_CLAMPED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		7, 2, 3, TS_CLAMPED, &spline, &status,
+		-1.75, -1.0,  /* P1 */
+		-1.5,  -0.5,  /* P2 */
+		-1.5,   0.0,  /* P3 */
+		-1.25,  0.5,  /* P4 */
+		-0.75,  0.75, /* P5 */
+		 0.0,   0.5,  /* P6 */
+		 0.5,   0.0)) /* P7 */
 
-		/* Set control points. */
-		CuAssertIntEquals(tc, NUM_CTRLP, (int)
-			ts_bspline_num_control_points(&spline));
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &sval, &status))
-		sval[0]  = -1.75f; /* x0 */
-		sval[1]  = -1.0f;  /* y0 */
-		sval[2]  = -1.5f;  /* x1 */
-		sval[3]  = -0.5f;  /* y1 */
-		sval[4]  = -1.5f;  /* x2 */
-		sval[5]  =  0.0f;  /* y2 */
-		sval[6]  = -1.25f; /* x3 */
-		sval[7]  =  0.5f;  /* y3 */
-		sval[8]  = -0.75f; /* x4 */
-		sval[9]  =  0.75f; /* y4 */
-		sval[10] =  0.0f;  /* x5 */
-		sval[11] =  0.5f;  /* y5 */
-		sval[12] =  0.5f;  /* x6 */
-		sval[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, sval, &status))
-		free(sval);
-		sval = NULL;
+	/* Check initial knots. */
+	CuAssertIntEquals(tc, 11, (int) ts_bspline_num_knots(&spline));
+	C(ts_bspline_knots(&spline, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10], TS_KNOT_EPSILON);
+	free(knots);
+	knots = NULL;
 
-		/* Check initial knots. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1, (int)
-			ts_bspline_num_knots(&spline));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		free(sval);
-		sval = NULL;
+	___WHEN___
+	C(ts_bspline_insert_knot(&spline,
+		(tsReal) 0.8, 3, &result, &k, &status))
 
-/* ================================= When ================================== */
-		/* Insert knot three times. */
-		TS_CALL(try, status.code, ts_bspline_insert_knot(
-			&spline, knot_to_insert, num_insertions,
-			&result, &k, &status))
+	___THEN___
+	CuAssertIntEquals(tc, 14, (int)ts_bspline_num_knots(&result));
+	C(ts_bspline_knots(&result, &knots, &status))
+	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.0,  knots[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.25, knots[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.5,  knots[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.75, knots[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.8,  knots[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.8,  knots[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 0.8,  knots[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[10],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[11],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[12], TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, 1.0,  knots[13], TS_KNOT_EPSILON);
+	CuAssertIntEquals(tc, 9, (int) k);
 
-/* ================================= Then ================================== */
-		/* Check resulting knots and index k. */
-		CuAssertIntEquals(tc, NUM_CTRLP + DEGREE + 1 + num_insertions,
-			(int)ts_bspline_num_knots(&result));
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&result, &sval, &status))
-		CuAssertDblEquals(tc, 0.f,   sval[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.f,   sval[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.25f, sval[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.5f,  sval[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.75f, sval[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.8f,  sval[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.8f,  sval[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 0.8f,  sval[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[10], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[11], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[12], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, 1.f,   sval[13], TS_KNOT_EPSILON);
-		CuAssertIntEquals(tc, 9, (int) k);
-		free(sval);
-		sval = NULL;
+	assert_equal_shape(tc, &spline, &result);
 
-		/* Compare control points by evaluating spline and result. */
-		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
-			/* Eval spline. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-				(int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &sval, &status))
-			ts_deboornet_free(&net);
-
-			/* Eval result. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&result, (tsReal)k / TS_MAX_NUM_KNOTS,
-				&net, &status))
-			CuAssertIntEquals(tc, DIMENSION,
-				(int)ts_deboornet_dimension(&net));
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net, &rval, &status))
-			ts_deboornet_free(&net);
-
-			/* Compare results. */
-			CuAssertDblEquals(tc, sval[0], rval[0], CTRLP_EPSILON);
-			CuAssertDblEquals(tc, sval[1], rval[1], CTRLP_EPSILON);
-			free(sval);
-			free(rval);
-			sval = rval = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&result);
-		ts_deboornet_free(&net);
-		free(sval);
-		free(rval);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&result);
+	free(knots);
 }
 
-void insert_knot_too_many(CuTest *tc) {
-/* ================================= Set Up ================================ */
-	const size_t num_insertions = DEGREE + 1;
-	const tsReal knot_to_insert = 0.25f;
+void insert_knot_too_many(CuTest *tc)
+{
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline result = ts_bspline_init();
-	size_t k = 0;
-	tsStatus status;
+	tsError err;
+	size_t k;
 
-	TS_TRY(try, status.code, &status)
+	___GIVEN___
+	C(ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, &status))
 
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			NUM_CTRLP, DIMENSION, DEGREE,
-			TS_CLAMPED, &spline, &status))
+	___WHEN___
+	err = ts_bspline_insert_knot(&spline,
+		(tsReal) 0.25, ts_bspline_degree(&spline) + 1,
+		&result, &k, NULL);
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_insert_knot(
-			&spline, knot_to_insert, num_insertions, &result, &k,
-			&status))
+	___THEN___
+	CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
 
-/* ================================= Then ================================== */
-		CuFail(tc, "Expected TS_NUM_KNOTS but operation succeeded");
-	TS_CATCH(status.code)
-		CuAssertIntEquals(tc, TS_MULTIPLICITY, status.code);
-
-/* =============================== Tear Down =============================== */
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&result);
 }
 
-void insert_knot_way_too_many(CuTest *tc) {
-/* ================================= Set Up ================================ */
-	const size_t num_insertions = DEGREE + 1 + 5;
-	const tsReal knot_to_insert = 0.75f;
+void insert_knot_way_too_many(CuTest *tc)
+{
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline result = ts_bspline_init();
-	size_t k = 0;
-	tsStatus status;
+	tsError err;
+	size_t k;
 
-	TS_TRY(try, status.code, &status)
+	___GIVEN___
+	C(ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, &status))
 
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			NUM_CTRLP, DIMENSION, DEGREE,
-			TS_CLAMPED, &spline, &status))
+	___WHEN___
+	err = ts_bspline_insert_knot(&spline,
+		(tsReal) 0.75, ts_bspline_degree(&spline) + 1 + 5,
+		&result, &k, NULL);
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_insert_knot(
-			&spline, knot_to_insert, num_insertions, &result, &k,
-			&status))
+	___THEN___
+	CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
 
-/* ================================= Then ================================== */
-		CuFail(tc, "Expected TS_NUM_KNOTS but operation succeeded");
-	TS_CATCH(status.code)
-		CuAssertIntEquals(tc, TS_MULTIPLICITY, status.code);
-
-/* =============================== Tear Down =============================== */
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&result);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&result);
 }
 
 CuSuite* get_insert_knot_suite()

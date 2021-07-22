@@ -340,7 +340,7 @@ void derive_discontinuous_lines_ignoring_epsilon(CuTest *tc)
 		(tsReal) 0.0, 0.0, 0.7, 0.7, 1.0, 1.0))
 
 	___WHEN___
-	err = ts_bspline_derive(&spline, 1, -1.f, &spline, NULL);
+	err = ts_bspline_derive(&spline, 1, (tsReal) -1.0, &spline, NULL);
 
 	___THEN___
 	CuAssertIntEquals(tc, TS_SUCCESS, err);
@@ -443,12 +443,6 @@ void derive_compare_third_derivative_with_three_times(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline third = ts_bspline_init();
 	tsBSpline three = ts_bspline_init();
-
-	tsReal ctrlp[8];
-	ctrlp[0] = 1.f; ctrlp[1] = 1.f;
-	ctrlp[2] = 2.f; ctrlp[3] = 4.f;
-	ctrlp[4] = 3.f; ctrlp[5] = 3.f;
-	ctrlp[6] = 4.f; ctrlp[7] = 0.f;
 
 	___GIVEN___
 	C(ts_bspline_new_with_control_points(

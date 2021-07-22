@@ -12,10 +12,10 @@ void eval_domain_min(CuTest *tc)
 		7, 2, 3, TS_CLAMPED, &spline, &status,
 		-1.75, -1.0,  /* P1 */
 		-1.5,  -0.5,  /* P2 */
-		-1.5f,  0.0,  /* P3 */
+		-1.5,   0.0,  /* P3 */
 		-1.25,  0.5,  /* P4 */
 		-0.75,  0.75, /* P5 */
-		 0.0f,  0.5,  /* P6 */
+		 0.0,   0.5,  /* P6 */
 		 0.5,   0.0)) /* P7 */
 
 	___WHEN___
@@ -208,7 +208,7 @@ void eval_two_points(CuTest *tc)
 	C(ts_bspline_new_with_control_points(
 		8, 2, 3, TS_BEZIERS, &spline, &status,
 		-1.75, -1.0,  /* P1 */
-		-1.5f, -0.5,  /* P2 */
+		-1.5,  -0.5,  /* P2 */
 		-1.5,   0.0,  /* P3 */
 		-1.25,  0.5,  /* P4 */
 		-0.75,  0.75, /* P5 */

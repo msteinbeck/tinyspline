@@ -2,314 +2,280 @@
 
 void set_knots_custom_interval(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal *result = NULL;
-	tsStatus status;
+	tsReal knots[11], *result = NULL;
 
-	tsReal knots[11] = {
-		-2.f, -1.f, -1.f, -0.5f, 1.25f, 1.5f, 1.75f, 2.f, 3.f, 4.f, 7.f
-	};
+	___GIVEN___
+	knots[0] = (tsReal) -2.0;
+	knots[1] = (tsReal) -1.0;
+	knots[2] = (tsReal) -1.0;
+	knots[3] = (tsReal) -0.5;
+	knots[4] = (tsReal)  1.25;
+	knots[5] = (tsReal)  1.5;
+	knots[6] = (tsReal)  1.75;
+	knots[7] = (tsReal)  2.0;
+	knots[8] = (tsReal)  3.0;
+	knots[9] = (tsReal)  4.0;
+	knots[10] = (tsReal) 7.0;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, 2, 3, TS_OPENED, &spline, &status))
+	C(ts_bspline_new(7, 2, 3, TS_OPENED, &spline, &status))
 
-/* ================================= When ================================== */
-		TS_CALL(try, status.code, ts_bspline_set_knots(
-			&spline, knots, &status))
+	___WHEN___
+	C(ts_bspline_set_knots( &spline, knots, &status))
 
-/* ================================= Then ================================== */
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &result, &status))
+	___THEN___
+	C(ts_bspline_knots( &spline, &result, &status))
 
-		CuAssertTrue(tc, knots != result);
-		CuAssertDblEquals(tc, -2.f,   result[0],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, -1.f,   result[1],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, -1.f,   result[2],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, -0.5f,  result[3],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  1.25f, result[4],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  1.5f,  result[5],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  1.75f, result[6],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  2.f,   result[7],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  3.f,   result[8],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  4.f,   result[9],  TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc,  7.f,   result[10], TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(result);
-		result = NULL;
-	TS_END_TRY
+	CuAssertTrue(tc, knots != result);
+	CuAssertDblEquals(tc, -2.0,  result[0],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, -1.0,  result[1],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, -1.0,  result[2],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc, -0.5,  result[3],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  1.25, result[4],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  1.5,  result[5],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  1.75, result[6],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  2.0,  result[7],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  3.0,  result[8],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  4.0,  result[9],  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,  7.0,  result[10], TS_KNOT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	free(result);
 }
 
 void set_knots_decreasing_knot_vector(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal *result = NULL;
-	tsStatus status;
+	tsReal knots[6], *result = NULL;
 	tsError err = TS_SUCCESS;
 
-	tsReal knots[6] = {
-		1.f, 1.f, 2.f, 2.f, 1.f, 3.f
-	};
+	___GIVEN___
+	knots[0] = (tsReal) 1.0;
+	knots[1] = (tsReal) 1.0;
+	knots[2] = (tsReal) 2.0;
+	knots[3] = (tsReal) 2.0;
+	knots[4] = (tsReal) 1.0;
+	knots[5] = (tsReal) 3.0;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			3, 2, 2, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
+	C(ts_bspline_new(3, 2, 2, TS_CLAMPED, &spline, &status))
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-/* ================================= When ================================== */
-		err = ts_bspline_set_knots(&spline, knots, NULL);
+	___WHEN___
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, TS_KNOTS_DECR, err);
+	___THEN___
+	CuAssertIntEquals(tc, TS_KNOTS_DECR, err);
 
-		/* Check if knots changed. */
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &result, &status))
+	/* Check if knots changed. */
+	C(ts_bspline_knots(&spline, &result, &status))
+	CuAssertTrue(tc, knots != result);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MIN,
+		result[0],
+		TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MIN,
+		result[1],
+		TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MIN,
+		result[2],
+		TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MAX,
+		result[3],
+		TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MAX,
+		result[4],
+		TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+		TS_DOMAIN_DEFAULT_MAX,
+		result[5],
+		TS_KNOT_EPSILON);
 
-		CuAssertTrue(tc, knots != result);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[0], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[1], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[2], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[3], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[4], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[5], TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(result);
-		result = NULL;
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	free(result);
 }
 
 void set_knots_exceeding_multiplicity(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal *result = NULL;
-	tsStatus status;
+	tsReal knots[6], *result = NULL;
 	tsError err = TS_SUCCESS;
 
-	tsReal knots[6] = {
-		2.f, 2.f, 2.f, 2.f, 3.f, 3.f
-	};
+	___GIVEN___
+	knots[0] = (tsReal) 2.0;
+	knots[1] = (tsReal) 2.0;
+	knots[2] = (tsReal) 2.0;
+	knots[3] = (tsReal) 2.0;
+	knots[4] = (tsReal) 3.0;
+	knots[5] = (tsReal) 3.0;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			3, 2, 2, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
+	C(ts_bspline_new(3, 2, 2, TS_CLAMPED, &spline, &status))
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-/* ================================= When ================================== */
-		err = ts_bspline_set_knots(&spline, knots, NULL);
+	___WHEN___
+	err = ts_bspline_set_knots(&spline, knots, NULL);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
+	___THEN___
+	CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
 
-		/* Check if knots changed. */
-		TS_CALL(try, status.code, ts_bspline_knots(
-			&spline, &result, &status))
+	/* Check if knots changed. */
+	C(ts_bspline_knots(&spline, &result, &status))
+	CuAssertTrue(tc, knots != result);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MIN,
+			  result[0],
+			  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MIN,
+			  result[1],
+			  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MIN,
+			  result[2],
+			  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MAX,
+			  result[3],
+			  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MAX,
+			  result[4],
+			  TS_KNOT_EPSILON);
+	CuAssertDblEquals(tc,
+			  TS_DOMAIN_DEFAULT_MAX,
+			  result[5],
+			  TS_KNOT_EPSILON);
 
-		CuAssertTrue(tc, knots != result);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[0], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[1], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN,
-			result[2], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[3], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[4], TS_KNOT_EPSILON);
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX,
-			result[5], TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		free(result);
-		result = NULL;
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	free(result);
 }
 
 void set_knot_at(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal knot;
-	tsStatus status;
+	tsReal knot, min, max, one = (tsReal) 1;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			2, 1, 1, TS_OPENED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new(2, 1, 1, TS_OPENED, &spline, &status))
+	ts_bspline_domain(&spline, &min, &max);
 
-		/* Check default knots. */
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN, knot,
-			TS_KNOT_EPSILON);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 3, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX, knot,
-			TS_KNOT_EPSILON);
+	___WHEN___ /* 1 */
+	C(ts_bspline_set_knot_at(&spline, 0, min - one, &status))
 
-/* ================================ When (1) =============================== */
-		/* Set and check custom knot at index 0. */
-		TS_CALL(try, status.code, ts_bspline_set_knot_at(
-			&spline, 0, TS_DOMAIN_DEFAULT_MIN - 1, &status))
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-/* ================================ Then (1) =============================== */
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN - 1,
-			knot, TS_KNOT_EPSILON);
+	___THEN___ /* 1 */
+	C(ts_bspline_knot_at(&spline, 0, &knot, &status))
+	CuAssertDblEquals(tc, min - one, knot, TS_KNOT_EPSILON);
 
-/* ================================ When (2) =============================== */
-		/* Set and check custom knot at index 3. */
-		TS_CALL(try, status.code, ts_bspline_set_knot_at(
-			&spline, 3, TS_DOMAIN_DEFAULT_MAX + 1, &status))
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 3, &knot, &status))
-/* ================================ Then (2) =============================== */
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX + 1,
-			knot, TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-	TS_END_TRY
+	___WHEN___ /* 2 */
+	C(ts_bspline_set_knot_at(&spline, 3, max + one, &status))
+
+	___THEN___ /* 2 */
+	C(ts_bspline_knot_at(&spline, 3, &knot, &status))
+	CuAssertDblEquals(tc, max + one, knot, TS_KNOT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void set_knot_at_invalid_index(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal knot;
-	tsStatus status;
+	tsReal knot, min, max, one = (tsReal) 1.0;
 	tsError err = TS_SUCCESS;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			1, 2, 0, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
+	___GIVEN___
+	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &spline, &status))
+	ts_bspline_domain(&spline, &min, &max);
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-/* ================================ When (1) =============================== */
-		/* Set knot at invalid index 2 and check if knots changed. */
-		err = ts_bspline_set_knot_at(&spline, 2,
-			TS_DOMAIN_DEFAULT_MAX + 1, &status);
-/* ================================ Then (1) =============================== */
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN, knot,
-			TS_KNOT_EPSILON);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 1, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX, knot,
-			TS_KNOT_EPSILON);
-		err = TS_SUCCESS; /* restore */
+	___WHEN___ /* 1 */   /* off-by-one */
+	err = ts_bspline_set_knot_at(&spline, 2, max + one, &status);
 
-/* ================================ When (2) =============================== */
-		/* Set knot at invalid index 10 and check if knots changed. */
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
-		err = ts_bspline_set_knot_at(&spline, 10,
-			TS_DOMAIN_DEFAULT_MAX + 1, &status);
-/* ================================ Then (2) =============================== */
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN, knot,
-			TS_KNOT_EPSILON);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 1, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX, knot,
-			TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-	TS_END_TRY
+	___THEN___ /* 1 */
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+	C(ts_bspline_knot_at(&spline, 0, &knot, &status))
+	CuAssertDblEquals(tc, min, knot, TS_KNOT_EPSILON);
+	C(ts_bspline_knot_at(&spline, 1, &knot, &status))
+	CuAssertDblEquals(tc, max, knot, TS_KNOT_EPSILON);
+
+	err = TS_SUCCESS; /* restore */
+
+	___WHEN___ /* 2 */   /* off-by-many */
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
+	err = ts_bspline_set_knot_at(&spline, 10, max + one, &status);
+
+	___THEN___ /* 2 */
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+	C(ts_bspline_knot_at(&spline, 0, &knot, &status))
+	CuAssertDblEquals(tc, min, knot, TS_KNOT_EPSILON);
+	C(ts_bspline_knot_at(&spline, 1, &knot, &status))
+	CuAssertDblEquals(tc, max, knot, TS_KNOT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void set_knot_at_decreasing_knot_vector(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal knot;
-	tsStatus status;
+	tsReal knot, min, max, one = (tsReal) 1.0;
 	tsError err = TS_SUCCESS;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			1, 2, 0, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
+	___GIVEN___
+	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &spline, &status))
+	ts_bspline_domain(&spline, &min, &max);
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-/* ================================= When ================================== */
-		err = ts_bspline_set_knot_at( &spline, 1,
-			TS_DOMAIN_DEFAULT_MIN - 1, &status);
+	___WHEN___
+	err = ts_bspline_set_knot_at( &spline, 1, min - one, &status);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, TS_KNOTS_DECR, err);
+	___THEN___
+	CuAssertIntEquals(tc, TS_KNOTS_DECR, err);
+	C(ts_bspline_knot_at(&spline, 0, &knot, &status))
+	CuAssertDblEquals(tc, min, knot, TS_KNOT_EPSILON);
+	C(ts_bspline_knot_at(&spline, 1, &knot, &status))
+	CuAssertDblEquals(tc, max, knot, TS_KNOT_EPSILON);
 
-		/* Check if knots changed. */
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN, knot,
-			TS_KNOT_EPSILON);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 1, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX, knot,
-			TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void set_knot_at_exceeding_multiplicity(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsReal knot;
-	tsStatus status;
+	tsReal knot, min, max;
 	tsError err = TS_SUCCESS;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		TS_CALL(try, status.code, ts_bspline_new(
-			1, 2, 0, TS_CLAMPED, &spline, &status))
-		CuAssertIntEquals(tc, TS_SUCCESS, err);
+	___GIVEN___
+	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &spline, &status))
+	ts_bspline_domain(&spline, &min, &max);
+	CuAssertIntEquals(tc, TS_SUCCESS, err);
 
-/* ================================= When ================================== */
-		err = ts_bspline_set_knot_at(&spline, 1,
-			TS_DOMAIN_DEFAULT_MIN, &status);
+	___WHEN___
+	err = ts_bspline_set_knot_at(&spline, 1, min, &status);
 
-/* ================================= Then ================================== */
-		CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
+	___THEN___
+	CuAssertIntEquals(tc, TS_MULTIPLICITY, err);
+	C(ts_bspline_knot_at(&spline, 0, &knot, &status))
+	CuAssertDblEquals(tc, min, knot, TS_KNOT_EPSILON);
+	C(ts_bspline_knot_at(&spline, 1, &knot, &status))
+	CuAssertDblEquals(tc, max, knot, TS_KNOT_EPSILON);
 
-		/* Check if knots changed. */
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 0, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MIN, knot,
-			TS_KNOT_EPSILON);
-		TS_CALL(try, status.code, ts_bspline_knot_at(
-			&spline, 1, &knot, &status))
-		CuAssertDblEquals(tc, TS_DOMAIN_DEFAULT_MAX, knot,
-			TS_KNOT_EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 CuSuite* get_set_knots_suite()

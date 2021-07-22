@@ -24,8 +24,8 @@ assert_bisect_eval_equal(CuTest *tc, tsBSpline *spline, size_t idx, int asc)
 
 			/* Bisect the corresponding point. */
 			TS_CALL(try, status.code, ts_bspline_bisect(
-				spline, result_eval[idx], 0.f, 0, idx, asc, 50,
-				&net_bisect, &status))
+				spline, result_eval[idx], (tsReal) 0.0, 0,
+				idx, asc, 50, &net_bisect, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net_bisect, &result_bisect, &status))
 
@@ -210,7 +210,7 @@ void bisect_invalid_index(CuTest *tc)
 
 	___WHEN___ /* 1 */
 	/* Check index off-by-one without status. */
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
 		4 /**< index */, 1, 50, &net, NULL);
 
 	___THEN___ /* 1 */
@@ -220,7 +220,7 @@ void bisect_invalid_index(CuTest *tc)
 	___WHEN___ /* 2 */
 	/* Check index off-by-one with status. */
 	stat.code = TS_SUCCESS;
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
 		4 /**< index */, 1, 50, &net, &stat);
 
 	___THEN___ /* 2 */
@@ -230,7 +230,7 @@ void bisect_invalid_index(CuTest *tc)
 
 	___WHEN___ /* 3 */
 	/* Check another invalid index without status. */
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
 		8 /**< index */, 1, 50, &net, NULL);
 
 	___THEN___ /* 3 */
@@ -240,7 +240,7 @@ void bisect_invalid_index(CuTest *tc)
 	___WHEN___ /* 4 */
 	/* Check another invalid index with status. */
 	stat.code = TS_SUCCESS;
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
 		8 /**< index */, 1, 50, &net, &stat);
 
 	___THEN___ /* 4 */
@@ -267,7 +267,7 @@ void bisect_max_iter_0(CuTest *tc)
 
 	___WHEN___ /* 1 */
 	/* Check max_iter = 0 without status. */
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0, 0, 1,
 		0 /**< max_iter */, &net, NULL);
 
 	___THEN___ /* 1 */
@@ -277,7 +277,7 @@ void bisect_max_iter_0(CuTest *tc)
 	___WHEN___ /* 2 */
 	/* Check max_iter = 0 with status. */
 	stat.code = TS_SUCCESS;
-	err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0, 0, 1,
 		0 /**< max_iter */, &net, &stat);
 
 	___THEN___ /* 2 */
@@ -334,7 +334,7 @@ void bisect_persnickety(CuTest *tc)
 
 	___WHEN___ /* 1 */
 	/* Check persnickety without status. */
-	err = ts_bspline_bisect(&spline, 6.0, 0.f,
+	err = ts_bspline_bisect(&spline, 6.0, (tsReal) 0.0,
 		1 /**< persnickety */, 0, 1, 2, &net, NULL);
 
 	___THEN___ /* 1 */
@@ -344,7 +344,7 @@ void bisect_persnickety(CuTest *tc)
 	___WHEN___ /* 2 */
 	/* Check persnickety with status. */
 	stat.code = TS_SUCCESS;
-	err = ts_bspline_bisect(&spline, 6.0, 0.f,
+	err = ts_bspline_bisect(&spline, 6.0, (tsReal) 0.0,
 		1 /**< persnickety */, 0, 1, 2, &net, &stat);
 
 	___THEN___ /* 2 */

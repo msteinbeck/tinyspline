@@ -113,9 +113,11 @@ void interpolation_issue32(CuTest *tc)
 	/* First bezier. */
 	dist = ts_distance_varargs(tc, 2, ctrlp, -1.0, 0.5);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
-	dist = ts_distance_varargs(tc, 2, ctrlp + 2, -0.8333, 0.0416);
+	dist = ts_distance_varargs(tc, 2, ctrlp + 2,
+		-0.83333335816860199, 0.041666667908430099);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
-	dist = ts_distance_varargs(tc, 2, ctrlp + 4, -0.6666, -0.4166);
+	dist = ts_distance_varargs(tc, 2, ctrlp + 4,
+		-0.66666668653488159, -0.41666667908430099);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 	dist = ts_distance_varargs(tc, 2, ctrlp + 6, 0.0, 0.0);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
@@ -123,9 +125,11 @@ void interpolation_issue32(CuTest *tc)
 	/* Second bezier. */
 	dist = ts_distance_varargs(tc, 2, ctrlp + 8, 0.0, 0.0);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
-	dist = ts_distance_varargs(tc, 2, ctrlp + 10, 0.6666, 0.4166);
+	dist = ts_distance_varargs(tc, 2, ctrlp + 10,
+		0.66666668653488159, 0.41666667908430099);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
-	dist = ts_distance_varargs(tc, 2, ctrlp + 12, 1.8333, 1.7083);
+	dist = ts_distance_varargs(tc, 2, ctrlp + 12,
+		1.8333333879709244, 1.7083333842456341);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 	dist = ts_distance_varargs(tc, 2, ctrlp + 14, 3.0, 3.0);
 	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);

@@ -18,6 +18,7 @@ CuSuite* get_align_suite();
 
 int main()
 {
+	int fails;
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
@@ -41,9 +42,10 @@ int main()
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
+	fails = suite->failCount;
 
 	CuStringDelete(output);
 	CuSuiteDelete(suite);
 
-	return 0;
+	return fails? EXIT_FAILURE : EXIT_SUCCESS;
 }

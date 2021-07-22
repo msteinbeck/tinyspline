@@ -58,3 +58,32 @@ assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 {
 	assert_equal_shape_eps(tc, s1, s2, POINT_EPSILON);
 }
+
+tsReal
+ts_distance_varargs(CuTest *tc, size_t dim, tsReal *x, double first, ...)
+{
+	va_list argp;
+	tsReal dist, *y = NULL;
+	size_t i;
+
+	if (!dim) {
+		CuFail(tc, "dim == 0");
+		return (tsReal) 0.0;
+	}
+
+	y = malloc(dim * sizeof(tsReal));
+	if (!y) {
+		CuFail(tc, "out of memory");
+		return (tsReal) 0.0;
+	}
+
+	y[0] = (tsReal) first;
+	va_start(argp, first);
+	for (i = 1; i < dim; i++)
+		y[i] = (tsReal) va_arg(argp, double);
+	va_end(argp);
+
+	dist = ts_distance(x, y, dim);
+	free(y);
+	return dist;
+}

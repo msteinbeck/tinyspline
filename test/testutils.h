@@ -12,7 +12,7 @@
 #define ___GIVEN___ TS_TRY(try, status.code, &status)
 #define ___WHEN___
 #define ___THEN___
-#define ___TEARDOWN___ TS_FINALLY TS_END_TRY \
+#define ___TEARDOWN___ TS_END_TRY \
 	if (status.code) CuFail(tc, status.message);
 #define C(call) TS_CALL(try, status.code, (call))
 
@@ -54,5 +54,24 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps);
  */
 void
 assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2);
+
+/**
+ * Returns the euclidean distance of the points \p x and \p first ... . Fails
+ * if \p dim is 0 (i.e., a failure is registered in \p tc).
+ *
+ * @param tc
+ * 	The active test container.
+ * @param dim
+ * 	The dim of \p x and \p first ... .
+ * @param x
+ * 	The x value
+ * @param first
+ * 	The first component of \p first ... .
+ * @param ...
+ * 	The remaining components of \p first ... .
+ * @return
+ */
+tsReal
+ts_distance_varargs(CuTest *tc, size_t dim, tsReal *x, double first, ...);
 
 #endif	/* TINYSPLINE_TESTUTILS_H */

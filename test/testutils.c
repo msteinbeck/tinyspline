@@ -1,7 +1,7 @@
 #include "testutils.h"
 
 void
-assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
+assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps)
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal min, max, knot, dist, *s1val = NULL, *s2val = NULL;
@@ -37,7 +37,7 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps)
 
 		/* Compare results. */
 		dist = ts_distance(s1val, s2val, dim);
-		CuAssertDblEquals(tc, 0, dist, eps);
+		CuAssertDblEquals(tc, 0, dist, (tsReal) eps);
 
 		/* Clean up. */
 		free(s1val);

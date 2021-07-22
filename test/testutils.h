@@ -30,10 +30,11 @@
  * @param s2
  * 	Second spline.
  * @param eps
- * 	Maximum distance of evaluated points.
+ * 	Maximum distance of evaluated points. The type of this argument is
+ * 	double so as to simplify the use of this method in unit tests.
  */
 void
-assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, tsReal eps);
+assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps);
 
 /**
  * Asserts that \p s1 and \p s2 have equal shape by evaluating them at

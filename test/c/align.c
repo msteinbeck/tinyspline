@@ -3,14 +3,14 @@
 void assert_compatible(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
 {
 	CuAssertIntEquals(tc,
-		ts_bspline_degree(s1),
-		ts_bspline_degree(s2));
+		(int) ts_bspline_degree(s1),
+		(int) ts_bspline_degree(s2));
 	CuAssertIntEquals(tc,
-		ts_bspline_num_control_points(s1),
-		ts_bspline_num_control_points(s2));
+		(int) ts_bspline_num_control_points(s1),
+		(int) ts_bspline_num_control_points(s2));
 	CuAssertIntEquals(tc,
-		ts_bspline_num_knots(s1),
-		ts_bspline_num_knots(s2));
+		(int) ts_bspline_num_knots(s1),
+		(int) ts_bspline_num_knots(s2));
 }
 
 void align_point_with_spline(CuTest *tc)

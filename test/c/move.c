@@ -1,11 +1,5 @@
 #include <testutils.h>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-/* unreferenced label */
-#pragma warning(disable:4102)
-#endif
-
 void move_bspline_different_ptr(CuTest *tc)
 {
 	___SETUP___
@@ -13,7 +7,7 @@ void move_bspline_different_ptr(CuTest *tc)
 	tsBSpline moved = ts_bspline_init();
 
 	___GIVEN___
-	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status);
+	C(ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status))
 	CuAssertPtrNotNull(tc, spline.pImpl);
 	CuAssertPtrEquals(tc, NULL, moved.pImpl);
 
@@ -37,8 +31,8 @@ void move_deboornet_different_ptr(CuTest *tc)
 	tsDeBoorNet moved = ts_deboornet_init();
 
 	___GIVEN___
-	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status);
-	ts_bspline_eval(&spline, (tsReal) 0.5, &net, &status);
+	C(ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status))
+	C(ts_bspline_eval(&spline, (tsReal) 0.5, &net, &status))
 	CuAssertPtrNotNull(tc, net.pImpl);
 	CuAssertPtrEquals(tc, NULL, moved.pImpl);
 
@@ -62,7 +56,3 @@ CuSuite* get_move_suite()
 	SUITE_ADD_TEST(suite, move_deboornet_different_ptr);
 	return suite;
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

@@ -1,18 +1,12 @@
 #include <testutils.h>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-/* unreferenced label */
-#pragma warning(disable:4102)
-#endif
-
 void free_bspline(CuTest* tc)
 {
 	___SETUP___
 	tsBSpline spline;
 
 	___GIVEN___
-	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status);
+	C(ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status))
 	CuAssertPtrNotNull(tc, spline.pImpl);
 
 	___WHEN___
@@ -31,8 +25,8 @@ void free_deboornet(CuTest* tc)
 	tsDeBoorNet net;
 
 	___GIVEN___
-	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status);
-	ts_bspline_eval(&spline, 0, &net, &status);
+	C(ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status))
+	C(ts_bspline_eval(&spline, 0, &net, &status))
 	CuAssertPtrNotNull(tc, net.pImpl);
 
 	___WHEN___
@@ -52,7 +46,3 @@ CuSuite* get_free_suite()
 	SUITE_ADD_TEST(suite, free_deboornet);
 	return suite;
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

@@ -69,12 +69,12 @@ jobs:
         mkdir $GITHUB_WORKSPACE/test/pkg/build
         cd $GITHUB_WORKSPACE/test/pkg/build
         if [ "$RUNNER_OS" == "Windows" ]; then
-            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..
+            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
         else
             cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..
         fi
-        cmake --build .
-        ctest
+        cmake --build . --config $BUILD_TYPE
+        ctest -C $BUILD_TYPE
 
     - name: Test Pkg-config Installation
       shell: bash

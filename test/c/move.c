@@ -1,5 +1,11 @@
 #include <testutils.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
 void move_bspline_different_ptr(CuTest *tc)
 {
 	___SETUP___
@@ -56,3 +62,7 @@ CuSuite* get_move_suite()
 	SUITE_ADD_TEST(suite, move_deboornet_different_ptr);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

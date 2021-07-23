@@ -1,5 +1,11 @@
 #include <testutils.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
 void arr_fill_size10_negative_integer(CuTest *tc)
 {
 	___SETUP___
@@ -99,3 +105,7 @@ CuSuite* get_arr_fill_suite()
 	SUITE_ADD_TEST(suite, arr_fill_subset_with_offset);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

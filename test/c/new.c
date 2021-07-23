@@ -1,5 +1,11 @@
 #include <testutils.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
 void new_bspline_zero_dim(CuTest* tc)
 {
 	___SETUP___
@@ -102,3 +108,7 @@ CuSuite* get_new_suite()
 	SUITE_ADD_TEST(suite, new_bspline_beziers_setup_failed);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

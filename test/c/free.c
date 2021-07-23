@@ -1,5 +1,11 @@
 #include <testutils.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
 void free_bspline(CuTest* tc)
 {
 	___SETUP___
@@ -46,3 +52,7 @@ CuSuite* get_free_suite()
 	SUITE_ADD_TEST(suite, free_deboornet);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

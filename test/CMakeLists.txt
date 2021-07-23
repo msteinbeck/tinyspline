@@ -16,11 +16,6 @@ endif()
 add_library(testutils STATIC "testutils.c")
 target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(testutils PUBLIC cutest tinyspline)
-if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# Disable the warnings about unreferenced labels (caused by ___GIVEN___).
-	set_target_properties(testutils PROPERTIES
-		COMPILE_FLAGS "-wd4102")
-endif()
 
 
 

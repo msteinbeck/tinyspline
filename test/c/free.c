@@ -3,7 +3,7 @@
 void free_bspline(CuTest* tc)
 {
 	___SETUP___
-	tsBSpline spline;
+	tsBSpline spline = ts_bspline_init();
 
 	___GIVEN___
 	C(ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status))
@@ -21,8 +21,8 @@ void free_bspline(CuTest* tc)
 void free_deboornet(CuTest* tc)
 {
 	___SETUP___
-	tsBSpline spline;
-	tsDeBoorNet net;
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
 
 	___GIVEN___
 	C(ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status))

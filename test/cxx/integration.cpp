@@ -32,10 +32,10 @@ void run()
 	for (size_t i = 0; i <= 10; i++) {
 		BSpline morph = morphism((real) i / 10);
 		std::string json = morph.toJson();
-		morph = morph.tension(0.75).toBeziers().derive();
+		morph = morph.tension((tsReal) 0.75).toBeziers().derive();
 		assert(morph.domain().min() == start.domain().min());
 		assert(morph.domain().max() == start.domain().max());
-		assert(morph(0.314).result().size() == 2);
+		assert(morph((tsReal) 0.314).result().size() == 2);
 		morph = BSpline(BSpline::parseJson(json));
 		assert(morph.sample(100).size() == 200);
 	}

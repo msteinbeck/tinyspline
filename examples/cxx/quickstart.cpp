@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	tinyspline::BSpline beziers = spline.derive().toBeziers();
 
 	// Evaluate `beziers` at u = 0.3 using '()' instead of 'eval'.
-	result = beziers((tsReal) 0.3f).result();
+	result = beziers((tsReal) 0.3).result();
 	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
 
 	return 0;

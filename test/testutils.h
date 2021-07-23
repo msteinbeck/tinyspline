@@ -12,8 +12,7 @@
 #define ___GIVEN___ TS_TRY(try, status.code, &status)
 #define ___WHEN___
 #define ___THEN___
-#define ___TEARDOWN___ TS_END_TRY \
-	if (status.code) CuFail(tc, status.message);
+#define ___TEARDOWN___ TS_END_TRY if (status.code) CuFail(tc, status.message);
 #define C(call) TS_CALL(try, status.code, (call))
 
 /**

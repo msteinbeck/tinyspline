@@ -69,7 +69,7 @@ jobs:
         mkdir $GITHUB_WORKSPACE/test/pkg/build
         cd $GITHUB_WORKSPACE/test/pkg/build
         if [ "$RUNNER_OS" == "Windows" ]; then
-            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
+            cmake -DCMAKE_PREFIX_PATH=C:/tinyspline ..
         else
             cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..
         fi

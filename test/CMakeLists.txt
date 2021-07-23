@@ -1,6 +1,28 @@
 ###############################################################################
+### Build CuTest.
+###############################################################################
+add_library(cutest STATIC "cutest/CuTest.c")
+target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/cutest")
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+	# Disable the warnings about sprintf.
+	target_compile_definitions(cutest PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
+
+
+###############################################################################
+### Build testutils.
+###############################################################################
+add_library(testutils STATIC "testutils.c")
+target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(testutils PUBLIC cutest tinyspline)
+
+
+
+###############################################################################
 ### Check if code coverage is available. Coverage is measured and visualized
-### with gcov, lcov, and genthml.
+### using gcov, lcov, and genthml. If one of these tools is missing, code
+### coverage cannot be generated.
 #
 # TINYSPLINE_COVERAGE_AVAILABLE
 #   TRUE if the tools that are required to generate code coverage are
@@ -61,9 +83,10 @@ set(TINYSPLINE_COVERAGE_C_LIBRARIES
 
 
 ###############################################################################
-### Add subdirectories containing the actual unit tests.
+### Add subdirectories containing the unit tests.
 ###############################################################################
 add_subdirectory(c)
+add_subdirectory(cxx)
 
 
 
@@ -71,9 +94,27 @@ add_subdirectory(c)
 ### Subsume unit tests and code coverage with custom targets.
 ###############################################################################
 add_custom_target(tests
-	COMMAND tinyspline_tests
-	DEPENDS tinyspline_tests
+	DEPENDS tinyspline_tests tinysplinecxx_tests
+	COMMAND tinyspline_tests tinysplinecxx_tests
 )
 add_custom_target(coverage
 	DEPENDS tinyspline_coverage
+)
+
+
+
+###############################################################################
+### Add a custom target for checking memory issues with CTest.
+###############################################################################
+add_custom_target(memcheck
+	DEPENDS tests
+	COMMAND
+		${CMAKE_CTEST_COMMAND} -T memcheck
+	COMMAND
+		${CMAKE_COMMAND} -E cat
+		"${CMAKE_BINARY_DIR}/Testing/Temporary/MemoryChecker.1.log"
+	COMMAND
+		${CMAKE_COMMAND} -E cat
+		"${CMAKE_BINARY_DIR}/Testing/Temporary/MemoryChecker.2.log"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )

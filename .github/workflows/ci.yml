@@ -17,6 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install System Tools
+      if: runner.os == 'Linux'
+      shell: bash
+      run: sudo apt install -y valgrind
+
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
@@ -47,10 +52,16 @@ jobs:
       shell: bash
       run: ctest -C $BUILD_TYPE
 
+    - name: Memory Check
+      if: runner.os == 'Linux'
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --target memcheck --config $BUILD_TYPE
+
     - name: Install
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --target install
+      run: cmake --build . --target install --config $BUILD_TYPE
 
     - name: Test CMake Installation
       shell: bash
@@ -62,8 +73,8 @@ jobs:
         else
             cmake -DCMAKE_PREFIX_PATH=~/tinyspline ..
         fi
-        cmake --build .
-        ctest
+        cmake --build . --config $BUILD_TYPE
+        ctest -C $BUILD_TYPE
 
     - name: Test Pkg-config Installation
       shell: bash

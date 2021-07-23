@@ -1,0 +1,55 @@
+LIST OF CHANGES
+
+- CuSuiteAddSuite: Test cases are now moved from testSuite2 to
+  testSuite1 (instead of just copying the pointer). Afterwards,
+  testSuite2 is deleted (i.e., its memory is released). This avoids
+  memory leaks when nesting test suites.
+
+  diff --git a/test/c/cutest/CuTest.c b/test/c/cutest/CuTest.c
+  index 8f61199..69d8cd6 100644
+  --- a/test/c/cutest/CuTest.c
+  +++ b/test/c/cutest/CuTest.c
+  @@ -277,7 +277,9 @@ void CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2)
+          {
+                  CuTest* testCase = testSuite2->list[i];
+                  CuSuiteAdd(testSuite, testCase);
+  +               testSuite2->list[i] = NULL;
+          }
+  +       CuSuiteDelete(testSuite2);
+   }
+
+   void CuSuiteRun(CuSuite* testSuite)
+
+- CuTest.c: Remove implicit conversion of size_t to int.
+
+  diff --git a/test/cutest/CuTest.c b/test/cutest/CuTest.c
+  index 69d8cd6..d20a5a9 100644
+  --- a/test/cutest/CuTest.c
+  +++ b/test/cutest/CuTest.c
+  @@ -19,7 +19,7 @@ char* CuStrAlloc(int size)
+
+   char* CuStrCopy(const char* old)
+   {
+  -       int len = strlen(old);
+  +       int len = (int) strlen(old);
+          char* newStr = CuStrAlloc(len + 1);
+          strcpy(newStr, old);
+          return newStr;
+  @@ -68,7 +68,7 @@ void CuStringAppend(CuString* str, const char* text)
+                  text = "NULL";
+          }
+
+  -       length = strlen(text);
+  +       length = (int) strlen(text);
+          if (str->length + length + 1 >= str->size)
+                  CuStringResize(str, str->length + length + 1 + STRING_INC);
+          str->length += length;
+  @@ -95,7 +95,7 @@ void CuStringAppendFormat(CuString* str, const char* format, ...)
+
+   void CuStringInsert(CuString* str, const char* text, int pos)
+   {
+  -       int length = strlen(text);
+  +       int length = (int) strlen(text);
+          if (pos > str->length)
+                  pos = str->length;
+          if (str->length + length + 1 >= str->size)

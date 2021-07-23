@@ -1,51 +1,68 @@
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
-void move_test_bspline_different_ptr(CuTest *tc)
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
+void move_bspline_different_ptr(CuTest *tc)
 {
-	tsBSpline spline, moved;
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline moved = ts_bspline_init();
 
-/* ================================= Given ================================= */
-	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, NULL);
+	___GIVEN___
+	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status);
 	CuAssertPtrNotNull(tc, spline.pImpl);
-	moved.pImpl = NULL;
+	CuAssertPtrEquals(tc, NULL, moved.pImpl);
 
-/* ================================= When ================================== */
+	___WHEN___
 	ts_bspline_move(&spline, &moved);
 
-/* ================================= Then ================================== */
+	___THEN___
 	CuAssertPtrEquals(tc, spline.pImpl, NULL);
 	CuAssertPtrNotNull(tc, moved.pImpl);
 
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 	ts_bspline_free(&moved);
 }
 
-void move_test_deboornet_different_ptr(CuTest *tc)
+void move_deboornet_different_ptr(CuTest *tc)
 {
-	tsBSpline spline;
-	tsDeBoorNet net, moved;
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsDeBoorNet moved = ts_deboornet_init();
 
-/* ================================= Given ================================= */
-	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, NULL);
-	net.pImpl = moved.pImpl = NULL;
-	ts_bspline_eval(&spline, 0.5f, &net, NULL);
+	___GIVEN___
+	ts_bspline_new(6, 3, 3, TS_OPENED, &spline, &status);
+	ts_bspline_eval(&spline, (tsReal) 0.5, &net, &status);
 	CuAssertPtrNotNull(tc, net.pImpl);
+	CuAssertPtrEquals(tc, NULL, moved.pImpl);
 
-/* ================================= When ================================== */
+	___WHEN___
 	ts_deboornet_move(&net, &moved);
 
-/* ================================= Then ================================== */
-	CuAssertPtrEquals(tc, net.pImpl, NULL);
+	___THEN___
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
 	CuAssertPtrNotNull(tc, moved.pImpl);
 
+	___TEARDOWN___
 	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 	ts_deboornet_free(&moved);
 }
 
 CuSuite* get_move_suite()
 {
 	CuSuite* suite = CuSuiteNew();
-	SUITE_ADD_TEST(suite, move_test_bspline_different_ptr);
-	SUITE_ADD_TEST(suite, move_test_deboornet_different_ptr);
+	SUITE_ADD_TEST(suite, move_bspline_different_ptr);
+	SUITE_ADD_TEST(suite, move_deboornet_different_ptr);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

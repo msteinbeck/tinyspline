@@ -1,529 +1,360 @@
-#include <stdlib.h>
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
-#define EPSILON 0.0001
-
-void bisect_compare_with_eval_x_coordinate(CuTest *tc)
+void
+assert_bisect_eval_equal(CuTest *tc, tsBSpline *spline, size_t idx, int asc)
 {
-	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net_eval = ts_deboornet_init();
 	tsDeBoorNet net_bisect = ts_deboornet_init();
 	tsReal *result_eval = NULL, *result_bisect = NULL;
 	tsReal min, max, knot, dist;
+	size_t k;
 	tsStatus status;
 
-	tsReal ctrlp[18] = {
-		1.0,  0.5,  0.3,
-		2.0,  1.5, -1.6,
-		4.0, -3.0, -2.9,
-		4.5, -4.1, -1.0,
-		4.9, -5.5,  1.3,
-		6.8, -6.3,  2.6
-	};
-
 	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			6, 3, 3, TS_OPENED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+		ts_bspline_domain(spline, &min, &max);
+		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
+			knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+			knot = ( (max - min) * knot ) + min;
 
-		/* Compare eval with bisect. */
-		for (knot = min; knot < max;
-			knot += (max - min) / TS_MAX_NUM_KNOTS) {
-
-/* ================================= When ================================== */
 			/* Eval the point to bisect. */
 			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, knot, &net_eval, &status))
+				spline, knot, &net_eval, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net_eval, &result_eval, &status))
 
 			/* Bisect the corresponding point. */
 			TS_CALL(try, status.code, ts_bspline_bisect(
-				&spline, result_eval[0], 0.f, 0, 0, 1, 50,
-				&net_bisect, &status))
+				spline, result_eval[idx], (tsReal) 0.0, 0,
+				idx, asc, 50, &net_bisect, &status))
 			TS_CALL(try, status.code, ts_deboornet_result(
 				&net_bisect, &result_bisect, &status))
 
-/* ================================= Then ================================== */
 			/* Compare knots and results. */
 			CuAssertDblEquals(tc, ts_deboornet_knot(&net_eval),
-				ts_deboornet_knot(&net_bisect), EPSILON);
+				ts_deboornet_knot(&net_bisect),
+				TS_KNOT_EPSILON);
 			dist = ts_distance(result_eval, result_bisect,
-				ts_bspline_dimension(&spline));
-			CuAssertDblEquals(tc, 0, dist, EPSILON);
+				ts_bspline_dimension(spline));
+			CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
 
 			/* Cleanup. */
 			ts_deboornet_free(&net_eval);
 			ts_deboornet_free(&net_bisect);
 			free(result_eval);
-			result_eval = NULL;
 			free(result_bisect);
-			result_bisect = NULL;
+			result_eval = result_bisect = NULL;
 		}
 	TS_CATCH(status.code)
 		CuFail(tc, status.message);
 	TS_FINALLY
-		ts_bspline_free(&spline);
+		ts_bspline_free(spline);
 		ts_deboornet_free(&net_eval);
 		ts_deboornet_free(&net_bisect);
 		free(result_eval);
 		free(result_bisect);
 	TS_END_TRY
+}
+
+void bisect_compare_with_eval_x_coordinate(CuTest *tc)
+{
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		6, 3, 3, TS_OPENED, &spline, &status,
+		1.0,  0.5,  0.3,  /* P1 */
+		2.0,  1.5, -1.6,  /* P2 */
+		4.0, -3.0, -2.9,  /* P3 */
+		4.5, -4.1, -1.0,  /* P4 */
+		4.9, -5.5,  1.3,  /* P5 */
+		6.8, -6.3,  2.6)) /* P6 */
+
+	___WHEN___
+
+	___THEN___
+	assert_bisect_eval_equal(tc, &spline, 0, 1);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void bisect_compare_with_eval_y_coordinate(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsDeBoorNet net_eval = ts_deboornet_init();
-	tsDeBoorNet net_bisect = ts_deboornet_init();
-	tsReal *result_eval = NULL, *result_bisect = NULL;
-	tsReal min, max, knot, dist;
-	tsStatus status;
 
-	tsReal ctrlp[10] = {
-		 0.0, -0.7,
-		-3.7,  2.6,
-		-1.6,  3.0,
-		-0.5,  3.1,
-		 2.9,  5.6
-	};
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		5, 2, 2, TS_CLAMPED, &spline, &status,
+		 0.0, -0.7,  /* P1 */
+		-3.7,  2.6,  /* P2 */
+		-1.6,  3.0,  /* P3 */
+		-0.5,  3.1,  /* P4 */
+		 2.9,  5.6)) /* P5 */
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			5, 2, 2, TS_CLAMPED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+	___WHEN___
 
-		/* Compare eval with bisect. */
-		for (knot = min; knot < max;
-			knot += (max - min) / TS_MAX_NUM_KNOTS) {
+	___THEN___
+	assert_bisect_eval_equal(tc, &spline, 1, 1);
 
-/* ================================= When ================================== */
-			/* Eval the point to bisect. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, knot, &net_eval, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_eval, &result_eval, &status))
-
-			/* Bisect the corresponding point. */
-			TS_CALL(try, status.code, ts_bspline_bisect(
-				&spline, result_eval[1], 0.f, 0, 1, 1, 50,
-				&net_bisect, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_bisect, &result_bisect, &status))
-
-/* ================================= Then ================================== */
-			/* Compare knots and results. */
-			CuAssertDblEquals(tc, ts_deboornet_knot(&net_eval),
-				ts_deboornet_knot(&net_bisect), EPSILON);
-			dist = ts_distance(result_eval, result_bisect,
-				ts_bspline_dimension(&spline));
-			CuAssertDblEquals(tc, 0, dist, EPSILON);
-
-			/* Cleanup. */
-			ts_deboornet_free(&net_eval);
-			ts_deboornet_free(&net_bisect);
-			free(result_eval);
-			result_eval = NULL;
-			free(result_bisect);
-			result_bisect = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net_eval);
-		ts_deboornet_free(&net_bisect);
-		free(result_eval);
-		free(result_bisect);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void bisect_compare_with_eval_z_coordinate(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsDeBoorNet net_eval = ts_deboornet_init();
-	tsDeBoorNet net_bisect = ts_deboornet_init();
-	tsReal *result_eval = NULL, *result_bisect = NULL;
-	tsReal min, max, knot, dist;
-	tsStatus status;
 
-	tsReal ctrlp[9] = {
-		1.0, 4.0, -3.0,
-		2.0, 2.0, -1.6,
-		4.0, 1.0,  2.8,
-	};
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		3, 3, 1, TS_CLAMPED, &spline, &status,
+		1.0, 4.0, -3.0,  /* P1 */
+		2.0, 2.0, -1.6,  /* P2 */
+		4.0, 1.0,  2.8)) /* P3 */
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			3, 3, 1, TS_CLAMPED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+	___WHEN___
 
-		/* Compare eval with bisect. */
-		for (knot = min; knot < max;
-			knot += (max - min) / TS_MAX_NUM_KNOTS) {
+	___THEN___
+	assert_bisect_eval_equal(tc, &spline, 2, 1);
 
-/* ================================= When ================================== */
-			/* Eval the point to bisect. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, knot, &net_eval, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_eval, &result_eval, &status))
-
-			/* Bisect the corresponding point. */
-			TS_CALL(try, status.code, ts_bspline_bisect(
-				&spline, result_eval[2], 0.f, 0, 2, 1, 50,
-				&net_bisect, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_bisect, &result_bisect, &status))
-
-/* ================================= Then ================================== */
-			/* Compare knots and results. */
-			CuAssertDblEquals(tc, ts_deboornet_knot(&net_eval),
-				ts_deboornet_knot(&net_bisect), EPSILON);
-			dist = ts_distance(result_eval, result_bisect,
-				ts_bspline_dimension(&spline));
-			CuAssertDblEquals(tc, 0, dist, EPSILON);
-
-			/* Cleanup. */
-			ts_deboornet_free(&net_eval);
-			ts_deboornet_free(&net_bisect);
-			free(result_eval);
-			result_eval = NULL;
-			free(result_bisect);
-			result_bisect = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net_eval);
-		ts_deboornet_free(&net_bisect);
-		free(result_eval);
-		free(result_bisect);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void bisect_less_than_first_control_point(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *result = NULL;
+	tsReal first[2] = {100.0, 200.0}, *result = NULL;
 	tsReal min, max, knot, dist;
-	tsStatus status;
 
-	tsReal ctrlp[10] = {
-		100,  200,
-		200,  300,
-		400,  600,
-		800,  450,
-		1200, 120
-	};
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		5, 2, 2, TS_CLAMPED, &spline, &status,
+		first[0],  first[1], /* P1 */
+		200.0,  300.0,       /* P2 */
+		400.0,  600.0,       /* P3 */
+		800.0,  450.0,       /* P4 */
+		1200.0, 120.0))      /* P5 */
+	ts_bspline_domain(&spline, &min, &max);
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			5, 2, 2, TS_CLAMPED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+	___WHEN___
+	C(ts_bspline_bisect(&spline, first[0] - 200,
+		0, 0, 0, 1, 50, &net, &status))
 
-/* ================================= When ================================== */
-		/* Bisect a point that is less than ctrlp[0] */
-		TS_CALL(try, status.code, ts_bspline_bisect(
-			&spline, ctrlp[0]-100, 0, 0, 0, 1, 50,
-			&net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
+	___THEN___
+	knot = ts_deboornet_knot(&net);
+	CuAssertDblEquals(tc, min, knot, TS_KNOT_EPSILON);
 
-/* ================================= Then ================================== */
-		/* Check knot and result. */
-		knot = ts_deboornet_knot(&net);
-		CuAssertDblEquals(tc, min, knot, EPSILON);
-		dist = ts_distance(ctrlp, result,
-			ts_bspline_dimension(&spline));
-		CuAssertDblEquals(tc, 0, dist, EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-		free(result);
-		result = NULL;
-	TS_END_TRY
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance(first, result, ts_bspline_dimension(&spline));
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
+	result = NULL;
 }
 
 void bisect_greater_than_last_control_point(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal *result = NULL;
+	tsReal last[2] = {1200.0, 120.0}, *result = NULL;
 	tsReal min, max, knot, dist;
-	tsStatus status;
 
-	tsReal ctrlp[10] = {
-		100,  200,
-		200,  300,
-		400,  600,
-		800,  450,
-		1200, 120
-	};
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		5, 2, 3, TS_CLAMPED, &spline, &status,
+		100.0, 200.0,      /* P1 */
+		200.0, 300.0,      /* P2 */
+		400.0, 600.0,      /* P3 */
+		800.0, 450.0,      /* P4 */
+		last[0], last[1])) /* P5 */
+	ts_bspline_domain(&spline, &min, &max);
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			5, 2, 3, TS_CLAMPED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+	___WHEN___
+	C(ts_bspline_bisect(&spline, last[0] + 100,
+		0, 0, 0, 1, 50, &net, &status))
 
-/* ================================= When ================================== */
-		/* Bisect a point that is greater than ctrlp[8] */
-		TS_CALL(try, status.code, ts_bspline_bisect(
-			&spline, ctrlp[8]+100, 0, 0, 0, 1, 50,
-			&net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
+	___THEN___
+	knot = ts_deboornet_knot(&net);
+	CuAssertDblEquals(tc, max, knot, TS_KNOT_EPSILON);
 
-/* ================================= Then ================================== */
-		/* Check knot and result. */
-		knot = ts_deboornet_knot(&net);
-		CuAssertDblEquals(tc, max, knot, EPSILON);
-		dist = ts_distance(ctrlp+8, result,
-			ts_bspline_dimension(&spline));
-		CuAssertDblEquals(tc, 0, dist, EPSILON);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-		free(result);
-		result = NULL;
-	TS_END_TRY
+	C(ts_deboornet_result(&net, &result, &status))
+	dist = ts_distance(last, result, ts_bspline_dimension(&spline));
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+	free(result);
+	result = NULL;
 }
 
 void bisect_invalid_index(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsError err;
-	tsStatus status, stat;
+	tsStatus stat;
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create arbitrary spline. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			16, 3, 3, TS_OPENED, &spline, &status))
+	___GIVEN___
+	C(ts_bspline_new(16, 3, 3, TS_OPENED, &spline, &status))
 
-/* ================================ When (1) =============================== */
-		/* Check index off-by-one without status. */
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			4 /**< index */, 1, 50, &net, NULL);
-/* ================================ Then (1) =============================== */
+	___WHEN___ /* 1 */
+	/* Check index off-by-one without status. */
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
+		4 /**< index */, 1, 50, &net, NULL);
+
+	___THEN___ /* 1 */
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+	___WHEN___ /* 2 */
+	/* Check index off-by-one with status. */
+	stat.code = TS_SUCCESS;
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
+		4 /**< index */, 1, 50, &net, &stat);
+
+	___THEN___ /* 2 */
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
+
+	___WHEN___ /* 3 */
+	/* Check another invalid index without status. */
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
+		8 /**< index */, 1, 50, &net, NULL);
+
+	___THEN___ /* 3 */
 		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
 		CuAssertPtrEquals(tc, NULL, net.pImpl);
 
-/* ================================ When (2) =============================== */
-		/* Check index off-by-one with status. */
-		stat.code = TS_SUCCESS;
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			4 /**< index */, 1, 50, &net, &stat);
-/* ================================ Then (2) =============================== */
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
+	___WHEN___ /* 4 */
+	/* Check another invalid index with status. */
+	stat.code = TS_SUCCESS;
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0,
+		8 /**< index */, 1, 50, &net, &stat);
 
-/* ================================ When (3) =============================== */
-		/* Check another invalid index without status. */
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			8 /**< index */, 1, 50, &net, NULL);
-/* ================================ Then (3) =============================== */
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
+	___THEN___ /* 4 */
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+	CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
 
-/* ================================ When (4) =============================== */
-		/* Check another invalid index with status. */
-		stat.code = TS_SUCCESS;
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,
-			8 /**< index */, 1, 50, &net, &stat);
-/* ================================ Then (4) =============================== */
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
-		CuAssertIntEquals(tc, TS_INDEX_ERROR, stat.code);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 }
 
 void bisect_max_iter_0(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsError err;
-	tsStatus status, stat;
+	tsStatus stat;
 
+	___GIVEN___
 	stat.code = TS_SUCCESS;
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create arbitrary spline. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			12, 2, 6, TS_CLAMPED, &spline, &status))
+	C(ts_bspline_new(12, 2, 6, TS_CLAMPED, &spline, &status))
 
-/* ================================ When (1) =============================== */
-		/* Check max_iter = 0 without status. */
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
-			0 /**< max_iter */, &net, NULL);
-/* ================================ Then (1) =============================== */
-		CuAssertIntEquals(tc, TS_NO_RESULT, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
+	___WHEN___ /* 1 */
+	/* Check max_iter = 0 without status. */
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0, 0, 1,
+		0 /**< max_iter */, &net, NULL);
 
-/* ================================ When (2) =============================== */
-		/* Check max_iter = 0 with status. */
-		stat.code = TS_SUCCESS;
-		err = ts_bspline_bisect(&spline, 0.f, 0.f, 0,  0, 1,
-			0 /**< max_iter */, &net, &stat);
-/* ================================ Then (2) =============================== */
-		CuAssertIntEquals(tc, TS_NO_RESULT, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
-		CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-	TS_END_TRY
+	___THEN___ /* 1 */
+	CuAssertIntEquals(tc, TS_NO_RESULT, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+
+	___WHEN___ /* 2 */
+	/* Check max_iter = 0 with status. */
+	stat.code = TS_SUCCESS;
+	err = ts_bspline_bisect(&spline, (tsReal) 0.0, (tsReal) 0.0, 0, 0, 1,
+		0 /**< max_iter */, &net, &stat);
+
+	___THEN___ /* 2 */
+	CuAssertIntEquals(tc, TS_NO_RESULT, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+	CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 }
 
 void bisect_descending_compare_with_eval(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
-	tsDeBoorNet net_eval = ts_deboornet_init();
-	tsDeBoorNet net_bisect = ts_deboornet_init();
-	tsReal *result_eval = NULL, *result_bisect = NULL;
-	tsReal min, max, knot, dist;
-	tsStatus status;
 
-	tsReal ctrlp[18] = {
-		1.0,  9.0,  0.3,
-		2.0,  8.5, -1.6,
-		4.0,  5.4, -2.9,
-		4.5,  0.0, -1.0,
-		4.9, -3.6,  1.3,
-		6.8, -6.3,  2.6
-	};
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		6, 3, 3, TS_OPENED, &spline, &status,
+		1.0,  9.0,  0.3,  /* P1 */
+		2.0,  8.5, -1.6,  /* P2 */
+		4.0,  5.4, -2.9,  /* P3 */
+		4.5,  0.0, -1.0,  /* P4 */
+		4.9, -3.6,  1.3,  /* P5 */
+		6.8, -6.3,  2.6)) /* P6 */
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			6, 3, 3, TS_OPENED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-		ts_bspline_domain(&spline, &min, &max);
+	___WHEN___
 
-		/* Compare eval with bisect. */
-		for (knot = min; knot < max;
-			knot += (max - min) / TS_MAX_NUM_KNOTS) {
+	___THEN___
+	assert_bisect_eval_equal(tc, &spline, 1, 0);
 
-/* ================================= When ================================== */
-			/* Eval the point to bisect. */
-			TS_CALL(try, status.code, ts_bspline_eval(
-				&spline, knot, &net_eval, &status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_eval, &result_eval, &status))
-
-			/* Bisect the corresponding point. */
-			TS_CALL(try, status.code, ts_bspline_bisect(
-				&spline, result_eval[1], 0.f, 0, 1,
-				0 /**< descending */, 50, &net_bisect,
-				&status))
-			TS_CALL(try, status.code, ts_deboornet_result(
-				&net_bisect, &result_bisect, &status))
-
-/* ================================= Then ================================== */
-			/* Compare knots and results. */
-			CuAssertDblEquals(tc, ts_deboornet_knot(&net_eval),
-				ts_deboornet_knot(&net_bisect), EPSILON);
-			dist = ts_distance(result_eval, result_bisect,
-				ts_bspline_dimension(&spline));
-			CuAssertDblEquals(tc, 0, dist, EPSILON);
-
-			/* Cleanup. */
-			ts_deboornet_free(&net_eval);
-			ts_deboornet_free(&net_bisect);
-			free(result_eval);
-			result_eval = NULL;
-			free(result_bisect);
-			result_bisect = NULL;
-		}
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net_eval);
-		ts_deboornet_free(&net_bisect);
-		free(result_eval);
-		free(result_bisect);
-	TS_END_TRY
+	___TEARDOWN___
+	ts_bspline_free(&spline);
 }
 
 void bisect_persnickety(CuTest *tc)
 {
+	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
 	tsError err;
-	tsStatus status, stat;
+	tsStatus stat;
 
-	tsReal ctrlp[6] = { 1.0, 1.5, 2.0, 3.0, 6.7, 7.0 };
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		6, 1, 4, TS_OPENED, &spline, &status,
+		1.0,  /* P1 */
+		1.5,  /* P2 */
+		2.0,  /* P3 */
+		3.0,  /* P4 */
+		6.7,  /* P5 */
+		7.0)) /* P6 */
 
-	TS_TRY(try, status.code, &status)
-/* ================================= Given ================================= */
-		/* Create spline with control points. */
-		TS_CALL(try, status.code, ts_bspline_new(
-			6, 1, 4, TS_OPENED, &spline, &status))
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
+	___WHEN___ /* 1 */
+	/* Check persnickety without status. */
+	err = ts_bspline_bisect(&spline, 6.0, (tsReal) 0.0,
+		1 /**< persnickety */, 0, 1, 2, &net, NULL);
 
-/* ================================ When (1) =============================== */
-		/* Check persnickety without status. */
-		err = ts_bspline_bisect(&spline, 6.0, 0.f,
-			1 /**< persnickety */, 0, 1, 2, &net, NULL);
-/* ================================ Then (1) =============================== */
-		CuAssertIntEquals(tc, TS_NO_RESULT, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
+	___THEN___ /* 1 */
+	CuAssertIntEquals(tc, TS_NO_RESULT, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
 
-/* ================================ When (2) =============================== */
-		/* Check persnickety with status. */
-		stat.code = TS_SUCCESS;
-		err = ts_bspline_bisect(&spline, 6.0, 0.f,
-			1 /**< persnickety */, 0, 1, 2, &net, &stat);
-/* ================================ Then (2) =============================== */
-		CuAssertIntEquals(tc, TS_NO_RESULT, err);
-		CuAssertPtrEquals(tc, NULL, net.pImpl);
-		CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
-	TS_CATCH(status.code)
-		CuFail(tc, status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_deboornet_free(&net);
-	TS_END_TRY
+	___WHEN___ /* 2 */
+	/* Check persnickety with status. */
+	stat.code = TS_SUCCESS;
+	err = ts_bspline_bisect(&spline, 6.0, (tsReal) 0.0,
+		1 /**< persnickety */, 0, 1, 2, &net, &stat);
+
+	___THEN___ /* 2 */
+	CuAssertIntEquals(tc, TS_NO_RESULT, err);
+	CuAssertPtrEquals(tc, NULL, net.pImpl);
+	CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
 }
 
 CuSuite* get_bisect_suite()

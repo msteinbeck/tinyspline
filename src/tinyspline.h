@@ -515,23 +515,6 @@ typedef struct
 size_t TINYSPLINE_API ts_bspline_degree(const tsBSpline *spline);
 
 /**
- * Sets the degree of \p spline.
- *
- * @param[out] spline
- * 	The spline whose degree is set.
- * @param[in] deg
- * 	The degree to be set.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p degree >= ts_bspline_get_control_points(spline).
- */
-tsError TINYSPLINE_API ts_bspline_set_degree(tsBSpline *spline, size_t deg,
-	tsStatus *status);
-
-/**
  * Returns the order (degree + 1) of \p spline.
  *
  * @param[in] spline
@@ -540,25 +523,6 @@ tsError TINYSPLINE_API ts_bspline_set_degree(tsBSpline *spline, size_t deg,
  * 	The order of \p spline.
  */
 size_t TINYSPLINE_API ts_bspline_order(const tsBSpline *spline);
-
-/**
- * Sets the order (degree + 1) of \p spline.
- *
- * @param[out] spline
- * 	The spline whose order is set.
- * @param[in] order
- * 	The order to be set.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p order > ts_bspline_get_control_points(spline) or if \p order == 0
- * 	( due to the underflow resulting from: order - 1 => 0 - 1 => INT_MAX
- * 	which always is >= ts_bspline_get_control_points(spline) ).
- */
-tsError TINYSPLINE_API ts_bspline_set_order(tsBSpline *spline, size_t order,
-	tsStatus *status);
 
 /**
  * Returns the dimension of \p spline. The dimension of a spline describes the
@@ -572,33 +536,6 @@ tsError TINYSPLINE_API ts_bspline_set_order(tsBSpline *spline, size_t order,
  * 	The dimension of \p spline.
  */
 size_t TINYSPLINE_API ts_bspline_dimension(const tsBSpline *spline);
-
-/**
- * Sets the dimension of \p spline. The following conditions must be satisfied:
- *
- * 	(1) dim >= 1
- * 	(2) len_control_points(spline) % dim == 0
- *
- * with _len_control_points_ being the length of the control point array of \p
- * spline. The dimension of a spline describes the number of components for
- * each point in ts_bspline_get_control_points(spline). One-dimensional splines
- * are possible, albeit their benefit might be questionable.
- *
- * @param[out] spline
- * 	The spline whose dimension is set.
- * @param[in] dim
- * 	The dimension to be set.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
- * @return TS_LCTRLP_DIM_MISMATCH
- * 	If len_control_points(spline) % \p dim != 0
- */
-tsError TINYSPLINE_API ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
-	tsStatus *status);
 
 /**
  * Returns the length of the control point array of \p spline.

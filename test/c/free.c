@@ -1,44 +1,58 @@
-#include <tinyspline.h>
-#include "CuTest.h"
+#include <testutils.h>
 
-void free_test_bspline(CuTest* tc)
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
+void free_bspline(CuTest* tc)
 {
+	___SETUP___
 	tsBSpline spline;
 
-/* ================================= Given ================================= */
-	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, NULL);
+	___GIVEN___
+	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status);
 	CuAssertPtrNotNull(tc, spline.pImpl);
 
-/* ================================= When ================================== */
+	___WHEN___
 	ts_bspline_free(&spline);
 
-/* ================================= Then ================================== */
+	___THEN___
 	CuAssertPtrEquals(tc, spline.pImpl, NULL);
+
+	___TEARDOWN___
 }
 
-void free_test_deboornet(CuTest* tc)
+void free_deboornet(CuTest* tc)
 {
+	___SETUP___
 	tsBSpline spline;
 	tsDeBoorNet net;
 
-/* ================================= Given ================================= */
-	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, NULL);
-	ts_bspline_eval(&spline, 0, &net, NULL);
+	___GIVEN___
+	ts_bspline_new(10, 2, 2, TS_CLAMPED, &spline, &status);
+	ts_bspline_eval(&spline, 0, &net, &status);
 	CuAssertPtrNotNull(tc, net.pImpl);
 
-/* ================================= When ================================== */
+	___WHEN___
 	ts_deboornet_free(&net);
 
-/* ================================= Then ================================== */
+	___THEN___
 	CuAssertPtrEquals(tc, net.pImpl, NULL);
 
+	___TEARDOWN___
 	ts_bspline_free(&spline);
 }
 
 CuSuite* get_free_suite()
 {
 	CuSuite* suite = CuSuiteNew();
-	SUITE_ADD_TEST(suite, free_test_bspline);
-	SUITE_ADD_TEST(suite, free_test_deboornet);
+	SUITE_ADD_TEST(suite, free_bspline);
+	SUITE_ADD_TEST(suite, free_deboornet);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

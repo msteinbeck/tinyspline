@@ -155,52 +155,14 @@ size_t ts_bspline_degree(const tsBSpline *spline)
 	return spline->pImpl->deg;
 }
 
-tsError ts_bspline_set_degree(tsBSpline *spline, size_t deg, tsStatus *status)
-{
-	if (deg >= ts_bspline_num_control_points(spline)) {
-		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			"degree (%lu) >= num(control_points) (%lu)",
-			(unsigned long) deg,
-			(unsigned long) ts_bspline_num_control_points(spline))
-	}
-	spline->pImpl->deg = deg;
-	TS_RETURN_SUCCESS(status)
-}
-
 size_t ts_bspline_order(const tsBSpline *spline)
 {
 	return ts_bspline_degree(spline) + 1;
 }
 
-tsError ts_bspline_set_order(tsBSpline *spline, size_t order, tsStatus *status)
-{
-	if (order == 0 || order > ts_bspline_num_control_points(spline)) {
-		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			"order (%lu) > num(control_points) (%lu)",
-			(unsigned long) order,
-			(unsigned long) ts_bspline_num_control_points(spline))
-	}
-	return ts_bspline_set_degree(spline, order - 1, status);
-}
-
 size_t ts_bspline_dimension(const tsBSpline *spline)
 {
 	return spline->pImpl->dim;
-}
-
-tsError ts_bspline_set_dimension(tsBSpline *spline, size_t dim,
-	tsStatus *status)
-{
-	if (dim == 0)
-		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
-	if (ts_bspline_len_control_points(spline) % dim != 0) {
-		TS_RETURN_2(status, TS_LCTRLP_DIM_MISMATCH,
-			"len(control_points) (%lu) %% dimension (%lu) != 0",
-			(unsigned long) ts_bspline_len_control_points(spline),
-			(unsigned long) dim)
-	}
-	spline->pImpl->dim = dim;
-	TS_RETURN_SUCCESS(status)
 }
 
 size_t ts_bspline_len_control_points(const tsBSpline *spline)

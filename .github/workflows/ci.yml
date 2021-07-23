@@ -56,12 +56,12 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --target memcheck
+      run: cmake --build . --target memcheck --config $BUILD_TYPE
 
     - name: Install
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --target install
+      run: cmake --build . --target install --config $BUILD_TYPE
 
     - name: Test CMake Installation
       shell: bash

@@ -1,0 +1,141 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0305
+header_name {.h}
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  Fl_Window {} {open
+    xywh {2324 294 900 600} type Double visible
+  } {
+    Fl_Group {} {open selected
+      xywh {0 0 900 600}
+    } {
+      Fl_Tabs {} {open
+        xywh {10 10 880 585}
+      } {
+        Fl_Group {} {
+          label Eval open
+          xywh {25 35 865 560}
+        } {
+          Fl_Box eval {
+            xywh {25 50 525 525}
+            code0 {\#include "eval.h"}
+            class Eval
+          }
+          Fl_Group {} {open
+            xywh {580 50 300 525}
+          } {
+            Fl_Value_Slider evalKnot {
+              label Knot
+              callback {eval->knot(((Fl_Slider *)o)->value());
+eval->redraw();}
+              xywh {580 50 300 25} type Horizontal
+              code0 {evalKnot->value(eval->knot());}
+            }
+            Fl_Light_Button evalAutoplay {
+              label Autoplay
+              callback {if (((Fl_Button *)o)->value())
+	Fl::add_timeout(0.01, evalAutoplay_cb);
+else
+	Fl::remove_timeout(evalAutoplay_cb)}
+              xywh {580 105 300 25}
+            }
+            Fl_Light_Button evalShowNet {
+              label {Show De Boor control net}
+              callback {eval->drawNet(((Fl_Button *)o)->value());
+eval->redraw();}
+              xywh {580 150 300 25}
+              code0 {evalShowNet->value(eval->drawNet());}
+            }
+            Fl_Value_Slider evalDegree {
+              label Degree
+              callback {eval->degree(((Fl_Slider *)o)->value());
+eval->redraw();}
+              xywh {580 200 300 25} type Horizontal
+              code0 {evalDegree->step(1);}
+              code1 {evalDegree->minimum(0);}
+              code2 {evalDegree->maximum(6);}
+              code3 {evalDegree->value(eval->degree());}
+            }
+            Fl_Text_Display evalInfo {
+              label Info
+              xywh {580 275 300 300} box THIN_DOWN_FRAME
+              code0 {evalInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
+            }
+          }
+        }
+        Fl_Group {} {
+          label Sample open
+          xywh {25 35 865 560} hide
+        } {
+          Fl_Box sample {
+            xywh {25 50 525 525}
+            code0 {\#include "sample.h"}
+            class Sample
+          }
+          Fl_Group {} {open
+            xywh {579 50 301 525}
+          } {
+            Fl_Value_Slider sampleNum {
+              label Samples
+              callback {sample->num(((Fl_Slider *)o)->value());
+sample->redraw();}
+              xywh {580 50 300 25} type Horizontal
+              code0 {sampleNum->step(1);}
+              code1 {sampleNum->minimum(0);}
+              code2 {sampleNum->maximum(100);}
+              code3 {sampleNum->value(sample->num());}
+            }
+            Fl_Group {} {
+              label {Knot vector:} open
+              xywh {665 92 214 45} align 4
+            } {
+              Fl_Round_Button sampleClamped {
+                label Clamped
+                callback {sample->knotVector(TS_CLAMPED);
+eval->redraw();}
+                xywh {684 105 82 20} type Radio down_box ROUND_DOWN_BOX
+                code0 {sampleClamped->value(sample->knotVector() == TS_CLAMPED);}
+              }
+              Fl_Round_Button sampleOpened {
+                label Opened
+                callback {sample->knotVector(TS_OPENED);
+eval->redraw();}
+                xywh {787 105 77 20} type Radio down_box ROUND_DOWN_BOX
+                code0 {sampleOpened->value(sample->knotVector() == TS_OPENED);}
+              }
+            }
+            Fl_Light_Button {} {
+              label {Show sampled points}
+              callback {sample->drawPoints(((Fl_Button *)o)->value());
+sample->redraw();}
+              xywh {580 143 300 25}
+            }
+            Fl_Text_Display sampleInfo {
+              label Info
+              xywh {580 275 300 300} box THIN_DOWN_FRAME
+              code0 {evalInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
+            }
+          }
+        }
+      }
+    }
+  }
+  code {Fl_Text_Buffer *buff = new Fl_Text_Buffer();
+evalInfo->buffer(buff);
+buff->append("Spline evaluation is one of the most important functions as it forms the basis for almost all other functions.");
+buff->append("\\n\\nThe result of an evaluation is a so called 'De Boor control net'. It stores the evaluated point as well as all points that were part of the calucation process.");
+buff->append("\\n\\nUse the knot slider to evaluate the spline on the left at a certain knot. The degree of the spline can be changed with the degree slider.");} {}
+}
+
+Function {evalAutoplay_cb(void *)} {open
+} {
+  code {double val = evalKnot->value();
+val += 0.001;
+if (val > evalKnot->maximum())
+	val = evalKnot->minimum();
+evalKnot->value(val);
+evalKnot->do_callback();
+if (evalAutoplay->value())
+	Fl::repeat_timeout(0.01, evalAutoplay_cb);} {}
+}

@@ -1,2 +1,5 @@
 add_subdirectory(c)
-add_subdirectory(cxx)
+
+if(TARGET tinysplinecxx)
+	add_subdirectory(cxx)
+endif()

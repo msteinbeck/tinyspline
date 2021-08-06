@@ -105,11 +105,12 @@ eval->redraw();}
                 code0 {sampleOpened->value(sample->knotVector() == TS_OPENED);}
               }
             }
-            Fl_Light_Button {} {
+            Fl_Light_Button sampleShowPoints {
               label {Show sampled points}
               callback {sample->drawPoints(((Fl_Button *)o)->value());
 sample->redraw();}
               xywh {580 143 300 25}
+              code0 {sampleShowPoints->value(sample->drawPoints());}
             }
             Fl_Text_Display sampleInfo {
               label Info

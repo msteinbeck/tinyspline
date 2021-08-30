@@ -5,6 +5,35 @@
 
 #include <stddef.h>
 
+
+
+/*! @name Library Export/Import
+ *
+ * If TinySpline is built as shared library with MSVC, the macros \c
+ * TINYSPLINE_SHARED_EXPORT and \c TINYSPLINE_SHARED_IMPORT define the
+ * Microsoft specific directives \c __declspec(dllexport) and \c
+ * __declspec(dllimport) respectively. More information on these
+ * directives can be found at:
+ *
+ *     https://docs.microsoft.com/en-us/cpp/cpp/dllexport-dllimport
+ *
+ * Depending on whether TinySpline is compiled or linked against, \c
+ * TINYSPLINE_API points to \c TINYSPLINE_SHARED_EXPORT (compiled) or \c
+ * TINYSPLINE_SHARED_IMPORT (linked against). All elements of TinySpline that
+ * needs to be exported/imported are annotated with \c TINYSPLINE_API. This
+ * eliminates the need for a module-definition (.def) file.
+ *
+ * If TinySpline is built with any other compiler than MSVC, \c
+ * TINYSPLINE_SHARED_EXPORT, \c TINYSPLINE_SHARED_IMPORT, and \c TINYSPLINE_API
+ * are empty (i.e., they define nothing).
+ *
+ * If you consume TinySpline as shared library built with MSVC, all you need is
+ * to define \c TINYSPLINE_SHARED. This will automatically import all required
+ * symbols. When compiling TinySpline, the build system should set all
+ * necessary defines.
+ *
+ * @{
+ */
 #ifdef _MSC_VER
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
@@ -26,17 +55,20 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+/*! @} */
 
-/******************************************************************************
-*                                                                             *
-* :: Predefined Constants                                                     *
-*                                                                             *
-* The following constants have been aligned to maintain internal consistency  *
-* and should only be changed with great caution! Values have been chosen to   *
-* fit most environments. If changes should be necessary, please read the      *
-* documentation of constants beforehand.                                      *
-*                                                                             *
-******************************************************************************/
+
+
+/*! @name Predefined Constants
+ *
+ * The following constants have been adjusted to maintain internal consistency
+ * and should only be changed with great caution! The values chosen should be
+ * suitable for most environments and can be used with float (single) and
+ * double precision (see ::tsReal). If changes are necessary, please read the
+ * documentation of the constants in advance.
+ *
+ * @{
+ */
 /**
  * The maximum number of knots a spline can have. This constant is strongly
  * related to ::TS_KNOT_EPSILON in that the larger ::TS_MAX_NUM_KNOTS is, the
@@ -98,32 +130,33 @@ extern "C" {
 #else
 #define TS_CONTROL_POINT_EPSILON 1e-5f
 #endif
+/*! @} */
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: API Configuration                                                        *
-*                                                                             *
-* In the following section, different aspects of TinySpline's API can be      *
-* configured. It is recommended to configure the API by supplying the         *
-* corresponding preprocessor definition(s). That said, there is nothing wrong *
-* with editing the source code directly.                                      *
-*                                                                             *
-******************************************************************************/
+/*! @name API Configuration
+ *
+ * In the following section, different aspects of TinySpline's API can be
+ * configured (compile-time). It is recommended to configure the API by
+ * supplying the corresponding preprocessor definition(s). That said, there is
+ * nothing wrong with editing the source code directly.
+ *
+ * @{
+ */
 /**
- * Floating point numbers can be stored either in floats (single precision) or
- * in doubles (double precision). By default, doubles are used. Note that this
- * configuration affects the entire API (i.e., types are not mixed; all structs
- * and functions rely only on tsReal). Float precision is primarily used in
- * combination with GLUT because GLUT's API doesn't support doubles:
+ * TinySpline uses its own typedef for floating point numbers. Supported are
+ * floats (single precision) and doubles (double precision). By default,
+ * doubles are used. Note that this typedef affects the entire API (i.e., types
+ * are not mixed; all structs and functions rely only on tsReal). Float
+ * precision is primarily used in combination with GLUT because GLUT's API
+ * doesn't support doubles:
  *
  *     https://www.glprogramming.com/red/chapter12.html
  *
  * Generally, double precision is the right choice. Floats are mainly supported
  * for legacy reasons. Yet, floats are not considered deprecated! If necessary,
  * tsReal can also be typedefed to any other floating point representation. In
- * this case, make sure to align TS_MAX_NUM_KNOTS and TS_KNOT_EPSILON
+ * this case, make sure to adjust TS_MAX_NUM_KNOTS and TS_KNOT_EPSILON
  * (cf. Section "Predefined Constants").
  */
 #ifdef TINYSPLINE_FLOAT_PRECISION
@@ -131,105 +164,265 @@ typedef float tsReal;
 #else
 typedef double tsReal;
 #endif
+/*! @} */
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Error Handling                                                           *
-*                                                                             *
-* The following enums, structs, and macros are used to define and handle      *
-* different types of errors. Use them as follows:                             *
-*                                                                             *
-*     tsStatus status;                                                        *
-*     TS_TRY(any_label, status.code, &status)                                 *
-*         // Wrap function calls with TS_CALL.                                *
-*         TS_CALL(any_label, status.code, ts_bspline_to_beziers(              *
-*             &spline, &beziers, &status))                                    *
-*         if (...)                                                            *
-*             // Use one of the TS_THROW macros to raise an error.            *
-*             TS_THROW_0(any_label, &status, TS_MALLOC, "out of memory")      *
-*     TS_CATCH(status.code)                                                   *
-*         // Executed on error.                                               *
-*         printf(status.message);                                             *
-*     TS_FINALLY                                                              *
-*         // Executed in any case.                                            *
-*     TS_END_TRY                                                              *
-*                                                                             *
-* Although it is always advisable to properly handle errors, embedding your   *
-* code into a TS_TRY/TS_END_TRY block as well as passing a pointer to a       *
-* tsStatus object is entirely optional:                                       *
-*                                                                             *
-*     ts_bspline_to_beziers(&spline, &beziers, NULL);                         *
-*                                                                             *
-* Yet, you may check if a particular function failed, albeit you don't have   *
-* access to the error message:                                                *
-*                                                                             *
-*     if (ts_bspline_to_beziers(&spline, &beziers, NULL))                     *
-*         // an error occurred                                                *
-*                                                                             *
-******************************************************************************/
+/*! @name Error Handling
+ *
+ * There are three types of error handling in Tinyspline.
+ *
+ * 1. Return value: Functions that can fail return a special error code
+ * (::tsError). If the code is not equal to 0, an error occurred during
+ * execution. For example:
+ *
+ *     if ( ts_bspline_to_beziers(&spline, &beziers, NULL) ) {
+ *          ... An error occurred ...
+ *     }
+ *
+ *   It is of course possible to check the actual type of error:
+ *
+ *       tsError error = ts_bspline_to_beziers(&spline, &beziers, NULL);
+ *       if (error == TS_MALLOC) {
+ *            ... Out of memory ...
+ *       } else if (error == ...
+ *
+ *   This type of error handling is used in many C programs. The disadvantage
+ *   is that there is no additional error message besides the error code (with
+ *   which the cause of an error could be specified in more detail). Some
+ *   libraries make do with global variables in which error messages are stored
+ *   for later purpose (e.g., \a errno and \a strerror). Unfortunately,
+ *   however, this approach (by design) is often not thread-safe. The second
+ *   error handling option solves this issue.
+ *
+ * 2. ::tsStatus objects: Functions that can fail do not only return an error
+ * code, but also take a pointer to a ::tsStatus object as an optional
+ * parameter. In the event of an error, and if the supplied pointer is not
+ * NULL, the error message is stored in tsStatus#message and can be accessed by
+ * the caller. Using a ::tsStatus object, the example given in 1. can be
+ * modified as follows:
+ *
+ *     tsStatus status;
+ *     if ( ts_bspline_to_beziers(&spline, &beziers, &status) ) {
+ *         status.code; // error code
+ *         status.message; // error message
+ *     }
+ *
+ *   Note that ::tsStatus objects can be reused:
+ *
+ *       tsStatus status;
+ *       if ( ts_bspline_to_beziers(&spline, &beziers, &status) ) {
+ *           ...
+ *       }
+ *       ...
+ *       if ( ts_bspline_derive(&beziers, 1, 0.001, &beziers, &status) ) {
+ *           ...
+ *       }
+ *
+ *   If you would like to use this type of error handling in your own functions
+ *   (in particular the optional ::tsStatus parameter), you may wonder whether
+ *   there is an easy way to return error codes and format error messages. This
+ *   is where the macros ::TS_RETURN_0 -- ::TS_RETURN_4 come into play. They
+ *   can, for example, be used as follows:
+ *
+ *       tsError my_function(..., tsStatus *status, ...)
+ *       {
+ *           ...
+ *           tsReal *points = (tsReal *) malloc(len * sizeof(tsReal));
+ *           if (!points)
+ *               TS_RETURN_0(status, TS_MALLOC, "out of memory")
+ *           ...
+ *       }
+ *
+ *   The \c N in \c TS_RETURN_<N> denotes the number of format specifier in the
+ *   supplied format string (cf. sprintf(char *, const char *, ... )).
+ *
+ * 3. Try-catch-finally blocks: TinySpline provides a set of macros that can be
+ * used when a complex control flow is necessary. The macros create a structure
+ * that is similar to the exception handling mechanisms of high-level languages
+ * such as C++. The basic structure is as follows:
+ *
+ *     TS_TRY(try, error, status) // `status' may be NULL
+ *         ...
+ *         TS_CALL( try, error, ts_bspline_to_beziers(
+ *             &spline, &beziers, status) )
+ *         ...
+ *     TS_CATCH(error)
+ *         ... Executed in case of an error ...
+ *         ... `error' (tsError) indicates the type of error.
+ *         ... `status' (tsStatus) contains the error code and message ...
+ *     TS_FINALLY
+ *         ... Executed in any case ...
+ *     TS_END_TRY
+ *
+ *   ::TS_TRY and ::TS_END_TRY mark the boundaries of a try-catch-finally
+ *   block. Every block has an identifier (name) that must be unique within a
+ *   scope. The name of a block is set via the first argument of ::TS_TRY (\c
+ *   try in the example listed above). The control flow of a try-catch-finally
+ *   block is directed via the second and third argument of ::TS_TRY (\c error
+ *   and \c status in the example listed above) and the utility macro
+ *   ::TS_CALL. The second argument of ::TS_TRY, a ::tsError, is mandatory. The
+ *   third argument of ::TS_TRY, a ::tsStatus object, is optional, that is, it
+ *   may be \c NULL. ::TS_CALL serves as a wrapper for functions with return
+ *   type ::tsError. If the called functions fails (more on that later),
+ *   ::TS_CALL immediately jumps into the ::TS_CATCH section where \c error and
+ *   \c status can be evaluated as needed (note that \c status may be \c
+ *   NULL). The ::TS_FINALLY section is executed in any case and is in
+ *   particularly helpful when resources (such as heap-memory, file-handles
+ *   etc.) must be released.
+ *
+ *   While ::TS_CALL can be used to wrap functions with return type ::tsError,
+ *   sooner or later it will be necessary to delegate the failure of other
+ *   kinds of functions (i.e., functions outside of TinySpline; e.g.,
+ *   malloc(size_t)). This is the purpose of the ::TS_THROW_0 -- ::TS_THROW_4
+ *   macros. It is not by coincidence that the signature of the \c TS_THROW_<N>
+ *   macros is quite similar to that of the \c TS_RETURN_<N> macros. Both
+ *   "macro groups" are used to report errors. The difference between \c
+ *   TS_RETURN_<N> and TS_THROW_<N>, however, is that the former exits a
+ *   function (i.e., a \c return statement is inserted by these macros) while
+ *   the latter jumps into a catch block (the catch block to jump into is set
+ *   via the first argument of \c TS_THROW_<N>):
+ *
+ *       tsBSpline spline = ts_bspline_init();
+ *       tsReal *points = NULL;
+ *       TS_TRY(try, error, status)
+ *           ...
+ *           tsReal *points = (tsReal *) malloc(len * sizeof(tsReal));
+ *           if (!points)
+ *               TS_THROW_0(try, status, TS_MALLOC, "out of memory")
+ *           ...
+ *           TS_CALL( try, error, ts_bspline_interpolate_cubic_natural(
+ *               points, len / dim, dim, &spline, status) )
+ *           ...
+ *       TS_CATCH(error)
+ *           ... Log error message ...
+ *       TS_FINALLY
+ *           ts_bspline_free(&spline);
+ *           if (points)
+ *               free(points);
+ *       TS_END_TRY
+ *
+ *   In all likelihood, you are already familiar with this kind error
+ *   handling. Actually, there are a plethora of examples available online
+ *   showing how exception-like error handling can be implemented in C. What
+ *   most of these examples have in common is that they suggest to wrap the
+ *   functions \c setjmp and \c longjmp (see setjmp.h) with macros. While this
+ *   undoubtedly is a clever trick, \c setjmp and \c longjmp have no viable
+ *   (i.e, thread-safe) solution for propagating the cause of an error (in the
+ *   form of a human-readable error message) back to the client of a
+ *   library. Therefore, TinySpline implements try-catch-finally blocks with \c
+ *   if statements, labels, and \c goto statements (TS_THROW_<N>).
+ *
+ *   ::TS_TRY is flexible enough to be used in functions that are in turn
+ *   embedded into TinySpline's error handling system:
+ *
+ *       tsError my_function(..., tsStatus *status, ...)
+ *       {
+ *           tsError error;
+ *           TS_TRY(try, error, status)
+ *               ...
+ *           TS_END_TRY
+ *           return error;
+ *       }
+ *
+ *   as well as functions forming the root of a call stack that uses
+ *   TinySpline's error handling system:
+ *
+ *       tsStatus status;
+ *       TS_TRY(try, status.code, &status)
+ *           ...
+ *       TS_END_TRY
+ *
+ *   There is some utility macros that might be useful when dealing with
+ *   try-catch-finally blocks:
+ *
+ *   - ::TS_END_TRY_RETURN: Returns the supplied error code immediately after
+ *     completing the corresponding block. Can be used as follows:
+ *
+ *         tsError my_function(..., tsStatus *status, ...)
+ *         {
+ *             tsError error;
+ *             TS_TRY(try, error, status)
+ *                 ...
+ *             TS_END_TRY_RETURN(error)
+ *         }
+ *
+ *   - ::TS_END_TRY_ROE: Like ::TS_END_TRY_RETURN but returns the supplied
+ *     error code, \c e, if \c e is not ::TS_SUCCESS (\c ROE means
+ *     <b>R</b>eturn <b>O</b>n <b>E</b>rror).
+ *
+ *   - ::TS_CALL_ROE: Calls the supplied function and returns its error code,
+ *     \c e, if \c e is not ::TS_SUCCESS. This macro can be seen as a \e
+ *     minified try block (a dedicated try block is not needed).
+ *
+ *   - ::TS_RETURN_SUCCESS: Shortcut for ::TS_RETURN_0 with error code
+ *     ::TS_SUCCESS and an empty error message.
+ *
+ * @{
+ */
 /**
  * Defines different error codes.
  */
-typedef enum {
-	/* No error. */
+typedef enum
+{
+	/** No error. */
 	TS_SUCCESS = 0,
 
-	/* Memory cannot be allocated (malloc, realloc etc.). */
+	/** Memory cannot be allocated (malloc, realloc etc.). */
 	TS_MALLOC = -1,
 
-	/* Points have dimensionality 0. */
+	/** Points have dimensionality 0. */
 	TS_DIM_ZERO = -2,
 
-	/* degree >= num(control_points). */
+	/** degree >= num(control_points). */
 	TS_DEG_GE_NCTRLP = -3,
 
-	/* Knot is not within the domain. */
+	/** Knot is not within the domain. */
 	TS_U_UNDEFINED = -4,
 
-	/* multiplicity(knot) > order */
+	/** multiplicity(knot) > order */
 	TS_MULTIPLICITY = -5,
 
-	/* Decreasing knot vector. */
+	/** Decreasing knot vector. */
 	TS_KNOTS_DECR = -6,
 
-	/* Unexpected number of knots. */
+	/** Unexpected number of knots. */
 	TS_NUM_KNOTS = -7,
 
-	/* Spline is not derivable. */
+	/** Spline is not derivable. */
 	TS_UNDERIVABLE = -8,
 
-	/* len(control_points) % dimension != 0. */
+	/** len(control_points) % dimension != 0. */
 	TS_LCTRLP_DIM_MISMATCH = -10,
 
-	/* Error while reading/writing a file. */
+	/** Error while reading/writing a file. */
 	TS_IO_ERROR = -11,
 
-	/* Error while parsing a serialized entity. */
+	/** Error while parsing a serialized entity. */
 	TS_PARSE_ERROR = -12,
 
-	/* Index does not exist (e.g., when accessing an array). */
+	/** Index does not exist (e.g., when accessing an array). */
 	TS_INDEX_ERROR = -13,
 
-	/* Function returns without result (e.g., approximations). */
+	/** Function returns without result (e.g., approximations). */
 	TS_NO_RESULT = -14,
 
-	/* Unexpected number of points. */
+	/** Unexpected number of points. */
 	TS_NUM_POINTS = -15
 } tsError;
 
 /**
  * Stores an error code (::tsError) with a corresponding error message.
  */
-typedef struct {
-	/* The error code. */
+typedef struct
+{
+	/** The error code. */
 	tsError code;
 
-	/*
-	 * The corresponding error message (encoded as c string). Memory is
-	 * allocated on stack in order to be able to provide a meaningful
-	 * message in the event of memory errors (see ::TS_MALLOC).
+	/**
+	 * The corresponding error message (encoded as C string). Memory is
+	 * allocated on stack so as to be able to provide a meaningful message
+	 * in the event of memory issues (cf. ::TS_MALLOC).
 	 */
 	char message[100];
 } tsStatus;
@@ -373,6 +566,7 @@ typedef struct {
 	}                                                                  \
 	goto __ ## label ## __;                                            \
 }
+/*! @} */
 
 
 
@@ -386,20 +580,22 @@ typedef struct {
 *                                                                             *
 ******************************************************************************/
 /**
- * Describes the structure of the knot vector of a NURBS/B-Spline. For more
- * details, see:
+ * Describes the structure of the knot vector. More details can be found at:
  *
  *     www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html
  */
 typedef enum
 {
-	/* Uniformly spaced knot vector. */
+	/** Uniformly spaced knot vector with opened end knots. */
 	TS_OPENED = 0,
 
-	/* Uniformly spaced knot vector with clamped end knots. */
+	/** Uniformly spaced knot vector with clamped end knots. */
 	TS_CLAMPED = 1,
 
-	/* Uniformly spaced knot vector with s(u) = order of spline. */
+	/**
+	 * Uniformly spaced knot vector where the multiplicity of each knot is
+	 * equal to the order of the spline.
+	 */
 	TS_BEZIERS = 2
 } tsBSplineType;
 

@@ -1151,6 +1151,9 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 
 	# C#
 	if(${TINYSPLINE_ENABLE_CSHARP})
+		if(${SWIG_VERSION} VERSION_LESS 4.0.1)
+			message(FATAL_ERROR "C# requires Swig 4.0.1 or later")
+		endif()
 		tinyspline_add_swig_library(
 			TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
 			LANG csharp

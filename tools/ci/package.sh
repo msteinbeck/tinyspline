@@ -38,14 +38,7 @@ find "${MACOSX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${LINUX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
-# Remove 'lib' prefix from the native library of the Windows DLL.
-find  "${SCRIPT_DIR}/nuget/runtimes/" \
-	-name 'libtinyspline*.dll' \
-	-exec /bin/bash -c \
-		'DIRNAME=$( dirname "${0}" ) && \
-		 BASENAME=$( basename "${0}" ) && \
-		 mv "${0}" "${DIRNAME}/${BASENAME#lib}"' {} \;
-# Add 'lib' prefix to the native library of the Linux/OSX so file.
+# Add 'lib' prefix to the native library of the Linux/OSX .so file.
 find  "${SCRIPT_DIR}/nuget/runtimes/" \
 	-name 'tinyspline*.so' \
 	-exec /bin/bash -c \

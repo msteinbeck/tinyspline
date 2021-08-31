@@ -173,8 +173,8 @@ typedef double tsReal;
  * There are three types of error handling in Tinyspline.
  *
  * 1. Return value: Functions that can fail return a special error code
- * (::tsError). If the code is not equal to 0, an error occurred during
- * execution. For example:
+ * (::tsError). If the error code is not \c 0 (::TS_SUCCESS), an error occurred
+ * during execution. For example:
  *
  *     if ( ts_bspline_to_beziers(&spline, &beziers, NULL) ) {
  *          ... An error occurred ...
@@ -349,7 +349,18 @@ typedef double tsReal;
  *
  *   - ::TS_END_TRY_ROE: Like ::TS_END_TRY_RETURN but returns the supplied
  *     error code, \c e, if \c e is not ::TS_SUCCESS (\c ROE means
- *     <b>R</b>eturn <b>O</b>n <b>E</b>rror).
+ *     <b>R</b>eturn <b>O</b>n <b>E</b>rror). Can be used as follows:
+ *
+ *         tsError my_function(..., tsStatus *status, ...)
+ *         {
+ *             tsError error;
+ *             TS_TRY(try, error, status)
+ *                 ...
+ *             TS_END_TRY_ROE(error)
+ *             ... Additional code. The code is executed only if `error' is
+ *                 TS_SUCCESS, that is, if no error occurred in the try block
+ *                 above ...
+ *         }
  *
  *   - ::TS_CALL_ROE: Calls the supplied function and returns its error code,
  *     \c e, if \c e is not ::TS_SUCCESS. This macro can be seen as a \e

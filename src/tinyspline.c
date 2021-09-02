@@ -2555,6 +2555,17 @@ tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
  * @{
  */
 void
+ts_vec3_set(const tsReal *x,
+	    size_t dim,
+	    tsReal *out)
+{
+	const size_t n = dim > 3 ? 3 : dim;
+	memmove(out, x, n * sizeof(tsReal));
+	if (dim < 3)
+		ts_arr_fill(out + dim, 3 - dim, (tsReal) 0.0);
+}
+
+void
 ts_vec_add(const tsReal *x,
 	   const tsReal *y,
 	   size_t dim,
@@ -2581,17 +2592,6 @@ ts_vec_sub(const tsReal *x,
 		out[i] = x[i] - y[i];
 }
 
-void
-ts_vec_had(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out)
-{
-	size_t i;
-	for (i = 0; i < dim; i++)
-		out[i] = x[i] * y[i];
-}
-
 tsReal
 ts_vec_dot(const tsReal *x,
 	   const tsReal *y,
@@ -2605,9 +2605,9 @@ ts_vec_dot(const tsReal *x,
 }
 
 void
-ts_vec_cross(const tsReal *x,
-	     const tsReal *y,
-	     tsReal *out)
+ts_vec3_cross(const tsReal *x,
+	      const tsReal *y,
+	      tsReal *out)
 {
 	tsReal a, b, c;
 	a = x[1] * y[2] - x[2] * y[1];

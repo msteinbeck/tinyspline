@@ -2122,6 +2122,28 @@ tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
  * @{
  */
 /**
+ * Copies the values of \p x (a vector with dimensionality \p dim) to \p out (a
+ * vector with dimensionality greater than or equal to \c 3). If \p dim is less
+ * than \c 3, the remaining components of \p out (up to and including the third
+ * component) are set to \c 0. Superfluous components in \p x (i.e., if \p dim
+ * is greater than \c 3) are ignored.
+ *
+ * @pre
+ * 	\p out has at least dimensionality \c 3.
+ * @param[in] x
+ * 	Vector to read the values from.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x, i.e., the result can be stored
+ * 	in-place.
+ */
+void TINYSPLINE_API
+ts_vec3_set(const tsReal *x,
+	    size_t dim,
+	    tsReal *out);
+
+/**
  * Adds vector \p y to vector \p x and stores the result in vector \p out.
  *
  * @param[in] x
@@ -2161,26 +2183,6 @@ ts_vec_sub(const tsReal *x,
 	   tsReal *out);
 
 /**
- * Multiplies the vectors \p x and \p y element-wise (also known as Hadamard
- * product) and stores the result in vector \p out.
- *
- * @param[in] x
- * 	First vector.
- * @param[in] y
- * 	Second vector.
- * @param[in] dim
- * 	Dimensionality of \p x and \p y.
- * @param[out] out
- * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
- * 	stored in-place.
- */
-void TINYSPLINE_API
-ts_vec_had(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out);
-
-/**
  * Computes the dot product (also known as scalar product) of the vectors \p x
  * and \p y.
  *
@@ -2202,9 +2204,11 @@ ts_vec_dot(const tsReal *x,
 
 /**
  * Computes the cross product (also known as vector product or directed area
- * product) of the vectors \p x and \p y.
+ * product) of \p x and \p y (vectors with dimensionality greater than or equal
+ * to \c 3). Superfluous components in \p x or \p y (i.e., dimensionality is
+ * greater than \c 3) are ignored.
  *
- * @pre \p x and \p y have dimensionality \c 3.
+ * @pre \p x and \p y have at least dimensionality \c 3.
  * @param[in] x
  * 	First vector.
  * @param[in] y
@@ -2214,9 +2218,9 @@ ts_vec_dot(const tsReal *x,
  * 	stored in-place.
  */
 void TINYSPLINE_API
-ts_vec_cross(const tsReal *x,
-	     const tsReal *y,
-	     tsReal *out);
+ts_vec3_cross(const tsReal *x,
+	      const tsReal *y,
+	      tsReal *out);
 
 /**
  * Normalizes vector \p x.

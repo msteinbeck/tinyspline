@@ -1607,6 +1607,14 @@ void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min,
 tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline,
 	tsReal epsilon, int *closed, tsStatus *status);
 
+tsError TINYSPLINE_API
+ts_bspline_compute_rmf(const tsBSpline *spline,
+		       size_t num,
+		       int has_first,
+		       tsReal eps,
+		       tsFrame *frames,
+		       tsStatus *status);
+
 
 
 /******************************************************************************

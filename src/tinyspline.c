@@ -1377,6 +1377,153 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 	TS_END_TRY_RETURN(err)
 }
 
+tsError
+ts_bspline_compute_rmf(const tsBSpline *spline,
+		       size_t num,
+		       int has_first,
+		       tsReal eps,
+		       tsFrame *frames,
+		       tsStatus *status)
+{
+	tsError err;
+	size_t i;
+	tsReal min, max /* domain */, fx, fy, fz, fmin;
+	tsReal xc[3], xn[3], v1[3], c1, v2[3], c2, rL[3], tL[3];
+	tsBSpline deriv = ts_bspline_init();
+	tsDeBoorNet curr = ts_deboornet_init();
+	tsDeBoorNet next = ts_deboornet_init();
+
+	if (num < 1)
+		TS_RETURN_SUCCESS(status);
+
+	TS_TRY(try, err, status)
+		ts_bspline_domain(spline, &min, &max);
+		TS_CALL(try, err, ts_int_deboornet_new(
+			spline, &curr, status))
+		TS_CALL(try, err, ts_int_deboornet_new(
+			spline, &next, status))
+		TS_CALL(try, err, ts_bspline_derive(
+			spline, 1, eps, &deriv, status))
+
+		if (!has_first) {
+			/* Set position. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, min, &curr, status))
+			ts_vec3_set(ts_int_deboornet_access_result(&curr),
+				    ts_bspline_dimension(spline),
+				    frames[0].position);
+			/* Set tangent. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				&deriv, min, &curr, status))
+			ts_vec3_set(ts_int_deboornet_access_result(&curr),
+				    ts_bspline_dimension(&deriv),
+				    frames[0].tangent);
+			ts_vec_norm(frames[0].tangent, 3, frames[0].tangent);
+			/* Set normal. */
+			fx = (tsReal) fabs(frames[0].tangent[0]);
+			fy = (tsReal) fabs(frames[0].tangent[1]);
+			fz = (tsReal) fabs(frames[0].tangent[2]);
+			fmin = fx; /* x is min => 1, 0, 0 */
+			frames[0].normal[0] = (tsReal) 1.0;
+			frames[0].normal[1] = (tsReal) 0.0;
+			frames[0].normal[2] = (tsReal) 0.0;
+			if (fy < fmin) { /* y is min => 0, 1, 0 */
+				fmin = fy;
+				frames[0].normal[0] = (tsReal) 0.0;
+				frames[0].normal[1] = (tsReal) 1.0;
+				frames[0].normal[2] = (tsReal) 0.0;
+			}
+			if (fz < fmin) { /* z is min => 0, 0, 1 */
+				frames[0].normal[0] = (tsReal) 0.0;
+				frames[0].normal[1] = (tsReal) 0.0;
+				frames[0].normal[2] = (tsReal) 1.0;
+			}
+			ts_vec3_cross(frames[0].tangent,
+				      frames[0].normal,
+				      frames[0].normal);
+			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
+			ts_vec3_cross(frames[0].tangent,
+				      frames[0].normal,
+				      frames[0].normal);
+			/* Set binormal. */
+			ts_vec3_cross(frames[0].tangent,
+				      frames[0].normal,
+				      frames[0].binormal);
+		} else {
+			/* Never trust user input! */
+			ts_vec_norm(frames[0].tangent,  3, frames[0].tangent);
+			ts_vec_norm(frames[0].normal,   3, frames[0].normal);
+			ts_vec_norm(frames[0].binormal, 3, frames[0].binormal);
+		}
+
+		for (i = 0; i < num - 1; i++) {
+			/* Eval current and next point. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, i, &curr, status))
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, i+1, &next, status))
+			ts_vec3_set(ts_int_deboornet_access_result(&curr),
+				    ts_bspline_dimension(spline),
+				    xc); /* xc is now the current point */
+			ts_vec3_set(ts_int_deboornet_access_result(&next),
+				    ts_bspline_dimension(spline),
+				    xn); /* xn is now the next point */
+
+			/* Set position of U_{i+1}. */
+			ts_vec3_set(xn, 3, frames[i+1].position);
+
+			/* Compute reflection vector of R_{1}. */
+			ts_vec_sub(xn, xc, 3, v1);
+			c1 = ts_vec_dot(v1, v1, 3);
+
+			/* Compute r_{i}^{L} = R_{1} * r_{i}. */
+			rL[0] = (tsReal) 2.0 / c1;
+			rL[1] = ts_vec_dot(v1, frames[i].normal, 3);
+			rL[2] = rL[0] * rL[1];
+			ts_vec_smul(v1, 3, rL[2], rL);
+			ts_vec_sub(frames[i].normal, rL, 3, rL);
+
+			/* Compute t_{i}^{L} = R_{1} * t_{i}. */
+			tL[0] = (tsReal) 2.0 / c1;
+			tL[1] = ts_vec_dot(v1, frames[i].tangent, 3);
+			tL[2] = tL[0] * tL[1];
+			ts_vec_smul(v1, 3, tL[2], tL);
+			ts_vec_sub(frames[i].tangent, tL, 3, tL);
+
+			/* Compute reflection vector of R_{2}. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				&deriv, i+1, &next, status))
+			ts_vec3_set(ts_int_deboornet_access_result(&next),
+				    ts_bspline_dimension(&deriv),
+				    xn); /* xn is now the next tangent */
+			ts_vec_norm(xn, 3, xn);
+			ts_vec_sub(xn, tL, 3, v2);
+			c2 = ts_vec_dot(v2, v2, 3);
+
+			/* Compute r_{i+1} = R_{2} * r_{i}^{L}. */
+			ts_vec3_set(frames[i+1].normal, 3,
+				    xc); /* xc is now the next normal */
+			xc[0] = (tsReal) 2.0 / c2;
+			xc[1] = ts_vec_dot(v2, rL, 3);
+			xc[2] = xc[0] * xc[1];
+			ts_vec_smul(v2, 3, xc[2], xc);
+			ts_vec_sub(rL, xc, 3, xc);
+			ts_vec_norm(xc, 3, xc);
+
+			/* Compute vector s_{i+1} of U_{i+1}. */
+			ts_vec3_cross(xn, xc, frames[i+1].binormal);
+
+			/* Set vector t_{i+1} and r_{i+1} of U_{i+1}. */
+			ts_vec3_set(xn, 3, frames[i+1].tangent);
+			ts_vec3_set(xc, 3, frames[i+1].normal);
+		}
+	TS_CATCH(err)
+		ts_bspline_free(&deriv);
+		ts_deboornet_free(&curr);
+		ts_deboornet_free(&next);
+	TS_END_TRY_RETURN(err)
+}
+
 
 
 /******************************************************************************

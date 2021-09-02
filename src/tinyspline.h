@@ -130,6 +130,16 @@ extern "C" {
 #else
 #define TS_CONTROL_POINT_EPSILON 1e-5f
 #endif
+
+/**
+ * If the length of an element (e.g., a vector) is less than this threshold,
+ * the length is considered \c 0. Must be positive ( > 0 ).
+ */
+#ifdef TINYSPLINE_FLOAT_PRECISION
+#define TS_LENGTH_ZERO 1e-3f
+#else
+#define TS_LENGTH_ZERO 1e-4f
+#endif
 /*! @} */
 
 
@@ -2097,6 +2107,170 @@ void TINYSPLINE_API ts_arr_fill(tsReal *arr, size_t num, tsReal val);
  */
 tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
 	size_t dimension);
+
+
+
+/*! @name Vector Math
+ *
+ * Vector math is a not insignificant part of TinySpline, and so it's not
+ * surprising that some utility functions around vectors are needed. Because
+ * these functions might be useful for others, they are part of TinySpline's
+ * public API. However, note that the code is \b not highly optimized (with,
+ * for example, instruction set extensions like SSE). If high performance
+ * vector math is needed, other libraries should be used instead.
+ *
+ * @{
+ */
+/**
+ * Adds vector \p y to vector \p x and stores the result in vector \p out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_add(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out);
+
+/**
+ * Subtracts vector \p y from vector \p x and stores the result in vector \p
+ * out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_sub(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out);
+
+/**
+ * Multiplies the vectors \p x and \p y element-wise (also known as Hadamard
+ * product) and stores the result in vector \p out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_had(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out);
+
+/**
+ * Computes the dot product (also known as scalar product) of the vectors \p x
+ * and \p y.
+ *
+ * @post
+ * 	\c 0 if \p dim is \c 0.
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @return
+ * 	The dot product of \p x and \y.
+ */
+tsReal TINYSPLINE_API
+ts_vec_dot(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim);
+
+/**
+ * Computes the cross product (also known as vector product or directed area
+ * product) of the vectors \p x and \p y.
+ *
+ * @pre \p x and \p y have dimensionality \c 3.
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_cross(const tsReal *x,
+	     const tsReal *y,
+	     tsReal *out);
+
+/**
+ * Normalizes vector \p x.
+ *
+ * @post
+ * 	\c 0 if the length of \p x (see ::ts_vec_mag) is less than
+ * 	::TS_LENGTH_ZERO.
+ * @param[in] x
+ * 	A vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x, i.e., the result can be stored
+ * 	in-place.
+ */
+void TINYSPLINE_API
+ts_vec_norm(const tsReal *x,
+	    size_t dim,
+	    tsReal *out);
+
+/**
+ * Determines the length of vector \p x.
+ *
+ * @post
+ * 	\c 0 if \p dim is \c 0.
+ * @param[in] x
+ * 	A vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ */
+tsReal TINYSPLINE_API
+ts_vec_mag(const tsReal *x,
+	   size_t dim);
+
+/**
+ * Multiplies vector \p x with scalar \p val and stores the result in vector \p
+ * out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ * @param[in] val
+ * 	Scalar value.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x, i.e., the result can be stored
+ * 	in-place.
+ */
+void TINYSPLINE_API
+ts_vec_smul(const tsReal *x,
+	    size_t dim,
+	    tsReal val,
+	    tsReal *out);
+/*! @} */
 
 
 

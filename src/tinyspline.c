@@ -2542,12 +2542,121 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 
 tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
 {
-	tsReal sum = 0;
 	size_t i;
+	tsReal sum = 0;
 	for (i = 0; i < dimension; i++)
 		sum += (x[i] - y[i]) * (x[i] - y[i]);
 	return (tsReal) sqrt(sum);
 }
+
+
+
+/*! @name Vector Math
+ * @{
+ */
+void
+ts_vec_add(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out)
+{
+	size_t i;
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] + y[i];
+}
+
+void
+ts_vec_sub(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out)
+{
+	size_t i;
+	if (x == y) {
+		/* More stable version. */
+		ts_arr_fill(out, dim, (tsReal) 0.0);
+		return;
+	}
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] - y[i];
+}
+
+void
+ts_vec_had(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out)
+{
+	size_t i;
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] * y[i];
+}
+
+tsReal
+ts_vec_dot(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim)
+{
+	size_t i;
+	tsReal dot = 0;
+	for (i = 0; i < dim; i++)
+		dot += x[i] * y[i];
+	return dot;
+}
+
+void
+ts_vec_cross(const tsReal *x,
+	     const tsReal *y,
+	     tsReal *out)
+{
+	tsReal a, b, c;
+	a = x[1] * y[2] - x[2] * y[1];
+	b = x[2] * y[0] - x[0] * y[2];
+	c = x[0] * y[1] - x[1] * y[0];
+	out[0] = a;
+	out[1] = b;
+	out[2] = c;
+}
+
+void
+ts_vec_norm(const tsReal *x,
+	    size_t dim,
+	    tsReal *out)
+{
+	size_t i;
+	const tsReal m = ts_vec_mag(x, dim);
+	if (m < TS_LENGTH_ZERO) {
+		ts_arr_fill(out, dim, (tsReal) 0.0);
+		return;
+	}
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] / m;
+}
+
+tsReal
+ts_vec_mag(const tsReal *x,
+	   size_t dim)
+{
+	size_t i;
+	tsReal sum = 0;
+	if (!dim)
+		return (tsReal) 0.0;
+	for (i = 0; i < dim; i++)
+		sum += (x[i] * x[i]);
+	return (tsReal) sqrt(sum);
+}
+
+void TINYSPLINE_API
+ts_vec_smul(const tsReal *x,
+	    size_t dim,
+	    tsReal val,
+	    tsReal *out)
+{
+	size_t i;
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] * val;
+}
+/*! @} */
 
 #ifdef _MSC_VER
 #pragma warning(pop)

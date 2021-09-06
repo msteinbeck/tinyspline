@@ -1609,9 +1609,9 @@ tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline,
 
 tsError TINYSPLINE_API
 ts_bspline_compute_rmf(const tsBSpline *spline,
+		       const tsReal *knots,
 		       size_t num,
 		       int has_first,
-		       tsReal eps,
 		       tsFrame *frames,
 		       tsStatus *status);
 

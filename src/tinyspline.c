@@ -1379,15 +1379,15 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 
 tsError
 ts_bspline_compute_rmf(const tsBSpline *spline,
+		       const tsReal *knots,
 		       size_t num,
 		       int has_first,
-		       tsReal eps,
 		       tsFrame *frames,
 		       tsStatus *status)
 {
 	tsError err;
 	size_t i;
-	tsReal min, max /* domain */, fx, fy, fz, fmin;
+	tsReal fx, fy, fz, fmin;
 	tsReal xc[3], xn[3], v1[3], c1, v2[3], c2, rL[3], tL[3];
 	tsBSpline deriv = ts_bspline_init();
 	tsDeBoorNet curr = ts_deboornet_init();
@@ -1397,24 +1397,23 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 		TS_RETURN_SUCCESS(status);
 
 	TS_TRY(try, err, status)
-		ts_bspline_domain(spline, &min, &max);
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline, &curr, status))
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline, &next, status))
 		TS_CALL(try, err, ts_bspline_derive(
-			spline, 1, eps, &deriv, status))
+			spline, 1, (tsReal) -1.0, &deriv, status))
 
 		if (!has_first) {
 			/* Set position. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, min, &curr, status))
+				spline, knots[0], &curr, status))
 			ts_vec3_set(ts_int_deboornet_access_result(&curr),
 				    ts_bspline_dimension(spline),
 				    frames[0].position);
 			/* Set tangent. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				&deriv, min, &curr, status))
+				&deriv, knots[0], &curr, status))
 			ts_vec3_set(ts_int_deboornet_access_result(&curr),
 				    ts_bspline_dimension(&deriv),
 				    frames[0].tangent);

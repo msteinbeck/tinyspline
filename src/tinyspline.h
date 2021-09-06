@@ -714,6 +714,17 @@ typedef struct
 	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
 } tsDeBoorNet;
 
+/**
+ * A TNB-vector with position.
+ */
+typedef struct
+{
+	tsReal position[3];
+	tsReal tangent[3];
+	tsReal normal[3];
+	tsReal binormal[3];
+} tsFrame;
+
 
 
 /******************************************************************************

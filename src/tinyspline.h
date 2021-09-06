@@ -2130,6 +2130,26 @@ tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
  * @{
  */
 /**
+ * Initializes vector \p out with \p x, \p y, and \p z.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 3.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	The x value.
+ * @param[in] y
+ * 	The y value.
+ * @param[in] z
+ * 	The z value.
+ */
+void TINYSPLINE_API
+ts_vec3_init(tsReal *out,
+	     tsReal x,
+	     tsReal y,
+	     tsReal z);
+
+/**
  * Copies the values of vector \p x (a vector with dimensionality \p dim) to
  * vector \p out (a vector with dimensionality \c 3). If \p dim is less than \c
  * 3, the remaining values of \p out are set to \c 0. Superfluous values in \p

@@ -1423,19 +1423,22 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			fy = (tsReal) fabs(frames[0].tangent[1]);
 			fz = (tsReal) fabs(frames[0].tangent[2]);
 			fmin = fx; /* x is min => 1, 0, 0 */
-			frames[0].normal[0] = (tsReal) 1.0;
-			frames[0].normal[1] = (tsReal) 0.0;
-			frames[0].normal[2] = (tsReal) 0.0;
+			ts_vec3_init(frames[0].normal,
+				     (tsReal) 1.0,
+				     (tsReal) 0.0,
+				     (tsReal) 0.0);
 			if (fy < fmin) { /* y is min => 0, 1, 0 */
 				fmin = fy;
-				frames[0].normal[0] = (tsReal) 0.0;
-				frames[0].normal[1] = (tsReal) 1.0;
-				frames[0].normal[2] = (tsReal) 0.0;
+				ts_vec3_init(frames[0].normal,
+				     (tsReal) 0.0,
+				     (tsReal) 1.0,
+				     (tsReal) 0.0);
 			}
 			if (fz < fmin) { /* z is min => 0, 0, 1 */
-				frames[0].normal[0] = (tsReal) 0.0;
-				frames[0].normal[1] = (tsReal) 0.0;
-				frames[0].normal[2] = (tsReal) 1.0;
+				ts_vec3_init(frames[0].normal,
+				     (tsReal) 0.0,
+				     (tsReal) 0.0,
+				     (tsReal) 1.0);
 			}
 			ts_vec3_cross(frames[0].tangent,
 				      frames[0].normal,
@@ -2700,6 +2703,17 @@ tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
 /*! @name Vector Math
  * @{
  */
+void
+ts_vec3_init(tsReal *out,
+	     tsReal x,
+	     tsReal y,
+	     tsReal z)
+{
+	out[0] = x;
+	out[1] = y;
+	out[2] = z;
+}
+
 void
 ts_vec3_set(tsReal *out,
 	    const tsReal *x,

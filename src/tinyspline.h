@@ -2130,14 +2130,13 @@ tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
  * @{
  */
 /**
- * Copies the values of \p x (a vector with dimensionality \p dim) to \p out (a
- * vector with dimensionality greater than or equal to \c 3). If \p dim is less
- * than \c 3, the remaining components of \p out (up to and including the third
- * component) are set to \c 0. Superfluous components in \p x (i.e., if \p dim
- * is greater than \c 3) are ignored.
+ * Copies the values of vector \p x (a vector with dimensionality \p dim) to
+ * vector \p out (a vector with dimensionality \c 3). If \p dim is less than \c
+ * 3, the remaining values of \p out are set to \c 0. Superfluous values in \p
+ * x (i.e., if \p dim is greater than \c 3) are ignored.
  *
  * @pre
- * 	\p out has at least dimensionality \c 3.
+ * 	\p out has dimensionality \c 3.
  * @param[in] x
  * 	Vector to read the values from.
  * @param[in] dim
@@ -2159,7 +2158,7 @@ ts_vec3_set(const tsReal *x,
  * @param[in] y
  * 	Second vector.
  * @param[in] dim
- * 	Dimensionality of \p x and \p y.
+ * 	Dimensionality of \p x, \p y, and \p out.
  * @param[out] out
  * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
  * 	stored in-place.
@@ -2179,7 +2178,7 @@ ts_vec_add(const tsReal *x,
  * @param[in] y
  * 	Second vector.
  * @param[in] dim
- * 	Dimensionality of \p x and \p y.
+ * 	Dimensionality of \p x, \p y, and \p out.
  * @param[out] out
  * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
  * 	stored in-place.
@@ -2212,11 +2211,9 @@ ts_vec_dot(const tsReal *x,
 
 /**
  * Computes the cross product (also known as vector product or directed area
- * product) of \p x and \p y (vectors with dimensionality greater than or equal
- * to \c 3). Superfluous components in \p x or \p y (i.e., dimensionality is
- * greater than \c 3) are ignored.
+ * product) of the vectors \p x and \p y.
  *
- * @pre \p x and \p y have at least dimensionality \c 3.
+ * @pre \p x and \p y have dimensionality \c 3.
  * @param[in] x
  * 	First vector.
  * @param[in] y

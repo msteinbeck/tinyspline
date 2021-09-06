@@ -2137,18 +2137,17 @@ tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
  *
  * @pre
  * 	\p out has dimensionality \c 3.
+ * @param[out] out
+ * 	Target vector.
  * @param[in] x
  * 	Vector to read the values from.
  * @param[in] dim
  * 	Dimensionality of \p x.
- * @param[out] out
- * 	Result vector. Can be same as \p x, i.e., the result can be stored
- * 	in-place.
  */
 void TINYSPLINE_API
-ts_vec3_set(const tsReal *x,
-	    size_t dim,
-	    tsReal *out);
+ts_vec3_set(tsReal *out,
+	    const tsReal *x,
+	    size_t dim);
 
 /**
  * Adds vector \p y to vector \p x and stores the result in vector \p out.

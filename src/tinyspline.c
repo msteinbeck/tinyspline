@@ -1515,9 +1515,9 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			/* Compute vector s_{i+1} of U_{i+1}. */
 			ts_vec3_cross(xn, xc, frames[i+1].binormal);
 
-			/* Set vector t_{i+1} and r_{i+1} of U_{i+1}. */
+			/* Set vectors t_{i+1} and r_{i+1} of U_{i+1}. */
 			ts_vec3_set(frames[i+1].tangent, xn, 3);
-			ts_vec3_set(xc, frames[i+1].normal, 3);
+			ts_vec3_set(frames[i+1].normal, xc, 3);
 		}
 	TS_CATCH(err)
 		ts_bspline_free(&deriv);

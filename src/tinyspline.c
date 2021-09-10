@@ -1461,9 +1461,9 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 		for (i = 0; i < num - 1; i++) {
 			/* Eval current and next point. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, i, &curr, status))
+				spline, knots[i], &curr, status))
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, i+1, &next, status))
+				spline, knots[i+1], &next, status))
 			ts_vec3_set(xc, /* xc is now the current point */
 				    ts_int_deboornet_access_result(&curr),
 				    ts_bspline_dimension(spline));
@@ -1494,7 +1494,7 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 
 			/* Compute reflection vector of R_{2}. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				&deriv, i+1, &next, status))
+				&deriv, knots[i+1], &next, status))
 			ts_vec3_set(xn, /* xn is now the next tangent */
 				    ts_int_deboornet_access_result(&next),
 				    ts_bspline_dimension(&deriv));

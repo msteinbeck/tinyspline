@@ -104,6 +104,32 @@ public:
 #endif
 };
 
+class TINYSPLINECXX_API Vector3 {
+public:
+	Vector3(real x, real y, real z);
+	Vector3(const Vector3 &other);
+
+	real x() const;
+	void setX(real val);
+
+	real y() const;
+	void setY(real val);
+
+	real z() const;
+	void setZ(real val);
+
+	Vector3 add(const Vector3 &other) const;
+	Vector3 subtract(const Vector3 &other) const;
+	Vector3 multiply(real scalar) const;
+	Vector3 cross(const Vector3 &other) const;
+	Vector3 norm() const;
+	tsReal magnitude() const;
+	tsReal dot(const Vector3 &other) const;
+
+private:
+	real vals[3];
+};
+
 class TINYSPLINECXX_API BSpline {
 public:
 	typedef tsBSplineType type;

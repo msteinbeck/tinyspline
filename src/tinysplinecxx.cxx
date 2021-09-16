@@ -1,5 +1,6 @@
 #include "tinysplinecxx.h"
 #include <stdlib.h>
+#include <cstring>
 #include <stdexcept>
 #include <cstdio>
 #include <sstream>
@@ -204,9 +205,33 @@ tinyspline::Vector3::Vector3(real x, real y, real z)
 
 tinyspline::Vector3::Vector3(const Vector3 &other)
 {
-	vals[0] = other.vals[0];
-	vals[1] = other.vals[1];
-	vals[2] = other.vals[2];
+	memcpy(vals, other.vals, 3 * sizeof(real));
+}
+
+tinyspline::Vector3 &
+tinyspline::Vector3::operator=(const tinyspline::Vector3 &other)
+{
+	if (&other != this)
+		memcpy(vals, other.vals, 3 * sizeof(real));
+	return *this;
+}
+
+tinyspline::Vector3
+tinyspline::Vector3::operator+(const tinyspline::Vector3 &other)
+{
+	return add(other);
+}
+
+tinyspline::Vector3
+tinyspline::Vector3::operator-(const tinyspline::Vector3 &other)
+{
+	return subtract(other);
+}
+
+tinyspline::Vector3
+tinyspline::Vector3::operator*(real scalar)
+{
+	return multiply(scalar);
 }
 
 tinyspline::real

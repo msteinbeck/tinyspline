@@ -109,6 +109,11 @@ public:
 	Vector3(real x, real y, real z);
 	Vector3(const Vector3 &other);
 
+	Vector3 &operator=(const Vector3 &other);
+	Vector3 operator+(const Vector3 &other);
+	Vector3 operator-(const Vector3 &other);
+	Vector3 operator*(real scalar);
+
 	real x() const;
 	void setX(real val);
 

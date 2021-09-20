@@ -344,7 +344,7 @@ tinyspline::Vector3::toString() const
  *
  * @{
  */
-tinyspline::Frame::Frame(real *values)
+tinyspline::Frame::Frame(const real *values)
 {
 	memcpy(vals, values, sizeof(vals));
 }
@@ -403,6 +403,63 @@ tinyspline::Frame::toString() const
 	    << ", tangent: " << tangent().toString()
 	    << ", normal: " << normal().toString()
 	    << ", binormal: " << binormal().toString() << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name FrameSeq
+ *
+ * @{
+ */
+tinyspline::FrameSeq::FrameSeq(real *values, size_t len)
+{
+	if (len % 12 != 0)
+		throw std::runtime_error("len(values) % 12 != 0");
+	vals = std::vector<real>(values, values + len);
+}
+
+tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
+{
+	vals = other.vals;
+}
+
+tinyspline::FrameSeq &
+tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
+{
+	if (&other != this)
+		vals = other.vals;
+	return *this;
+}
+
+size_t
+tinyspline::FrameSeq::numFrames() const
+{
+	return vals.size() / 12;
+}
+
+tinyspline::Frame
+tinyspline::FrameSeq::at(size_t idx) const
+{
+	if (idx >= numFrames())
+		throw std::runtime_error("index out of range");
+	return Frame(vals.data() + idx * 12);
+}
+
+std::vector<tinyspline::real>
+tinyspline::FrameSeq::values() const
+{
+	return vals;
+}
+
+std::string
+tinyspline::FrameSeq::toString() const
+{
+	std::ostringstream oss;
+	oss << "FrameSeq{";
+	oss << "frames: " << numFrames();
+	oss << "}";
 	return oss.str();
 }
 /*! @} */
@@ -673,6 +730,20 @@ bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 	if (ts_bspline_is_closed(&spline, epsilon, &closed, &status))
 		throw std::runtime_error(status.message);
 	return closed == 1;
+}
+
+tinyspline::FrameSeq
+tinyspline::BSpline::computeRMF(std::vector<real> &knots, bool hasFirst) const
+{
+	tsStatus status;
+	tsFrame *frames = (tsFrame *) malloc(knots.size() * sizeof(tsFrame));
+	if (ts_bspline_compute_rmf(&spline,
+				   knots.data(), knots.size(),
+				   hasFirst, frames, &status))
+		throw std::runtime_error(status.message);
+	FrameSeq seq = FrameSeq((real *) frames, knots.size() * 12);
+	free(frames);
+	return seq;
 }
 
 std::string tinyspline::BSpline::toJson() const

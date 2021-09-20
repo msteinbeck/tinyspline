@@ -136,6 +136,16 @@ private:
 	real vals[3];
 };
 
+
+
+/*! @name Spline Framing
+ *
+ * Wrapper classes for ::tsFrame (::Frame) and sequences of ::tsFrame
+ * (::FrameSeq). To reduce the amount of copied data, access the relevant
+ * values with FrameSeq::values.
+ *
+ * @{
+ */
 class TINYSPLINECXX_API Frame {
 public:
 	Frame(const Frame &other);
@@ -150,10 +160,30 @@ public:
 	std::string toString() const;
 
 private:
-	real vals[12]; // 4 * 3
-
-	Frame(real *values);
+	real vals[12]; // 4 * Vector3
+	Frame(const real *values);
+	friend class FrameSeq;
 };
+
+class TINYSPLINECXX_API FrameSeq {
+public:
+	FrameSeq(const FrameSeq &other);
+	FrameSeq &operator=(const FrameSeq &other);
+
+	size_t numFrames() const;
+	Frame at(size_t idx) const;
+	std::vector<real> values() const;
+
+	std::string toString() const;
+
+private:
+	std::vector<real> vals;
+	FrameSeq(real *values, size_t len);
+	friend class BSpline;
+};
+/*! @} */
+
+
 
 class TINYSPLINECXX_API BSpline {
 public:
@@ -201,6 +231,7 @@ public:
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	FrameSeq computeRMF(std::vector<real> &knots, bool hasFirst = false) const;
 
 	/* Serialization */
 	std::string toJson() const;

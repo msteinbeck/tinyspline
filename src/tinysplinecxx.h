@@ -104,6 +104,14 @@ public:
 #endif
 };
 
+
+
+/*! @name Vector Math
+ *
+ * Wrapper classes for TinySpline's vector math.
+ *
+ * @{
+ */
 class TINYSPLINECXX_API Vector3 {
 public:
 	Vector3();
@@ -135,6 +143,7 @@ public:
 private:
 	real vals[3];
 };
+/*! @} */
 
 
 

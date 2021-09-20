@@ -117,10 +117,8 @@ public:
 
 	real x() const;
 	void setX(real val);
-
 	real y() const;
 	void setY(real val);
-
 	real z() const;
 	void setZ(real val);
 

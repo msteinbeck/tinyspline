@@ -198,7 +198,8 @@ std::string tinyspline::Domain::toString() const
  */
 tinyspline::Vector3::Vector3()
 {
-	ts_vec3_init(vals, (real) 0.0, (real) 0.0, (real) 0.0);
+	const real v = (real) 0.0;
+	ts_vec3_init(vals, v, v, v);
 }
 
 tinyspline::Vector3::Vector3(real x, real y, real z)
@@ -208,14 +209,14 @@ tinyspline::Vector3::Vector3(real x, real y, real z)
 
 tinyspline::Vector3::Vector3(const Vector3 &other)
 {
-	ts_vec3_set(vals, other.vals, 3);
+	memcpy(vals, other.vals, sizeof(vals));
 }
 
 tinyspline::Vector3 &
 tinyspline::Vector3::operator=(const tinyspline::Vector3 &other)
 {
 	if (&other != this)
-		memcpy(vals, other.vals, 3 * sizeof(real));
+		memcpy(vals, other.vals, sizeof(vals));
 	return *this;
 }
 

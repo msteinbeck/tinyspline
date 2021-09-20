@@ -340,6 +340,74 @@ tinyspline::Vector3::toString() const
 
 
 
+/*! @name Frame
+ *
+ * @{
+ */
+tinyspline::Frame::Frame(real *values)
+{
+	memcpy(vals, values, sizeof(vals));
+}
+
+tinyspline::Frame::Frame(const Frame &other)
+{
+	memcpy(vals, other.vals, sizeof(vals));
+}
+
+tinyspline::Frame &
+tinyspline::Frame::operator=(const tinyspline::Frame &other)
+{
+	if (&other != this)
+		memcpy(vals, other.vals, sizeof(vals));
+	return *this;
+}
+
+tinyspline::Vector3
+tinyspline::Frame::position() const
+{
+	return Vector3(vals[0], vals[1], vals[2]);
+}
+
+tinyspline::Vector3
+tinyspline::Frame::tangent() const
+{
+	return Vector3(vals[3], vals[4], vals[5]);
+}
+
+tinyspline::Vector3
+tinyspline::Frame::normal() const
+{
+	return Vector3(vals[6], vals[7], vals[8]);
+}
+
+tinyspline::Vector3
+tinyspline::Frame::binormal() const
+{
+	return Vector3(vals[9], vals[10], vals[11]);
+}
+
+std::vector<tinyspline::real>
+tinyspline::Frame::values() const
+{
+	const real *b = vals;
+	const real *e = vals + 12;
+	return std::vector<real>(b, e);
+}
+
+std::string
+tinyspline::Frame::toString() const
+{
+	std::ostringstream oss;
+	oss << "Frame{"
+	    << "position: " << position().toString()
+	    << ", tangent: " << tangent().toString()
+	    << ", normal: " << normal().toString()
+	    << ", binormal: " << binormal().toString() << "}";
+	return oss.str();
+}
+/*! @} */
+
+
 
 /******************************************************************************
 *                                                                             *

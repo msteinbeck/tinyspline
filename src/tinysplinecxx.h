@@ -136,6 +136,25 @@ private:
 	real vals[3];
 };
 
+class TINYSPLINECXX_API Frame {
+public:
+	Frame(const Frame &other);
+	Frame &operator=(const Frame &other);
+
+	Vector3 position() const;
+	Vector3 tangent() const;
+	Vector3 normal() const;
+	Vector3 binormal() const;
+	std::vector<real> values() const;
+
+	std::string toString() const;
+
+private:
+	real vals[12]; // 4 * 3
+
+	Frame(real *values);
+};
+
 class TINYSPLINECXX_API BSpline {
 public:
 	typedef tsBSplineType type;

@@ -132,6 +132,8 @@ public:
 	tsReal magnitude() const;
 	tsReal dot(const Vector3 &other) const;
 
+	std::string toString() const;
+
 private:
 	real vals[3];
 };

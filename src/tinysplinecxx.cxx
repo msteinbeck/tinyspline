@@ -208,7 +208,7 @@ tinyspline::Vector3::Vector3(real x, real y, real z)
 
 tinyspline::Vector3::Vector3(const Vector3 &other)
 {
-	memcpy(vals, other.vals, 3 * sizeof(real));
+	ts_vec3_set(vals, other.vals, 3);
 }
 
 tinyspline::Vector3 &
@@ -323,6 +323,17 @@ tinyspline::real
 tinyspline::Vector3::dot(const tinyspline::Vector3 &other) const
 {
 	return ts_vec_dot(vals, other.vals, 3);
+}
+
+std::string
+tinyspline::Vector3::toString() const
+{
+	std::ostringstream oss;
+	oss << "Vector3{"
+	    << "x: " << vals[0]
+	    << ", y: " << vals[1]
+	    << ", z: " << vals[2] << "}";
+	return oss.str();
 }
 /*! @} */
 

@@ -106,6 +106,7 @@ public:
 
 class TINYSPLINECXX_API Vector3 {
 public:
+	Vector3();
 	Vector3(real x, real y, real z);
 	Vector3(const Vector3 &other);
 

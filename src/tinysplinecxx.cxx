@@ -196,11 +196,14 @@ std::string tinyspline::Domain::toString() const
  *
  * @{
  */
+tinyspline::Vector3::Vector3()
+{
+	ts_vec3_init(vals, (real) 0.0, (real) 0.0, (real) 0.0);
+}
+
 tinyspline::Vector3::Vector3(real x, real y, real z)
 {
-	vals[0] = x;
-	vals[1] = y;
-	vals[2] = z;
+	ts_vec3_init(vals, x, y, z);
 }
 
 tinyspline::Vector3::Vector3(const Vector3 &other)

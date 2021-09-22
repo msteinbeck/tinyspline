@@ -186,7 +186,7 @@ public:
 	std::string toString() const;
 
 private:
-	std::vector<real> vals;
+	std::vector<real> *vals;
 	FrameSeq(real *values, size_t len);
 	friend class BSpline;
 };

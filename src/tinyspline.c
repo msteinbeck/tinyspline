@@ -1526,6 +1526,25 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 	TS_END_TRY_RETURN(err)
 }
 
+void
+ts_bspline_uniform_knot_seq(const tsBSpline *spline,
+			    size_t num,
+			    tsReal *knots)
+{
+	size_t i;
+	tsReal min, max;
+	ts_bspline_domain(spline, &min, &max);
+	for (i = 0; i < num; i++) {
+		knots[i] = max - min;
+		knots[i] *= (tsReal) i / (num - 1);
+		knots[i] += min;
+	}
+	/* Set knots[0] after knots[num - 1] to ensure that
+	 * knots[0] = min if num is 1. */
+	knots[num - 1] = max;
+	knots[0] = min;
+}
+
 
 
 /******************************************************************************

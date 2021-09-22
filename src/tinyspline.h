@@ -1626,6 +1626,11 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 		       tsFrame *frames,
 		       tsStatus *status);
 
+void TINYSPLINE_API
+ts_bspline_uniform_knot_seq(const tsBSpline *spline,
+			    size_t num,
+			    tsReal *knots);
+
 
 
 /******************************************************************************

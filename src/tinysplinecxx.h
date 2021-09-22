@@ -242,6 +242,7 @@ public:
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
 	FrameSeq computeRMF(std::vector<real> &knots, bool hasFirst = false) const;
+	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 
 	/* Serialization */
 	std::string toJson() const;

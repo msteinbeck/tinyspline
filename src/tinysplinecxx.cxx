@@ -754,6 +754,15 @@ tinyspline::BSpline::computeRMF(std::vector<real> &knots, bool hasFirst) const
 	return seq;
 }
 
+std_real_vector_out
+tinyspline::BSpline::uniformKnotSeq(size_t num) const
+{
+	tsReal *knots = (tsReal *) malloc(num * sizeof(tsReal));
+	ts_bspline_uniform_knot_seq(&spline, num, knots);
+	std_real_vector_out vec = std_real_vector_init(knots, knots + num);
+	return vec;
+}
+
 std::string tinyspline::BSpline::toJson() const
 {
 	char *json;

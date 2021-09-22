@@ -177,9 +177,10 @@ private:
 class TINYSPLINECXX_API FrameSeq {
 public:
 	FrameSeq(const FrameSeq &other);
+	~FrameSeq();
 	FrameSeq &operator=(const FrameSeq &other);
 
-	size_t numFrames() const;
+	size_t size() const;
 	Frame at(size_t idx) const;
 	std::vector<real> values() const;
 

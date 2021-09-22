@@ -425,6 +425,11 @@ tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
 	vals = new std::vector<real>(*other.vals);
 }
 
+tinyspline::FrameSeq::~FrameSeq()
+{
+	delete vals;
+}
+
 tinyspline::FrameSeq &
 tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
 {
@@ -437,7 +442,7 @@ tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
 }
 
 size_t
-tinyspline::FrameSeq::numFrames() const
+tinyspline::FrameSeq::size() const
 {
 	return vals->size() / 12;
 }
@@ -445,7 +450,7 @@ tinyspline::FrameSeq::numFrames() const
 tinyspline::Frame
 tinyspline::FrameSeq::at(size_t idx) const
 {
-	if (idx >= numFrames())
+	if (idx >= size())
 		throw std::runtime_error("index out of range");
 	return Frame(vals->data() + idx * 12);
 }
@@ -461,7 +466,7 @@ tinyspline::FrameSeq::toString() const
 {
 	std::ostringstream oss;
 	oss << "FrameSeq{";
-	oss << "frames: " << numFrames();
+	oss << "frames: " << size();
 	oss << "}";
 	return oss.str();
 }

@@ -116,6 +116,40 @@ sample->redraw();}
           }
         }
       }
+      Fl_Group {} {
+        label Frames open
+        xywh {25 35 865 560} hide
+      } {
+        Fl_Box frames {
+          xywh {25 50 525 525}
+          code0 {\#include "frames.h"}
+          class Frames
+        }
+        Fl_Group {} {open
+          xywh {580 50 300 525}
+        } {
+          Fl_Value_Slider framesKnot {
+            label Knot
+            callback {frames->knot(((Fl_Slider *)o)->value());
+frames->redraw();}
+            xywh {580 50 300 25} type Horizontal
+            code0 {framesKnot->value(frames->knot());}
+          }
+          Fl_Light_Button framesAutoplay {
+            label Autoplay
+            callback {if (((Fl_Button *)o)->value())
+	Fl::add_timeout(0.01, framesAutoplay_cb);
+else
+	Fl::remove_timeout(framesAutoplay_cb)}
+            xywh {580 105 300 25}
+          }
+          Fl_Text_Display framesInfo {
+            label Info
+            xywh {580 275 300 300} box THIN_DOWN_FRAME
+            code0 {framesInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
+          }
+        }
+      }
     }
   }
   code {Fl_Text_Buffer *buff = new Fl_Text_Buffer();
@@ -135,4 +169,15 @@ evalKnot->value(val);
 evalKnot->do_callback();
 if (evalAutoplay->value())
 	Fl::repeat_timeout(0.01, evalAutoplay_cb);} {}
+}
+
+Function {framesAutoplay_cb(void *)} {} {
+  code {double val = framesKnot->value();
+val += 0.001;
+if (val > framesKnot->maximum())
+	val = framesKnot->minimum();
+framesKnot->value(val);
+framesKnot->do_callback();
+if (framesAutoplay->value())
+	Fl::repeat_timeout(0.01, framesAutoplay_cb);} {}
 }

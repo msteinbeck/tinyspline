@@ -1439,15 +1439,15 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
  * @{
  */
 /**
- * Evaluates \p spline at knot \p u and stores the result (cf. tsDeBoorNet) in
+ * Evaluates \p spline at \p knot and stores the result (see ::tsDeBoorNet) in
  * \p net.
  *
  * @param[in] spline
  * 	The spline to evaluate.
- * @param[in] u
+ * @param[in] knot
  * 	The knot to evaluate \p spline at.
  * @param[out] net
- * 	The output parameter
+ * 	Stores the evaluation result.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -1459,7 +1459,7 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
  */
 tsError TINYSPLINE_API
 ts_bspline_eval(const tsBSpline *spline,
-		tsReal u,
+		tsReal knot,
 		tsDeBoorNet *net,
 		tsStatus *status);
 

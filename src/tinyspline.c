@@ -1197,7 +1197,7 @@ ts_int_bspline_eval_woa(const tsBSpline *spline,
 
 tsError
 ts_bspline_eval(const tsBSpline *spline,
-		tsReal u,
+		tsReal knot,
 		tsDeBoorNet *net,
 		tsStatus *status)
 {
@@ -1207,7 +1207,7 @@ ts_bspline_eval(const tsBSpline *spline,
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline, net, status))
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			spline, u, net, status))
+			spline, knot, net, status))
 	TS_CATCH(err)
 		ts_deboornet_free(net);
 	TS_END_TRY_RETURN(err)

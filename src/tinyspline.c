@@ -1215,7 +1215,7 @@ ts_bspline_eval(const tsBSpline *spline,
 
 tsError
 ts_bspline_eval_all(const tsBSpline *spline,
-			    const tsReal *us,
+			    const tsReal *knots,
 			    size_t num,
 			    tsReal **points,
 			    tsStatus *status)
@@ -1237,7 +1237,7 @@ ts_bspline_eval_all(const tsBSpline *spline,
 			spline,&net, status))
 		for (i = 0; i < num; i++) {
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, us[i], &net, status))
+				spline, knots[i], &net, status))
 			result = ts_int_deboornet_access_result(&net);
 			memcpy((*points) + i * dim, result, sof_point);
 		}

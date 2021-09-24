@@ -1464,20 +1464,21 @@ ts_bspline_eval(const tsBSpline *spline,
 		tsStatus *status);
 
 /**
- * Evaluates \p spline at knots \p us and stores the resultant points in
- * \p points. If \p us contains one or more knots where \p spline is
- * discontinuous at, only the first point of the corresponding evaluation
- * result is taken. After calling this function \p points contains exactly
- * \p num * ts_bspline_dimension(spline) values.
+ * Evaluates \p spline at each knot in \p knots and stores the evaluated points
+ * (see ::ts_deboornet_result) in \p points. If \p knots contains one or more
+ * knots where \p spline is discontinuous at, only the first point of the
+ * corresponding evaluation result is taken. After calling this function \p
+ * points contains exactly \code num * ts_bspline_dimension(spline) \endcode
+ * values.
  *
  * This function is in particular useful in cases where a multitude of knots
- * need to be evaluated, because only a single instance of tsDeBoorNet is
+ * need to be evaluated, because only a single instance of ::tsDeBoorNet is
  * created and reused for all evaluation tasks (therefore the memory footprint
  * is reduced to a minimum).
  *
  * @param[in] spline
  * 	The spline to evaluate.
- * @param[in] us
+ * @param[in] knots
  * 	The knot values to evaluate.
  * @param[in] num
  * 	The number of knots in \p us.
@@ -1494,7 +1495,7 @@ ts_bspline_eval(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_eval_all(const tsBSpline *spline,
-		    const tsReal *us,
+		    const tsReal *knots,
 		    size_t num,
 		    tsReal **points,
 		    tsStatus *status);

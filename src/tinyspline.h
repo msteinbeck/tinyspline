@@ -1919,37 +1919,36 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
 	tsBSpline *s2_out, tsStatus *status);
 
 /**
- * Interpolates between \p start and \p end with respect to the time parameter
- * \p t (domain: [0, 1]). The resulting spline is stored in \p out. if \p t is
- * less than 0, it is interpreted as 0. If \p t is greater than 1, it is
- * interpreted as 1. That is, \p is limited to the domain [0, 1]. Because it is
- * to be expected that this function is called several times in a row (e.g., to
- * have a smooth transition from one spline to another), memory for \p out is
- * allocated only if it points to NULL. This way, this function can be used as
- * follows:
+ * Interpolates between \p source and \p target with respect to the time
+ * parameter \p t (domain: [0, 1]; clamped if necessary). The resulting spline
+ * is stored in \p out. Because it is to be expected that this function is
+ * called several times in a row (e.g., to have a smooth transition from one
+ * spline to another), memory for \p out is allocated only if it points to NULL
+ * or if it has to be enlarged to store the result of the interpolation (which
+ * can only happen if \p source or \p target---or both---have been changed
+ * since the last call). This way, this function can be used as follows:
  *
  *     tsReal t;
- *     tsBSpline start = ...
- *     tsBSpline end = ...
+ *     tsBSpline source = ...
+ *     tsBSpline target = ...
  *     tsBSpline morph = ts_bspline_init();
  *     for (t = (tsReal) 0.0; t <= (tsReal) 1.0; t += (tsReal) 0.001)
- *         ts_bspline_morph(&start, &end, t, ..., &morph, ...);
+ *         ts_bspline_morph(&source, &target, t, ..., &morph, ...);
  *     ts_bspline_free(&morph);
  *
- * It should be noted that this function aligns \p start and \p end using
+ * It should be noted that this function aligns \p source and \p target using
  * ::ts_bspline_align if necessary. In order to avoid the overhead of spline
- * alignment, \p start and \p end should be aligned in advance.
+ * alignment, \p source and \p target should be aligned in advance.
  *
- * @param[in] start
- * 	The origin spline.
- * @param[in] end
- * 	The target spline.
+ * @param[in] source
+ * 	Origin spline.
+ * @param[in] target
+ * 	Target spline.
  * @param[in] t
- * 	The time parameter. If 0, \p out becomes \p start. If 1, \p out becomes
- * 	\p end. The value of this parameter is automatically limited to the
- * 	domain [0. 1].
+ * 	The time parameter. If 0, \p out becomes \p source. If 1, \p out becomes
+ * 	\p target. Note that this value is clamped to the domain [0. 1].
  * @param[in] epsilon
- * 	If \p start and \p end must be aligned, this parameter is passed
+ * 	If \p source and \p target must be aligned, this parameter is passed
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
  * 	is less than or equal to \p epsilon. A viable default value is
@@ -1961,9 +1960,13 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
  * @return TS_MALLOC
  * 	If memory allocation failed.
  */
-tsError TINYSPLINE_API ts_bspline_morph(const tsBSpline *start,
-	const tsBSpline *end, tsReal t, tsReal epsilon, tsBSpline *out,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_morph(const tsBSpline *source,
+		 const tsBSpline *target,
+		 tsReal t,
+		 tsReal epsilon,
+		 tsBSpline *out,
+		 tsStatus *status);
 
 
 

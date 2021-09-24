@@ -945,34 +945,57 @@ std::string tinyspline::BSpline::toString() const
 
 
 
-/******************************************************************************
-*                                                                             *
-* Morphism                                                                    *
-*                                                                             *
-******************************************************************************/
-tinyspline::Morphism::Morphism(const tinyspline::BSpline &start,
-	const tinyspline::BSpline &end, real epsilon)
-: start(start), end(end), epsilon(epsilon)
+/*! @name Morphism
+ *
+ * @{
+ */
+tinyspline::Morphism::Morphism(const tinyspline::BSpline &source,
+			       const tinyspline::BSpline &target,
+			       real epsilon)
+	: _source(source), _target(target), _epsilon(epsilon)
 {
-	startAligned = start.alignWith(end, endAligned, epsilon);
+	sourceAligned = source.alignWith(target, targetAligned, epsilon);
 	// Make buffer compatible by copying one of the aligned splines.
-	buffer = startAligned;
+	buffer = sourceAligned;
 }
 
-tinyspline::BSpline tinyspline::Morphism::eval(real t)
+tinyspline::BSpline
+tinyspline::Morphism::eval(real t)
 {
 	tsStatus status;
-	if (ts_bspline_morph(&startAligned.spline, &endAligned.spline, t,
-		epsilon, &buffer.spline, &status)) {
+	if (ts_bspline_morph(&sourceAligned.spline,
+			     &targetAligned.spline,
+			     t, _epsilon,
+			     &buffer.spline, &status)) {
 		throw std::runtime_error(status.message);
 	}
 	return buffer;
 }
 
-tinyspline::BSpline tinyspline::Morphism::operator()(real t)
+tinyspline::BSpline
+tinyspline::Morphism::source() const
+{
+	return _source;
+}
+
+tinyspline::BSpline
+tinyspline::Morphism::target() const
+{
+	return _target;
+}
+
+tinyspline::real
+tinyspline::Morphism::epsilon() const
+{
+	return _epsilon;
+}
+
+tinyspline::BSpline
+tinyspline::Morphism::operator()(real t)
 {
 	return eval(t);
 }
+/*! @} */
 
 
 

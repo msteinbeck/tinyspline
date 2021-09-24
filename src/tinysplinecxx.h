@@ -150,8 +150,9 @@ private:
 /*! @name Spline Framing
  *
  * Wrapper classes for ::tsFrame (::Frame) and sequences of ::tsFrame
- * (::FrameSeq). To reduce the amount of copied data, access the relevant
- * values with FrameSeq::values.
+ * (::FrameSeq). To reduce the amount of copied data, access the vectors
+ * (position, tangent, normal, and binormal) with Frame::values and
+ * FrameSeq::values.
  *
  * @{
  */
@@ -290,20 +291,33 @@ public:
 #endif
 };
 
+
+
+/*! @name Spline Morphing
+ *
+ * @{
+ */
 class TINYSPLINECXX_API Morphism {
 public:
-	/* Constructors & Destructors */
-	Morphism(const BSpline &start, const BSpline &end,
-		real epsilon = TS_CONTROL_POINT_EPSILON);
+	Morphism(const BSpline &source,
+		 const BSpline &target,
+		 real epsilon = TS_CONTROL_POINT_EPSILON);
+
+	BSpline source() const;
+	BSpline target() const;
+	real epsilon() const;
 
 	BSpline eval(real t);
 	BSpline operator()(real t);
 private:
-	BSpline start, end;
-	real epsilon;
-	BSpline startAligned, endAligned;
+	BSpline _source, _target;
+	real _epsilon;
+	BSpline sourceAligned, targetAligned;
 	BSpline buffer;
 };
+/*! @} */
+
+
 
 class TINYSPLINECXX_API Utils {
 public:

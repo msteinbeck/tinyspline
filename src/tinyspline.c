@@ -2306,58 +2306,69 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
-	tsReal t, tsReal epsilon, tsBSpline *out, tsStatus *status)
+tsError
+ts_bspline_morph(const tsBSpline *source,
+		 const tsBSpline *target,
+		 tsReal t, tsReal epsilon,
+		 tsBSpline *out,
+		 tsStatus *status)
 {
-	tsBSpline start_al, end_al; /* aligned start and end */
-	tsReal *start_al_c, *start_al_k; /* control points and knots */
-	tsReal *end_al_c, *end_al_k; /* control points and knots */
+	tsBSpline source_al, target_al; /* aligned source and target */
+	tsReal *source_al_c, *source_al_k; /* control points and knots */
+	tsReal *target_al_c, *target_al_k; /* control points and knots */
 
 	/* Properties of `out'. */
 	size_t deg, dim, num_ctrlp, num_knots;
 	tsReal *ctrlp, *knots;
+	tsBSpline tmp; /* temporary buffer if `out' must be resized */
 
 	tsReal t_hat;
 	size_t i, offset, d;
 	tsError err;
 
-	start_al = ts_bspline_init();
-	end_al = ts_bspline_init();
+	source_al = ts_bspline_init();
+	target_al = ts_bspline_init();
 	TS_TRY(try, err, status)
-		/* Limit `t' to domain [0, 1] and set up `t_hat'. */
+		/* Clamp `t' to domain [0, 1] and set up `t_hat'. */
 		if (t < (tsReal) 0.0)
 			t = (tsReal) 0.0;
 		if (t > (tsReal) 1.0)
 			t = (tsReal) 1.0;
 		t_hat = (tsReal) 1.0 - t;
 
-		/* Set up `start_al' and `end_al'. */
+		/* Set up `source_al' and `target_al'. */
 		/* Degree must be elevated... */
-		if (ts_bspline_degree(start) != ts_bspline_degree(end) ||
+		if (ts_bspline_degree(source) != ts_bspline_degree(target) ||
 		/* .. or knots (and thus control points) must be inserted. */
-		ts_bspline_num_knots(start) != ts_bspline_num_knots(end)) {
+		ts_bspline_num_knots(source) != ts_bspline_num_knots(target)) {
 			TS_CALL(try, err, ts_bspline_align(
-				start, end, epsilon, &start_al, &end_al,
+				source, target, epsilon, &source_al, &target_al,
 				status));
 		} else {
 			/* Flat copy. */
-			start_al = *start;
-			end_al = *end;
+			source_al = *source;
+			target_al = *target;
 		}
-		start_al_c = ts_int_bspline_access_ctrlp(&start_al);
-		start_al_k = ts_int_bspline_access_knots(&start_al);
-		end_al_c = ts_int_bspline_access_ctrlp(&end_al);
-		end_al_k = ts_int_bspline_access_knots(&end_al);
+		source_al_c = ts_int_bspline_access_ctrlp(&source_al);
+		source_al_k = ts_int_bspline_access_knots(&source_al);
+		target_al_c = ts_int_bspline_access_ctrlp(&target_al);
+		target_al_k = ts_int_bspline_access_knots(&target_al);
 
 		/* Set up `out'. */
-		deg = ts_bspline_degree(&start_al);
-		num_ctrlp = ts_bspline_num_control_points(&start_al);
-		dim = ts_bspline_dimension(&start_al);
-		if (ts_bspline_dimension(&end_al) < dim)
-			dim = ts_bspline_dimension(&end_al);
+		deg = ts_bspline_degree(&source_al);
+		num_ctrlp = ts_bspline_num_control_points(&source_al);
+		dim = ts_bspline_dimension(&source_al);
+		if (ts_bspline_dimension(&target_al) < dim)
+			dim = ts_bspline_dimension(&target_al);
 		if (out->pImpl == NULL) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
 				TS_OPENED /* doesn't matter */, out, status))
+		} else if (ts_bspline_degree(out) < deg ||
+			   ts_bspline_num_control_points(out) < num_ctrlp) {
+			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
+				TS_OPENED /* doesn't matter */, &tmp, status))
+			ts_bspline_free(out);
+			ts_bspline_move(&tmp, out);
 		}
 		num_knots = ts_bspline_num_knots(out);
 		ctrlp = ts_int_bspline_access_ctrlp(out);
@@ -2367,21 +2378,21 @@ tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
 		for (i = 0; i < num_ctrlp; i++) {
 			for (d = 0; d < dim; d++) {
 				offset = i * dim + d;
-				ctrlp[offset] = t * end_al_c[offset] +
-					t_hat * start_al_c[offset];
+				ctrlp[offset] = t * target_al_c[offset] +
+					t_hat * source_al_c[offset];
 			}
 		}
 
 		/* Interpolate knots. */
 		for (i = 0; i < num_knots; i++) {
-			knots[i] = t * end_al_k[i] +
-				t_hat * start_al_k[i];
+			knots[i] = t * target_al_k[i] +
+				t_hat * source_al_k[i];
 		}
 	TS_FINALLY
-		if (start->pImpl != start_al.pImpl)
-			ts_bspline_free(&start_al);
-		if (end->pImpl != end_al.pImpl)
-			ts_bspline_free(&end_al);
+		if (source->pImpl != source_al.pImpl)
+			ts_bspline_free(&source_al);
+		if (target->pImpl != target_al.pImpl)
+			ts_bspline_free(&target_al);
 	TS_END_TRY_RETURN(err)
 }
 

@@ -1432,11 +1432,12 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Query Functions                                                          *
-*                                                                             *
-******************************************************************************/
+/*! @name Query Functions
+ *
+ * Functions for querying different kinds of data from splines.
+ *
+ * @{
+ */
 /**
  * Evaluates \p spline at knot \p u and stores the result (cf. tsDeBoorNet) in
  * \p net.
@@ -1456,8 +1457,11 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_eval(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *net, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_eval(const tsBSpline *spline,
+		tsReal u,
+		tsDeBoorNet *net,
+		tsStatus *status);
 
 /**
  * Evaluates \p spline at knots \p us and stores the resultant points in
@@ -1488,8 +1492,12 @@ tsError TINYSPLINE_API ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_eval_all(const tsBSpline *spline,
-	const tsReal *us, size_t num, tsReal **points, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_eval_all(const tsBSpline *spline,
+		    const tsReal *us,
+		    size_t num,
+		    tsReal **points,
+		    tsStatus *status);
 
 /**
  * Generates a sequence of \p num different knots (The knots are equally
@@ -1522,8 +1530,12 @@ tsError TINYSPLINE_API ts_bspline_eval_all(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_sample(const tsBSpline *spline, size_t num,
-	tsReal **points, size_t *actual_num, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_sample(const tsBSpline *spline,
+		  size_t num,
+		  tsReal **points,
+		  size_t *actual_num,
+		  tsStatus *status);
 
 /**
  * Tries to find a point P on \p spline such that:
@@ -1580,9 +1592,16 @@ tsError TINYSPLINE_API ts_bspline_sample(const tsBSpline *spline, size_t num,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, int persnickety, size_t index, int ascending,
-	size_t max_iter,  tsDeBoorNet *net, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_bisect(const tsBSpline *spline,
+		  tsReal value,
+		  tsReal epsilon,
+		  int persnickety,
+		  size_t index,
+		  int ascending,
+		  size_t max_iter,
+		  tsDeBoorNet *net,
+		  tsStatus *status);
 
 /**
  * Returns the domain of \p spline.
@@ -1594,8 +1613,10 @@ tsError TINYSPLINE_API ts_bspline_bisect(const tsBSpline *spline, tsReal value,
  * @param[out] max
  * 	The upper bound of the domain of \p spline.
  */
-void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min,
-	tsReal *max);
+void TINYSPLINE_API
+ts_bspline_domain(const tsBSpline *spline,
+		  tsReal *min,
+		  tsReal *max);
 
 /**
  * Checks whether the distance of the endpoints of \p spline is less than or
@@ -1615,8 +1636,11 @@ void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline,
-	tsReal epsilon, int *closed, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_is_closed(const tsBSpline *spline,
+		     tsReal epsilon,
+		     int *closed,
+		     tsStatus *status);
 
 tsError TINYSPLINE_API
 ts_bspline_compute_rmf(const tsBSpline *spline,
@@ -1630,6 +1654,7 @@ void TINYSPLINE_API
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 			    size_t num,
 			    tsReal *knots);
+/*! @} */
 
 
 

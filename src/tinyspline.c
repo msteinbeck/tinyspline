@@ -1030,13 +1030,16 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Query Functions                                                          *
-*                                                                             *
-******************************************************************************/
-tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
-	size_t *index, size_t *multiplicity, tsStatus *status)
+/*! @name Query Functions
+ *
+ * @{
+ */
+tsError
+ts_int_bspline_find_knot(const tsBSpline *spline,
+			 tsReal knot,
+			 size_t *index,
+			 size_t *multiplicity,
+			 tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
@@ -1085,8 +1088,11 @@ tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *net, tsStatus *status)
+tsError
+ts_int_bspline_eval_woa(const tsBSpline *spline,
+			tsReal u,
+			tsDeBoorNet *net,
+			tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
@@ -1189,8 +1195,11 @@ tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
-	tsStatus *status)
+tsError
+ts_bspline_eval(const tsBSpline *spline,
+		tsReal u,
+		tsDeBoorNet *net,
+		tsStatus *status)
 {
 	tsError err;
 	ts_int_deboornet_init(net);
@@ -1204,8 +1213,12 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
-	size_t num, tsReal **points, tsStatus *status)
+tsError
+ts_bspline_eval_all(const tsBSpline *spline,
+			    const tsReal *us,
+			    size_t num,
+			    tsReal **points,
+			    tsStatus *status)
 {
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t sof_point = dim * sizeof(tsReal);
@@ -1237,8 +1250,12 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
-	size_t *actual_num, tsStatus *status)
+tsError
+ts_bspline_sample(const tsBSpline *spline,
+		  size_t num,
+		  tsReal **points,
+		  size_t *actual_num,
+		  tsStatus *status)
 {
 	tsError err;
 	tsReal *knots;
@@ -1271,9 +1288,16 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, int persnickety, size_t index, int ascending,
-	size_t max_iter, tsDeBoorNet *net, tsStatus *status)
+tsError
+ts_bspline_bisect(const tsBSpline *spline,
+		  tsReal value,
+		  tsReal epsilon,
+		  int persnickety,
+		  size_t index,
+		  int ascending,
+		  size_t max_iter,
+		  tsDeBoorNet *net,
+		  tsStatus *status)
 {
 	tsError err;
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1336,8 +1360,11 @@ void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)
 		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
 }
 
-tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
-	int *closed, tsStatus *status)
+tsError
+ts_bspline_is_closed(const tsBSpline *spline,
+		     tsReal epsilon,
+		     int *closed,
+		     tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1544,6 +1571,7 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 	knots[num - 1] = max;
 	knots[0] = min;
 }
+/*! @} */
 
 
 

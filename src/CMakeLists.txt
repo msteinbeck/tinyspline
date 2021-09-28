@@ -1486,6 +1486,12 @@ tinyspline_set_on_off(TINYSPLINE_WITH_R R_FOUND)
 ###############################################################################
 get_filename_component(TINYSPLINE_LIB_DIR ${TINYSPLINE_OUTPUT_DIRECTORY} NAME)
 
+# CPack
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${TINYSPLINE_AUTHOR})
+set(CPACK_PACKAGE_VERSION ${TINYSPLINE_VERSION})
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+include(CPack)
+
 # Dub
 file(REMOVE "${TINYSPLINE_BINARY_DIR}/dub.json")
 if(${TINYSPLINE_WITH_DLANG})

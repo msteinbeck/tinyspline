@@ -30,6 +30,10 @@ OUTPUT="${SCRIPT_DIR}/tinyspline"
 mkdir -p "${OUTPUT}"
 
 ### Copy and merge files.
+# C/C++
+find "${LINUX_X86_64}" -name '*.deb' -print0 | \
+	xargs -0 -I{} cp {} "${OUTPUT}"
+
 # C#
 NUPKG_TMP_DIR="${SCRIPT_DIR}/nuget"
 find "${WINDOWS_X86_64}" -name '*.nupkg' -print0 | \

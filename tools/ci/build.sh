@@ -35,6 +35,11 @@ docker run \
 				-DTINYSPLINE_ENABLE_OCTAVE=True \
 				-DTINYSPLINE_ENABLE_PHP=True \
 				-DTINYSPLINE_ENABLE_R=True && \
+			cmake --build . --target tinyspline && \
+			cmake --build . --target tinysplinecxx && \
+				cpack -G DEB && \
+				chown $(id -u):$(id -g) *.deb && \
+				cp -a *.deb ${STORAGE}/linux64 && \
 			cmake --build . --target tinysplinecsharp && \
 				nuget pack && \
 				chown $(id -u):$(id -g) *.nupkg && \

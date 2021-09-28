@@ -28,6 +28,8 @@ docker run \
 		mkdir linux64 && pushd linux64 && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
+				-DCMAKE_INSTALL_PREFIX=/usr \
+				-DTINYSPLINE_INSTALL_LIBRARY_DIR=/lib \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
 				-DTINYSPLINE_ENABLE_DLANG=True \
 				-DTINYSPLINE_ENABLE_GO=True \

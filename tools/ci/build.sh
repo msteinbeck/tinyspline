@@ -28,7 +28,7 @@ docker run \
 		mkdir linux64 && pushd linux64 && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DBUILD_SHARED_LIBS=On
+				-DBUILD_SHARED_LIBS=On \
 				-DCMAKE_INSTALL_PREFIX=/usr \
 				-DTINYSPLINE_INSTALL_LIBRARY_DIR=lib \
 			cmake --build . --target tinyspline && \

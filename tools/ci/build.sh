@@ -28,8 +28,17 @@ docker run \
 		mkdir linux64 && pushd linux64 && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
+				-DBUILD_SHARED_LIBS=On
 				-DCMAKE_INSTALL_PREFIX=/usr \
 				-DTINYSPLINE_INSTALL_LIBRARY_DIR=lib \
+			cmake --build . --target tinyspline && \
+			cmake --build . --target tinysplinecxx && \
+				cpack -G DEB && \
+				chown $(id -u):$(id -g) *.deb && \
+				cp -a *.deb ${STORAGE}/linux64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
 				-DTINYSPLINE_ENABLE_DLANG=True \
 				-DTINYSPLINE_ENABLE_GO=True \

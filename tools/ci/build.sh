@@ -33,6 +33,7 @@ docker run \
 				-DTINYSPLINE_INSTALL_LIBRARY_DIR=lib && \
 			cmake --build . --target tinyspline && \
 			cmake --build . --target tinysplinecxx && \
+			strip --strip-unneeded lib/libtinyspline* && \
 				cpack -G DEB && \
 				chown $(id -u):$(id -g) *.deb && \
 				cp -a *.deb ${STORAGE}/linux64 && \

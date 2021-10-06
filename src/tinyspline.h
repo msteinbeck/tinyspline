@@ -1160,7 +1160,7 @@ tsError TINYSPLINE_API ts_deboornet_result(const tsDeBoorNet *net,
 ******************************************************************************/
 /**
  * Creates a new spline whose data points to NULL.
- * 
+ *
  * @return
  * 	A new spline whose data points to NULL.
  */
@@ -1260,7 +1260,7 @@ tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
  * Moves the ownership of the data of \p src to \p dest. After calling this
  * function, the data of \p src points to NULL. Does not free the data of
  * \p dest. Does nothing, if \p src == \p dest.
- * 
+ *
  * @param[out] src
  * 	The spline whose values are moved to \p dest.
  * @param[out] dest
@@ -1271,7 +1271,7 @@ void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
 /**
  * Frees the data of \p spline. After calling this function, the data of
  * \p spline points to NULL.
- * 
+ *
  * @param[out] spline
  * 	The spline to free.
  */
@@ -1281,7 +1281,7 @@ void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
 
 /**
  * Creates a new net whose data points to NULL.
- * 
+ *
  * @return
  * 	A new net whose data points to NULL.
  */
@@ -1309,7 +1309,7 @@ tsError TINYSPLINE_API ts_deboornet_copy(const tsDeBoorNet *src,
  * Moves the ownership of the data of \p src to \p dest. After calling this
  * function, the data of \p src points to NULL. Does not free the data of
  * \p dest. Does nothing, if \p src == \p dest.
- * 
+ *
  * @param[out] src
  * 	The net whose values are moved to \p dest.
  * @param[out] dest
@@ -1320,7 +1320,7 @@ void TINYSPLINE_API ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
 /**
  * Frees the data of \p net. After calling this function, the data of \p net
  * points to NULL.
- * 
+ *
  * @param[out] net
  * 	The net to free.
  */
@@ -1336,7 +1336,7 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
 /**
  * Interpolates a cubic spline with natural end conditions. For more details
  * see:
- * 
+ *
  *     https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
  *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
@@ -1350,7 +1350,7 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
  * Note: \p num_points is the number of points in \p points and not the length
  * of \p points. For instance, the following point vector has
  * \p num_points = 4 and \p dimension = 2:
- * 
+ *
  *     [x0, y0, x1, y1, x2, y2, x3, y3]
  *
  * @param[in] points
@@ -1725,27 +1725,27 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  * Returns the \p n'th derivative of \p spline and stores the result in
  * \p derivative. Creates a deep copy of \p spline if
  * \p spline != \p derivative. For more details, see:
- * 
+ *
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
  * The derivative of a spline _s_ of degree _d_ (_d_ > 0) with _m_ control
  * points and _n_ knots is another spline _s'_ of degree _d-1_ with _m-1_
  * control points and _n-2_ knots, defined over _s_ as:
- * 
+ *
  * \f{eqnarray*}{
  *   s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u) *
  * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1}) \\
  *         &=& \sum_{i=1}^{n} N_{i,p-1}(u) *
  * 		(P_{i} - P_{i-1}) * p / (u_{i+p}-u_{i})
  * \f}
- * 
+ *
  * If _s_ has a clamped knot vector, it can be shown that:
- * 
+ *
  * \f{eqnarray*}{
  *   s'(u) &=& \sum_{i=0}^{n-1} N_{i,p-1}(u) *
  * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1})
  * \f}
- * 
+ *
  * where the multiplicity of the first and the last knot value _u_ is _p_
  * rather than _p+1_. The derivative of a point (degree == 0) is another point
  * with coordinate 0.
@@ -1778,7 +1778,7 @@ tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
  * the result in \p result. Creates a deep copy of \p spline if \p spline !=
  * \p result. The operation fails if \p result would have an invalid knot
  * vector ( i.e., multiplicity(\p knot) > order(\p result) ).
- * 
+ *
  * @param[in] spline
  * 	The spline into which \p knot is inserted \p num times.
  * @param[in] knot
@@ -1810,7 +1810,7 @@ tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline,
  * is, \p u is inserted _n_ times such that the multiplicity of \p u is equal
  * to the \p spline's order. Creates a deep copy of \p spline if
  * \p spline != \p split.
- * 
+ *
  * @param[in] spline
  * 	The spline to split.
  * @param[in] u
@@ -1840,11 +1840,11 @@ tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
  * \p spline != \p out.
  *
  * This function is based on:
- * 
+ *
  *      Holten, Danny. "Hierarchical edge bundles: Visualization of adjacency
  *      relations in hierarchical data." Visualization and Computer Graphics,
  *      IEEE Transactions on 12.5 (2006): 741-748.
- * 
+ *
  * Holten calls it "straightening" (page 744, equation 1).
  *
  * @param[in] spline
@@ -1867,7 +1867,7 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
  * Decomposes \p spline into a sequence of Bezier curves by splitting it at
  * each internal knot value. Creates a deep copy of \p spline if
  * \p spline != \p beziers.
- * 
+ *
  * @param[in] spline
  * 	The spline to decompose.
  * @param[out] beziers

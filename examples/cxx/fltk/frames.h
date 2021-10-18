@@ -59,12 +59,12 @@ public:
 			spline.uniformKnotSeq(1001);
 		tinyspline::FrameSeq seq = spline.computeRMF(knots);
 		size_t t = m_knot * 1000;
-		tinyspline::Vector3 pos = seq.at(t).position();
+		tinyspline::Vec3 pos = seq.at(t).position();
 
 		glColor3f(1.f, 0.0f, 0.0f); // red
 		glBegin(GL_LINE_STRIP); // tangent
 			glVertex3f(pos.x(), pos.y(), pos.z());
-			tinyspline::Vector3 tan = seq.at(t).tangent();
+			tinyspline::Vec3 tan = seq.at(t).tangent();
 			tan = pos + tan * 100;
 			glVertex3f(tan.x(), tan.y(), tan.z());
 		glEnd();
@@ -73,7 +73,7 @@ public:
 		glColor3f(0.f, 1.0f, 0.0f); // green
 		glBegin(GL_LINE_STRIP); // binormal
 			glVertex3f(pos.x(), pos.y(), pos.z());
-			tinyspline::Vector3 bin = seq.at(t).binormal();
+			tinyspline::Vec3 bin = seq.at(t).binormal();
 			bin = pos + bin * 100;
 			glVertex3f(bin.x(), bin.y(), bin.z());
 		glEnd();
@@ -81,7 +81,7 @@ public:
 		glColor3f(0.f, 0.0f, 1.0f); // blue
 		glBegin(GL_LINE_STRIP); // normal
 			glVertex3f(pos.x(), pos.y(), pos.z());
-			tinyspline::Vector3 nor = seq.at(t).normal();
+			tinyspline::Vec3 nor = seq.at(t).normal();
 			nor = pos + nor * 100;
 			glVertex3f(nor.x(), nor.y(), nor.z());
 		glEnd();

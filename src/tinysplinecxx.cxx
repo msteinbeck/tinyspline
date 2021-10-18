@@ -196,141 +196,141 @@ std::string tinyspline::Domain::toString() const
  *
  * @{
  */
-tinyspline::Vector3::Vector3()
+tinyspline::Vec3::Vec3()
 {
 	const real v = (real) 0.0;
 	ts_vec3_init(vals, v, v, v);
 }
 
-tinyspline::Vector3::Vector3(real x, real y, real z)
+tinyspline::Vec3::Vec3(real x, real y, real z)
 {
 	ts_vec3_init(vals, x, y, z);
 }
 
-tinyspline::Vector3::Vector3(const Vector3 &other)
+tinyspline::Vec3::Vec3(const Vec3 &other)
 {
 	memcpy(vals, other.vals, sizeof(vals));
 }
 
-tinyspline::Vector3 &
-tinyspline::Vector3::operator=(const tinyspline::Vector3 &other)
+tinyspline::Vec3 &
+tinyspline::Vec3::operator=(const tinyspline::Vec3 &other)
 {
 	if (&other != this)
 		memcpy(vals, other.vals, sizeof(vals));
 	return *this;
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::operator+(const tinyspline::Vector3 &other)
+tinyspline::Vec3
+tinyspline::Vec3::operator+(const tinyspline::Vec3 &other)
 {
 	return add(other);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::operator-(const tinyspline::Vector3 &other)
+tinyspline::Vec3
+tinyspline::Vec3::operator-(const tinyspline::Vec3 &other)
 {
 	return subtract(other);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::operator*(real scalar)
+tinyspline::Vec3
+tinyspline::Vec3::operator*(real scalar)
 {
 	return multiply(scalar);
 }
 
 tinyspline::real
-tinyspline::Vector3::x() const
+tinyspline::Vec3::x() const
 {
 	return vals[0];
 }
 
 void
-tinyspline::Vector3::setX(real val)
+tinyspline::Vec3::setX(real val)
 {
 	vals[0] = val;
 }
 
 tinyspline::real
-tinyspline::Vector3::y() const
+tinyspline::Vec3::y() const
 {
 	return vals[1];
 }
 
 void
-tinyspline::Vector3::setY(real val)
+tinyspline::Vec3::setY(real val)
 {
 	vals[1] = val;
 }
 
 tinyspline::real
-tinyspline::Vector3::z() const
+tinyspline::Vec3::z() const
 {
 	return vals[2];
 }
 
 void
-tinyspline::Vector3::setZ(real val)
+tinyspline::Vec3::setZ(real val)
 {
 	vals[2] = val;
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::add(const tinyspline::Vector3 &other) const
+tinyspline::Vec3
+tinyspline::Vec3::add(const tinyspline::Vec3 &other) const
 {
 	real out[3];
 	ts_vec_add(vals, other.vals, 3, out);
-	return Vector3(out[0], out[1], out[2]);
+	return Vec3(out[0], out[1], out[2]);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::subtract(const tinyspline::Vector3 &other) const
+tinyspline::Vec3
+tinyspline::Vec3::subtract(const tinyspline::Vec3 &other) const
 {
 	real out[3];
 	ts_vec_sub(vals, other.vals, 3, out);
-	return Vector3(out[0], out[1], out[2]);
+	return Vec3(out[0], out[1], out[2]);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::multiply(real scalar) const
+tinyspline::Vec3
+tinyspline::Vec3::multiply(real scalar) const
 {
 	real out[3];
 	ts_vec_smul(vals, 3, scalar, out);
-	return Vector3(out[0], out[1], out[2]);
+	return Vec3(out[0], out[1], out[2]);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::cross(const tinyspline::Vector3 &other) const
+tinyspline::Vec3
+tinyspline::Vec3::cross(const tinyspline::Vec3 &other) const
 {
 	real out[3];
 	ts_vec3_cross(vals, other.vals, out);
-	return Vector3(out[0], out[1], out[2]);
+	return Vec3(out[0], out[1], out[2]);
 }
 
-tinyspline::Vector3
-tinyspline::Vector3::norm() const
+tinyspline::Vec3
+tinyspline::Vec3::norm() const
 {
 	real out[3];
 	ts_vec_norm(vals, 3, out);
-	return Vector3(out[0], out[1], out[2]);
+	return Vec3(out[0], out[1], out[2]);
 }
 
 tinyspline::real
-tinyspline::Vector3::magnitude() const
+tinyspline::Vec3::magnitude() const
 {
 	return ts_vec_mag(vals, 3);
 }
 
 tinyspline::real
-tinyspline::Vector3::dot(const tinyspline::Vector3 &other) const
+tinyspline::Vec3::dot(const tinyspline::Vec3 &other) const
 {
 	return ts_vec_dot(vals, other.vals, 3);
 }
 
 std::string
-tinyspline::Vector3::toString() const
+tinyspline::Vec3::toString() const
 {
 	std::ostringstream oss;
-	oss << "Vector3{"
+	oss << "Vec3{"
 	    << "x: " << vals[0]
 	    << ", y: " << vals[1]
 	    << ", z: " << vals[2] << "}";
@@ -362,28 +362,28 @@ tinyspline::Frame::operator=(const tinyspline::Frame &other)
 	return *this;
 }
 
-tinyspline::Vector3
+tinyspline::Vec3
 tinyspline::Frame::position() const
 {
-	return Vector3(vals[0], vals[1], vals[2]);
+	return Vec3(vals[0], vals[1], vals[2]);
 }
 
-tinyspline::Vector3
+tinyspline::Vec3
 tinyspline::Frame::tangent() const
 {
-	return Vector3(vals[3], vals[4], vals[5]);
+	return Vec3(vals[3], vals[4], vals[5]);
 }
 
-tinyspline::Vector3
+tinyspline::Vec3
 tinyspline::Frame::normal() const
 {
-	return Vector3(vals[6], vals[7], vals[8]);
+	return Vec3(vals[6], vals[7], vals[8]);
 }
 
-tinyspline::Vector3
+tinyspline::Vec3
 tinyspline::Frame::binormal() const
 {
-	return Vector3(vals[9], vals[10], vals[11]);
+	return Vec3(vals[9], vals[10], vals[11]);
 }
 
 std::vector<tinyspline::real>

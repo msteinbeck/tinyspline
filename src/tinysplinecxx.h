@@ -112,16 +112,16 @@ public:
  *
  * @{
  */
-class TINYSPLINECXX_API Vector3 {
+class TINYSPLINECXX_API Vec3 {
 public:
-	Vector3();
-	Vector3(real x, real y, real z);
-	Vector3(const Vector3 &other);
+	Vec3();
+	Vec3(real x, real y, real z);
+	Vec3(const Vec3 &other);
 
-	Vector3 &operator=(const Vector3 &other);
-	Vector3 operator+(const Vector3 &other);
-	Vector3 operator-(const Vector3 &other);
-	Vector3 operator*(real scalar);
+	Vec3 &operator=(const Vec3 &other);
+	Vec3 operator+(const Vec3 &other);
+	Vec3 operator-(const Vec3 &other);
+	Vec3 operator*(real scalar);
 
 	real x() const;
 	void setX(real val);
@@ -130,13 +130,13 @@ public:
 	real z() const;
 	void setZ(real val);
 
-	Vector3 add(const Vector3 &other) const;
-	Vector3 subtract(const Vector3 &other) const;
-	Vector3 multiply(real scalar) const;
-	Vector3 cross(const Vector3 &other) const;
-	Vector3 norm() const;
+	Vec3 add(const Vec3 &other) const;
+	Vec3 subtract(const Vec3 &other) const;
+	Vec3 multiply(real scalar) const;
+	Vec3 cross(const Vec3 &other) const;
+	Vec3 norm() const;
 	tsReal magnitude() const;
-	tsReal dot(const Vector3 &other) const;
+	tsReal dot(const Vec3 &other) const;
 
 	std::string toString() const;
 
@@ -161,10 +161,10 @@ public:
 	Frame(const Frame &other);
 	Frame &operator=(const Frame &other);
 
-	Vector3 position() const;
-	Vector3 tangent() const;
-	Vector3 normal() const;
-	Vector3 binormal() const;
+	Vec3 position() const;
+	Vec3 tangent() const;
+	Vec3 normal() const;
+	Vec3 binormal() const;
 	std::vector<real> values() const;
 
 	std::string toString() const;

@@ -1,5 +1,7 @@
 %module tinysplineruby
 
+%ignore tsFrame;
+
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;

@@ -170,7 +170,7 @@ public:
 	std::string toString() const;
 
 private:
-	real vals[12]; // 4 * Vector3
+	real vals[12]; // 4 * Vec3
 	Frame(const real *values);
 	friend class FrameSeq;
 };

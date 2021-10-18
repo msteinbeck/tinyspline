@@ -4,11 +4,20 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Frame::operator=;
+%ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec3::operator+;
+%ignore tinyspline::Vec3::operator-;
+%ignore tinyspline::Vec3::operator*;
 
 %rename (string) tinyspline::BSpline::toString;
 %rename (string) tinyspline::DeBoorNet::toString;
 %rename (string) tinyspline::Domain::toString;
+%rename (string) tinyspline::Frame::toString;
+%rename (string) tinyspline::FrameSeq::toString;
+%rename (string) tinyspline::Vec3::toString;
 
 %insert(cgo_comment_typedefs) %{
 #cgo !windows LDFLAGS: -L${SRCDIR} -lm -lstdc++ -ltinysplinego

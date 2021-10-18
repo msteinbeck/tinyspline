@@ -1647,7 +1647,7 @@ tsError TINYSPLINE_API
 ts_bspline_compute_rmf(const tsBSpline *spline,
 		       const tsReal *knots,
 		       size_t num,
-		       int has_first,
+		       int has_first_normal,
 		       tsFrame *frames,
 		       tsStatus *status);
 

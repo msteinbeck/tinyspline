@@ -1408,7 +1408,7 @@ tsError
 ts_bspline_compute_rmf(const tsBSpline *spline,
 		       const tsReal *knots,
 		       size_t num,
-		       int has_first,
+		       int has_first_normal,
 		       tsFrame *frames,
 		       tsStatus *status)
 {
@@ -1431,21 +1431,21 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 		TS_CALL(try, err, ts_bspline_derive(
 			spline, 1, (tsReal) -1.0, &deriv, status))
 
-		if (!has_first) {
-			/* Set position. */
-			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, knots[0], &curr, status))
-			ts_vec3_set(frames[0].position,
-				    ts_int_deboornet_access_result(&curr),
-				    ts_bspline_dimension(spline));
-			/* Set tangent. */
-			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				&deriv, knots[0], &curr, status))
-			ts_vec3_set(frames[0].tangent,
-				    ts_int_deboornet_access_result(&curr),
-				    ts_bspline_dimension(&deriv));
-			ts_vec_norm(frames[0].tangent, 3, frames[0].tangent);
-			/* Set normal. */
+		/* Set position. */
+		TS_CALL(try, err, ts_int_bspline_eval_woa(
+			spline, knots[0], &curr, status))
+		ts_vec3_set(frames[0].position,
+			    ts_int_deboornet_access_result(&curr),
+			    ts_bspline_dimension(spline));
+		/* Set tangent. */
+		TS_CALL(try, err, ts_int_bspline_eval_woa(
+			&deriv, knots[0], &curr, status))
+		ts_vec3_set(frames[0].tangent,
+			    ts_int_deboornet_access_result(&curr),
+			    ts_bspline_dimension(&deriv));
+		ts_vec_norm(frames[0].tangent, 3, frames[0].tangent);
+		/* Set normal. */
+		if (!has_first_normal) {
 			fx = (tsReal) fabs(frames[0].tangent[0]);
 			fy = (tsReal) fabs(frames[0].tangent[1]);
 			fz = (tsReal) fabs(frames[0].tangent[2]);
@@ -1474,16 +1474,14 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			ts_vec3_cross(frames[0].tangent,
 				      frames[0].normal,
 				      frames[0].normal);
-			/* Set binormal. */
-			ts_vec3_cross(frames[0].tangent,
-				      frames[0].normal,
-				      frames[0].binormal);
 		} else {
 			/* Never trust user input! */
-			ts_vec_norm(frames[0].tangent,  3, frames[0].tangent);
-			ts_vec_norm(frames[0].normal,   3, frames[0].normal);
-			ts_vec_norm(frames[0].binormal, 3, frames[0].binormal);
+			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
 		}
+		/* Set binormal. */
+		ts_vec3_cross(frames[0].tangent,
+			      frames[0].normal,
+			      frames[0].binormal);
 
 		for (i = 0; i < num - 1; i++) {
 			/* Eval current and next point. */

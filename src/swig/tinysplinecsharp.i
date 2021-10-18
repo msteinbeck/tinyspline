@@ -13,10 +13,17 @@
 %ignore tinyspline::Vec3::operator*;
 
 %typemap(cscode) tinyspline::Vec3 %{
-	public static Vec3 operator+(Vec3 a, Vec3 b) => a.Add(b);
-	public static Vec3 operator-(Vec3 a, Vec3 b) => a.Subtract(b);
-	public static Vec3 operator*(Vec3 vec, double val) => vec.Multiply(val);
-	public static Vec3 operator*(Vec3 vec, float val) => vec.Multiply(val);
+	public static Vec3 operator+(Vec3 a, Vec3 b)
+	{ return a.Add(b); }
+
+	public static Vec3 operator-(Vec3 a, Vec3 b)
+	{ return a.Subtract(b); }
+
+	public static Vec3 operator*(Vec3 vec, double val)
+	{ return vec.Multiply(val); }
+
+	public static Vec3 operator*(Vec3 vec, float val)
+	{ return vec.Multiply(val); }
 %}
 
 %csmethodmodifiers tinyspline::BSpline::toString "public override";

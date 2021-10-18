@@ -995,6 +995,16 @@ tinyspline::Morphism::operator()(real t)
 {
 	return eval(t);
 }
+
+std::string tinyspline::Morphism::toString() const
+{
+	std::ostringstream oss;
+	oss << "Morphism{";
+	oss << "buffer: " << buffer.toString();
+	oss << ", epsilon: " << _epsilon;
+	oss << "}";
+	return oss.str();
+}
 /*! @} */
 
 

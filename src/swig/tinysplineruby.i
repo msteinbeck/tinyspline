@@ -19,6 +19,8 @@
 %extend tinyspline::Frame {std::string to_s() { return $self->toString(); }}
 %rename (inspect) tinyspline::FrameSeq::toString;
 %extend tinyspline::FrameSeq {std::string to_s() { return $self->toString(); }}
+%rename (inspect) tinyspline::Morphism::toString;
+%extend tinyspline::Morphism {std::string to_s() { return $self->toString(); }}
 %rename (inspect) tinyspline::Vec3::toString;
 %extend tinyspline::Vec3 {std::string to_s() { return $self->toString(); }}
 

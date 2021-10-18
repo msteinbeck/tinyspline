@@ -17,6 +17,7 @@
 %rename (string) tinyspline::Domain::toString;
 %rename (string) tinyspline::Frame::toString;
 %rename (string) tinyspline::FrameSeq::toString;
+%rename (string) tinyspline::Morphism::toString;
 %rename (string) tinyspline::Vec3::toString;
 
 %insert(cgo_comment_typedefs) %{

@@ -14,6 +14,7 @@
 %rename (__toString) tinyspline::Domain::toString;
 %rename (__toString) tinyspline::Frame::toString;
 %rename (__toString) tinyspline::FrameSeq::toString;
+%rename (__toString) tinyspline::Morphism::toString;
 %rename (__toString) tinyspline::Vec3::toString;
 
 // Map std::vector<tinyspline::real> to PHP array.

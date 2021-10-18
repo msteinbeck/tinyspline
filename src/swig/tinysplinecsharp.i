@@ -31,6 +31,7 @@
 %csmethodmodifiers tinyspline::Domain::toString "public override";
 %csmethodmodifiers tinyspline::Frame::toString "public override";
 %csmethodmodifiers tinyspline::FrameSeq::toString "public override";
+%csmethodmodifiers tinyspline::Morphism::toString "public override";
 %csmethodmodifiers tinyspline::Vec3::toString "public override";
 
 // Capitalize first character of methods and properties.

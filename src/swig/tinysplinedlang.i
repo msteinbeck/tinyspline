@@ -12,6 +12,7 @@
 %dmethodmodifiers tinyspline::Domain::toString "override public";
 %dmethodmodifiers tinyspline::Frame::toString "override public";
 %dmethodmodifiers tinyspline::FrameSeq::toString "override public";
+%dmethodmodifiers tinyspline::Morphism::toString "override public";
 %dmethodmodifiers tinyspline::Vec3::toString "override public";
 
 %include "tinyspline.i"

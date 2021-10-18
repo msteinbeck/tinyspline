@@ -17,6 +17,7 @@
 %javamethodmodifiers tinyspline::Domain::toString "@Override public";
 %javamethodmodifiers tinyspline::Frame::toString "@Override public";
 %javamethodmodifiers tinyspline::FrameSeq::toString "@Override public";
+%javamethodmodifiers tinyspline::Morphism::toString "@Override public";
 %javamethodmodifiers tinyspline::Vec3::toString "@Override public";
 
 // Automatically load native library.

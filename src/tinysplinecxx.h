@@ -309,6 +309,8 @@ public:
 
 	BSpline eval(real t);
 	BSpline operator()(real t);
+
+	std::string toString() const;
 private:
 	BSpline _source, _target;
 	real _epsilon;

@@ -741,13 +741,20 @@ bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 }
 
 tinyspline::FrameSeq
-tinyspline::BSpline::computeRMF(std::vector<real> &knots, bool hasFirst) const
+tinyspline::BSpline::computeRMF(std::vector<real> &knots,
+                                tinyspline::Vec3 *firstNormal) const
 {
 	tsStatus status;
 	tsFrame *frames = (tsFrame *) malloc(knots.size() * sizeof(tsFrame));
+	if (firstNormal && knots.size() > 0) {
+		ts_vec3_init(frames[0].normal,
+		             firstNormal->x(),
+		             firstNormal->y(),
+		             firstNormal->z());
+	}
 	if (ts_bspline_compute_rmf(&spline,
 				   knots.data(), knots.size(),
-				   hasFirst, frames, &status))
+				   firstNormal != NULL, frames, &status))
 		throw std::runtime_error(status.message);
 	FrameSeq seq = FrameSeq((real *) frames, knots.size() * 12);
 	free(frames);

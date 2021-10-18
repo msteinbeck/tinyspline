@@ -294,7 +294,7 @@ tinyspline::Vec3
 tinyspline::Vec3::multiply(real scalar) const
 {
 	real out[3];
-	ts_vec_smul(vals, 3, scalar, out);
+	ts_vec_mul(vals, 3, scalar, out);
 	return Vec3(out[0], out[1], out[2]);
 }
 

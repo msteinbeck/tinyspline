@@ -1509,14 +1509,14 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			rL[0] = (tsReal) 2.0 / c1;
 			rL[1] = ts_vec_dot(v1, frames[i].normal, 3);
 			rL[2] = rL[0] * rL[1];
-			ts_vec_smul(v1, 3, rL[2], rL);
+			ts_vec_mul(v1, 3, rL[2], rL);
 			ts_vec_sub(frames[i].normal, rL, 3, rL);
 
 			/* Compute t_{i}^{L} = R_{1} * t_{i}. */
 			tL[0] = (tsReal) 2.0 / c1;
 			tL[1] = ts_vec_dot(v1, frames[i].tangent, 3);
 			tL[2] = tL[0] * tL[1];
-			ts_vec_smul(v1, 3, tL[2], tL);
+			ts_vec_mul(v1, 3, tL[2], tL);
 			ts_vec_sub(frames[i].tangent, tL, 3, tL);
 
 			/* Compute reflection vector of R_{2}. */
@@ -1535,7 +1535,7 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			xc[0] = (tsReal) 2.0 / c2;
 			xc[1] = ts_vec_dot(v2, rL, 3);
 			xc[2] = xc[0] * xc[1];
-			ts_vec_smul(v2, 3, xc[2], xc);
+			ts_vec_mul(v2, 3, xc[2], xc);
 			ts_vec_sub(rL, xc, 3, xc);
 			ts_vec_norm(xc, 3, xc);
 
@@ -2865,10 +2865,10 @@ ts_vec_mag(const tsReal *x,
 }
 
 void TINYSPLINE_API
-ts_vec_smul(const tsReal *x,
-	    size_t dim,
-	    tsReal val,
-	    tsReal *out)
+ts_vec_mul(const tsReal *x,
+	   size_t dim,
+	   tsReal val,
+	   tsReal *out)
 {
 	size_t i;
 	for (i = 0; i < dim; i++)

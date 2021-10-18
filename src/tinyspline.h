@@ -2329,7 +2329,7 @@ ts_vec_mag(const tsReal *x,
  * out.
  *
  * @param[in] x
- * 	First vector.
+ * 	A vector.
  * @param[in] dim
  * 	Dimensionality of \p x.
  * @param[in] val
@@ -2339,10 +2339,10 @@ ts_vec_mag(const tsReal *x,
  * 	in-place.
  */
 void TINYSPLINE_API
-ts_vec_smul(const tsReal *x,
-	    size_t dim,
-	    tsReal val,
-	    tsReal *out);
+ts_vec_mul(const tsReal *x,
+	   size_t dim,
+	   tsReal val,
+	   tsReal *out);
 /*! @} */
 
 

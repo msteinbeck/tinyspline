@@ -1726,6 +1726,17 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 		       tsFrame *frames,
 		       tsStatus *status);
 
+/**
+ * Generates a sequence of \p num knots with uniform distribution. \e Uniform
+ * means that consecutive knots have the same distance.
+ *
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] num
+ * 	Number of knots in \p knots.
+ * @param[out] knots
+ * 	Stores the generated knot sequence.
+ */
 void TINYSPLINE_API
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 			    size_t num,

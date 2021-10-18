@@ -1630,7 +1630,7 @@ ts_bspline_domain(const tsBSpline *spline,
  * 	The maximum distance.
  * @param[out] closed
  * 	The output parameter. 1 if true, 0 otherwise.
- * @param status
+ * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
@@ -1643,6 +1643,81 @@ ts_bspline_is_closed(const tsBSpline *spline,
 		     int *closed,
 		     tsStatus *status);
 
+/**
+ * Computes a sequence of thee-dimensional frames (see ::tsFrame) for the
+ * spline \p spline. The position of the frames corresponds to the knots in \p
+ * knots. The implementation is based on:
+ *
+ *     @article{10.1145/1330511.1330513,
+ *       author =	 {Wang, Wenping and J\"{u}ttler, Bert and Zheng, Dayue
+ *                       and Liu, Yang},
+ *       title =	 {Computation of Rotation Minimizing Frames},
+ *       year =	 {2008},
+ *       issue_date =	 {March 2008},
+ *       publisher =	 {Association for Computing Machinery},
+ *       address =	 {New York, NY, USA},
+ *       volume =	 {27},
+ *       number =	 {1},
+ *       issn =	 {0730-0301},
+ *       url =		 {https://doi.org/10.1145/1330511.1330513},
+ *       doi =		 {10.1145/1330511.1330513},
+ *       abstract =	 {Due to its minimal twist, the rotation minimizing
+ *                       frame (RMF) is widely used in computer graphics,
+ *                       including sweep or blending surface modeling, motion
+ *                       design and control in computer animation and
+ *                       robotics, streamline visualization, and tool path
+ *                       planning in CAD/CAM. We present a novel simple and
+ *                       efficient method for accurate and stable computation
+ *                       of RMF of a curve in 3D. This method, called the
+ *                       double reflection method, uses two reflections to
+ *                       compute each frame from its preceding one to yield a
+ *                       sequence of frames to approximate an exact RMF. The
+ *                       double reflection method has the fourth order global
+ *                       approximation error, thus it is much more accurate
+ *                       than the two currently prevailing methods with the
+ *                       second order approximation error—the projection
+ *                       method by Klok and the rotation method by
+ *                       Bloomenthal, while all these methods have nearly the
+ *                       same per-frame computational cost. Furthermore, the
+ *                       double reflection method is much simpler and faster
+ *                       than using the standard fourth order Runge-Kutta
+ *                       method to integrate the defining ODE of the RMF,
+ *                       though they have the same accuracy. We also
+ *                       investigate further properties and extensions of the
+ *                       double reflection method, and discuss the
+ *                       variational principles in design moving frames with
+ *                       boundary conditions, based on RMF.},
+ *       journal =	 {ACM Trans. Graph.},
+ *       month =	 mar,
+ *       articleno =	 {2},
+ *       numpages =	 {18},
+ *       keywords =	 {motion design, sweep surface, motion, differential
+ *                       geometry, Curve, rotation minimizing frame}
+ *     }
+ *
+ * @pre \p knots and \p frames have \p num entries.
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] knots
+ * 	The knots to query \p spline at.
+ * @param[in] num
+ * 	Number of elements in \p knots and \p frames. Can be \c 0.
+ * @param[in] has_first_normal
+ * 	Indicates whether the normal of the first element of \p frames should
+ * 	be taken as starting value for the algorithm. If \c 0, the starting
+ * 	normal is determined based on the tangent of \p spline at \c knots[0].
+ * 	Note that, if the argument value is not \c 0, it is up to the caller of
+ * 	this function to ensure that the supplied normal is valid. The function
+ * 	only normalizes the supplied value.
+ * @param[in, out] frames
+ * 	Stores the computed frames.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
 tsError TINYSPLINE_API
 ts_bspline_compute_rmf(const tsBSpline *spline,
 		       const tsReal *knots,

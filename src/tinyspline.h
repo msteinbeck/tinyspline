@@ -715,13 +715,25 @@ typedef struct
 } tsDeBoorNet;
 
 /**
- * A TNB-vector with position.
+ * A three-dimensional TNB-vector with position. More details can be found at:
+ *
+ *     https://en.wikipedia.org/wiki/Frenet-Serret_formulas
+ *     https://www.math.tamu.edu/~tkiffe/calc3/tnb/tnb.html
+ *
+ * TNB stands for \e tangent, \e normal, and \e binormal.
  */
 typedef struct
 {
+	/** Position of the TNB-vector. */
 	tsReal position[3];
+
+	/** Tangent of the TNB-vector. */
 	tsReal tangent[3];
+
+	/** Normal of the TNB-vector. */
 	tsReal normal[3];
+
+	/** Binormal of the TNB-vector. */
 	tsReal binormal[3];
 } tsFrame;
 
@@ -1644,7 +1656,7 @@ ts_bspline_is_closed(const tsBSpline *spline,
 		     tsStatus *status);
 
 /**
- * Computes a sequence of thee-dimensional frames (see ::tsFrame) for the
+ * Computes a sequence of three-dimensional frames (see ::tsFrame) for the
  * spline \p spline. The position of the frames corresponds to the knots in \p
  * knots. The implementation is based on:
  *

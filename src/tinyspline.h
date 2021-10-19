@@ -130,6 +130,16 @@ extern "C" {
 #else
 #define TS_CONTROL_POINT_EPSILON 1e-5f
 #endif
+
+/**
+ * If the length of an element (e.g., a vector) is less than this threshold,
+ * the length is considered \c 0. Must be positive ( > 0 ).
+ */
+#ifdef TINYSPLINE_FLOAT_PRECISION
+#define TS_LENGTH_ZERO 1e-3f
+#else
+#define TS_LENGTH_ZERO 1e-4f
+#endif
 /*! @} */
 
 
@@ -704,6 +714,29 @@ typedef struct
 	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
 } tsDeBoorNet;
 
+/**
+ * A three-dimensional TNB-vector with position. More details can be found at:
+ *
+ *     https://en.wikipedia.org/wiki/Frenet-Serret_formulas
+ *     https://www.math.tamu.edu/~tkiffe/calc3/tnb/tnb.html
+ *
+ * TNB stands for \e tangent, \e normal, and \e binormal.
+ */
+typedef struct
+{
+	/** Position of the TNB-vector. */
+	tsReal position[3];
+
+	/** Tangent of the TNB-vector. */
+	tsReal tangent[3];
+
+	/** Normal of the TNB-vector. */
+	tsReal normal[3];
+
+	/** Binormal of the TNB-vector. */
+	tsReal binormal[3];
+} tsFrame;
+
 
 
 /******************************************************************************
@@ -1139,7 +1172,7 @@ tsError TINYSPLINE_API ts_deboornet_result(const tsDeBoorNet *net,
 ******************************************************************************/
 /**
  * Creates a new spline whose data points to NULL.
- * 
+ *
  * @return
  * 	A new spline whose data points to NULL.
  */
@@ -1239,7 +1272,7 @@ tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
  * Moves the ownership of the data of \p src to \p dest. After calling this
  * function, the data of \p src points to NULL. Does not free the data of
  * \p dest. Does nothing, if \p src == \p dest.
- * 
+ *
  * @param[out] src
  * 	The spline whose values are moved to \p dest.
  * @param[out] dest
@@ -1250,7 +1283,7 @@ void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
 /**
  * Frees the data of \p spline. After calling this function, the data of
  * \p spline points to NULL.
- * 
+ *
  * @param[out] spline
  * 	The spline to free.
  */
@@ -1260,7 +1293,7 @@ void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
 
 /**
  * Creates a new net whose data points to NULL.
- * 
+ *
  * @return
  * 	A new net whose data points to NULL.
  */
@@ -1288,7 +1321,7 @@ tsError TINYSPLINE_API ts_deboornet_copy(const tsDeBoorNet *src,
  * Moves the ownership of the data of \p src to \p dest. After calling this
  * function, the data of \p src points to NULL. Does not free the data of
  * \p dest. Does nothing, if \p src == \p dest.
- * 
+ *
  * @param[out] src
  * 	The net whose values are moved to \p dest.
  * @param[out] dest
@@ -1299,7 +1332,7 @@ void TINYSPLINE_API ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
 /**
  * Frees the data of \p net. After calling this function, the data of \p net
  * points to NULL.
- * 
+ *
  * @param[out] net
  * 	The net to free.
  */
@@ -1315,7 +1348,7 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
 /**
  * Interpolates a cubic spline with natural end conditions. For more details
  * see:
- * 
+ *
  *     https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
  *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
@@ -1329,7 +1362,7 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
  * Note: \p num_points is the number of points in \p points and not the length
  * of \p points. For instance, the following point vector has
  * \p num_points = 4 and \p dimension = 2:
- * 
+ *
  *     [x0, y0, x1, y1, x2, y2, x3, y3]
  *
  * @param[in] points
@@ -1411,21 +1444,22 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Query Functions                                                          *
-*                                                                             *
-******************************************************************************/
+/*! @name Query Functions
+ *
+ * Functions for querying different kinds of data from splines.
+ *
+ * @{
+ */
 /**
- * Evaluates \p spline at knot \p u and stores the result (cf. tsDeBoorNet) in
+ * Evaluates \p spline at \p knot and stores the result (see ::tsDeBoorNet) in
  * \p net.
  *
  * @param[in] spline
  * 	The spline to evaluate.
- * @param[in] u
+ * @param[in] knot
  * 	The knot to evaluate \p spline at.
  * @param[out] net
- * 	The output parameter
+ * 	Stores the evaluation result.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -1435,24 +1469,28 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_eval(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *net, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_eval(const tsBSpline *spline,
+		tsReal knot,
+		tsDeBoorNet *net,
+		tsStatus *status);
 
 /**
- * Evaluates \p spline at knots \p us and stores the resultant points in
- * \p points. If \p us contains one or more knots where \p spline is
- * discontinuous at, only the first point of the corresponding evaluation
- * result is taken. After calling this function \p points contains exactly
- * \p num * ts_bspline_dimension(spline) values.
+ * Evaluates \p spline at each knot in \p knots and stores the evaluated points
+ * (see ::ts_deboornet_result) in \p points. If \p knots contains one or more
+ * knots where \p spline is discontinuous at, only the first point of the
+ * corresponding evaluation result is taken. After calling this function \p
+ * points contains exactly \code num * ts_bspline_dimension(spline) \endcode
+ * values.
  *
  * This function is in particular useful in cases where a multitude of knots
- * need to be evaluated, because only a single instance of tsDeBoorNet is
+ * need to be evaluated, because only a single instance of ::tsDeBoorNet is
  * created and reused for all evaluation tasks (therefore the memory footprint
  * is reduced to a minimum).
  *
  * @param[in] spline
  * 	The spline to evaluate.
- * @param[in] us
+ * @param[in] knots
  * 	The knot values to evaluate.
  * @param[in] num
  * 	The number of knots in \p us.
@@ -1467,8 +1505,12 @@ tsError TINYSPLINE_API ts_bspline_eval(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_eval_all(const tsBSpline *spline,
-	const tsReal *us, size_t num, tsReal **points, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_eval_all(const tsBSpline *spline,
+		    const tsReal *knots,
+		    size_t num,
+		    tsReal **points,
+		    tsStatus *status);
 
 /**
  * Generates a sequence of \p num different knots (The knots are equally
@@ -1501,8 +1543,12 @@ tsError TINYSPLINE_API ts_bspline_eval_all(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_sample(const tsBSpline *spline, size_t num,
-	tsReal **points, size_t *actual_num, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_sample(const tsBSpline *spline,
+		  size_t num,
+		  tsReal **points,
+		  size_t *actual_num,
+		  tsStatus *status);
 
 /**
  * Tries to find a point P on \p spline such that:
@@ -1559,9 +1605,16 @@ tsError TINYSPLINE_API ts_bspline_sample(const tsBSpline *spline, size_t num,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, int persnickety, size_t index, int ascending,
-	size_t max_iter,  tsDeBoorNet *net, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_bisect(const tsBSpline *spline,
+		  tsReal value,
+		  tsReal epsilon,
+		  int persnickety,
+		  size_t index,
+		  int ascending,
+		  size_t max_iter,
+		  tsDeBoorNet *net,
+		  tsStatus *status);
 
 /**
  * Returns the domain of \p spline.
@@ -1573,8 +1626,10 @@ tsError TINYSPLINE_API ts_bspline_bisect(const tsBSpline *spline, tsReal value,
  * @param[out] max
  * 	The upper bound of the domain of \p spline.
  */
-void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min,
-	tsReal *max);
+void TINYSPLINE_API
+ts_bspline_domain(const tsBSpline *spline,
+		  tsReal *min,
+		  tsReal *max);
 
 /**
  * Checks whether the distance of the endpoints of \p spline is less than or
@@ -1587,15 +1642,118 @@ void TINYSPLINE_API ts_bspline_domain(const tsBSpline *spline, tsReal *min,
  * 	The maximum distance.
  * @param[out] closed
  * 	The output parameter. 1 if true, 0 otherwise.
- * @param status
+ * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline,
-	tsReal epsilon, int *closed, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_is_closed(const tsBSpline *spline,
+		     tsReal epsilon,
+		     int *closed,
+		     tsStatus *status);
+
+/**
+ * Computes a sequence of three-dimensional frames (see ::tsFrame) for the
+ * spline \p spline. The position of the frames corresponds to the knots in \p
+ * knots. The implementation is based on:
+ *
+ *     @article{10.1145/1330511.1330513,
+ *       author =	 {Wang, Wenping and J\"{u}ttler, Bert and Zheng, Dayue
+ *                       and Liu, Yang},
+ *       title =	 {Computation of Rotation Minimizing Frames},
+ *       year =	 {2008},
+ *       issue_date =	 {March 2008},
+ *       publisher =	 {Association for Computing Machinery},
+ *       address =	 {New York, NY, USA},
+ *       volume =	 {27},
+ *       number =	 {1},
+ *       issn =	 {0730-0301},
+ *       url =		 {https://doi.org/10.1145/1330511.1330513},
+ *       doi =		 {10.1145/1330511.1330513},
+ *       abstract =	 {Due to its minimal twist, the rotation minimizing
+ *                       frame (RMF) is widely used in computer graphics,
+ *                       including sweep or blending surface modeling, motion
+ *                       design and control in computer animation and
+ *                       robotics, streamline visualization, and tool path
+ *                       planning in CAD/CAM. We present a novel simple and
+ *                       efficient method for accurate and stable computation
+ *                       of RMF of a curve in 3D. This method, called the
+ *                       double reflection method, uses two reflections to
+ *                       compute each frame from its preceding one to yield a
+ *                       sequence of frames to approximate an exact RMF. The
+ *                       double reflection method has the fourth order global
+ *                       approximation error, thus it is much more accurate
+ *                       than the two currently prevailing methods with the
+ *                       second order approximation error—the projection
+ *                       method by Klok and the rotation method by
+ *                       Bloomenthal, while all these methods have nearly the
+ *                       same per-frame computational cost. Furthermore, the
+ *                       double reflection method is much simpler and faster
+ *                       than using the standard fourth order Runge-Kutta
+ *                       method to integrate the defining ODE of the RMF,
+ *                       though they have the same accuracy. We also
+ *                       investigate further properties and extensions of the
+ *                       double reflection method, and discuss the
+ *                       variational principles in design moving frames with
+ *                       boundary conditions, based on RMF.},
+ *       journal =	 {ACM Trans. Graph.},
+ *       month =	 mar,
+ *       articleno =	 {2},
+ *       numpages =	 {18},
+ *       keywords =	 {motion design, sweep surface, motion, differential
+ *                       geometry, Curve, rotation minimizing frame}
+ *     }
+ *
+ * @pre \p knots and \p frames have \p num entries.
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] knots
+ * 	The knots to query \p spline at.
+ * @param[in] num
+ * 	Number of elements in \p knots and \p frames. Can be \c 0.
+ * @param[in] has_first_normal
+ * 	Indicates whether the normal of the first element of \p frames should
+ * 	be taken as starting value for the algorithm. If \c 0, the starting
+ * 	normal is determined based on the tangent of \p spline at \c knots[0].
+ * 	Note that, if the argument value is not \c 0, it is up to the caller of
+ * 	this function to ensure that the supplied normal is valid. The function
+ * 	only normalizes the supplied value.
+ * @param[in, out] frames
+ * 	Stores the computed frames.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
+tsError TINYSPLINE_API
+ts_bspline_compute_rmf(const tsBSpline *spline,
+		       const tsReal *knots,
+		       size_t num,
+		       int has_first_normal,
+		       tsFrame *frames,
+		       tsStatus *status);
+
+/**
+ * Generates a sequence of \p num knots with uniform distribution. \e Uniform
+ * means that consecutive knots have the same distance.
+ *
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] num
+ * 	Number of knots in \p knots.
+ * @param[out] knots
+ * 	Stores the generated knot sequence.
+ */
+void TINYSPLINE_API
+ts_bspline_uniform_knot_seq(const tsBSpline *spline,
+			    size_t num,
+			    tsReal *knots);
+/*! @} */
 
 
 
@@ -1665,27 +1823,27 @@ tsError TINYSPLINE_API ts_bspline_is_closed(const tsBSpline *spline,
  * Returns the \p n'th derivative of \p spline and stores the result in
  * \p derivative. Creates a deep copy of \p spline if
  * \p spline != \p derivative. For more details, see:
- * 
+ *
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
  * The derivative of a spline _s_ of degree _d_ (_d_ > 0) with _m_ control
  * points and _n_ knots is another spline _s'_ of degree _d-1_ with _m-1_
  * control points and _n-2_ knots, defined over _s_ as:
- * 
+ *
  * \f{eqnarray*}{
  *   s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u) *
  * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1}) \\
  *         &=& \sum_{i=1}^{n} N_{i,p-1}(u) *
  * 		(P_{i} - P_{i-1}) * p / (u_{i+p}-u_{i})
  * \f}
- * 
+ *
  * If _s_ has a clamped knot vector, it can be shown that:
- * 
+ *
  * \f{eqnarray*}{
  *   s'(u) &=& \sum_{i=0}^{n-1} N_{i,p-1}(u) *
  * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1})
  * \f}
- * 
+ *
  * where the multiplicity of the first and the last knot value _u_ is _p_
  * rather than _p+1_. The derivative of a point (degree == 0) is another point
  * with coordinate 0.
@@ -1718,7 +1876,7 @@ tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
  * the result in \p result. Creates a deep copy of \p spline if \p spline !=
  * \p result. The operation fails if \p result would have an invalid knot
  * vector ( i.e., multiplicity(\p knot) > order(\p result) ).
- * 
+ *
  * @param[in] spline
  * 	The spline into which \p knot is inserted \p num times.
  * @param[in] knot
@@ -1750,7 +1908,7 @@ tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline,
  * is, \p u is inserted _n_ times such that the multiplicity of \p u is equal
  * to the \p spline's order. Creates a deep copy of \p spline if
  * \p spline != \p split.
- * 
+ *
  * @param[in] spline
  * 	The spline to split.
  * @param[in] u
@@ -1780,11 +1938,11 @@ tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
  * \p spline != \p out.
  *
  * This function is based on:
- * 
+ *
  *      Holten, Danny. "Hierarchical edge bundles: Visualization of adjacency
  *      relations in hierarchical data." Visualization and Computer Graphics,
  *      IEEE Transactions on 12.5 (2006): 741-748.
- * 
+ *
  * Holten calls it "straightening" (page 744, equation 1).
  *
  * @param[in] spline
@@ -1807,7 +1965,7 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
  * Decomposes \p spline into a sequence of Bezier curves by splitting it at
  * each internal knot value. Creates a deep copy of \p spline if
  * \p spline != \p beziers.
- * 
+ *
  * @param[in] spline
  * 	The spline to decompose.
  * @param[out] beziers
@@ -1885,37 +2043,36 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
 	tsBSpline *s2_out, tsStatus *status);
 
 /**
- * Interpolates between \p start and \p end with respect to the time parameter
- * \p t (domain: [0, 1]). The resulting spline is stored in \p out. if \p t is
- * less than 0, it is interpreted as 0. If \p t is greater than 1, it is
- * interpreted as 1. That is, \p is limited to the domain [0, 1]. Because it is
- * to be expected that this function is called several times in a row (e.g., to
- * have a smooth transition from one spline to another), memory for \p out is
- * allocated only if it points to NULL. This way, this function can be used as
- * follows:
+ * Interpolates between \p source and \p target with respect to the time
+ * parameter \p t (domain: [0, 1]; clamped if necessary). The resulting spline
+ * is stored in \p out. Because it is to be expected that this function is
+ * called several times in a row (e.g., to have a smooth transition from one
+ * spline to another), memory for \p out is allocated only if it points to NULL
+ * or if it has to be enlarged to store the result of the interpolation (which
+ * can only happen if \p source or \p target---or both---have been changed
+ * since the last call). This way, this function can be used as follows:
  *
  *     tsReal t;
- *     tsBSpline start = ...
- *     tsBSpline end = ...
+ *     tsBSpline source = ...
+ *     tsBSpline target = ...
  *     tsBSpline morph = ts_bspline_init();
  *     for (t = (tsReal) 0.0; t <= (tsReal) 1.0; t += (tsReal) 0.001)
- *         ts_bspline_morph(&start, &end, t, ..., &morph, ...);
+ *         ts_bspline_morph(&source, &target, t, ..., &morph, ...);
  *     ts_bspline_free(&morph);
  *
- * It should be noted that this function aligns \p start and \p end using
+ * It should be noted that this function aligns \p source and \p target using
  * ::ts_bspline_align if necessary. In order to avoid the overhead of spline
- * alignment, \p start and \p end should be aligned in advance.
+ * alignment, \p source and \p target should be aligned in advance.
  *
- * @param[in] start
- * 	The origin spline.
- * @param[in] end
- * 	The target spline.
+ * @param[in] source
+ * 	Origin spline.
+ * @param[in] target
+ * 	Target spline.
  * @param[in] t
- * 	The time parameter. If 0, \p out becomes \p start. If 1, \p out becomes
- * 	\p end. The value of this parameter is automatically limited to the
- * 	domain [0. 1].
+ * 	The time parameter. If 0, \p out becomes \p source. If 1, \p out becomes
+ * 	\p target. Note that this value is clamped to the domain [0. 1].
  * @param[in] epsilon
- * 	If \p start and \p end must be aligned, this parameter is passed
+ * 	If \p source and \p target must be aligned, this parameter is passed
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
  * 	is less than or equal to \p epsilon. A viable default value is
@@ -1927,9 +2084,13 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
  * @return TS_MALLOC
  * 	If memory allocation failed.
  */
-tsError TINYSPLINE_API ts_bspline_morph(const tsBSpline *start,
-	const tsBSpline *end, tsReal t, tsReal epsilon, tsBSpline *out,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_morph(const tsBSpline *source,
+		 const tsBSpline *target,
+		 tsReal t,
+		 tsReal epsilon,
+		 tsBSpline *out,
+		 tsStatus *status);
 
 
 
@@ -2097,6 +2258,190 @@ void TINYSPLINE_API ts_arr_fill(tsReal *arr, size_t num, tsReal val);
  */
 tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
 	size_t dimension);
+
+
+
+/*! @name Vector Math
+ *
+ * Vector math is a not insignificant part of TinySpline, and so it's not
+ * surprising that some utility functions around vectors are needed. Because
+ * these functions might be useful for others, they are part of TinySpline's
+ * public API. However, note that the code is \b not highly optimized (with,
+ * for example, instruction set extensions like SSE). If high performance
+ * vector math is needed, other libraries should be used instead.
+ *
+ * @{
+ */
+/**
+ * Initializes vector \p out with \p x, \p y, and \p z.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 3.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	The x value.
+ * @param[in] y
+ * 	The y value.
+ * @param[in] z
+ * 	The z value.
+ */
+void TINYSPLINE_API
+ts_vec3_init(tsReal *out,
+	     tsReal x,
+	     tsReal y,
+	     tsReal z);
+
+/**
+ * Copies the values of vector \p x (a vector with dimensionality \p dim) to
+ * vector \p out (a vector with dimensionality \c 3). If \p dim is less than \c
+ * 3, the remaining values of \p out are set to \c 0. Superfluous values in \p
+ * x (i.e., if \p dim is greater than \c 3) are ignored.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 3.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	Vector to read the values from.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ */
+void TINYSPLINE_API
+ts_vec3_set(tsReal *out,
+	    const tsReal *x,
+	    size_t dim);
+
+/**
+ * Adds vector \p y to vector \p x and stores the result in vector \p out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x, \p y, and \p out.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_add(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out);
+
+/**
+ * Subtracts vector \p y from vector \p x and stores the result in vector \p
+ * out.
+ *
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x, \p y, and \p out.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec_sub(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out);
+
+/**
+ * Computes the dot product (also known as scalar product) of the vectors \p x
+ * and \p y.
+ *
+ * @post
+ * 	\c 0 if \p dim is \c 0.
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @return
+ * 	The dot product of \p x and \y.
+ */
+tsReal TINYSPLINE_API
+ts_vec_dot(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim);
+
+/**
+ * Computes the cross product (also known as vector product or directed area
+ * product) of the vectors \p x and \p y.
+ *
+ * @pre \p x and \p y have dimensionality \c 3.
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x or \p y, i.e., the result can be
+ * 	stored in-place.
+ */
+void TINYSPLINE_API
+ts_vec3_cross(const tsReal *x,
+	      const tsReal *y,
+	      tsReal *out);
+
+/**
+ * Normalizes vector \p x.
+ *
+ * @post
+ * 	\c 0 if the length of \p x (see ::ts_vec_mag) is less than
+ * 	::TS_LENGTH_ZERO.
+ * @param[in] x
+ * 	A vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x, i.e., the result can be stored
+ * 	in-place.
+ */
+void TINYSPLINE_API
+ts_vec_norm(const tsReal *x,
+	    size_t dim,
+	    tsReal *out);
+
+/**
+ * Determines the length of vector \p x.
+ *
+ * @post
+ * 	\c 0 if \p dim is \c 0.
+ * @param[in] x
+ * 	A vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ */
+tsReal TINYSPLINE_API
+ts_vec_mag(const tsReal *x,
+	   size_t dim);
+
+/**
+ * Multiplies vector \p x with scalar \p val and stores the result in vector \p
+ * out.
+ *
+ * @param[in] x
+ * 	A vector.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ * @param[in] val
+ * 	Scalar value.
+ * @param[out] out
+ * 	Result vector. Can be same as \p x, i.e., the result can be stored
+ * 	in-place.
+ */
+void TINYSPLINE_API
+ts_vec_mul(const tsReal *x,
+	   size_t dim,
+	   tsReal val,
+	   tsReal *out);
+/*! @} */
 
 
 

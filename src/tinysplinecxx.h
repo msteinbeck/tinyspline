@@ -104,6 +104,98 @@ public:
 #endif
 };
 
+
+
+/*! @name Vector Math
+ *
+ * Wrapper classes for TinySpline's vector math.
+ *
+ * @{
+ */
+class TINYSPLINECXX_API Vec3 {
+public:
+	Vec3();
+	Vec3(real x, real y, real z);
+	Vec3(const Vec3 &other);
+
+	Vec3 &operator=(const Vec3 &other);
+	Vec3 operator+(const Vec3 &other);
+	Vec3 operator-(const Vec3 &other);
+	Vec3 operator*(real scalar);
+
+	real x() const;
+	void setX(real val);
+	real y() const;
+	void setY(real val);
+	real z() const;
+	void setZ(real val);
+
+	Vec3 add(const Vec3 &other) const;
+	Vec3 subtract(const Vec3 &other) const;
+	Vec3 multiply(real scalar) const;
+	Vec3 cross(const Vec3 &other) const;
+	Vec3 norm() const;
+	tsReal magnitude() const;
+	tsReal dot(const Vec3 &other) const;
+
+	std::string toString() const;
+
+private:
+	real vals[3];
+};
+/*! @} */
+
+
+
+/*! @name Spline Framing
+ *
+ * Wrapper classes for ::tsFrame (::Frame) and sequences of ::tsFrame
+ * (::FrameSeq). To reduce the amount of copied data, access the vectors
+ * (position, tangent, normal, and binormal) with Frame::values and
+ * FrameSeq::values.
+ *
+ * @{
+ */
+class TINYSPLINECXX_API Frame {
+public:
+	Frame(const Frame &other);
+	Frame &operator=(const Frame &other);
+
+	Vec3 position() const;
+	Vec3 tangent() const;
+	Vec3 normal() const;
+	Vec3 binormal() const;
+	std::vector<real> values() const;
+
+	std::string toString() const;
+
+private:
+	real vals[12]; // 4 * Vec3
+	Frame(const real *values);
+	friend class FrameSeq;
+};
+
+class TINYSPLINECXX_API FrameSeq {
+public:
+	FrameSeq(const FrameSeq &other);
+	~FrameSeq();
+	FrameSeq &operator=(const FrameSeq &other);
+
+	size_t size() const;
+	Frame at(size_t idx) const;
+	std::vector<real> values() const;
+
+	std::string toString() const;
+
+private:
+	std::vector<real> *vals;
+	FrameSeq(real *values, size_t len);
+	friend class BSpline;
+};
+/*! @} */
+
+
+
 class TINYSPLINECXX_API BSpline {
 public:
 	typedef tsBSplineType type;
@@ -150,6 +242,9 @@ public:
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	FrameSeq computeRMF(const std_real_vector_in knots,
+	                    Vec3 *firstNormal = NULL) const;
+	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 
 	/* Serialization */
 	std::string toJson() const;
@@ -197,20 +292,35 @@ public:
 #endif
 };
 
+
+
+/*! @name Spline Morphing
+ *
+ * @{
+ */
 class TINYSPLINECXX_API Morphism {
 public:
-	/* Constructors & Destructors */
-	Morphism(const BSpline &start, const BSpline &end,
-		real epsilon = TS_CONTROL_POINT_EPSILON);
+	Morphism(const BSpline &source,
+		 const BSpline &target,
+		 real epsilon = TS_CONTROL_POINT_EPSILON);
+
+	BSpline source() const;
+	BSpline target() const;
+	real epsilon() const;
 
 	BSpline eval(real t);
 	BSpline operator()(real t);
+
+	std::string toString() const;
 private:
-	BSpline start, end;
-	real epsilon;
-	BSpline startAligned, endAligned;
+	BSpline _source, _target;
+	real _epsilon;
+	BSpline sourceAligned, targetAligned;
 	BSpline buffer;
 };
+/*! @} */
+
+
 
 class TINYSPLINECXX_API Utils {
 public:

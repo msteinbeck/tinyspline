@@ -1,5 +1,6 @@
 #include "tinysplinecxx.h"
 #include <stdlib.h>
+#include <cstring>
 #include <stdexcept>
 #include <cstdio>
 #include <sstream>
@@ -189,6 +190,287 @@ std::string tinyspline::Domain::toString() const
 	return oss.str();
 }
 
+
+
+/*! @name Vector3
+ *
+ * @{
+ */
+tinyspline::Vec3::Vec3()
+{
+	const real v = (real) 0.0;
+	ts_vec3_init(vals, v, v, v);
+}
+
+tinyspline::Vec3::Vec3(real x, real y, real z)
+{
+	ts_vec3_init(vals, x, y, z);
+}
+
+tinyspline::Vec3::Vec3(const Vec3 &other)
+{
+	memcpy(vals, other.vals, sizeof(vals));
+}
+
+tinyspline::Vec3 &
+tinyspline::Vec3::operator=(const tinyspline::Vec3 &other)
+{
+	if (&other != this)
+		memcpy(vals, other.vals, sizeof(vals));
+	return *this;
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::operator+(const tinyspline::Vec3 &other)
+{
+	return add(other);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::operator-(const tinyspline::Vec3 &other)
+{
+	return subtract(other);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::operator*(real scalar)
+{
+	return multiply(scalar);
+}
+
+tinyspline::real
+tinyspline::Vec3::x() const
+{
+	return vals[0];
+}
+
+void
+tinyspline::Vec3::setX(real val)
+{
+	vals[0] = val;
+}
+
+tinyspline::real
+tinyspline::Vec3::y() const
+{
+	return vals[1];
+}
+
+void
+tinyspline::Vec3::setY(real val)
+{
+	vals[1] = val;
+}
+
+tinyspline::real
+tinyspline::Vec3::z() const
+{
+	return vals[2];
+}
+
+void
+tinyspline::Vec3::setZ(real val)
+{
+	vals[2] = val;
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::add(const tinyspline::Vec3 &other) const
+{
+	real out[3];
+	ts_vec_add(vals, other.vals, 3, out);
+	return Vec3(out[0], out[1], out[2]);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::subtract(const tinyspline::Vec3 &other) const
+{
+	real out[3];
+	ts_vec_sub(vals, other.vals, 3, out);
+	return Vec3(out[0], out[1], out[2]);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::multiply(real scalar) const
+{
+	real out[3];
+	ts_vec_mul(vals, 3, scalar, out);
+	return Vec3(out[0], out[1], out[2]);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::cross(const tinyspline::Vec3 &other) const
+{
+	real out[3];
+	ts_vec3_cross(vals, other.vals, out);
+	return Vec3(out[0], out[1], out[2]);
+}
+
+tinyspline::Vec3
+tinyspline::Vec3::norm() const
+{
+	real out[3];
+	ts_vec_norm(vals, 3, out);
+	return Vec3(out[0], out[1], out[2]);
+}
+
+tinyspline::real
+tinyspline::Vec3::magnitude() const
+{
+	return ts_vec_mag(vals, 3);
+}
+
+tinyspline::real
+tinyspline::Vec3::dot(const tinyspline::Vec3 &other) const
+{
+	return ts_vec_dot(vals, other.vals, 3);
+}
+
+std::string
+tinyspline::Vec3::toString() const
+{
+	std::ostringstream oss;
+	oss << "Vec3{"
+	    << "x: " << vals[0]
+	    << ", y: " << vals[1]
+	    << ", z: " << vals[2] << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name Frame
+ *
+ * @{
+ */
+tinyspline::Frame::Frame(const real *values)
+{
+	memcpy(vals, values, sizeof(vals));
+}
+
+tinyspline::Frame::Frame(const Frame &other)
+{
+	memcpy(vals, other.vals, sizeof(vals));
+}
+
+tinyspline::Frame &
+tinyspline::Frame::operator=(const tinyspline::Frame &other)
+{
+	if (&other != this)
+		memcpy(vals, other.vals, sizeof(vals));
+	return *this;
+}
+
+tinyspline::Vec3
+tinyspline::Frame::position() const
+{
+	return Vec3(vals[0], vals[1], vals[2]);
+}
+
+tinyspline::Vec3
+tinyspline::Frame::tangent() const
+{
+	return Vec3(vals[3], vals[4], vals[5]);
+}
+
+tinyspline::Vec3
+tinyspline::Frame::normal() const
+{
+	return Vec3(vals[6], vals[7], vals[8]);
+}
+
+tinyspline::Vec3
+tinyspline::Frame::binormal() const
+{
+	return Vec3(vals[9], vals[10], vals[11]);
+}
+
+std::vector<tinyspline::real>
+tinyspline::Frame::values() const
+{
+	const real *b = vals;
+	const real *e = vals + 12;
+	return std::vector<real>(b, e);
+}
+
+std::string
+tinyspline::Frame::toString() const
+{
+	std::ostringstream oss;
+	oss << "Frame{"
+	    << "position: " << position().toString()
+	    << ", tangent: " << tangent().toString()
+	    << ", normal: " << normal().toString()
+	    << ", binormal: " << binormal().toString() << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name FrameSeq
+ *
+ * @{
+ */
+tinyspline::FrameSeq::FrameSeq(real *values, size_t len)
+{
+	if (len % 12 != 0)
+		throw std::runtime_error("len(values) % 12 != 0");
+	vals = new std::vector<real>(values, values + len);
+}
+
+tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
+{
+	vals = new std::vector<real>(*other.vals);
+}
+
+tinyspline::FrameSeq::~FrameSeq()
+{
+	delete vals;
+}
+
+tinyspline::FrameSeq &
+tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
+{
+	if (&other != this) {
+		vals->clear();
+		vals->reserve(other.vals->capacity());
+		vals->assign(other.vals->begin(), other.vals->end());
+	}
+	return *this;
+}
+
+size_t
+tinyspline::FrameSeq::size() const
+{
+	return vals->size() / 12;
+}
+
+tinyspline::Frame
+tinyspline::FrameSeq::at(size_t idx) const
+{
+	if (idx >= size())
+		throw std::runtime_error("index out of range");
+	return Frame(vals->data() + idx * 12);
+}
+
+std::vector<tinyspline::real>
+tinyspline::FrameSeq::values() const
+{
+	return *vals;
+}
+
+std::string
+tinyspline::FrameSeq::toString() const
+{
+	std::ostringstream oss;
+	oss << "FrameSeq{";
+	oss << "frames: " << size();
+	oss << "}";
+	return oss.str();
+}
+/*! @} */
 
 
 
@@ -458,6 +740,38 @@ bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 	return closed == 1;
 }
 
+tinyspline::FrameSeq
+tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
+                                tinyspline::Vec3 *firstNormal) const
+{
+	tsStatus status;
+	size_t size = std_real_vector_read(knots)size();
+	const tsReal *data = std_real_vector_read(knots)data();
+	tsFrame *frames = (tsFrame *) malloc(size * sizeof(tsFrame));
+	if (firstNormal && size > 0) {
+		ts_vec3_init(frames[0].normal,
+		             firstNormal->x(),
+		             firstNormal->y(),
+		             firstNormal->z());
+	}
+	if (ts_bspline_compute_rmf(&spline, data, size,
+	                           firstNormal != NULL,
+	                           frames, &status))
+		throw std::runtime_error(status.message);
+	FrameSeq seq = FrameSeq((real *) frames, size * 12);
+	free(frames);
+	return seq;
+}
+
+std_real_vector_out
+tinyspline::BSpline::uniformKnotSeq(size_t num) const
+{
+	tsReal *knots = (tsReal *) malloc(num * sizeof(tsReal));
+	ts_bspline_uniform_knot_seq(&spline, num, knots);
+	std_real_vector_out vec = std_real_vector_init(knots, knots + num);
+	return vec;
+}
+
 std::string tinyspline::BSpline::toJson() const
 {
 	char *json;
@@ -640,34 +954,67 @@ std::string tinyspline::BSpline::toString() const
 
 
 
-/******************************************************************************
-*                                                                             *
-* Morphism                                                                    *
-*                                                                             *
-******************************************************************************/
-tinyspline::Morphism::Morphism(const tinyspline::BSpline &start,
-	const tinyspline::BSpline &end, real epsilon)
-: start(start), end(end), epsilon(epsilon)
+/*! @name Morphism
+ *
+ * @{
+ */
+tinyspline::Morphism::Morphism(const tinyspline::BSpline &source,
+			       const tinyspline::BSpline &target,
+			       real epsilon)
+	: _source(source), _target(target), _epsilon(epsilon)
 {
-	startAligned = start.alignWith(end, endAligned, epsilon);
+	sourceAligned = source.alignWith(target, targetAligned, epsilon);
 	// Make buffer compatible by copying one of the aligned splines.
-	buffer = startAligned;
+	buffer = sourceAligned;
 }
 
-tinyspline::BSpline tinyspline::Morphism::eval(real t)
+tinyspline::BSpline
+tinyspline::Morphism::eval(real t)
 {
 	tsStatus status;
-	if (ts_bspline_morph(&startAligned.spline, &endAligned.spline, t,
-		epsilon, &buffer.spline, &status)) {
+	if (ts_bspline_morph(&sourceAligned.spline,
+			     &targetAligned.spline,
+			     t, _epsilon,
+			     &buffer.spline, &status)) {
 		throw std::runtime_error(status.message);
 	}
 	return buffer;
 }
 
-tinyspline::BSpline tinyspline::Morphism::operator()(real t)
+tinyspline::BSpline
+tinyspline::Morphism::source() const
+{
+	return _source;
+}
+
+tinyspline::BSpline
+tinyspline::Morphism::target() const
+{
+	return _target;
+}
+
+tinyspline::real
+tinyspline::Morphism::epsilon() const
+{
+	return _epsilon;
+}
+
+tinyspline::BSpline
+tinyspline::Morphism::operator()(real t)
 {
 	return eval(t);
 }
+
+std::string tinyspline::Morphism::toString() const
+{
+	std::ostringstream oss;
+	oss << "Morphism{";
+	oss << "buffer: " << buffer.toString();
+	oss << ", epsilon: " << _epsilon;
+	oss << "}";
+	return oss.str();
+}
+/*! @} */
 
 
 

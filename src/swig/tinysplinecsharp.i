@@ -4,11 +4,35 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Frame::operator=;
+%ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec3::operator+;
+%ignore tinyspline::Vec3::operator-;
+%ignore tinyspline::Vec3::operator*;
+
+%typemap(cscode) tinyspline::Vec3 %{
+	public static Vec3 operator+(Vec3 a, Vec3 b)
+	{ return a.Add(b); }
+
+	public static Vec3 operator-(Vec3 a, Vec3 b)
+	{ return a.Subtract(b); }
+
+	public static Vec3 operator*(Vec3 vec, double val)
+	{ return vec.Multiply(val); }
+
+	public static Vec3 operator*(Vec3 vec, float val)
+	{ return vec.Multiply(val); }
+%}
 
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
 %csmethodmodifiers tinyspline::DeBoorNet::toString "public override";
 %csmethodmodifiers tinyspline::Domain::toString "public override";
+%csmethodmodifiers tinyspline::Frame::toString "public override";
+%csmethodmodifiers tinyspline::FrameSeq::toString "public override";
+%csmethodmodifiers tinyspline::Morphism::toString "public override";
+%csmethodmodifiers tinyspline::Vec3::toString "public override";
 
 // Capitalize first character of methods and properties.
 %rename("%(camelcase)s", %$ismember, notregexmatch$name=

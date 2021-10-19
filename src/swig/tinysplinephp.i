@@ -4,11 +4,18 @@
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Frame::operator=;
+%ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec3::operator=;
 
 %rename (__toString) tinyspline::BSpline::toString;
 %rename (__toString) tinyspline::DeBoorNet::toString;
 %rename (__toString) tinyspline::Domain::toString;
+%rename (__toString) tinyspline::Frame::toString;
+%rename (__toString) tinyspline::FrameSeq::toString;
+%rename (__toString) tinyspline::Morphism::toString;
+%rename (__toString) tinyspline::Vec3::toString;
 
 // Map std::vector<tinyspline::real> to PHP array.
 %typemap(out) std::vector<tinyspline::real> * {

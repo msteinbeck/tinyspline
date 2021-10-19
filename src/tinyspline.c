@@ -1030,13 +1030,16 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Query Functions                                                          *
-*                                                                             *
-******************************************************************************/
-tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
-	size_t *index, size_t *multiplicity, tsStatus *status)
+/*! @name Query Functions
+ *
+ * @{
+ */
+tsError
+ts_int_bspline_find_knot(const tsBSpline *spline,
+			 tsReal knot,
+			 size_t *index,
+			 size_t *multiplicity,
+			 tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t num_knots = ts_bspline_num_knots(spline);
@@ -1085,8 +1088,11 @@ tsError ts_int_bspline_find_knot(const tsBSpline *spline, tsReal knot,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
-	tsDeBoorNet *net, tsStatus *status)
+tsError
+ts_int_bspline_eval_woa(const tsBSpline *spline,
+			tsReal u,
+			tsDeBoorNet *net,
+			tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
@@ -1189,8 +1195,11 @@ tsError ts_int_bspline_eval_woa(const tsBSpline *spline, tsReal u,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
-	tsStatus *status)
+tsError
+ts_bspline_eval(const tsBSpline *spline,
+		tsReal knot,
+		tsDeBoorNet *net,
+		tsStatus *status)
 {
 	tsError err;
 	ts_int_deboornet_init(net);
@@ -1198,14 +1207,18 @@ tsError ts_bspline_eval(const tsBSpline *spline, tsReal u, tsDeBoorNet *net,
 		TS_CALL(try, err, ts_int_deboornet_new(
 			spline, net, status))
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			spline, u, net, status))
+			spline, knot, net, status))
 	TS_CATCH(err)
 		ts_deboornet_free(net);
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
-	size_t num, tsReal **points, tsStatus *status)
+tsError
+ts_bspline_eval_all(const tsBSpline *spline,
+			    const tsReal *knots,
+			    size_t num,
+			    tsReal **points,
+			    tsStatus *status)
 {
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t sof_point = dim * sizeof(tsReal);
@@ -1224,7 +1237,7 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 			spline,&net, status))
 		for (i = 0; i < num; i++) {
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, us[i], &net, status))
+				spline, knots[i], &net, status))
 			result = ts_int_deboornet_access_result(&net);
 			memcpy((*points) + i * dim, result, sof_point);
 		}
@@ -1237,8 +1250,12 @@ tsError ts_bspline_eval_all(const tsBSpline *spline, const tsReal *us,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
-	size_t *actual_num, tsStatus *status)
+tsError
+ts_bspline_sample(const tsBSpline *spline,
+		  size_t num,
+		  tsReal **points,
+		  size_t *actual_num,
+		  tsStatus *status)
 {
 	tsError err;
 	tsReal *knots;
@@ -1271,9 +1288,16 @@ tsError ts_bspline_sample(const tsBSpline *spline, size_t num, tsReal **points,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_bisect(const tsBSpline *spline, tsReal value,
-	tsReal epsilon, int persnickety, size_t index, int ascending,
-	size_t max_iter, tsDeBoorNet *net, tsStatus *status)
+tsError
+ts_bspline_bisect(const tsBSpline *spline,
+		  tsReal value,
+		  tsReal epsilon,
+		  int persnickety,
+		  size_t index,
+		  int ascending,
+		  size_t max_iter,
+		  tsDeBoorNet *net,
+		  tsStatus *status)
 {
 	tsError err;
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1336,8 +1360,11 @@ void ts_bspline_domain(const tsBSpline *spline, tsReal *min, tsReal *max)
 		[ts_bspline_num_knots(spline) - ts_bspline_order(spline)];
 }
 
-tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
-	int *closed, tsStatus *status)
+tsError
+ts_bspline_is_closed(const tsBSpline *spline,
+		     tsReal epsilon,
+		     int *closed,
+		     tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1376,6 +1403,173 @@ tsError ts_bspline_is_closed(const tsBSpline *spline, tsReal epsilon,
 		ts_deboornet_free(&last);
 	TS_END_TRY_RETURN(err)
 }
+
+tsError
+ts_bspline_compute_rmf(const tsBSpline *spline,
+		       const tsReal *knots,
+		       size_t num,
+		       int has_first_normal,
+		       tsFrame *frames,
+		       tsStatus *status)
+{
+	tsError err;
+	size_t i;
+	tsReal fx, fy, fz, fmin;
+	tsReal xc[3], xn[3], v1[3], c1, v2[3], c2, rL[3], tL[3];
+	tsBSpline deriv = ts_bspline_init();
+	tsDeBoorNet curr = ts_deboornet_init();
+	tsDeBoorNet next = ts_deboornet_init();
+
+	if (num < 1)
+		TS_RETURN_SUCCESS(status);
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_int_deboornet_new(
+			spline, &curr, status))
+		TS_CALL(try, err, ts_int_deboornet_new(
+			spline, &next, status))
+		TS_CALL(try, err, ts_bspline_derive(
+			spline, 1, (tsReal) -1.0, &deriv, status))
+
+		/* Set position. */
+		TS_CALL(try, err, ts_int_bspline_eval_woa(
+			spline, knots[0], &curr, status))
+		ts_vec3_set(frames[0].position,
+			    ts_int_deboornet_access_result(&curr),
+			    ts_bspline_dimension(spline));
+		/* Set tangent. */
+		TS_CALL(try, err, ts_int_bspline_eval_woa(
+			&deriv, knots[0], &curr, status))
+		ts_vec3_set(frames[0].tangent,
+			    ts_int_deboornet_access_result(&curr),
+			    ts_bspline_dimension(&deriv));
+		ts_vec_norm(frames[0].tangent, 3, frames[0].tangent);
+		/* Set normal. */
+		if (!has_first_normal) {
+			fx = (tsReal) fabs(frames[0].tangent[0]);
+			fy = (tsReal) fabs(frames[0].tangent[1]);
+			fz = (tsReal) fabs(frames[0].tangent[2]);
+			fmin = fx; /* x is min => 1, 0, 0 */
+			ts_vec3_init(frames[0].normal,
+				     (tsReal) 1.0,
+				     (tsReal) 0.0,
+				     (tsReal) 0.0);
+			if (fy < fmin) { /* y is min => 0, 1, 0 */
+				fmin = fy;
+				ts_vec3_init(frames[0].normal,
+				     (tsReal) 0.0,
+				     (tsReal) 1.0,
+				     (tsReal) 0.0);
+			}
+			if (fz < fmin) { /* z is min => 0, 0, 1 */
+				ts_vec3_init(frames[0].normal,
+				     (tsReal) 0.0,
+				     (tsReal) 0.0,
+				     (tsReal) 1.0);
+			}
+			ts_vec3_cross(frames[0].tangent,
+				      frames[0].normal,
+				      frames[0].normal);
+			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
+			ts_vec3_cross(frames[0].tangent,
+				      frames[0].normal,
+				      frames[0].normal);
+		} else {
+			/* Never trust user input! */
+			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
+		}
+		/* Set binormal. */
+		ts_vec3_cross(frames[0].tangent,
+			      frames[0].normal,
+			      frames[0].binormal);
+
+		for (i = 0; i < num - 1; i++) {
+			/* Eval current and next point. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, knots[i], &curr, status))
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				spline, knots[i+1], &next, status))
+			ts_vec3_set(xc, /* xc is now the current point */
+				    ts_int_deboornet_access_result(&curr),
+				    ts_bspline_dimension(spline));
+			ts_vec3_set(xn, /* xn is now the next point */
+				    ts_int_deboornet_access_result(&next),
+				    ts_bspline_dimension(spline));
+
+			/* Set position of U_{i+1}. */
+			ts_vec3_set(frames[i+1].position, xn, 3);
+
+			/* Compute reflection vector of R_{1}. */
+			ts_vec_sub(xn, xc, 3, v1);
+			c1 = ts_vec_dot(v1, v1, 3);
+
+			/* Compute r_{i}^{L} = R_{1} * r_{i}. */
+			rL[0] = (tsReal) 2.0 / c1;
+			rL[1] = ts_vec_dot(v1, frames[i].normal, 3);
+			rL[2] = rL[0] * rL[1];
+			ts_vec_mul(v1, 3, rL[2], rL);
+			ts_vec_sub(frames[i].normal, rL, 3, rL);
+
+			/* Compute t_{i}^{L} = R_{1} * t_{i}. */
+			tL[0] = (tsReal) 2.0 / c1;
+			tL[1] = ts_vec_dot(v1, frames[i].tangent, 3);
+			tL[2] = tL[0] * tL[1];
+			ts_vec_mul(v1, 3, tL[2], tL);
+			ts_vec_sub(frames[i].tangent, tL, 3, tL);
+
+			/* Compute reflection vector of R_{2}. */
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+				&deriv, knots[i+1], &next, status))
+			ts_vec3_set(xn, /* xn is now the next tangent */
+				    ts_int_deboornet_access_result(&next),
+				    ts_bspline_dimension(&deriv));
+			ts_vec_norm(xn, 3, xn);
+			ts_vec_sub(xn, tL, 3, v2);
+			c2 = ts_vec_dot(v2, v2, 3);
+
+			/* Compute r_{i+1} = R_{2} * r_{i}^{L}. */
+			ts_vec3_set(xc, /* xc is now the next normal */
+				    frames[i+1].normal, 3);
+			xc[0] = (tsReal) 2.0 / c2;
+			xc[1] = ts_vec_dot(v2, rL, 3);
+			xc[2] = xc[0] * xc[1];
+			ts_vec_mul(v2, 3, xc[2], xc);
+			ts_vec_sub(rL, xc, 3, xc);
+			ts_vec_norm(xc, 3, xc);
+
+			/* Compute vector s_{i+1} of U_{i+1}. */
+			ts_vec3_cross(xn, xc, frames[i+1].binormal);
+
+			/* Set vectors t_{i+1} and r_{i+1} of U_{i+1}. */
+			ts_vec3_set(frames[i+1].tangent, xn, 3);
+			ts_vec3_set(frames[i+1].normal, xc, 3);
+		}
+	TS_CATCH(err)
+		ts_bspline_free(&deriv);
+		ts_deboornet_free(&curr);
+		ts_deboornet_free(&next);
+	TS_END_TRY_RETURN(err)
+}
+
+void
+ts_bspline_uniform_knot_seq(const tsBSpline *spline,
+			    size_t num,
+			    tsReal *knots)
+{
+	size_t i;
+	tsReal min, max;
+	ts_bspline_domain(spline, &min, &max);
+	for (i = 0; i < num; i++) {
+		knots[i] = max - min;
+		knots[i] *= (tsReal) i / (num - 1);
+		knots[i] += min;
+	}
+	/* Set knots[0] after knots[num - 1] to ensure that
+	 * knots[0] = min if num is 1. */
+	knots[num - 1] = max;
+	knots[0] = min;
+}
+/*! @} */
 
 
 
@@ -2138,58 +2332,69 @@ tsError ts_bspline_align(const tsBSpline *s1, const tsBSpline *s2,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
-	tsReal t, tsReal epsilon, tsBSpline *out, tsStatus *status)
+tsError
+ts_bspline_morph(const tsBSpline *source,
+		 const tsBSpline *target,
+		 tsReal t, tsReal epsilon,
+		 tsBSpline *out,
+		 tsStatus *status)
 {
-	tsBSpline start_al, end_al; /* aligned start and end */
-	tsReal *start_al_c, *start_al_k; /* control points and knots */
-	tsReal *end_al_c, *end_al_k; /* control points and knots */
+	tsBSpline source_al, target_al; /* aligned source and target */
+	tsReal *source_al_c, *source_al_k; /* control points and knots */
+	tsReal *target_al_c, *target_al_k; /* control points and knots */
 
 	/* Properties of `out'. */
 	size_t deg, dim, num_ctrlp, num_knots;
 	tsReal *ctrlp, *knots;
+	tsBSpline tmp; /* temporary buffer if `out' must be resized */
 
 	tsReal t_hat;
 	size_t i, offset, d;
 	tsError err;
 
-	start_al = ts_bspline_init();
-	end_al = ts_bspline_init();
+	source_al = ts_bspline_init();
+	target_al = ts_bspline_init();
 	TS_TRY(try, err, status)
-		/* Limit `t' to domain [0, 1] and set up `t_hat'. */
+		/* Clamp `t' to domain [0, 1] and set up `t_hat'. */
 		if (t < (tsReal) 0.0)
 			t = (tsReal) 0.0;
 		if (t > (tsReal) 1.0)
 			t = (tsReal) 1.0;
 		t_hat = (tsReal) 1.0 - t;
 
-		/* Set up `start_al' and `end_al'. */
+		/* Set up `source_al' and `target_al'. */
 		/* Degree must be elevated... */
-		if (ts_bspline_degree(start) != ts_bspline_degree(end) ||
+		if (ts_bspline_degree(source) != ts_bspline_degree(target) ||
 		/* .. or knots (and thus control points) must be inserted. */
-		ts_bspline_num_knots(start) != ts_bspline_num_knots(end)) {
+		ts_bspline_num_knots(source) != ts_bspline_num_knots(target)) {
 			TS_CALL(try, err, ts_bspline_align(
-				start, end, epsilon, &start_al, &end_al,
+				source, target, epsilon, &source_al, &target_al,
 				status));
 		} else {
 			/* Flat copy. */
-			start_al = *start;
-			end_al = *end;
+			source_al = *source;
+			target_al = *target;
 		}
-		start_al_c = ts_int_bspline_access_ctrlp(&start_al);
-		start_al_k = ts_int_bspline_access_knots(&start_al);
-		end_al_c = ts_int_bspline_access_ctrlp(&end_al);
-		end_al_k = ts_int_bspline_access_knots(&end_al);
+		source_al_c = ts_int_bspline_access_ctrlp(&source_al);
+		source_al_k = ts_int_bspline_access_knots(&source_al);
+		target_al_c = ts_int_bspline_access_ctrlp(&target_al);
+		target_al_k = ts_int_bspline_access_knots(&target_al);
 
 		/* Set up `out'. */
-		deg = ts_bspline_degree(&start_al);
-		num_ctrlp = ts_bspline_num_control_points(&start_al);
-		dim = ts_bspline_dimension(&start_al);
-		if (ts_bspline_dimension(&end_al) < dim)
-			dim = ts_bspline_dimension(&end_al);
+		deg = ts_bspline_degree(&source_al);
+		num_ctrlp = ts_bspline_num_control_points(&source_al);
+		dim = ts_bspline_dimension(&source_al);
+		if (ts_bspline_dimension(&target_al) < dim)
+			dim = ts_bspline_dimension(&target_al);
 		if (out->pImpl == NULL) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
 				TS_OPENED /* doesn't matter */, out, status))
+		} else if (ts_bspline_degree(out) < deg ||
+			   ts_bspline_num_control_points(out) < num_ctrlp) {
+			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
+				TS_OPENED /* doesn't matter */, &tmp, status))
+			ts_bspline_free(out);
+			ts_bspline_move(&tmp, out);
 		}
 		num_knots = ts_bspline_num_knots(out);
 		ctrlp = ts_int_bspline_access_ctrlp(out);
@@ -2199,21 +2404,21 @@ tsError ts_bspline_morph(const tsBSpline *start, const tsBSpline *end,
 		for (i = 0; i < num_ctrlp; i++) {
 			for (d = 0; d < dim; d++) {
 				offset = i * dim + d;
-				ctrlp[offset] = t * end_al_c[offset] +
-					t_hat * start_al_c[offset];
+				ctrlp[offset] = t * target_al_c[offset] +
+					t_hat * source_al_c[offset];
 			}
 		}
 
 		/* Interpolate knots. */
 		for (i = 0; i < num_knots; i++) {
-			knots[i] = t * end_al_k[i] +
-				t_hat * start_al_k[i];
+			knots[i] = t * target_al_k[i] +
+				t_hat * source_al_k[i];
 		}
 	TS_FINALLY
-		if (start->pImpl != start_al.pImpl)
-			ts_bspline_free(&start_al);
-		if (end->pImpl != end_al.pImpl)
-			ts_bspline_free(&end_al);
+		if (source->pImpl != source_al.pImpl)
+			ts_bspline_free(&source_al);
+		if (target->pImpl != target_al.pImpl)
+			ts_bspline_free(&target_al);
 	TS_END_TRY_RETURN(err)
 }
 
@@ -2542,12 +2747,132 @@ void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
 
 tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
 {
-	tsReal sum = 0;
 	size_t i;
+	tsReal sum = 0;
 	for (i = 0; i < dimension; i++)
 		sum += (x[i] - y[i]) * (x[i] - y[i]);
 	return (tsReal) sqrt(sum);
 }
+
+
+
+/*! @name Vector Math
+ * @{
+ */
+void
+ts_vec3_init(tsReal *out,
+	     tsReal x,
+	     tsReal y,
+	     tsReal z)
+{
+	out[0] = x;
+	out[1] = y;
+	out[2] = z;
+}
+
+void
+ts_vec3_set(tsReal *out,
+	    const tsReal *x,
+	    size_t dim)
+{
+	const size_t n = dim > 3 ? 3 : dim;
+	memmove(out, x, n * sizeof(tsReal));
+	if (dim < 3)
+		ts_arr_fill(out + dim, 3 - dim, (tsReal) 0.0);
+}
+
+void
+ts_vec_add(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out)
+{
+	size_t i;
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] + y[i];
+}
+
+void
+ts_vec_sub(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim,
+	   tsReal *out)
+{
+	size_t i;
+	if (x == y) {
+		/* More stable version. */
+		ts_arr_fill(out, dim, (tsReal) 0.0);
+		return;
+	}
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] - y[i];
+}
+
+tsReal
+ts_vec_dot(const tsReal *x,
+	   const tsReal *y,
+	   size_t dim)
+{
+	size_t i;
+	tsReal dot = 0;
+	for (i = 0; i < dim; i++)
+		dot += x[i] * y[i];
+	return dot;
+}
+
+void
+ts_vec3_cross(const tsReal *x,
+	      const tsReal *y,
+	      tsReal *out)
+{
+	tsReal a, b, c;
+	a = x[1] * y[2] - x[2] * y[1];
+	b = x[2] * y[0] - x[0] * y[2];
+	c = x[0] * y[1] - x[1] * y[0];
+	out[0] = a;
+	out[1] = b;
+	out[2] = c;
+}
+
+void
+ts_vec_norm(const tsReal *x,
+	    size_t dim,
+	    tsReal *out)
+{
+	size_t i;
+	const tsReal m = ts_vec_mag(x, dim);
+	if (m < TS_LENGTH_ZERO) {
+		ts_arr_fill(out, dim, (tsReal) 0.0);
+		return;
+	}
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] / m;
+}
+
+tsReal
+ts_vec_mag(const tsReal *x,
+	   size_t dim)
+{
+	size_t i;
+	tsReal sum = 0;
+	if (!dim)
+		return (tsReal) 0.0;
+	for (i = 0; i < dim; i++)
+		sum += (x[i] * x[i]);
+	return (tsReal) sqrt(sum);
+}
+
+void TINYSPLINE_API
+ts_vec_mul(const tsReal *x,
+	   size_t dim,
+	   tsReal val,
+	   tsReal *out)
+{
+	size_t i;
+	for (i = 0; i < dim; i++)
+		out[i] = x[i] * val;
+}
+/*! @} */
 
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -4,11 +4,21 @@
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Frame::operator=;
+%ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec3::operator+;
+%ignore tinyspline::Vec3::operator-;
+%ignore tinyspline::Vec3::operator*;
 
 %javamethodmodifiers tinyspline::BSpline::toString "@Override public";
 %javamethodmodifiers tinyspline::DeBoorNet::toString "@Override public";
 %javamethodmodifiers tinyspline::Domain::toString "@Override public";
+%javamethodmodifiers tinyspline::Frame::toString "@Override public";
+%javamethodmodifiers tinyspline::FrameSeq::toString "@Override public";
+%javamethodmodifiers tinyspline::Morphism::toString "@Override public";
+%javamethodmodifiers tinyspline::Vec3::toString "@Override public";
 
 // Automatically load native library.
 %pragma(java) jniclasscode=%{

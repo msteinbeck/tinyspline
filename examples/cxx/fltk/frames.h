@@ -69,7 +69,6 @@ public:
 			glVertex3f(tan.x(), tan.y(), tan.z());
 		glEnd();
 
-
 		glColor3f(0.f, 1.0f, 0.0f); // green
 		glBegin(GL_LINE_STRIP); // binormal
 			glVertex3f(pos.x(), pos.y(), pos.z());

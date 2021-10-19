@@ -242,7 +242,7 @@ public:
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
-	FrameSeq computeRMF(std::vector<real> &knots,
+	FrameSeq computeRMF(const std_real_vector_in knots,
 	                    Vec3 *firstNormal = NULL) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 

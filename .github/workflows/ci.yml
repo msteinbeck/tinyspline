@@ -155,7 +155,7 @@ jobs:
       shell: bash
       run: |
         cmake --build . --config $BUILD_TYPE
-        dotnet pack
+        dotnet pack *.csproj
 
     - name: Deploy
       uses: actions/upload-artifact@v2

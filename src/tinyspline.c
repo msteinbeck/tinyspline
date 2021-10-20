@@ -1050,11 +1050,13 @@ ts_int_bspline_find_knot(const tsBSpline *spline,
 	ts_bspline_domain(spline, &min, &max);
 	if (knot < min && !ts_knots_equal(knot, min)) {
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			"knot (%f) < min(domain) (%f)", knot, min)
+		            "knot (%f) < min(domain) (%f)",
+		            knot, min)
 	}
 	if (knot > max && !ts_knots_equal(knot, max)) {
 		TS_RETURN_2(status, TS_U_UNDEFINED,
-			"knot (%f) > max(domain) (%f)", knot, max)
+		            "knot (%f) > max(domain) (%f)",
+		            knot, max)
 	}
 
 	/* Based on 'The NURBS Book' (Les Piegl and Wayne Tiller). */
@@ -1075,7 +1077,7 @@ ts_int_bspline_find_knot(const tsBSpline *spline,
 
 	/* Handle floating point errors. */
 	while (*index < num_knots - 1 && /* there is a next knot */
-		ts_knots_equal(knot, knots[*index + 1])) {
+	       ts_knots_equal(knot, knots[*index + 1])) {
 		(*index)++;
 	}
 
@@ -1132,7 +1134,7 @@ ts_int_bspline_eval_woa(const tsBSpline *spline,
 	/* 1. */
 	k = s = 0;
 	TS_CALL_ROE(err, ts_int_bspline_find_knot(
-		spline, u, &k, &s, status))
+	            spline, u, &k, &s, status))
 
 	/* 2. */
 	uk = knots[k];  /* Ensures that with any precision of  */
@@ -1205,9 +1207,9 @@ ts_bspline_eval(const tsBSpline *spline,
 	ts_int_deboornet_init(net);
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline, net, status))
+		        spline, net, status))
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			spline, knot, net, status))
+		        spline, knot, net, status))
 	TS_CATCH(err)
 		ts_deboornet_free(net);
 	TS_END_TRY_RETURN(err)
@@ -1231,13 +1233,13 @@ ts_bspline_eval_all(const tsBSpline *spline,
 		*points = (tsReal *) malloc(sof_points);
 		if (!*points) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline,&net, status))
+		        spline,&net, status))
 		for (i = 0; i < num; i++) {
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, knots[i], &net, status))
+			        spline, knots[i], &net, status))
 			result = ts_int_deboornet_access_result(&net);
 			memcpy((*points) + i * dim, result, sof_point);
 		}
@@ -1263,7 +1265,7 @@ ts_bspline_sample(const tsBSpline *spline,
 	size_t i;
 	if (num == 0)
 		num = (ts_bspline_num_control_points(spline) -
-			ts_bspline_degree(spline)) * 30;
+		       ts_bspline_degree(spline)) * 30;
 	*actual_num = num;
 	knots = (tsReal *) malloc(num * sizeof(tsReal));
 	if (!knots) {
@@ -1282,7 +1284,7 @@ ts_bspline_sample(const tsBSpline *spline,
 	knots[0] = min;
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_eval_all(
-			spline, knots, num, points, status))
+		        spline, knots, num, points, status))
 	TS_FINALLY
 		free(knots);
 	TS_END_TRY_RETURN(err)
@@ -1311,9 +1313,9 @@ ts_bspline_bisect(const tsBSpline *spline,
 
 	if (dim < index) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			"dimension (%lu) <= index (%lu)",
-			(unsigned long) dim,
-			(unsigned long) index)
+		            "dimension (%lu) <= index (%lu)",
+		            (unsigned long) dim,
+		            (unsigned long) index)
 	}
 	if(max_iter == 0)
 		TS_RETURN_0(status, TS_NO_RESULT, "0 iterations")
@@ -1321,11 +1323,11 @@ ts_bspline_bisect(const tsBSpline *spline,
 	ts_bspline_domain(spline, &min, &max);
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline, net, status))
+		        spline, net, status))
 		do {
 			mid = (tsReal) ((min + max) / 2.0);
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, mid, net, status))
+			        spline, mid, net, status))
 			P = ts_int_deboornet_access_result(net);
 			dist = ts_distance(&P[index], &value, 1);
 			if (dist <= eps)
@@ -1344,8 +1346,8 @@ ts_bspline_bisect(const tsBSpline *spline,
 		} while (i++ < max_iter);
 		if (persnickety) {
 			TS_THROW_1(try, err, status, TS_NO_RESULT,
-				"maximum iterations (%lu) exceeded",
-				(unsigned long) max_iter)
+			           "maximum iterations (%lu) exceeded",
+			           (unsigned long) max_iter)
 		}
 	TS_CATCH(err)
 		ts_deboornet_free(net);
@@ -1383,12 +1385,12 @@ ts_bspline_is_closed(const tsBSpline *spline,
 	TS_TRY(try, err, status)
 		for (i = 0; i < deg; i++) {
 			TS_CALL(try, err, ts_bspline_derive(
-				spline, i, -1.f, &derivative, status))
+			        spline, i, -1.f, &derivative, status))
 			ts_bspline_domain(&derivative, &min, &max);
 			TS_CALL(try, err, ts_bspline_eval(
-				&derivative, min, &first, status))
+			        &derivative, min, &first, status))
 			TS_CALL(try, err, ts_bspline_eval(
-				&derivative, max, &last, status))
+			        &derivative, max, &last, status))
 			*closed = ts_distance(
 				ts_int_deboornet_access_result(&first),
 				ts_int_deboornet_access_result(&last),
@@ -1427,24 +1429,24 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline, &curr, status))
+		        spline, &curr, status))
 		TS_CALL(try, err, ts_int_deboornet_new(
-			spline, &next, status))
+		        spline, &next, status))
 		TS_CALL(try, err, ts_bspline_derive(
-			spline, 1, (tsReal) -1.0, &deriv, status))
+		        spline, 1, (tsReal) -1.0, &deriv, status))
 
 		/* Set position. */
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			spline, knots[0], &curr, status))
+		        spline, knots[0], &curr, status))
 		ts_vec3_set(frames[0].position,
-			    ts_int_deboornet_access_result(&curr),
-			    ts_bspline_dimension(spline));
+		            ts_int_deboornet_access_result(&curr),
+		            ts_bspline_dimension(spline));
 		/* Set tangent. */
 		TS_CALL(try, err, ts_int_bspline_eval_woa(
-			&deriv, knots[0], &curr, status))
+		        &deriv, knots[0], &curr, status))
 		ts_vec3_set(frames[0].tangent,
-			    ts_int_deboornet_access_result(&curr),
-			    ts_bspline_dimension(&deriv));
+		            ts_int_deboornet_access_result(&curr),
+		            ts_bspline_dimension(&deriv));
 		ts_vec_norm(frames[0].tangent, 3, frames[0].tangent);
 		/* Set normal. */
 		if (!has_first_normal) {
@@ -1453,50 +1455,50 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			fz = (tsReal) fabs(frames[0].tangent[2]);
 			fmin = fx; /* x is min => 1, 0, 0 */
 			ts_vec3_init(frames[0].normal,
-				     (tsReal) 1.0,
-				     (tsReal) 0.0,
-				     (tsReal) 0.0);
+			             (tsReal) 1.0,
+			             (tsReal) 0.0,
+			             (tsReal) 0.0);
 			if (fy < fmin) { /* y is min => 0, 1, 0 */
 				fmin = fy;
 				ts_vec3_init(frames[0].normal,
-				     (tsReal) 0.0,
-				     (tsReal) 1.0,
-				     (tsReal) 0.0);
+				             (tsReal) 0.0,
+				             (tsReal) 1.0,
+				             (tsReal) 0.0);
 			}
 			if (fz < fmin) { /* z is min => 0, 0, 1 */
 				ts_vec3_init(frames[0].normal,
-				     (tsReal) 0.0,
-				     (tsReal) 0.0,
-				     (tsReal) 1.0);
+				             (tsReal) 0.0,
+				             (tsReal) 0.0,
+				             (tsReal) 1.0);
 			}
 			ts_vec3_cross(frames[0].tangent,
-				      frames[0].normal,
-				      frames[0].normal);
+			              frames[0].normal,
+			              frames[0].normal);
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
 			ts_vec3_cross(frames[0].tangent,
-				      frames[0].normal,
-				      frames[0].normal);
+			              frames[0].normal,
+			              frames[0].normal);
 		} else {
 			/* Never trust user input! */
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
 		}
 		/* Set binormal. */
 		ts_vec3_cross(frames[0].tangent,
-			      frames[0].normal,
-			      frames[0].binormal);
+		              frames[0].normal,
+		              frames[0].binormal);
 
 		for (i = 0; i < num - 1; i++) {
 			/* Eval current and next point. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, knots[i], &curr, status))
+			        spline, knots[i], &curr, status))
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				spline, knots[i+1], &next, status))
+			        spline, knots[i+1], &next, status))
 			ts_vec3_set(xc, /* xc is now the current point */
-				    ts_int_deboornet_access_result(&curr),
-				    ts_bspline_dimension(spline));
+			            ts_int_deboornet_access_result(&curr),
+			            ts_bspline_dimension(spline));
 			ts_vec3_set(xn, /* xn is now the next point */
-				    ts_int_deboornet_access_result(&next),
-				    ts_bspline_dimension(spline));
+			            ts_int_deboornet_access_result(&next),
+			            ts_bspline_dimension(spline));
 
 			/* Set position of U_{i+1}. */
 			ts_vec3_set(frames[i+1].position, xn, 3);
@@ -1521,17 +1523,17 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 
 			/* Compute reflection vector of R_{2}. */
 			TS_CALL(try, err, ts_int_bspline_eval_woa(
-				&deriv, knots[i+1], &next, status))
+			        &deriv, knots[i+1], &next, status))
 			ts_vec3_set(xn, /* xn is now the next tangent */
-				    ts_int_deboornet_access_result(&next),
-				    ts_bspline_dimension(&deriv));
+			            ts_int_deboornet_access_result(&next),
+			            ts_bspline_dimension(&deriv));
 			ts_vec_norm(xn, 3, xn);
 			ts_vec_sub(xn, tL, 3, v2);
 			c2 = ts_vec_dot(v2, v2, 3);
 
 			/* Compute r_{i+1} = R_{2} * r_{i}^{L}. */
 			ts_vec3_set(xc, /* xc is now the next normal */
-				    frames[i+1].normal, 3);
+			            frames[i+1].normal, 3);
 			xc[0] = (tsReal) 2.0 / c2;
 			xc[1] = ts_vec_dot(v2, rL, 3);
 			xc[2] = xc[0] * xc[1];

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <OutputPath>@TINYSPLINE_BINARY_DIR@</OutputPath>
+    <NuspecFile>@TINYSPLINE_NUSPEC_FILE@</NuspecFile>
+  </PropertyGroup>
+
+</Project>

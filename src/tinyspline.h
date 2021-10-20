@@ -1471,9 +1471,9 @@ tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
  */
 tsError TINYSPLINE_API
 ts_bspline_eval(const tsBSpline *spline,
-		tsReal knot,
-		tsDeBoorNet *net,
-		tsStatus *status);
+                tsReal knot,
+                tsDeBoorNet *net,
+                tsStatus *status);
 
 /**
  * Evaluates \p spline at each knot in \p knots and stores the evaluated points
@@ -1507,10 +1507,10 @@ ts_bspline_eval(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_eval_all(const tsBSpline *spline,
-		    const tsReal *knots,
-		    size_t num,
-		    tsReal **points,
-		    tsStatus *status);
+                    const tsReal *knots,
+                    size_t num,
+                    tsReal **points,
+                    tsStatus *status);
 
 /**
  * Generates a sequence of \p num different knots (The knots are equally
@@ -1545,10 +1545,10 @@ ts_bspline_eval_all(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_sample(const tsBSpline *spline,
-		  size_t num,
-		  tsReal **points,
-		  size_t *actual_num,
-		  tsStatus *status);
+                  size_t num,
+                  tsReal **points,
+                  size_t *actual_num,
+                  tsStatus *status);
 
 /**
  * Tries to find a point P on \p spline such that:
@@ -1607,14 +1607,14 @@ ts_bspline_sample(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_bisect(const tsBSpline *spline,
-		  tsReal value,
-		  tsReal epsilon,
-		  int persnickety,
-		  size_t index,
-		  int ascending,
-		  size_t max_iter,
-		  tsDeBoorNet *net,
-		  tsStatus *status);
+                  tsReal value,
+                  tsReal epsilon,
+                  int persnickety,
+                  size_t index,
+                  int ascending,
+                  size_t max_iter,
+                  tsDeBoorNet *net,
+                  tsStatus *status);
 
 /**
  * Returns the domain of \p spline.
@@ -1628,8 +1628,8 @@ ts_bspline_bisect(const tsBSpline *spline,
  */
 void TINYSPLINE_API
 ts_bspline_domain(const tsBSpline *spline,
-		  tsReal *min,
-		  tsReal *max);
+                  tsReal *min,
+                  tsReal *max);
 
 /**
  * Checks whether the distance of the endpoints of \p spline is less than or
@@ -1651,9 +1651,9 @@ ts_bspline_domain(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_is_closed(const tsBSpline *spline,
-		     tsReal epsilon,
-		     int *closed,
-		     tsStatus *status);
+                     tsReal epsilon,
+                     int *closed,
+                     tsStatus *status);
 
 /**
  * Computes a sequence of three-dimensional frames (see ::tsFrame) for the
@@ -1732,11 +1732,11 @@ ts_bspline_is_closed(const tsBSpline *spline,
  */
 tsError TINYSPLINE_API
 ts_bspline_compute_rmf(const tsBSpline *spline,
-		       const tsReal *knots,
-		       size_t num,
-		       int has_first_normal,
-		       tsFrame *frames,
-		       tsStatus *status);
+                       const tsReal *knots,
+                       size_t num,
+                       int has_first_normal,
+                       tsFrame *frames,
+                       tsStatus *status);
 
 /**
  * Generates a sequence of \p num knots with uniform distribution. \e Uniform
@@ -1751,8 +1751,8 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
  */
 void TINYSPLINE_API
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
-			    size_t num,
-			    tsReal *knots);
+                            size_t num,
+                            tsReal *knots);
 /*! @} */
 
 

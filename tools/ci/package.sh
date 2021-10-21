@@ -24,6 +24,11 @@ if [ ! -d "${WASM}" ]; then
 	echo "WebAssembly is missing.  Aborting."
 	exit 1
 fi
+ACTIONS="${SCRIPT_DIR}/build/actions"
+if [ -d "${ACTIONS}" ]; then
+	echo "Found actions directory."
+	echo "Probably running in CI job."
+fi
 
 ### Prepare output directory.
 OUTPUT="${SCRIPT_DIR}/tinyspline"
@@ -36,12 +41,18 @@ find "${LINUX_X86_64}" -name '*.deb' -print0 | \
 
 # C#
 NUPKG_TMP_DIR="${SCRIPT_DIR}/nuget"
+if [ -d "${ACTIONS}" ]; then
+	find "${ACTIONS}" -name '*.nupkg' -print0 | \
+		xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+fi
 find "${WINDOWS_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${MACOSX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${LINUX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+# Fix file permissions of set by `dotnet pack'.
+find "${NUPKG_TMP_DIR}" -type f -exec chmod 644 -- {} +
 # Add 'lib' prefix to the native library of the Linux/OSX .so file.
 find  "${SCRIPT_DIR}/nuget/runtimes/" \
 	-name 'tinyspline*.so' \

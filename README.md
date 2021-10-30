@@ -156,7 +156,7 @@ The same example using the C++ interface:
 
 ```cpp
 #include <iostream>
-#include "tinysplinecpp.h"
+#include "tinysplinecxx.h"
 
 int main(int argc, char **argv)
 {

@@ -680,11 +680,12 @@ ts_int_thomas_algorithm(const tsReal *a,
 
 	if (dim == 0) {
 		TS_RETURN_0(status, TS_DIM_ZERO,
-			"unsupported dimension: 0")
+		            "unsupported dimension: 0")
 	}
 	if (num <= 1) {
 		TS_RETURN_1(status, TS_NUM_POINTS,
-			"num(points) (%lu) <= 1", (unsigned long) num)
+		            "num(points) (%lu) <= 1",
+		            (unsigned long) num)
 	}
 	cc = (tsReal *) malloc(num * sizeof(tsReal));
 	if (!cc) TS_RETURN_0(status, TS_MALLOC, "out of memory")
@@ -693,7 +694,7 @@ ts_int_thomas_algorithm(const tsReal *a,
 		/* Forward sweep. */
 		if (fabs(b[0]) <= fabs(c[0])) {
 			TS_THROW_2(try, err, status, TS_NO_RESULT,
-				"error: |%f| <= |%f|", b[0], c[0])
+			           "error: |%f| <= |%f|", b[0], c[0])
 		}
 		/* |b[i]| > |c[i]| implies that |b[i]| > 0. Thus, the following
 		 * statements cannot evaluate to division by zero.*/
@@ -703,8 +704,8 @@ ts_int_thomas_algorithm(const tsReal *a,
 		for (i = 1; i < num; i++) {
 			if (fabs(b[i]) <= fabs(a[i]) + fabs(c[i])) {
 				TS_THROW_3(try, err, status, TS_NO_RESULT,
-					"error: |%f| <= |%f| + |%f|",
-					b[i], a[i], c[i])
+				           "error: |%f| <= |%f| + |%f|",
+				           b[i], a[i], c[i])
 			}
 			/* |a[i]| < |b[i]| and cc[i - 1] < 1. Therefore, the
 			 * following statement cannot evaluate to division by
@@ -763,7 +764,8 @@ ts_int_relaxed_uniform_cubic_bspline(const tsReal *points,
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (n <= 1) {
 		TS_RETURN_1(status, TS_NUM_POINTS,
-			"num(points) (%lu) <= 1", (unsigned long) n)
+		            "num(points) (%lu) <= 1",
+		            (unsigned long) n)
 	}
 	/* in the following n >= 2 applies */
 
@@ -773,13 +775,14 @@ ts_int_relaxed_uniform_cubic_bspline(const tsReal *points,
 	TS_TRY(try, err, status)
 		/* n >= 2 implies n-1 >= 1 implies (n-1)*4 >= 4 */
 		TS_CALL(try, err, ts_bspline_new(
-			(n-1)*4, dim, order-1, TS_BEZIERS, spline, status))
+		        (n-1) * 4, dim, order - 1,
+		        TS_BEZIERS, spline, status))
 		ctrlp = ts_int_bspline_access_ctrlp(spline);
 
 		s = (tsReal*) malloc(n * sof_ctrlp);
 		if (!s) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 
 		/* set s_0 to b_0 and s_n = b_n */
@@ -838,10 +841,11 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (num_points == 1) {
 		TS_CALL_ROE(err, ts_bspline_new(
-			4, dimension, 3, TS_CLAMPED, spline, status))
+		            4, dimension, 3,
+		            TS_CLAMPED, spline, status))
 		for (i = 0; i < ts_bspline_num_control_points(spline); i++) {
 			memcpy(ts_int_bspline_access_ctrlp(spline)
-				+ i * dimension, points, sof_ctrlp);
+			       + i * dimension, points, sof_ctrlp);
 		}
 		TS_RETURN_SUCCESS(status)
 	}
@@ -855,7 +859,7 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
 		if (!thomas) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		/* The system of linear equations is taken from:
 		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
@@ -889,15 +893,15 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 				d[i] *= (tsReal) 0.25f;
 		} else {
 			TS_CALL(try, err, ts_int_thomas_algorithm(
-				a, b, c, num_int_points, dimension, d,
-				status))
+			        a, b, c, num_int_points, dimension, d,
+			        status))
 		}
 		memcpy(thomas, points, sof_ctrlp);
 		memmove(thomas + dimension, d, num_int_points * sof_ctrlp);
 		memcpy(thomas + (num_int_points+1) * dimension,
-			points + (num_points-1) * dimension, sof_ctrlp);
+		       points + (num_points-1) * dimension, sof_ctrlp);
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
-			thomas, num_points, dimension, spline, status))
+		        thomas, num_points, dimension, spline, status))
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_FINALLY
@@ -938,8 +942,9 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	if (num_points == 0)
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (num_points == 1) {
-		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
-			num_points - 1, TS_CLAMPED, spline, status))
+		TS_CALL_ROE(err, ts_bspline_new(
+		            num_points, dimension, num_points - 1,
+		            TS_CLAMPED, spline, status))
 		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
 		memcpy(bs_ctrlp, points, sof_ctrlp);
 		TS_RETURN_SUCCESS(status)
@@ -957,8 +962,8 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 	/* Remove redundant points from `cr_ctrlp`. Update `num_points`. */
 	for (i = 1 /* 0 (`first`) is not assigned yet */;
-			i < num_points /* skip last point (inclusive end) */;
-			i++) {
+	     i < num_points /* skip last point (inclusive end) */;
+	     i++) {
 		p0 = cr_ctrlp + (i * dimension);
 		p1 = p0 + dimension;
 		if (ts_distance(p0, p1, dimension) <= eps) {
@@ -966,7 +971,7 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 			 * to be removed) that need to be shifted? */
 			if (i < num_points - 1) {
 				memmove(p1, p1 + dimension,
-					(num_points - (i + 1)) * sof_ctrlp);
+				        (num_points - (i + 1)) * sof_ctrlp);
 			}
 			num_points--;
 			i--;
@@ -976,8 +981,9 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	/* Check if there are still enough points for interpolation. */
 	if (num_points == 1) { /* `num_points` can't be 0 */
 		free(cr_ctrlp); /* The point is copied from `points`. */
-		TS_CALL_ROE(err, ts_bspline_new(num_points, dimension,
-			num_points - 1, TS_CLAMPED, spline, status))
+		TS_CALL_ROE(err, ts_bspline_new(
+		            num_points, dimension, num_points - 1,
+		            TS_CLAMPED, spline, status))
 		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
 		memcpy(bs_ctrlp, points, sof_ctrlp);
 		TS_RETURN_SUCCESS(status)
@@ -995,7 +1001,7 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	p1 = cr_ctrlp + (num_points * dimension);
 	if (last && ts_distance(p1, last, dimension) > eps) {
 		memcpy(cr_ctrlp + ((num_points + 1) * dimension),
-			last, sof_ctrlp);
+		       last, sof_ctrlp);
 	} else {
 		p0 = p1 - dimension;
 		for (d = 0; d < dimension; d++) {
@@ -1009,8 +1015,8 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	bs_ctrlp = NULL;
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_new(
-			(num_points - 3) * 4, dimension, 3,
-			TS_BEZIERS, spline, status))
+		        (num_points - 3) * 4, dimension, 3,
+		        TS_BEZIERS, spline, status))
 		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
 	TS_CATCH(err)
 		free(cr_ctrlp);
@@ -1033,9 +1039,9 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 
 		for (d = 0; d < dimension; d++) {
 			m1 = (t2-t1)*(c1*(p1[d]-p0[d])/(t1-t0)
-				+ c2*(p2[d]-p1[d])/(t2-t1));
+			              + c2*(p2[d]-p1[d])/(t2-t1));
 			m2 = (t2-t1)*(d1*(p2[d]-p1[d])/(t2-t1)
-				+ d2*(p3[d]-p2[d])/(t3-t2));
+			              + d2*(p3[d]-p2[d])/(t3-t2));
 			bs_ctrlp[((i*4 + 0) * dimension) + d] = p1[d];
 			bs_ctrlp[((i*4 + 1) * dimension) + d] = p1[d] + m1/3;
 			bs_ctrlp[((i*4 + 2) * dimension) + d] = p2[d] - m2/3;

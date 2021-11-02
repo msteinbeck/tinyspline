@@ -433,7 +433,7 @@ typedef enum
 } tsError;
 
 /**
- * Stores an error code (::tsError) with a corresponding error message.
+ * Stores an error code (see ::tsError) with corresponding message.
  */
 typedef struct
 {

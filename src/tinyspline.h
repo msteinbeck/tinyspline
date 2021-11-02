@@ -1340,11 +1340,16 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Interpolation and Approximation Functions                                *
-*                                                                             *
-******************************************************************************/
+/*! @name Interpolation and Approximation Functions
+ *
+ * Given a set (or a sequence) of points, interpolate/approximate a spline that
+ * follows these points.
+ *
+ * Note: Approximations have not yet been implemented. Pull requests are
+ * welcome.
+ *
+ * @{
+ */
 /**
  * Interpolates a cubic spline with natural end conditions. For more details
  * see:
@@ -1384,9 +1389,12 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_interpolate_cubic_natural(
-	const tsReal *points, size_t num_points, size_t dimension,
-	tsBSpline *spline, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_interpolate_cubic_natural(const tsReal *points,
+                                     size_t num_points,
+                                     size_t dimension,
+                                     tsBSpline *spline,
+                                     tsStatus *status);
 
 /**
  * Interpolates a piecewise cubic spline by translating the given catmull-rom
@@ -1437,10 +1445,17 @@ tsError TINYSPLINE_API ts_bspline_interpolate_cubic_natural(
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_interpolate_catmull_rom(const tsReal *points,
-	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
-	const tsReal *last, tsReal epsilon, tsBSpline *spline,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_interpolate_catmull_rom(const tsReal *points,
+                                   size_t num_points,
+                                   size_t dimension,
+                                   tsReal alpha,
+                                   const tsReal *first,
+                                   const tsReal *last,
+                                   tsReal epsilon,
+                                   tsBSpline *spline,
+                                   tsStatus *status);
+/*! @} */
 
 
 

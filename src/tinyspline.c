@@ -661,13 +661,18 @@ void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Interpolation and Approximation Functions                                *
-*                                                                             *
-******************************************************************************/
-tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
-	const tsReal *c, size_t num, size_t dim, tsReal *d, tsStatus *status)
+/*! @name Interpolation and Approximation Functions
+ *
+ * @{
+ */
+tsError
+ts_int_thomas_algorithm(const tsReal *a,
+                        const tsReal *b,
+                        const tsReal *c,
+                        size_t num,
+                        size_t dim,
+                        tsReal *d,
+                        tsStatus *status)
 {
 	size_t i, j, k, l;
 	tsReal m, *cc = NULL;
@@ -734,8 +739,12 @@ tsError ts_int_thomas_algorithm(const tsReal *a, const tsReal *b,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
-	size_t dim, tsBSpline *spline, tsStatus *status)
+tsError
+ts_int_relaxed_uniform_cubic_bspline(const tsReal *points,
+                                     size_t n,
+                                     size_t dim,
+                                     tsBSpline *spline,
+                                     tsStatus *status)
 {
 	const size_t order = 4;    /**< Order of spline to interpolate. */
 	const tsReal as = 1.f/6.f; /**< The value 'a sixth'. */
@@ -809,9 +818,12 @@ tsError ts_int_relaxed_uniform_cubic_bspline(const tsReal *points, size_t n,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
-	size_t num_points, size_t dimension, tsBSpline *spline,
-	tsStatus *status)
+tsError
+ts_bspline_interpolate_cubic_natural(const tsReal *points,
+                                     size_t num_points,
+                                     size_t dimension,
+                                     tsBSpline *spline,
+                                     tsStatus *status)
 {
 	const size_t sof_ctrlp = dimension * sizeof(tsReal);
 	const size_t len_points = num_points * dimension;
@@ -894,10 +906,16 @@ tsError ts_bspline_interpolate_cubic_natural(const tsReal *points,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
-	size_t num_points, size_t dimension, tsReal alpha, const tsReal *first,
-	const tsReal *last, tsReal epsilon, tsBSpline *spline,
-	tsStatus *status)
+tsError
+ts_bspline_interpolate_catmull_rom(const tsReal *points,
+                                   size_t num_points,
+                                   size_t dimension,
+                                   tsReal alpha,
+                                   const tsReal *first,
+                                   const tsReal *last,
+                                   tsReal epsilon,
+                                   tsBSpline *spline,
+                                   tsStatus *status)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dimension * sof_real;
@@ -1027,6 +1045,7 @@ tsError ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	free(cr_ctrlp);
 	TS_RETURN_SUCCESS(status)
 }
+/*! @} */
 
 
 

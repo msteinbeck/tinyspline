@@ -49,6 +49,10 @@ python -m pip install tinyspline
 See [BUILD.md](BUILD.md).
 
 ### Getting Started
+
+Examples for each interface (target language) can be found in the
+[examples](examples) subdirectory.
+
 The following listing uses the ANSI C interface:
 
 ```c
@@ -156,7 +160,7 @@ The same example using the C++ interface:
 
 ```cpp
 #include <iostream>
-#include "tinysplinecpp.h"
+#include "tinysplinecxx.h"
 
 int main(int argc, char **argv)
 {

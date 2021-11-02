@@ -1381,7 +1381,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 				2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
 		elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
 			set(Python_ADDITIONAL_VERSIONS
-				3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+				3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
 		endif()
 		find_package(PythonLibs REQUIRED)
 		if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2"

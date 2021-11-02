@@ -88,6 +88,37 @@
 	std::vector<tinyspline::real>,
 	result,
 	result);
+%attributeval(tinyspline::Frame,
+	tinyspline::Vec3,
+	position,
+	position);
+%attributeval(tinyspline::Frame,
+	tinyspline::Vec3,
+	tangent,
+	tangent);
+%attributeval(tinyspline::Frame,
+	tinyspline::Vec3,
+	normal,
+	normal);
+%attributeval(tinyspline::Frame,
+	tinyspline::Vec3,
+	binormal,
+	binormal);
+%attribute(tinyspline::Vec3,
+	tinyspline::real,
+	x,
+	x,
+	setX);
+%attribute(tinyspline::Vec3,
+	tinyspline::real,
+	y,
+	y,
+	setY);
+%attribute(tinyspline::Vec3,
+	tinyspline::real,
+	z,
+	z,
+	setZ);
 #endif
 
 // Make strings directly accessible in target language.

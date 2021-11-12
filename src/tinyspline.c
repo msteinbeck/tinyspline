@@ -2757,39 +2757,6 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 
 
 
-/*! @name Utility Functions
- *
- * @{
- */
-int ts_knots_equal(tsReal x,
-                   tsReal y)
-{
-	return fabs(x-y) < TS_KNOT_EPSILON ? 1 : 0;
-}
-
-void ts_arr_fill(tsReal *arr,
-                 size_t num,
-                 tsReal val)
-{
-	size_t i;
-	for (i = 0; i < num; i++)
-		arr[i] = val;
-}
-
-tsReal ts_distance(const tsReal *x,
-                   const tsReal *y,
-                   size_t dim)
-{
-	size_t i;
-	tsReal sum = 0;
-	for (i = 0; i < dim; i++)
-		sum += (x[i] - y[i]) * (x[i] - y[i]);
-	return (tsReal) sqrt(sum);
-}
-/*! @} */
-
-
-
 /*! @name Vector Math
  * @{
  */
@@ -2905,6 +2872,39 @@ ts_vec_mul(const tsReal *x,
 	size_t i;
 	for (i = 0; i < dim; i++)
 		out[i] = x[i] * val;
+}
+/*! @} */
+
+
+
+/*! @name Utility Functions
+ *
+ * @{
+ */
+int ts_knots_equal(tsReal x,
+                   tsReal y)
+{
+	return fabs(x-y) < TS_KNOT_EPSILON ? 1 : 0;
+}
+
+void ts_arr_fill(tsReal *arr,
+                 size_t num,
+                 tsReal val)
+{
+	size_t i;
+	for (i = 0; i < num; i++)
+		arr[i] = val;
+}
+
+tsReal ts_distance(const tsReal *x,
+                   const tsReal *y,
+                   size_t dim)
+{
+	size_t i;
+	tsReal sum = 0;
+	for (i = 0; i < dim; i++)
+		sum += (x[i] - y[i]) * (x[i] - y[i]);
+	return (tsReal) sqrt(sum);
 }
 /*! @} */
 

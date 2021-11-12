@@ -2249,9 +2249,9 @@ tsError TINYSPLINE_API ts_bspline_load(const char *path, tsBSpline *spline,
  */
 void TINYSPLINE_API
 ts_vec3_init(tsReal *out,
-	     tsReal x,
-	     tsReal y,
-	     tsReal z);
+             tsReal x,
+             tsReal y,
+             tsReal z);
 
 /**
  * Copies the values of vector \p x (a vector with dimensionality \p dim) to
@@ -2270,8 +2270,8 @@ ts_vec3_init(tsReal *out,
  */
 void TINYSPLINE_API
 ts_vec3_set(tsReal *out,
-	    const tsReal *x,
-	    size_t dim);
+            const tsReal *x,
+            size_t dim);
 
 /**
  * Adds vector \p y to vector \p x and stores the result in vector \p out.
@@ -2288,9 +2288,9 @@ ts_vec3_set(tsReal *out,
  */
 void TINYSPLINE_API
 ts_vec_add(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out);
+           const tsReal *y,
+           size_t dim,
+           tsReal *out);
 
 /**
  * Subtracts vector \p y from vector \p x and stores the result in vector \p
@@ -2308,9 +2308,9 @@ ts_vec_add(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_sub(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out);
+           const tsReal *y,
+           size_t dim,
+           tsReal *out);
 
 /**
  * Computes the dot product (also known as scalar product) of the vectors \p x
@@ -2329,8 +2329,8 @@ ts_vec_sub(const tsReal *x,
  */
 tsReal TINYSPLINE_API
 ts_vec_dot(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim);
+           const tsReal *y,
+           size_t dim);
 
 /**
  * Computes the cross product (also known as vector product or directed area
@@ -2347,8 +2347,8 @@ ts_vec_dot(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec3_cross(const tsReal *x,
-	      const tsReal *y,
-	      tsReal *out);
+              const tsReal *y,
+              tsReal *out);
 
 /**
  * Normalizes vector \p x.
@@ -2366,8 +2366,8 @@ ts_vec3_cross(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_norm(const tsReal *x,
-	    size_t dim,
-	    tsReal *out);
+            size_t dim,
+            tsReal *out);
 
 /**
  * Determines the length of vector \p x.
@@ -2381,7 +2381,7 @@ ts_vec_norm(const tsReal *x,
  */
 tsReal TINYSPLINE_API
 ts_vec_mag(const tsReal *x,
-	   size_t dim);
+           size_t dim);
 
 /**
  * Multiplies vector \p x with scalar \p val and stores the result in vector \p
@@ -2399,9 +2399,9 @@ ts_vec_mag(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_mul(const tsReal *x,
-	   size_t dim,
-	   tsReal val,
-	   tsReal *out);
+           size_t dim,
+           tsReal val,
+           tsReal *out);
 /*! @} */
 
 

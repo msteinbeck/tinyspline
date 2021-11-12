@@ -2222,57 +2222,60 @@ tsError TINYSPLINE_API ts_bspline_load(const char *path, tsBSpline *spline,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Utility Functions                                                        *
-*                                                                             *
-* The following section contains utility functions used by TinySpline which   *
-* also may be helpful when using this library.                                *
-*                                                                             *
-******************************************************************************/
+/*! @name Utility Functions
+ *
+ * @{
+ */
 /**
- * Checks whether \p x and \p y are equal with respect to the epsilon
- * environment TS_KNOT_EPSILON, i.e. their distance is less than
- * TS_KNOT_EPSILON.
+ * Returns whether the knots \p x and \p y are equal with respect to the epsilon
+ * environment ::TS_KNOT_EPSILON (i.e., their distance is <u>less</u> than
+ * ::TS_KNOT_EPSILON).
  *
  * @param[in] x
- * 	A knot.
+ * 	First knot.
  * @param[in] y
- * 	A knot.
+ * 	Second knot.
  * @return 1
  * 	If \p x and \p y are equal.
  * @return 0
  * 	If \p x and \p y are not equal.
  */
-int TINYSPLINE_API ts_knots_equal(tsReal x, tsReal y);
+int TINYSPLINE_API
+ts_knots_equal(tsReal x,
+               tsReal y);
 
 /**
- * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num
- * (exclusive).
+ * Fills the given array \p arr with \p val.
  *
  * @param[in] arr
- * 	The array to fill.
+ * 	The array to be filled.
  * @param[in] num
- * 	The fill length.
+ * 	Fill length.
  * @param[in] val
  * 	The value to fill into \p arr.
  */
-void TINYSPLINE_API ts_arr_fill(tsReal *arr, size_t num, tsReal val);
+void TINYSPLINE_API
+ts_arr_fill(tsReal *arr,
+            size_t num,
+            tsReal val);
 
 /**
  * Returns the euclidean distance of the points \p x and \p y.
  *
  * @param[in] x
- * 	The x value.
+ * 	First point.
  * @param[in] y
- * 	The y value.
- * @param[in] dimension
- * 	The dimension of \p x and \p y.
+ * 	Second point.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
  * @return
- * 	The euclidean distance of \p x and \p y.
+ * 	The euclidean distance of the points \p x and \p y.
  */
-tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
-	size_t dimension);
+tsReal TINYSPLINE_API
+ts_distance(const tsReal *x,
+            const tsReal *y,
+            size_t dim);
+/*! @} */
 
 
 

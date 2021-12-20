@@ -2021,8 +2021,12 @@ tsError TINYSPLINE_API ts_bspline_to_beziers(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If memory allocation failed.
  */
-tsError TINYSPLINE_API ts_bspline_elevate_degree(const tsBSpline *spline,
-	size_t amount, tsReal epsilon, tsBSpline *elevated, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_elevate_degree(const tsBSpline *spline,
+                          size_t amount,
+                          tsReal epsilon,
+                          tsBSpline *elevated,
+                          tsStatus *status);
 
 /**
  * Modifies the splines \p s1 and \p s2 such that they have same degree and

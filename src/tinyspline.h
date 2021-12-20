@@ -1945,25 +1945,58 @@ tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
 	tsBSpline *split, size_t *k, tsStatus *status);
 
 /**
- * Sets the control points of \p spline so that their tension corresponds the
- * given tension factor (0 => yields to a line connecting the first and the
- * last control point; 1 => keeps the original shape). If \p tension < 0 or if
- * \p tension > 1, the behaviour of this function is undefined, though, it will
- * not result in an error. Creates a deep copy of \p spline if
- * \p spline != \p out.
+ * Straightens the control points of \p spline according to \p beta (0 yields a
+ * line connecting the first and the last control point; 1 keeps the original
+ * shape). The value of \p beta is clamped to [0, 1]. If \p spline != \p out,
+ * the internal state of \p spline is not modified, that is, \p out is a new,
+ * independent ::tsBSpline instance.
  *
  * This function is based on:
  *
- *      Holten, Danny. "Hierarchical edge bundles: Visualization of adjacency
- *      relations in hierarchical data." Visualization and Computer Graphics,
- *      IEEE Transactions on 12.5 (2006): 741-748.
+ *     @ARTICLE{10.1109/TVCG.2006.147,
+ *       author =       {Holten, Danny},
+ *       journal =      {IEEE Transactions on Visualization and Computer
+ *                       Graphics},
+ *       title =        {Hierarchical Edge Bundles: Visualization of
+ *                       Adjacency Relations in Hierarchical Data},
+ *       year =         {2006},
+ *       volume =       {12},
+ *       number =       {5},
+ *       pages =        {741-748},
+ *       abstract =     {A compound graph is a frequently encountered type of
+ *                       data set. Relations are given between items, and a
+ *                       hierarchy is defined on the items as well. We
+ *                       present a new method for visualizing such compound
+ *                       graphs. Our approach is based on visually bundling
+ *                       the adjacency edges, i.e., non-hierarchical edges,
+ *                       together. We realize this as follows. We assume that
+ *                       the hierarchy is shown via a standard tree
+ *                       visualization method. Next, we bend each adjacency
+ *                       edge, modeled as a B-spline curve, toward the
+ *                       polyline defined by the path via the inclusion edges
+ *                       from one node to another. This hierarchical bundling
+ *                       reduces visual clutter and also visualizes implicit
+ *                       adjacency edges between parent nodes that are the
+ *                       result of explicit adjacency edges between their
+ *                       respective child nodes. Furthermore, hierarchical
+ *                       edge bundling is a generic method which can be used
+ *                       in conjunction with existing tree visualization
+ *                       techniques. We illustrate our technique by providing
+ *                       example visualizations and discuss the results based
+ *                       on an informal evaluation provided by potential
+ *                       users of such visualizations.},
+ *       keywords =     {},
+ *       doi =          {10.1109/TVCG.2006.147},
+ *       ISSN =         {1941-0506},
+ *       month =        {Sep.},
+ *     }
  *
  * Holten calls it "straightening" (page 744, equation 1).
  *
  * @param[in] spline
  * 	The input spline.
- * @param[in] tension
- * 	The tension factor (0 <= \p tension <= 1).
+ * @param[in] beta
+ * 	The straightening factor. The value is clamped to the domain [0, 1].
  * @param[out] out
  * 	The output spline.
  * @param[out] status
@@ -1973,8 +2006,11 @@ tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
-	tsReal tension, tsBSpline *out, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_tension(const tsBSpline *spline,
+                   tsReal beta,
+                   tsBSpline *out,
+                   tsStatus *status);
 
 /**
  * Decomposes \p spline into a sequence of Bezier curves by splitting it at
@@ -2096,7 +2132,7 @@ ts_bspline_align(const tsBSpline *s1,
  * 	Target spline.
  * @param[in] t
  * 	The time parameter. If 0, \p out becomes \p source. If 1, \p out becomes
- * 	\p target. Note that this value is clamped to the domain [0. 1].
+ * 	\p target. Note that this value is clamped to the domain [0, 1].
  * @param[in] epsilon
  * 	If \p source and \p target must be aligned, this parameter is passed
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1

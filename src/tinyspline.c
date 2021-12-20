@@ -1922,10 +1922,13 @@ tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
-	tsBSpline *out, tsStatus *status)
+tsError
+ts_bspline_tension(const tsBSpline *spline,
+                   tsReal beta,
+                   tsBSpline *out,
+                   tsStatus *status)
 {
-	const tsReal s  = 1.f - tension; /**< The straightening factor. */
+	const tsReal s  = 1.f - beta; /**< The straightening factor. */
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t N = ts_bspline_num_control_points(spline);
 	const tsReal* p0 = ts_int_bspline_access_ctrlp(spline);
@@ -1940,9 +1943,11 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {
-			ctrlp[i*dim + d] *= tension;
-			ctrlp[i*dim + d] += s * (p0[d] + ((tsReal)i / (N-1)) *
-				(pn_1[d] - p0[d]));
+			ctrlp[i*dim + d] *= beta;
+			ctrlp[i*dim + d] += s * (
+				p0[d] +
+				((tsReal)i / (N-1)) * (pn_1[d] - p0[d])
+				);
 		}
 	}
 	TS_RETURN_SUCCESS(status)

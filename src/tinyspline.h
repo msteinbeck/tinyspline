@@ -2105,11 +2105,11 @@ ts_bspline_align(const tsBSpline *s1,
  */
 tsError TINYSPLINE_API
 ts_bspline_morph(const tsBSpline *source,
-		 const tsBSpline *target,
-		 tsReal t,
-		 tsReal epsilon,
-		 tsBSpline *out,
-		 tsStatus *status);
+                 const tsBSpline *target,
+                 tsReal t,
+                 tsReal epsilon,
+                 tsBSpline *out,
+                 tsStatus *status);
 
 
 

@@ -2368,10 +2368,11 @@ ts_bspline_align(const tsBSpline *s1,
 
 tsError
 ts_bspline_morph(const tsBSpline *source,
-		 const tsBSpline *target,
-		 tsReal t, tsReal epsilon,
-		 tsBSpline *out,
-		 tsStatus *status)
+                 const tsBSpline *target,
+                 tsReal t,
+                 tsReal epsilon,
+                 tsBSpline *out,
+                 tsStatus *status)
 {
 	tsBSpline source_al, target_al; /* aligned source and target */
 	tsReal *source_al_c, *source_al_k; /* control points and knots */
@@ -2399,11 +2400,11 @@ ts_bspline_morph(const tsBSpline *source,
 		/* Set up `source_al' and `target_al'. */
 		/* Degree must be elevated... */
 		if (ts_bspline_degree(source) != ts_bspline_degree(target) ||
-		/* .. or knots (and thus control points) must be inserted. */
-		ts_bspline_num_knots(source) != ts_bspline_num_knots(target)) {
+		 /* .. or knots (and thus control points) must be inserted. */
+		 ts_bspline_num_knots(source) != ts_bspline_num_knots(target)) {
 			TS_CALL(try, err, ts_bspline_align(
-				source, target, epsilon, &source_al, &target_al,
-				status));
+			        source, target, epsilon, &source_al, &target_al,
+			        status));
 		} else {
 			/* Flat copy. */
 			source_al = *source;
@@ -2422,11 +2423,11 @@ ts_bspline_morph(const tsBSpline *source,
 			dim = ts_bspline_dimension(&target_al);
 		if (out->pImpl == NULL) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
-				TS_OPENED /* doesn't matter */, out, status))
+			        TS_OPENED /* doesn't matter */, out, status))
 		} else if (ts_bspline_degree(out) < deg ||
-			   ts_bspline_num_control_points(out) < num_ctrlp) {
+		           ts_bspline_num_control_points(out) < num_ctrlp) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
-				TS_OPENED /* doesn't matter */, &tmp, status))
+			        TS_OPENED /* doesn't matter */, &tmp, status))
 			ts_bspline_free(out);
 			ts_bspline_move(&tmp, out);
 		}
@@ -2439,14 +2440,14 @@ ts_bspline_morph(const tsBSpline *source,
 			for (d = 0; d < dim; d++) {
 				offset = i * dim + d;
 				ctrlp[offset] = t * target_al_c[offset] +
-					t_hat * source_al_c[offset];
+					        t_hat * source_al_c[offset];
 			}
 		}
 
 		/* Interpolate knots. */
 		for (i = 0; i < num_knots; i++) {
 			knots[i] = t * target_al_k[i] +
-				t_hat * source_al_k[i];
+				   t_hat * source_al_k[i];
 		}
 	TS_FINALLY
 		if (source->pImpl != source_al.pImpl)

@@ -1994,11 +1994,11 @@ tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
  * Holten calls it "straightening" (page 744, equation 1).
  *
  * @param[in] spline
- * 	The input spline.
+ * 	The spline to be straightened.
  * @param[in] beta
  * 	The straightening factor. The value is clamped to the domain [0, 1].
  * @param[out] out
- * 	The output spline.
+ * 	The straightened spline.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS

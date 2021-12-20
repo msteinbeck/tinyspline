@@ -1928,18 +1928,21 @@ ts_bspline_tension(const tsBSpline *spline,
                    tsBSpline *out,
                    tsStatus *status)
 {
-	const tsReal s  = 1.f - beta; /**< The straightening factor. */
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t N = ts_bspline_num_control_points(spline);
 	const tsReal* p0 = ts_int_bspline_access_ctrlp(spline);
 	const tsReal* pn_1 = p0 + (N-1)*dim;
 
+	tsReal s; /**< The straightening factor. */
 	tsReal *ctrlp; /**< Pointer to the control points of \p out. */
 	size_t i, d; /**< Used in for loops. */
 	tsError err;
 
 	TS_CALL_ROE(err, ts_bspline_copy(spline, out, status))
 	ctrlp = ts_int_bspline_access_ctrlp(out);
+	if (beta < 0.f) beta = 0;
+	if (beta > 1.f) beta = 1;
+	s = 1.f - beta;
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {

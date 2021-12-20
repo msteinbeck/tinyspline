@@ -2762,42 +2762,14 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Utility Functions                                                        *
-*                                                                             *
-******************************************************************************/
-int ts_knots_equal(tsReal x, tsReal y)
-{
-	return fabs(x-y) < TS_KNOT_EPSILON ? 1 : 0;
-}
-
-void ts_arr_fill(tsReal *arr, size_t num, tsReal val)
-{
-	size_t i;
-	for (i = 0; i < num; i++)
-		arr[i] = val;
-}
-
-tsReal ts_distance(const tsReal *x, const tsReal *y, size_t dimension)
-{
-	size_t i;
-	tsReal sum = 0;
-	for (i = 0; i < dimension; i++)
-		sum += (x[i] - y[i]) * (x[i] - y[i]);
-	return (tsReal) sqrt(sum);
-}
-
-
-
 /*! @name Vector Math
  * @{
  */
 void
 ts_vec3_init(tsReal *out,
-	     tsReal x,
-	     tsReal y,
-	     tsReal z)
+             tsReal x,
+             tsReal y,
+             tsReal z)
 {
 	out[0] = x;
 	out[1] = y;
@@ -2806,8 +2778,8 @@ ts_vec3_init(tsReal *out,
 
 void
 ts_vec3_set(tsReal *out,
-	    const tsReal *x,
-	    size_t dim)
+            const tsReal *x,
+            size_t dim)
 {
 	const size_t n = dim > 3 ? 3 : dim;
 	memmove(out, x, n * sizeof(tsReal));
@@ -2817,9 +2789,9 @@ ts_vec3_set(tsReal *out,
 
 void
 ts_vec_add(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out)
+           const tsReal *y,
+           size_t dim,
+           tsReal *out)
 {
 	size_t i;
 	for (i = 0; i < dim; i++)
@@ -2828,9 +2800,9 @@ ts_vec_add(const tsReal *x,
 
 void
 ts_vec_sub(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out)
+           const tsReal *y,
+           size_t dim,
+           tsReal *out)
 {
 	size_t i;
 	if (x == y) {
@@ -2844,8 +2816,8 @@ ts_vec_sub(const tsReal *x,
 
 tsReal
 ts_vec_dot(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim)
+           const tsReal *y,
+           size_t dim)
 {
 	size_t i;
 	tsReal dot = 0;
@@ -2856,8 +2828,8 @@ ts_vec_dot(const tsReal *x,
 
 void
 ts_vec3_cross(const tsReal *x,
-	      const tsReal *y,
-	      tsReal *out)
+              const tsReal *y,
+              tsReal *out)
 {
 	tsReal a, b, c;
 	a = x[1] * y[2] - x[2] * y[1];
@@ -2870,8 +2842,8 @@ ts_vec3_cross(const tsReal *x,
 
 void
 ts_vec_norm(const tsReal *x,
-	    size_t dim,
-	    tsReal *out)
+            size_t dim,
+            tsReal *out)
 {
 	size_t i;
 	const tsReal m = ts_vec_mag(x, dim);
@@ -2885,7 +2857,7 @@ ts_vec_norm(const tsReal *x,
 
 tsReal
 ts_vec_mag(const tsReal *x,
-	   size_t dim)
+           size_t dim)
 {
 	size_t i;
 	tsReal sum = 0;
@@ -2898,13 +2870,46 @@ ts_vec_mag(const tsReal *x,
 
 void TINYSPLINE_API
 ts_vec_mul(const tsReal *x,
-	   size_t dim,
-	   tsReal val,
-	   tsReal *out)
+           size_t dim,
+           tsReal val,
+           tsReal *out)
 {
 	size_t i;
 	for (i = 0; i < dim; i++)
 		out[i] = x[i] * val;
+}
+/*! @} */
+
+
+
+/*! @name Utility Functions
+ *
+ * @{
+ */
+int ts_knots_equal(tsReal x,
+                   tsReal y)
+{
+	return fabs(x-y) < TS_KNOT_EPSILON ? 1 : 0;
+}
+
+void ts_arr_fill(tsReal *arr,
+                 size_t num,
+                 tsReal val)
+{
+	size_t i;
+	for (i = 0; i < num; i++)
+		arr[i] = val;
+}
+
+tsReal ts_distance(const tsReal *x,
+                   const tsReal *y,
+                   size_t dim)
+{
+	size_t i;
+	tsReal sum = 0;
+	for (i = 0; i < dim; i++)
+		sum += (x[i] - y[i]) * (x[i] - y[i]);
+	return (tsReal) sqrt(sum);
 }
 /*! @} */
 

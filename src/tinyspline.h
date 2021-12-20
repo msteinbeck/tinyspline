@@ -2226,60 +2226,6 @@ tsError TINYSPLINE_API ts_bspline_load(const char *path, tsBSpline *spline,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Utility Functions                                                        *
-*                                                                             *
-* The following section contains utility functions used by TinySpline which   *
-* also may be helpful when using this library.                                *
-*                                                                             *
-******************************************************************************/
-/**
- * Checks whether \p x and \p y are equal with respect to the epsilon
- * environment TS_KNOT_EPSILON, i.e. their distance is less than
- * TS_KNOT_EPSILON.
- *
- * @param[in] x
- * 	A knot.
- * @param[in] y
- * 	A knot.
- * @return 1
- * 	If \p x and \p y are equal.
- * @return 0
- * 	If \p x and \p y are not equal.
- */
-int TINYSPLINE_API ts_knots_equal(tsReal x, tsReal y);
-
-/**
- * Fills the given array \p arr with \p val from \p arr+0 to \p arr+ \p num
- * (exclusive).
- *
- * @param[in] arr
- * 	The array to fill.
- * @param[in] num
- * 	The fill length.
- * @param[in] val
- * 	The value to fill into \p arr.
- */
-void TINYSPLINE_API ts_arr_fill(tsReal *arr, size_t num, tsReal val);
-
-/**
- * Returns the euclidean distance of the points \p x and \p y.
- *
- * @param[in] x
- * 	The x value.
- * @param[in] y
- * 	The y value.
- * @param[in] dimension
- * 	The dimension of \p x and \p y.
- * @return
- * 	The euclidean distance of \p x and \p y.
- */
-tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
-	size_t dimension);
-
-
-
 /*! @name Vector Math
  *
  * Vector math is a not insignificant part of TinySpline, and so it's not
@@ -2307,9 +2253,9 @@ tsReal TINYSPLINE_API ts_distance(const tsReal *x, const tsReal *y,
  */
 void TINYSPLINE_API
 ts_vec3_init(tsReal *out,
-	     tsReal x,
-	     tsReal y,
-	     tsReal z);
+             tsReal x,
+             tsReal y,
+             tsReal z);
 
 /**
  * Copies the values of vector \p x (a vector with dimensionality \p dim) to
@@ -2328,8 +2274,8 @@ ts_vec3_init(tsReal *out,
  */
 void TINYSPLINE_API
 ts_vec3_set(tsReal *out,
-	    const tsReal *x,
-	    size_t dim);
+            const tsReal *x,
+            size_t dim);
 
 /**
  * Adds vector \p y to vector \p x and stores the result in vector \p out.
@@ -2346,9 +2292,9 @@ ts_vec3_set(tsReal *out,
  */
 void TINYSPLINE_API
 ts_vec_add(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out);
+           const tsReal *y,
+           size_t dim,
+           tsReal *out);
 
 /**
  * Subtracts vector \p y from vector \p x and stores the result in vector \p
@@ -2366,9 +2312,9 @@ ts_vec_add(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_sub(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim,
-	   tsReal *out);
+           const tsReal *y,
+           size_t dim,
+           tsReal *out);
 
 /**
  * Computes the dot product (also known as scalar product) of the vectors \p x
@@ -2387,8 +2333,8 @@ ts_vec_sub(const tsReal *x,
  */
 tsReal TINYSPLINE_API
 ts_vec_dot(const tsReal *x,
-	   const tsReal *y,
-	   size_t dim);
+           const tsReal *y,
+           size_t dim);
 
 /**
  * Computes the cross product (also known as vector product or directed area
@@ -2405,8 +2351,8 @@ ts_vec_dot(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec3_cross(const tsReal *x,
-	      const tsReal *y,
-	      tsReal *out);
+              const tsReal *y,
+              tsReal *out);
 
 /**
  * Normalizes vector \p x.
@@ -2424,8 +2370,8 @@ ts_vec3_cross(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_norm(const tsReal *x,
-	    size_t dim,
-	    tsReal *out);
+            size_t dim,
+            tsReal *out);
 
 /**
  * Determines the length of vector \p x.
@@ -2439,7 +2385,7 @@ ts_vec_norm(const tsReal *x,
  */
 tsReal TINYSPLINE_API
 ts_vec_mag(const tsReal *x,
-	   size_t dim);
+           size_t dim);
 
 /**
  * Multiplies vector \p x with scalar \p val and stores the result in vector \p
@@ -2457,9 +2403,66 @@ ts_vec_mag(const tsReal *x,
  */
 void TINYSPLINE_API
 ts_vec_mul(const tsReal *x,
-	   size_t dim,
-	   tsReal val,
-	   tsReal *out);
+           size_t dim,
+           tsReal val,
+           tsReal *out);
+/*! @} */
+
+
+
+/*! @name Utility Functions
+ *
+ * @{
+ */
+/**
+ * Returns whether the knots \p x and \p y are equal with respect to the epsilon
+ * environment ::TS_KNOT_EPSILON (i.e., their distance is <u>less</u> than
+ * ::TS_KNOT_EPSILON).
+ *
+ * @param[in] x
+ * 	First knot.
+ * @param[in] y
+ * 	Second knot.
+ * @return 1
+ * 	If \p x and \p y are equal.
+ * @return 0
+ * 	If \p x and \p y are not equal.
+ */
+int TINYSPLINE_API
+ts_knots_equal(tsReal x,
+               tsReal y);
+
+/**
+ * Fills the given array \p arr with \p val.
+ *
+ * @param[in] arr
+ * 	The array to be filled.
+ * @param[in] num
+ * 	Fill length.
+ * @param[in] val
+ * 	The value to fill into \p arr.
+ */
+void TINYSPLINE_API
+ts_arr_fill(tsReal *arr,
+            size_t num,
+            tsReal val);
+
+/**
+ * Returns the euclidean distance of the points \p x and \p y.
+ *
+ * @param[in] x
+ * 	First point.
+ * @param[in] y
+ * 	Second point.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @return
+ * 	The euclidean distance of the points \p x and \p y.
+ */
+tsReal TINYSPLINE_API
+ts_distance(const tsReal *x,
+            const tsReal *y,
+            size_t dim);
 /*! @} */
 
 

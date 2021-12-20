@@ -2053,9 +2053,13 @@ tsError TINYSPLINE_API ts_bspline_elevate_degree(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If memory allocation failed.
  */
-tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
-	const tsBSpline *s2, tsReal epsilon, tsBSpline *s1_out,
-	tsBSpline *s2_out, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_align(const tsBSpline *s1,
+                 const tsBSpline *s2,
+                 tsReal epsilon,
+                 tsBSpline *s1_out,
+                 tsBSpline *s2_out,
+                 tsStatus *status);
 
 /**
  * Interpolates between \p source and \p target with respect to the time

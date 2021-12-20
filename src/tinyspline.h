@@ -1978,11 +1978,12 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
 
 /**
  * Decomposes \p spline into a sequence of Bezier curves by splitting it at
- * each internal knot value. Creates a deep copy of \p spline if
- * \p spline != \p beziers.
+ * each internal knot. If \p spline != \p beziers, the internal state of \p
+ * spline is not modified, that is, \p beziers is a new, independent
+ * ::tsBSpline instance.
  *
  * @param[in] spline
- * 	The spline to decompose.
+ * 	The spline to be decomposed.
  * @param[out] beziers
  * 	The bezier decomposition of \p spline.
  * @param[out] status
@@ -1992,8 +1993,10 @@ tsError TINYSPLINE_API ts_bspline_tension(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_to_beziers(const tsBSpline *spline,
-	tsBSpline *beziers, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_to_beziers(const tsBSpline *spline,
+                      tsBSpline *beziers,
+                      tsStatus *status);
 
 /**
  * Elevates the degree of \p spline by \p amount and stores the result in

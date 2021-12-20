@@ -1948,8 +1948,10 @@ tsError ts_bspline_tension(const tsBSpline *spline, tsReal tension,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
-	tsStatus *status)
+tsError
+ts_bspline_to_beziers(const tsBSpline *spline,
+                      tsBSpline *beziers,
+                      tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
@@ -1978,10 +1980,10 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 		u_min = knots[deg];
 		if (!ts_knots_equal(knots[0], u_min)) {
 			TS_CALL(try, err, ts_bspline_split(
-				&tmp, u_min, &tmp, &k, status))
+			        &tmp, u_min, &tmp, &k, status))
 			resize = (int)(-1*deg + (deg*2 - k));
 			TS_CALL(try, err, ts_int_bspline_resize(
-				&tmp, resize, 0, &tmp, status))
+			        &tmp, resize, 0, &tmp, status))
 			knots = ts_int_bspline_access_knots(&tmp);
 			num_knots = ts_bspline_num_knots(&tmp);
 		}
@@ -1990,11 +1992,11 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 		u_max = knots[num_knots - order];
 		if (!ts_knots_equal(knots[num_knots - 1], u_max)) {
 			TS_CALL(try, err, ts_bspline_split(
-				&tmp, u_max, &tmp, &k, status))
+			        &tmp, u_max, &tmp, &k, status))
 			num_knots = ts_bspline_num_knots(&tmp);
 			resize = (int)(-1*deg + (k - (num_knots - order)));
 			TS_CALL(try, err, ts_int_bspline_resize(
-				&tmp, resize, 1, &tmp, status))
+			        &tmp, resize, 1, &tmp, status))
 			knots = ts_int_bspline_access_knots(&tmp);
 			num_knots = ts_bspline_num_knots(&tmp);
 		}
@@ -2003,7 +2005,7 @@ tsError ts_bspline_to_beziers(const tsBSpline *spline, tsBSpline *beziers,
 		k = order;
 		while (k < num_knots - order) {
 			TS_CALL(try, err, ts_bspline_split(
-				&tmp, knots[k], &tmp, &k, status))
+			        &tmp, knots[k], &tmp, &k, status))
 			knots = ts_int_bspline_access_knots(&tmp);
 			num_knots = ts_bspline_num_knots(&tmp);
 			k++;

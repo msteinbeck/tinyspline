@@ -1940,8 +1940,8 @@ ts_bspline_tension(const tsBSpline *spline,
 
 	TS_CALL_ROE(err, ts_bspline_copy(spline, out, status))
 	ctrlp = ts_int_bspline_access_ctrlp(out);
-	if (beta < 0.f) beta = 0;
-	if (beta > 1.f) beta = 1;
+	if (beta < (tsReal) 0.0) beta = (tsReal) 0.0;
+	if (beta > (tsReal) 1.0) beta = (tsReal) 1.0;
 	s = 1.f - beta;
 
 	for (i = 0; i < N; i++) {

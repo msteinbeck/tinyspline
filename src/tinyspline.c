@@ -2405,10 +2405,8 @@ ts_bspline_morph(const tsBSpline *source,
 	target_al = ts_bspline_init();
 	TS_TRY(try, err, status)
 		/* Clamp `t' to domain [0, 1] and set up `t_hat'. */
-		if (t < (tsReal) 0.0)
-			t = (tsReal) 0.0;
-		if (t > (tsReal) 1.0)
-			t = (tsReal) 1.0;
+		if (t < (tsReal) 0.0) t = (tsReal) 0.0;
+		if (t > (tsReal) 1.0) t = (tsReal) 1.0;
 		t_hat = (tsReal) 1.0 - t;
 
 		/* Set up `source_al' and `target_al'. */

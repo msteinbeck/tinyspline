@@ -2132,7 +2132,7 @@ ts_bspline_align(const tsBSpline *s1,
  * 	Target spline.
  * @param[in] t
  * 	The time parameter. If 0, \p out becomes \p source. If 1, \p out becomes
- * 	\p target. Note that this value is clamped to the domain [0, 1].
+ * 	\p target. Note that the value is clamped to the domain [0, 1].
  * @param[in] epsilon
  * 	If \p source and \p target must be aligned, this parameter is passed
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1

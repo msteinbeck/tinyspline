@@ -2075,8 +2075,8 @@ tsError TINYSPLINE_API ts_bspline_align(const tsBSpline *s1,
  *         ts_bspline_morph(&source, &target, t, ..., &morph, ...);
  *     ts_bspline_free(&morph);
  *
- * It should be noted that this function aligns \p source and \p target using
- * ::ts_bspline_align if necessary. In order to avoid the overhead of spline
+ * It should be noted that this function, if necessary, aligns \p source and \p
+ * target using ::ts_bspline_align. In order to avoid the overhead of spline
  * alignment, \p source and \p target should be aligned in advance.
  *
  * @param[in] source

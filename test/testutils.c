@@ -1,7 +1,10 @@
 #include "testutils.h"
 
 void
-assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps)
+assert_equal_shape_eps(CuTest *tc,
+                       tsBSpline *s1,
+                       tsBSpline *s2,
+                       double eps)
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal min, max, knot, dist, *s1val = NULL, *s2val = NULL;
@@ -20,9 +23,9 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps)
 		knot = (tsReal)k / TS_MAX_NUM_KNOTS;
 		knot = ( (max - min) * knot ) + min;
 		TS_CALL(try, status.code, ts_bspline_eval(
-			s1, knot, &net, &status))
+		        s1, knot, &net, &status))
 		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &s1val, &status))
+		        &net, &s1val, &status))
 		ts_deboornet_free(&net);
 
 		/* Eval s2. */
@@ -30,9 +33,9 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps)
 		knot = (tsReal)k / TS_MAX_NUM_KNOTS;
 		knot = ( (max - min) * knot ) + min;
 		TS_CALL(try, status.code, ts_bspline_eval(
-			s2, knot, &net, &status))
+		        s2, knot, &net, &status))
 		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &s2val, &status))
+		        &net, &s2val, &status))
 		ts_deboornet_free(&net);
 
 		/* Compare results. */
@@ -54,13 +57,19 @@ assert_equal_shape_eps(CuTest *tc, tsBSpline *s1, tsBSpline *s2, double eps)
 }
 
 void
-assert_equal_shape(CuTest *tc, tsBSpline *s1, tsBSpline *s2)
+assert_equal_shape(CuTest *tc,
+                   tsBSpline *s1,
+                   tsBSpline *s2)
 {
 	assert_equal_shape_eps(tc, s1, s2, POINT_EPSILON);
 }
 
 tsReal
-ts_distance_varargs(CuTest *tc, size_t dim, tsReal *x, double first, ...)
+ts_distance_varargs(CuTest *tc,
+                    size_t dim,
+                    tsReal *x,
+                    double first,
+                    ...)
 {
 	va_list argp;
 	tsReal dist, *y = NULL;

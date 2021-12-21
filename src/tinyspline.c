@@ -1607,8 +1607,12 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 * :: Transformation Functions                                                 *
 *                                                                             *
 ******************************************************************************/
-tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
-	tsBSpline *_resized_, tsStatus *status)
+tsError
+ts_int_bspline_resize(const tsBSpline *spline,
+                      int n,
+                      int back,
+                      tsBSpline *resized,
+                      tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1633,11 +1637,12 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 	tsError err;
 
 	if (n == 0)
-		return ts_bspline_copy(spline, _resized_, status);
+		return ts_bspline_copy(spline, resized, status);
 
-	INIT_OUT_BSPLINE(spline, _resized_)
+	INIT_OUT_BSPLINE(spline, resized)
 	TS_CALL_ROE(err, ts_bspline_new(
-		nnum_ctrlp, dim, deg, TS_OPENED, &tmp, status))
+	            nnum_ctrlp, dim, deg, TS_OPENED,
+	            &tmp, status))
 	to_ctrlp = ts_int_bspline_access_ctrlp(&tmp);
 	to_knots = ts_int_bspline_access_knots(&tmp);
 
@@ -1654,9 +1659,9 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 		memcpy(to_knots, from_knots, sof_min_num_knots);
 	}
 
-	if (spline == _resized_)
-		ts_bspline_free(_resized_);
-	ts_bspline_move(&tmp, _resized_);
+	if (spline == resized)
+		ts_bspline_free(resized);
+	ts_bspline_move(&tmp, resized);
 	TS_RETURN_SUCCESS(status)
 }
 

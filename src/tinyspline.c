@@ -1660,8 +1660,12 @@ tsError ts_int_bspline_resize(const tsBSpline *spline, int n, int back,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
-	tsBSpline *derivative, tsStatus *status)
+tsError
+ts_bspline_derive(const tsBSpline *spline,
+                  size_t n,
+                  tsReal epsilon,
+                  tsBSpline *deriv,
+                  tsStatus *status)
 {
 	const size_t sof_real = sizeof(tsReal);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -1683,7 +1687,7 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	tsBSpline swap; /**< Used to swap worker and derivative. */
 	tsError err;
 
-	INIT_OUT_BSPLINE(spline, derivative)
+	INIT_OUT_BSPLINE(spline, deriv)
 	TS_CALL_ROE(err, ts_bspline_copy(spline, &worker, status))
 	ctrlp = ts_int_bspline_access_ctrlp(&worker);
 	knots = ts_int_bspline_access_knots(&worker);
@@ -1693,7 +1697,8 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 			if (deg == 0) {
 				ts_arr_fill(ctrlp, dim, 0.f);
 				ts_bspline_domain(spline,
-					&knots[0], &knots[1]);
+				                  &knots[0],
+				                  &knots[1]);
 				num_ctrlp = 1;
 				num_knots = 2;
 				break;
@@ -1707,14 +1712,16 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 				dist = ts_distance(fst, snd, dim);
 				if (epsilon >= 0.f && dist > epsilon) {
 					TS_THROW_1(try, err, status,
-						TS_UNDERIVABLE,
-						"discontinuity at knot: %f",
-						knots[i])
+					           TS_UNDERIVABLE,
+					           "discontinuity at knot: %f",
+					           knots[i])
 				}
-				memmove(snd, snd + dim,
-					(num_ctrlp - (i+1-deg)) * sof_ctrlp);
-				memmove(&knots[i], &knots[i+1],
-					(num_knots - (i+1)) * sof_real);
+				memmove(snd,
+				        snd + dim,
+				        (num_ctrlp - (i+1-deg)) * sof_ctrlp);
+				memmove(&knots[i],
+				        &knots[i+1],
+				        (num_knots - (i+1)) * sof_real);
 				num_ctrlp--;
 				num_knots--;
 				i += deg-1;
@@ -1740,14 +1747,17 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 			knots     += 1;
 		}
 		TS_CALL(try, err, ts_bspline_new(
-			num_ctrlp, dim, deg, TS_OPENED, &swap, status))
-		memcpy(ts_int_bspline_access_ctrlp(&swap), ctrlp,
-			num_ctrlp * sof_ctrlp);
-		memcpy(ts_int_bspline_access_knots(&swap), knots,
-			num_knots * sof_real);
-		if (spline == derivative)
-			ts_bspline_free(derivative);
-		ts_bspline_move(&swap, derivative);
+		        num_ctrlp, dim, deg, TS_OPENED,
+		        &swap, status))
+		memcpy(ts_int_bspline_access_ctrlp(&swap),
+		       ctrlp,
+		       num_ctrlp * sof_ctrlp);
+		memcpy(ts_int_bspline_access_knots(&swap),
+		       knots,
+		       num_knots * sof_real);
+		if (spline == deriv)
+			ts_bspline_free(deriv);
+		ts_bspline_move(&swap, deriv);
 	TS_FINALLY
 		ts_bspline_free(&worker);
 	TS_END_TRY_RETURN(err)

@@ -1835,43 +1835,46 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 *                                                                             *
 ******************************************************************************/
 /**
- * Returns the \p n'th derivative of \p spline and stores the result in
- * \p derivative. Creates a deep copy of \p spline if
- * \p spline != \p derivative. For more details, see:
+ * Returns the \p n'th derivative of \p spline as ::tsBSpline instance. The
+ * derivative of a spline \c s of degree \c d (\c d > 0) with \c m control
+ * points and \c n knots is another spline \c s' of degree \c d-1 with \c m-1
+ * control points and \c n-2 knots, defined over \c s as:
+ *
+ * \f{eqnarray*}{
+ *   s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u)    *
+ *                              (P_{i+1} - P_{i}) *
+ *                              p / (u_{i+p+1}-u_{i+1}) \\
+ *         &=& \sum_{i=1}^{n} N_{i,p-1}(u)      *
+ *                            (P_{i} - P_{i-1}) *
+ *                            p / (u_{i+p}-u_{i})
+ * \f}
+ *
+ * If \c s has a clamped knot vector, it can be shown that:
+ *
+ * \f{eqnarray*}{
+ *   s'(u) &=& \sum_{i=0}^{n-1} N_{i,p-1}(u)      *
+ *                              (P_{i+1} - P_{i}) *
+ *                              p / (u_{i+p+1}-u_{i+1})
+ * \f}
+ *
+ * where the multiplicity of the first and the last knot value \c u is \c p
+ * rather than \c p+1. The derivative of a point (degree 0) is another point
+ * with coordinate 0. For more details, see:
  *
  *     http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
  *
- * The derivative of a spline _s_ of degree _d_ (_d_ > 0) with _m_ control
- * points and _n_ knots is another spline _s'_ of degree _d-1_ with _m-1_
- * control points and _n-2_ knots, defined over _s_ as:
- *
- * \f{eqnarray*}{
- *   s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u) *
- * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1}) \\
- *         &=& \sum_{i=1}^{n} N_{i,p-1}(u) *
- * 		(P_{i} - P_{i-1}) * p / (u_{i+p}-u_{i})
- * \f}
- *
- * If _s_ has a clamped knot vector, it can be shown that:
- *
- * \f{eqnarray*}{
- *   s'(u) &=& \sum_{i=0}^{n-1} N_{i,p-1}(u) *
- * 		(P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1})
- * \f}
- *
- * where the multiplicity of the first and the last knot value _u_ is _p_
- * rather than _p+1_. The derivative of a point (degree == 0) is another point
- * with coordinate 0.
+ * If \p spline != \p deriv, the internal state of \p spline is not modified,
+ * that is, \p deriv is a new, independent ::tsBSpline instance.
  *
  * @param[in] spline
- * 	The spline to derive.
+ * 	The spline to be derived.
  * @param[in] n
- * 	The number of derivations.
+ * 	Number of derivations.
  * @param[in] epsilon
  * 	The maximum distance of discontinuous points. If negative,
  * 	discontinuity is ignored and the derivative is computed based on the
- * 	first result of the corresponding DeBoorNet.
- * @param[out] derivative
+ * 	first result of the corresponding ::tsDeboorNet.
+ * @param[out] deriv
  *	The derivative of \p spline.
  * @param[out] status
  * 	The status of this function. May be NULL.
@@ -1883,8 +1886,12 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
-	tsReal epsilon, tsBSpline *derivative, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_derive(const tsBSpline *spline,
+                  size_t n,
+                  tsReal epsilon,
+                  tsBSpline *deriv,
+                  tsStatus *status);
 
 /**
  * Inserts \p knot \p num times into the knot vector of \p spline. The

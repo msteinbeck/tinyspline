@@ -1887,17 +1887,18 @@ tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
 	tsReal epsilon, tsBSpline *derivative, tsStatus *status);
 
 /**
- * Inserts \p knot \p num times into the knot vector of \p spline and stores
- * the result in \p result. Creates a deep copy of \p spline if \p spline !=
- * \p result. The operation fails if \p result would have an invalid knot
- * vector ( i.e., multiplicity(\p knot) > order(\p result) ).
+ * Inserts \p knot \p num times into the knot vector of \p spline. The
+ * operation fails if \p result would have an invalid knot vector (i.e.,
+ * multiplicity(knot) > order(result)). If \p spline != \p result, the internal
+ * state of \p spline is not modified, that is, \p result is a new, independent
+ * ::tsBSpline instance.
  *
  * @param[in] spline
  * 	The spline into which \p knot is inserted \p num times.
  * @param[in] knot
- * 	The knot to insert.
+ * 	The knot to be inserted.
  * @param[in] num
- * 	How many times \p knot should be inserted.
+ * 	Number of insertions.
  * @param[out] result
  * 	The output spline.
  * @param[out] k
@@ -1914,9 +1915,12 @@ tsError TINYSPLINE_API ts_bspline_derive(const tsBSpline *spline, size_t n,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline,
-	tsReal knot, size_t num, tsBSpline *result, size_t *k,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_insert_knot(const tsBSpline *spline,
+                       tsReal knot, size_t num,
+                       tsBSpline *result,
+                       size_t *k,
+                       tsStatus *status);
 
 /**
  * Splits \p spline at \p knot. That is, \p knot is inserted into \p spline \c

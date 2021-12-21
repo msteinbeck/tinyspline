@@ -2087,7 +2087,7 @@ ts_bspline_elevate_degree(const tsBSpline *spline,
  * 	The spline which is to be aligned with \p s2.
  * @param[in] s2
  * 	The spline which is to be aligned with \p s1.
- * @param[int] epsilon
+ * @param[in] epsilon
  * 	Spline alignment relies on degree elevation. This parameter is used in
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2

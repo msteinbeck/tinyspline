@@ -1772,68 +1772,54 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Transformation functions                                                 *
-*                                                                             *
-* TinySpline is a library focusing on transformations. That is, most          *
-* functions are used to transform splines by modifying their state, e.g.,     *
-* their number of control points, their degree, and so on. Accordingly, each  *
-* transformation functions specifies an input and output parameter (along     *
-* with the other parameters required to calculate the actual transformation). *
-* By passing a different pointer to the output parameter, the transformation  *
-* result is calculated and stored without changing the state of the input.    *
-* This is in particular useful when dealing with errors as the original state *
-* will never be modified. For instance, let's have a look at the following    *
-* code snippet:                                                               *
-*                                                                             *
-*     tsBSpline in = ...    // an arbitrary spline                            *
-*     tsBSpline out;        // result of transformation                       *
-*                                                                             *
-*     // Subdivide 'in' into sequence of bezier curves and store the result   *
-*     // in 'out'. Does not change 'in' in any way.                           *
-*     tsError err = ts_bspline_to_beziers(&in, &out);                         *
-*     if (err != TS_SUCCESS) {                                                *
-*         // fortunately, 'in' has not been changed                           *
-*     }                                                                       *
-*                                                                             *
-* Even if 'ts_bspline_to_beziers' fails, the state of 'in' has not been       *
-* changed allowing you to handle the error properly.                          *
-*                                                                             *
-* Unless stated otherwise, the order of the parameters for transformation     *
-* functions is:                                                               *
-*                                                                             *
-*     function(input, [additional_input], output, [additional_output])        *
-*                                                                             *
-* 'additional_input' are parameters required to calculate the actual          *
-* transformation. 'additional_output' are parameters storing further result.  *
-*                                                                             *
-* Note: None of TinySpline's transformation functions frees the memory of the *
-*       output parameter. Thus, when using the same output parameter multiple *
-*       times, make sure to free memory before each call. Otherwise, you will *
-*       have a bad time with memory leaks:                                    *
-*                                                                             *
-*     tsBSpline in = ...                  // an arbitrary spline              *
-*     tsBSpline out;                      // result of transformations        *
-*                                                                             *
-*     ts_bspline_to_beziers(&in, &out);    // first transformation            *
-*     ...                                  // some code                       *
-*     ts_bspline_free(&out);               // avoid memory leak.              *
-*     ts_bspline_tension(&in, 0.85, &out); // next transformation             *
-*                                                                             *
-* If you want to modify your input directly without having a separate output, *
-* pass it as input and output at once:                                        *
-*                                                                             *
-*     tsBSpline s = ...                       // an arbitrary spline          *
-*     tsReal *knots = ...                     // a knot vector                *
-*                                                                             *
-*     ts_bspline_set_knots(&s, knots, &s);    // copy 'knots' into 's'        *
-*                                                                             *
-* Note: If a transformation function fails *and* input != output, all fields  *
-*       of the output parameter are set to 0/NULL. If input == output, your   *
-*       input may have an invalid state in case of errors.                    *
-*                                                                             *
-******************************************************************************/
+/*! @name Transformation Functions
+ *
+ * A transformation modifies the internal state of a spline, e.g., its number
+ * of control points, the structure of its knot vector, its degree, and so
+ * on. It should be noted that some transformation modify a spline's state
+ * without changing its shape (e.g., ::ts_bspline_elevate). All transformations
+ * specify at least three parameters: i) an input spline (the spline to be
+ * transformed), ii) an output spline (the spline which receives the result of
+ * the transformation), and iii) a ::tsStatus (output parameter for error
+ * handling). Along with these parameters, additional parameters may be
+ * necessary to i) calculate a certain transformation (such as
+ * ::ts_bspline_tension) or ii) to store additional results (such as
+ * ::ts_bspline_insert_knot). Unless stated otherwise, the order of the
+ * parameters of a transformation \c t is:
+ *
+ *     t(input, [additional_input], output, [additional_output], status)
+ *
+ * Note: None of the transformations releases the memory of the output spline
+ *       before assigning the transformation result to it. Thus, when using the
+ *       same output spline multiple times, make sure to release its memory
+ *       before each call (after the first one). If not, severe memory leaks
+ *       are to be expected:
+ *
+ *     tsBSpline in = ...                  // an arbitrary spline
+ *     tsBSpline out = ts_bspline_init();  // stores the result
+ *
+ *     ts_bspline_to_beziers(&in, &out);    // first transformation
+ *     ...                                  // some code
+ *     ts_bspline_free(&out);               // avoid memory leak.
+ *     ts_bspline_tension(&in, 0.85, &out); // next transformation
+ *
+ * It is possible to pass a spline as input and output argument at the same
+ * time. In this case, the called transformation uses a temporary buffer to
+ * store the working data and result. If the transformation succeeds, the
+ * memory of the supplied spline is released and the transformation result is
+ * assigned to it. So even if a transformation fails, the internal state of the
+ * supplied splines stays intact (i.e., it remains unchanged).
+ *
+ * Note: It is not necessary to release the memory of a spline which is passed
+ *       as input and output argument at the same time before calling the next
+ *       transformation (in fact that would fail due to a null pointer):
+ *
+ *     tsBSpline spline = ...                      // an arbitrary spline
+ *     ts_bspline_to_beziers(&spline, &spline);    // first transformation
+ *     ts_bspline_tension(&spline, 0.85, &spline); // next transformation
+ *
+ * @{
+ */
 /**
  * Returns the \p n'th derivative of \p spline as ::tsBSpline instance. The
  * derivative of a spline \c s of degree \c d (\c d > 0) with \c m control
@@ -2168,6 +2154,7 @@ ts_bspline_morph(const tsBSpline *source,
                  tsReal epsilon,
                  tsBSpline *out,
                  tsStatus *status);
+/*! @} */
 
 
 

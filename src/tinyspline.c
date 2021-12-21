@@ -1602,11 +1602,10 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Transformation Functions                                                 *
-*                                                                             *
-******************************************************************************/
+/*! @name Transformation Functions
+ *
+ * @{
+ */
 tsError
 ts_int_bspline_resize(const tsBSpline *spline,
                       int n,
@@ -2496,6 +2495,7 @@ ts_bspline_morph(const tsBSpline *source,
 			ts_bspline_free(&target_al);
 	TS_END_TRY_RETURN(err)
 }
+/*! @} */
 
 
 

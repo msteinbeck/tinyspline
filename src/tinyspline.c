@@ -1961,8 +1961,9 @@ ts_bspline_tension(const tsBSpline *spline,
 	const tsReal* pn_1 = p0 + (N-1)*dim;
 
 	tsReal s; /**< The straightening factor. */
-	tsReal *ctrlp; /**< Pointer to the control points of \p out. */
+	tsReal *ctrlp; /**< Pointer to the control points of `out'. */
 	size_t i, d; /**< Used in for loops. */
+	tsReal vec; /**< Straightening vector. */
 	tsError err;
 
 	TS_CALL_ROE(err, ts_bspline_copy(spline, out, status))
@@ -1973,11 +1974,9 @@ ts_bspline_tension(const tsBSpline *spline,
 
 	for (i = 0; i < N; i++) {
 		for (d = 0; d < dim; d++) {
-			ctrlp[i*dim + d] *= beta;
-			ctrlp[i*dim + d] += s * (
-				p0[d] +
-				((tsReal)i / (N-1)) * (pn_1[d] - p0[d])
-				);
+			vec = ((tsReal)i / (N-1)) * (pn_1[d] - p0[d]);
+			ctrlp[i*dim + d] = beta * ctrlp[i*dim + d] +
+			                   s * (p0[d] + vec);
 		}
 	}
 	TS_RETURN_SUCCESS(status)

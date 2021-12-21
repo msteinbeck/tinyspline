@@ -15,6 +15,7 @@ CuSuite* get_bisect_suite();
 CuSuite* get_save_load_suite();
 CuSuite* get_elevate_degree_suite();
 CuSuite* get_align_suite();
+CuSuite* get_tension_suite();
 
 int main()
 {
@@ -37,6 +38,7 @@ int main()
 	CuSuiteAddSuite(suite, get_save_load_suite());
 	CuSuiteAddSuite(suite, get_elevate_degree_suite());
 	CuSuiteAddSuite(suite, get_align_suite());
+	CuSuiteAddSuite(suite, get_tension_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

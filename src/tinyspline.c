@@ -1753,16 +1753,19 @@ tsError ts_bspline_derive(const tsBSpline *spline, size_t n, tsReal epsilon,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
-	const tsDeBoorNet *deBoorNet, size_t n, tsBSpline *result,
-	tsStatus *status)
+tsError
+ts_int_bspline_insert_knot(const tsBSpline *spline,
+                           const tsDeBoorNet *net,
+                           size_t n,
+                           tsBSpline *result,
+                           tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
 	const size_t dim = ts_bspline_dimension(spline);
-	const tsReal knot = ts_deboornet_knot(deBoorNet);
-	const size_t k = ts_deboornet_index(deBoorNet);
-	const size_t mult = ts_deboornet_multiplicity(deBoorNet);
+	const tsReal knot = ts_deboornet_knot(net);
+	const size_t k = ts_deboornet_index(net);
+	const size_t mult = ts_deboornet_multiplicity(net);
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_ctrlp = dim * sof_real;
 
@@ -1784,13 +1787,13 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 		return ts_bspline_copy(spline, result, status);
 	if (mult + n > order) {
 		TS_RETURN_4(status, TS_MULTIPLICITY,
-			"multiplicity(%f) (%lu) + %lu > order (%lu)",
-			knot, (unsigned long) mult, (unsigned long) n,
-			(unsigned long) order)
+		            "multiplicity(%f) (%lu) + %lu > order (%lu)",
+		            knot, (unsigned long) mult, (unsigned long) n,
+		            (unsigned long) order)
 	}
 
 	TS_CALL_ROE(err, ts_int_bspline_resize(
-		spline, (int)n, 1, result, status))
+	            spline, (int)n, 1, result, status))
 	ctrlp_spline = ts_int_bspline_access_ctrlp(spline);
 	knots_spline = ts_int_bspline_access_knots(spline);
 	ctrlp_result = ts_int_bspline_access_ctrlp(result);
@@ -1802,26 +1805,24 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 	 * =>  mult <= deg
 	 * =>  regular evaluation
 	 * =>  N = h + 1 is valid */
-	N = ts_deboornet_num_insertions(deBoorNet) + 1;
+	N = ts_deboornet_num_insertions(net) + 1;
 
-	/* 1. Copy all necessary control points and knots from
-	 *    the original B-Spline.
-	 * 2. Copy all necessary control points and knots from
-	 *    the de Boor net. */
+	/* 1. Copy the relevant control points and knots from `spline'.
+	 * 2. Copy the relevant control points and knots from `net'. */
 
 	/* 1.
 	 *
-	 * a) Copy left hand side control points from original b-spline.
-	 * b) Copy right hand side control points from original b-spline.
-	 * c) Copy left hand side knots from original b-spline.
-	 * d) Copy right hand side knots form original b-spline. */
-	/* copy control points */
+	 * a) Copy left hand side control points from `spline'.
+	 * b) Copy right hand side control points from `spline'.
+	 * c) Copy left hand side knots from `spline'.
+	 * d) Copy right hand side knots form `spline'. */
+	/*** Copy Control Points ***/
 	memmove(ctrlp_result, ctrlp_spline, (k-deg) * sof_ctrlp);      /* a) */
 	from = (tsReal *) ctrlp_spline + dim*(k-deg+N);
 	/* n >= 0 implies to >= from */
 	to = ctrlp_result + dim*(k-deg+N+n);
 	memmove(to, from, (num_ctrlp_result-n-(k-deg+N)) * sof_ctrlp); /* b) */
-	/* copy knots */
+	/*** Copy Knots ***/
 	memmove(knots_result, knots_spline, (k+1) * sof_real);         /* c) */
 	from = (tsReal *) knots_spline + k+1;
 	/* n >= 0 implies to >= from */
@@ -1830,15 +1831,15 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 
 	/* 2.
 	 *
-	 * a) Copy left hand side control points from de boor net.
-	 * b) Copy middle part control points from de boor net.
-	 * c) Copy right hand side control points from de boor net.
-	 * d) Insert knots with u_k. */
-	from = ts_int_deboornet_access_points(deBoorNet);
+	 * a) Copy left hand side control points from `net'.
+	 * b) Copy middle part control points from `net'.
+	 * c) Copy right hand side control points from `net'.
+	 * d) Copy knot from `net' (`knot'). */
+	from = ts_int_deboornet_access_points(net);
 	to = ctrlp_result + (k-deg)*dim;
 	stride = (int)(N*dim);
 
-	/* copy control points */
+	/*** Copy Control Points ***/
 	for (i = 0; i < n; i++) {                                      /* a) */
 		memcpy(to, from, sof_ctrlp);
 		from += stride;
@@ -1863,7 +1864,7 @@ tsError ts_int_bspline_insert_knot(const tsBSpline *spline,
 		stride -= (int)dim;
 		to += dim;
 	}
-	/* copy knots */
+	/*** Copy Knot ***/
 	to = knots_result + k+1;
 	for (i = 0; i < n; i++) {                                      /* d) */
 		*to = knot;

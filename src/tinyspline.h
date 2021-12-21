@@ -1919,30 +1919,34 @@ tsError TINYSPLINE_API ts_bspline_insert_knot(const tsBSpline *spline,
 	tsStatus *status);
 
 /**
- * Splits \p spline at knot value \p u and stores the result in \p split. That
- * is, \p u is inserted _n_ times such that the multiplicity of \p u is equal
- * to the \p spline's order. Creates a deep copy of \p spline if
- * \p spline != \p split.
+ * Splits \p spline at \p knot. That is, \p knot is inserted into \p spline \c
+ * n times such that the multiplicity of \p knot is equal the spline's order.
+ * If \p spline != \p split, the internal state of \p spline is not modified,
+ * that is, \p split is a new, independent ::tsBSpline instance.
  *
  * @param[in] spline
- * 	The spline to split.
- * @param[in] u
+ * 	The spline to be split.
+ * @param[in] knot
  * 	The split point (knot).
  * @param[out] split
  * 	The split spline.
  * @param[out] k
- * 	Stores the last index of \p u in \p split.
+ * 	Stores the last index of \p knot in \p split.
  * @param[out] status
- * 	Stores the last index of \p u in \p result.
+ * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
- * 	If \p spline is not defined at knot value \p u.
+ * 	If \p spline is not defined at \p knot.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_split(const tsBSpline *spline, tsReal u,
-	tsBSpline *split, size_t *k, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_split(const tsBSpline *spline,
+                 tsReal knot,
+                 tsBSpline *split,
+                 size_t *k,
+                 tsStatus *status);
 
 /**
  * Straightens the control points of \p spline according to \p beta (0 yields a

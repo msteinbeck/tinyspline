@@ -1893,27 +1893,32 @@ tsError ts_bspline_insert_knot(const tsBSpline *spline, tsReal u, size_t num,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_split(const tsBSpline *spline, tsReal u, tsBSpline *split,
-	size_t* k, tsStatus *status)
+tsError
+ts_bspline_split(const tsBSpline *spline,
+                 tsReal knot,
+                 tsBSpline *split,
+                 size_t* k,
+                 tsStatus *status)
 {
 	tsDeBoorNet net;
 	tsError err;
 	INIT_OUT_BSPLINE(spline, split)
 	ts_int_deboornet_init(&net);
 	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_bspline_eval(spline, u, &net, status))
+		TS_CALL(try, err, ts_bspline_eval(
+		        spline, knot, &net, status))
 		if (ts_deboornet_multiplicity(&net)
-				== ts_bspline_order(spline)) {
+		    == ts_bspline_order(spline)) {
 			TS_CALL(try, err, ts_bspline_copy(
-				spline, split, status))
+			        spline, split, status))
 			*k = ts_deboornet_index(&net);
 		} else {
 			TS_CALL(try, err, ts_int_bspline_insert_knot(
-				spline, &net,
-				ts_deboornet_num_insertions(&net) + 1, split,
-				status))
+			        spline, &net,
+			        ts_deboornet_num_insertions(&net) + 1,
+			        split, status))
 			*k = ts_deboornet_index(&net) +
-				ts_deboornet_num_insertions(&net) + 1;
+			     ts_deboornet_num_insertions(&net) + 1;
 		}
 	TS_CATCH(err)
 		*k = 0;

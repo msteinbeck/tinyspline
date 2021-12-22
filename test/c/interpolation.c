@@ -278,6 +278,35 @@ interpolation_catmull_rom_single_point(CuTest *tc)
 	ts_bspline_free(&point);
 }
 
+void
+interpolation_catmull_rom_same_point(CuTest *tc)
+{
+
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline point = ts_bspline_init();
+	tsReal ctrlp[6] = { 1.0, 2.0, 1.1, 2.0, 1.0, 2.1 };
+
+	___GIVEN___
+	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &point, &status))
+	C(ts_bspline_set_control_points(&point, ctrlp, &status))
+
+	___WHEN___
+	C(ts_bspline_interpolate_catmull_rom(
+		ctrlp, 3, 2, 0.5, NULL, NULL,
+		(tsReal) 0.2, &spline, &status))
+
+	___THEN___
+	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 2, ts_bspline_dimension(&spline));
+	assert_equal_shape(tc, &spline, &point);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&point);
+}
+
 CuSuite* get_interpolation_suite()
 {
 	CuSuite* suite = CuSuiteNew();
@@ -286,5 +315,6 @@ CuSuite* get_interpolation_suite()
 	SUITE_ADD_TEST(suite, interpolation_issue32);
 	SUITE_ADD_TEST(suite, interpolation_catmull_rom);
 	SUITE_ADD_TEST(suite, interpolation_catmull_rom_single_point);
+	SUITE_ADD_TEST(suite, interpolation_catmull_rom_same_point);
 	return suite;
 }

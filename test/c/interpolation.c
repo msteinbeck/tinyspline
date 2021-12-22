@@ -93,6 +93,34 @@ interpolation_cubic_natural(CuTest *tc)
 }
 
 void
+interpolation_cubic_natural_single_point(CuTest *tc)
+{
+
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline point = ts_bspline_init();
+	tsReal ctrlp[4] = { -5.0, 5.0, 3.2 };
+
+	___GIVEN___
+	C(ts_bspline_new(1, 3, 0, TS_CLAMPED, &point, &status))
+	C(ts_bspline_set_control_points(&point, ctrlp, &status))
+
+	___WHEN___
+	C(ts_bspline_interpolate_cubic_natural(
+		ctrlp, 1, 3, &spline, &status))
+
+	___THEN___
+	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 3, ts_bspline_dimension(&spline));
+	assert_equal_shape(tc, &spline, &point);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&point);
+}
+
+void
 interpolation_issue32(CuTest *tc)
 {
 	___SETUP___
@@ -198,8 +226,7 @@ interpolation_catmull_rom(CuTest *tc)
 		POINT_EPSILON, &spline, &status))
 
 	___THEN___
-	for (i = 0; i < 400; i++)
-	{
+	for (i = 0; i < 400; i++) {
 		C(ts_bspline_bisect(&spline,
 		                    samples[i * 2],
 		                    POINT_EPSILON,
@@ -222,11 +249,42 @@ interpolation_catmull_rom(CuTest *tc)
 	ts_bspline_free(&spline);
 }
 
+void
+interpolation_catmull_rom_single_point(CuTest *tc)
+{
+
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsBSpline point = ts_bspline_init();
+	tsReal ctrlp[2] = { 10.0, 10.0 };
+
+	___GIVEN___
+	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &point, &status))
+	C(ts_bspline_set_control_points(&point, ctrlp, &status))
+
+	___WHEN___
+	C(ts_bspline_interpolate_catmull_rom(
+		ctrlp, 1, 2, 0.5, NULL, NULL,
+		POINT_EPSILON, &spline, &status))
+
+	___THEN___
+	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 2, ts_bspline_dimension(&spline));
+	assert_equal_shape(tc, &spline, &point);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_bspline_free(&point);
+}
+
 CuSuite* get_interpolation_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, interpolation_cubic_natural);
+	SUITE_ADD_TEST(suite, interpolation_cubic_natural_single_point);
 	SUITE_ADD_TEST(suite, interpolation_issue32);
 	SUITE_ADD_TEST(suite, interpolation_catmull_rom);
+	SUITE_ADD_TEST(suite, interpolation_catmull_rom_single_point);
 	return suite;
 }

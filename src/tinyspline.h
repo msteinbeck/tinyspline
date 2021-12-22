@@ -1358,9 +1358,9 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
  *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
  *
- * The resultant spline is a sequence of bezier curves connecting each point
- * in \p points. Each bezier curve is of degree 3 with dimensionality
- * \p dimension. The total number of control points is:
+ * The interpolated spline is a sequence of bezier curves connecting each point
+ * in \p points. Each bezier curve is of degree \c 3 with dimensionality \p
+ * dimension. The total number of control points is:
  *
  *     min(1, \p num_points - 1) * 4
  *
@@ -1371,13 +1371,14 @@ void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
  *     [x0, y0, x1, y1, x2, y2, x3, y3]
  *
  * @param[in] points
- * 	The points to interpolate.
+ * 	The points to be interpolated.
  * @param[in] num_points
- * 	The number of points in \p points.
+ * 	The number of points in \p points. If \c 1, a cubic point (i.e., a
+ * 	spline with four times the same control point) is created.
  * @param[in] dimension
- * 	The dimension of each control point in \p spline.
+ * 	The dimensionality of the points.
  * @param[out] spline
- * 	The output spline.
+ * 	The interpolated spline.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -1399,21 +1400,22 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 /**
  * Interpolates a piecewise cubic spline by translating the given catmull-rom
  * control points into a sequence of bezier curves. In order to avoid division
- * by zero, successive control points with distance less than or equal to
- * \p epsilon are filtered out. If the resultant sequence contains only a
- * single point, a spline of degree 0 (a point) is created. Optionally, the
- * first and last control point can be specified (\p first and \p last).
+ * by zero, successive control points with distance less than or equal to \p
+ * epsilon are filtered out. If the resultant sequence contains only a single
+ * point, a cubic point (i.e., a spline with four times the same control point)
+ * is created. Optionally, the first and last control point can be specified
+ * (see \p first and \p last).
  *
  * @param[in] points
- * 	The points to interpolate.
+ * 	The points to be interpolated.
  * @param[in] num_points
- * 	The number of points in \p points.
+ * 	The number of points in \p points. If \c 1, a cubic point (i.e., a
+ * 	spline with four times the same control point) is created.
  * @param[in] dimension
  * 	The dimensionality of the points.
  * @param[in] alpha
- * 	The knot parameterization: 0 => uniform, 0.5 => centripetal,
- * 	1 => chordal. The input value is automatically trimmed to the [0, 1]
- * 	interval.
+ * 	Knot parameterization: 0 => uniform, 0.5 => centripetal, 1 => chordal.
+ * 	The input value is clamped to the domain [0, 1].
  * @param[in] first
  * 	The first control point of the catmull-rom sequence. If NULL, an
  * 	appropriate point is generated based on the first two points in

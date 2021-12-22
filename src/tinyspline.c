@@ -666,6 +666,28 @@ void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
  * @{
  */
 tsError
+ts_int_cubic_point(const tsReal *point,
+                   size_t dim,
+                   tsBSpline *spline,
+                   tsStatus *status)
+{
+	const size_t size = dim * sizeof(tsReal);
+	tsReal *ctrlp = NULL;
+	size_t i;
+	tsError err;
+	TS_CALL_ROE(err, ts_bspline_new(
+	            4, dim, 3,
+	            TS_CLAMPED, spline, status))
+	ctrlp = ts_int_bspline_access_ctrlp(spline);
+	for (i = 0; i < 4; i++) {
+		memcpy(ctrlp + i*dim,
+		       point,
+		       size);
+	}
+	TS_RETURN_SUCCESS(status)
+}
+
+tsError
 ts_int_thomas_algorithm(const tsReal *a,
                         const tsReal *b,
                         const tsReal *c,
@@ -840,13 +862,8 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 	if (num_points == 0)
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (num_points == 1) {
-		TS_CALL_ROE(err, ts_bspline_new(
-		            4, dimension, 3,
-		            TS_CLAMPED, spline, status))
-		for (i = 0; i < ts_bspline_num_control_points(spline); i++) {
-			memcpy(ts_int_bspline_access_ctrlp(spline)
-			       + i * dimension, points, sof_ctrlp);
-		}
+		TS_CALL_ROE(err, ts_int_cubic_point(
+		            points, dimension, spline, status))
 		TS_RETURN_SUCCESS(status)
 	}
 	if (num_points == 2) {
@@ -941,18 +958,8 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
 	if (num_points == 0)
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
-	if (num_points == 1) {
-		TS_CALL_ROE(err, ts_bspline_new(
-		            num_points, dimension, num_points - 1,
-		            TS_CLAMPED, spline, status))
-		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
-		memcpy(bs_ctrlp, points, sof_ctrlp);
-		TS_RETURN_SUCCESS(status)
-	}
-	if (alpha < 0.f)
-		alpha = (tsReal) 0.f;
-	if (alpha > 1.f)
-		alpha = (tsReal) 1.f;
+	if (alpha < (tsReal) 0.0) alpha = (tsReal) 0.0;
+	if (alpha > (tsReal) 1.0) alpha = (tsReal) 1.0;
 
 	/* Copy `points` to `cr_ctrlp`. Add space for `first` and `last`. */
 	cr_ctrlp = (tsReal *) malloc((num_points + 2) * sof_ctrlp);
@@ -981,11 +988,8 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 	/* Check if there are still enough points for interpolation. */
 	if (num_points == 1) { /* `num_points` can't be 0 */
 		free(cr_ctrlp); /* The point is copied from `points`. */
-		TS_CALL_ROE(err, ts_bspline_new(
-		            num_points, dimension, num_points - 1,
-		            TS_CLAMPED, spline, status))
-		bs_ctrlp = ts_int_bspline_access_ctrlp(spline);
-		memcpy(bs_ctrlp, points, sof_ctrlp);
+		TS_CALL_ROE(err, ts_int_cubic_point(
+		            points, dimension, spline, status))
 		TS_RETURN_SUCCESS(status)
 	}
 

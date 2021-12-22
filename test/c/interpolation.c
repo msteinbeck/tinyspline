@@ -1,6 +1,7 @@
 #include <testutils.h>
 
-void interpolation_cubic_natural(CuTest *tc)
+void
+interpolation_cubic_natural(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -91,7 +92,8 @@ void interpolation_cubic_natural(CuTest *tc)
 	free(knots);
 }
 
-void interpolation_issue32(CuTest *tc)
+void
+interpolation_issue32(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -155,10 +157,76 @@ void interpolation_issue32(CuTest *tc)
 	free(knots);
 }
 
+void
+interpolation_catmull_rom(CuTest *tc)
+{
+
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+	tsReal dist, eps, *result = NULL;
+	size_t i;
+
+	___GIVEN___
+	/* POINT_EPSILON is slightly too small to compare the interpolated
+	 * points with their reference points. Thus, we use an adjusted epsilon
+	 * environment in this test to assert the distances. */
+	eps = 0.000017; /* from 1e-5f (0.00001) */
+#ifdef TINYSPLINE_FLOAT_PRECISION
+	eps = 0.0016; /* from 1e-3f (0.001) */
+#endif
+
+	/* Points to be interpolated. */
+	tsReal points[14] = {
+		0.0, 1.5, /* P1 */
+		2.0, 2.0, /* P2 */
+		3.0, 1.0, /* P3 */
+		4.0, 0.5, /* P4 */
+		5.0, 1.0, /* P5 */
+		6.0, 2.0, /* P6 */
+		7.0, 3.0  /* P7 */
+	};
+
+	/* Generated with catmullrom.py (alpha = 0.5). */
+	tsReal samples[800] = {
+		#include "res/interpolation_catmull_rom.txt"
+	};
+
+	___WHEN___
+	C(ts_bspline_interpolate_catmull_rom(
+		points, 7, 2, 0.5, NULL, NULL,
+		POINT_EPSILON, &spline, &status))
+
+	___THEN___
+	for (i = 0; i < 400; i++)
+	{
+		C(ts_bspline_bisect(&spline,
+		                    samples[i * 2],
+		                    POINT_EPSILON,
+		                    1,  /* persnickety */
+		                    0,  /* index */
+		                    1,  /* ascending */
+		                    50, /* max_iter */
+		                    &net,
+		                    &status))
+		C(ts_deboornet_result(&net, &result, &status))
+
+		dist = ts_distance(samples + i*2, result, 2);
+		CuAssertDblEquals(tc, 0, dist, eps);
+
+		ts_deboornet_free(&net);
+		free(result);
+	}
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+}
+
 CuSuite* get_interpolation_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, interpolation_cubic_natural);
 	SUITE_ADD_TEST(suite, interpolation_issue32);
+	SUITE_ADD_TEST(suite, interpolation_catmull_rom);
 	return suite;
 }

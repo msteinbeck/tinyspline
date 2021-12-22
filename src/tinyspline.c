@@ -295,7 +295,7 @@ tsError ts_bspline_set_knots(tsBSpline *spline, const tsReal *knots,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
+tsError ts_bspline_set_knots_varargs(tsBSpline *spline,
 	tsStatus *status, tsReal knot0, double knot1, ...)
 {
 	tsReal *values = NULL;
@@ -534,7 +534,7 @@ tsError ts_bspline_new(size_t num_control_points, size_t dimension,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError TINYSPLINE_API ts_bspline_new_with_control_points(
+tsError ts_bspline_new_with_control_points(
 	size_t num_control_points, size_t dimension, size_t degree,
 	tsBSplineType type, tsBSpline *spline, tsStatus *status,
 	double first, ...)
@@ -2908,7 +2908,7 @@ ts_vec_mag(const tsReal *x,
 	return (tsReal) sqrt(sum);
 }
 
-void TINYSPLINE_API
+void
 ts_vec_mul(const tsReal *x,
            size_t dim,
            tsReal val,

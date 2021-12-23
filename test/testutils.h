@@ -4,6 +4,7 @@
 #include <CuTest.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <tinyspline.h>
 
 #define POINT_EPSILON TS_CONTROL_POINT_EPSILON

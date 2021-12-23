@@ -2466,8 +2466,9 @@ ts_bspline_morph(const tsBSpline *source,
 		if (out->pImpl == NULL) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
 			        TS_OPENED /* doesn't matter */, out, status))
-		} else if (ts_bspline_degree(out) < deg ||
-		           ts_bspline_num_control_points(out) < num_ctrlp) {
+		} else if (ts_bspline_degree(out) != deg ||
+		           ts_bspline_num_control_points(out) != num_ctrlp ||
+		           ts_bspline_dimension(out) != dim) {
 			TS_CALL(try, err, ts_bspline_new(num_ctrlp, dim, deg,
 			        TS_OPENED /* doesn't matter */, &tmp, status))
 			ts_bspline_free(out);

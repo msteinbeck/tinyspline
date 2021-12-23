@@ -6,4 +6,8 @@
     <NuspecFile>@TINYSPLINE_NUSPEC_FILE@</NuspecFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="@TINYSPLINE_CSHARP_SOURCE_DIRECTORY@/*.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1678,19 +1678,19 @@ ts_bspline_is_closed(const tsBSpline *spline,
  * knots. The implementation is based on:
  *
  *     @article{10.1145/1330511.1330513,
- *       author =	 {Wang, Wenping and J\"{u}ttler, Bert and Zheng, Dayue
+ *       author =       {Wang, Wenping and J\"{u}ttler, Bert and Zheng, Dayue
  *                       and Liu, Yang},
- *       title =	 {Computation of Rotation Minimizing Frames},
- *       year =	 {2008},
- *       issue_date =	 {March 2008},
- *       publisher =	 {Association for Computing Machinery},
- *       address =	 {New York, NY, USA},
- *       volume =	 {27},
- *       number =	 {1},
- *       issn =	 {0730-0301},
- *       url =		 {https://doi.org/10.1145/1330511.1330513},
- *       doi =		 {10.1145/1330511.1330513},
- *       abstract =	 {Due to its minimal twist, the rotation minimizing
+ *       title =        {Computation of Rotation Minimizing Frames},
+ *       year =         {2008},
+ *       issue_date =   {March 2008},
+ *       publisher =    {Association for Computing Machinery},
+ *       address =      {New York, NY, USA},
+ *       volume =       {27},
+ *       number =       {1},
+ *       issn =         {0730-0301},
+ *       url =          {https://doi.org/10.1145/1330511.1330513},
+ *       doi =          {10.1145/1330511.1330513},
+ *       abstract =     {Due to its minimal twist, the rotation minimizing
  *                       frame (RMF) is widely used in computer graphics,
  *                       including sweep or blending surface modeling, motion
  *                       design and control in computer animation and
@@ -1716,11 +1716,11 @@ ts_bspline_is_closed(const tsBSpline *spline,
  *                       double reflection method, and discuss the
  *                       variational principles in design moving frames with
  *                       boundary conditions, based on RMF.},
- *       journal =	 {ACM Trans. Graph.},
- *       month =	 mar,
- *       articleno =	 {2},
- *       numpages =	 {18},
- *       keywords =	 {motion design, sweep surface, motion, differential
+ *       journal =      {ACM Trans. Graph.},
+ *       month =        mar,
+ *       articleno =    {2},
+ *       numpages =     {18},
+ *       keywords =     {motion design, sweep surface, motion, differential
  *                       geometry, Curve, rotation minimizing frame}
  *     }
  *

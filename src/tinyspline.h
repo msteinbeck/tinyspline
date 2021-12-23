@@ -689,7 +689,8 @@ typedef struct
  * @return
  * 	The degree of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_degree(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_degree(const tsBSpline *spline);
 
 /**
  * Returns the order (degree + 1) of \p spline.
@@ -699,30 +700,32 @@ size_t TINYSPLINE_API ts_bspline_degree(const tsBSpline *spline);
  * @return
  * 	The order of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_order(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_order(const tsBSpline *spline);
 
 /**
- * Returns the dimension of \p spline. The dimension of a spline describes the
- * number of components for each point in ts_bspline_get_control_points(spline).
- * One-dimensional splines are possible, albeit their benefit might be
- * questionable.
+ * Returns the dimensionality of \p spline, that is, the number of components
+ * of its control points (::ts_bspline_control_points). One-dimensional splines
+ * are possible, albeit their benefit might be questionable.
  *
  * @param[in] spline
  * 	The spline whose dimension is read.
  * @return
- * 	The dimension of \p spline.
+ * 	The dimension of \p spline (>= 1).
  */
-size_t TINYSPLINE_API ts_bspline_dimension(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_dimension(const tsBSpline *spline);
 
 /**
  * Returns the length of the control point array of \p spline.
  *
  * @param[in] spline
- * 	The spline with its control point array whose length is read.
+ * 	The spline whose length of the control point array is read.
  * @return
  * 	The length of the control point array of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_len_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_len_control_points(const tsBSpline *spline);
 
 /**
  * Returns the number of control points of \p spline.
@@ -732,18 +735,20 @@ size_t TINYSPLINE_API ts_bspline_len_control_points(const tsBSpline *spline);
  * @return
  * 	The number of control points of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_num_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_num_control_points(const tsBSpline *spline);
 
 /**
  * Returns the size of the control point array of \p spline. This function may
  * be useful when copying control points using memcpy or memmove.
  *
  * @param[in] spline
- * 	The spline with its control point array whose size is read.
+ * 	The spline whose size of the control point array is read.
  * @return
  * 	The size of the control point array of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_sof_control_points(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_sof_control_points(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the control points of \p spline.
@@ -751,7 +756,8 @@ size_t TINYSPLINE_API ts_bspline_sof_control_points(const tsBSpline *spline);
  * @param[in] spline
  * 	The spline whose control points are read.
  * @param[out] ctrlp
- * 	The output array.
+ * 	The output array. \b Note: It is the responsibility of the client to
+ * 	release the allocated memory after use.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -759,8 +765,10 @@ size_t TINYSPLINE_API ts_bspline_sof_control_points(const tsBSpline *spline);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_control_points(const tsBSpline *spline,
-	tsReal **ctrlp, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_control_points(const tsBSpline *spline,
+                          tsReal **ctrlp,
+                          tsStatus *status);
 
 /**
  * Returns a deep copy of the control point of \p spline at \p index.
@@ -768,9 +776,10 @@ tsError TINYSPLINE_API ts_bspline_control_points(const tsBSpline *spline,
  * @param[in] spline
  * 	The spline whose control point is read at \p index.
  * @param[in] index
- * 	The zero-based index of the control point to return.
+ * 	Zero-based index of the control point to be copied.
  * @param[out] ctrlp
- * 	The output array.
+ * 	The output array. \b Note: It is the responsibility of the client to
+ * 	release the allocated memory after use.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -780,34 +789,43 @@ tsError TINYSPLINE_API ts_bspline_control_points(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_control_point_at(const tsBSpline *spline,
-	size_t index, tsReal **ctrlp, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_control_point_at(const tsBSpline *spline,
+                            size_t index,
+                            tsReal **ctrlp,
+                            tsStatus *status);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.
  *
+ * @pre
+ * 	\p ctrlp has length ::ts_bspline_len_control_points.
  * @param[out] spline
  * 	The spline whose control points are set.
  * @param[in] ctrlp
- * 	The control points to be set.
+ * 	The value.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  */
-tsError TINYSPLINE_API ts_bspline_set_control_points(tsBSpline *spline,
-	const tsReal *ctrlp, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_set_control_points(tsBSpline *spline,
+                              const tsReal *ctrlp,
+                              tsStatus *status);
 
 /**
  * Sets the control point of \p spline at \p index. Creates a deep copy of
  * \p ctrlp.
  *
+ * @pre
+ * 	\p ctrlp has length ::ts_bspline_dimension.
  * @param[out] spline
  * 	The spline whose control point is set at \p index.
  * @param[in] index
- * 	The zero-based index of the control point to set.
+ * 	Zero-based index of the control point to be set.
  * @param[in] ctrlp
- * 	The control point to be set at \p index.
+ * 	The value.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -815,8 +833,11 @@ tsError TINYSPLINE_API ts_bspline_set_control_points(tsBSpline *spline,
  * @return TS_INDEX_ERROR
  * 	If \p index is out of range.
  */
-tsError TINYSPLINE_API ts_bspline_set_control_point_at(tsBSpline *spline,
-	size_t index, const tsReal *ctrlp, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_set_control_point_at(tsBSpline *spline,
+                                size_t index,
+                                const tsReal *ctrlp,
+                                tsStatus *status);
 
 /**
  * Returns the number of knots of \p spline.
@@ -826,18 +847,20 @@ tsError TINYSPLINE_API ts_bspline_set_control_point_at(tsBSpline *spline,
  * @return
  * 	The number of knots of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_num_knots(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_num_knots(const tsBSpline *spline);
 
 /**
  * Returns the size of the knot array of \p spline. This function may be useful
  * when copying knots using memcpy or memmove.
  *
  * @param[in] spline
- * 	The spline with its knot array whose size is read.
+ * 	The spline whose size of the knot array is read.
  * @return TS_SUCCESS
  * 	The size of the knot array of \p spline.
  */
-size_t TINYSPLINE_API ts_bspline_sof_knots(const tsBSpline *spline);
+size_t TINYSPLINE_API
+ts_bspline_sof_knots(const tsBSpline *spline);
 
 /**
  * Returns a deep copy of the knots of \p spline.
@@ -845,7 +868,8 @@ size_t TINYSPLINE_API ts_bspline_sof_knots(const tsBSpline *spline);
  * @param[in] spline
  * 	The spline whose knots are read.
  * @param[out] knots
- * 	The output array.
+ * 	The output array. \b Note: It is the responsibility of the client to
+ * 	release the allocated memory after use.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -853,8 +877,10 @@ size_t TINYSPLINE_API ts_bspline_sof_knots(const tsBSpline *spline);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_knots(const tsBSpline *spline,
-	tsReal **knots, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_knots(const tsBSpline *spline,
+                 tsReal **knots,
+                 tsStatus *status);
 
 /**
  * Returns the knot of \p spline at \p index.
@@ -862,7 +888,7 @@ tsError TINYSPLINE_API ts_bspline_knots(const tsBSpline *spline,
  * @param[in] spline
  * 	The spline whose knot is read at \p index.
  * @param[in] index
- * 	The zero-based index of the knot to return.
+ * 	Zero-based index of the knot to be read.
  * @param[out] knot
  * 	The output value.
  * @param[out] status
@@ -872,16 +898,21 @@ tsError TINYSPLINE_API ts_bspline_knots(const tsBSpline *spline,
  * @return TS_INDEX_ERROR
  * 	If \p index is out of range.
  */
-tsError TINYSPLINE_API ts_bspline_knot_at(const tsBSpline *spline,
-	size_t index, tsReal *knot, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_knot_at(const tsBSpline *spline,
+                   size_t index,
+                   tsReal *knot,
+                   tsStatus *status);
 
 /**
  * Sets the knots of \p spline. Creates a deep copy of \p knots.
  *
+ * @pre
+ * 	\p knots has length ::ts_bspline_num_knots.
  * @param[out] spline
  * 	The spline whose knots are set.
  * @param[in] knots
- * 	The knots to be set.
+ * 	The value.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -891,25 +922,29 @@ tsError TINYSPLINE_API ts_bspline_knot_at(const tsBSpline *spline,
  * @return TS_MULTIPLICITY
  * 	If there is a knot with multiplicity > order
  */
-tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline,
-	const tsReal *knots, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_set_knots(tsBSpline *spline,
+                     const tsReal *knots,
+                     tsStatus *status);
 
 /**
  * Sets the knots of \p spline supplied as varargs. As all splines have at
  * least two knots, the first two knots have a named parameter. Note that, by
  * design of varargs in C, the last named parameter must not be float. Thus,
- * \p knot1 is of type double instead of tsReal.
+ * \p knot1 is of type double instead of ::tsReal.
  *
+ * @pre
+ * 	::ts_bspline_num_knots knots are supplied as varargs.
  * @param[out] spline
  *	The spline whose knots are set.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @param[in] knot0
- * 	The first knot to be set.
+ * 	The first knot.
  * @param[in] knot1
- * 	the second knot to be set.
+ * 	the second knot.
  * @param[in] ...
- * 	The remaining knots to be set.
+ * 	The remaining knots.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_MALLOC
@@ -919,8 +954,12 @@ tsError TINYSPLINE_API ts_bspline_set_knots(tsBSpline *spline,
  * @return TS_MULTIPLICITY
  * 	If there is a knot with multiplicity > order
  */
-tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
-	tsStatus *status, tsReal knot0, double knot1, ...);
+tsError TINYSPLINE_API
+ts_bspline_set_knots_varargs(tsBSpline *spline,
+                             tsStatus *status,
+                             tsReal knot0,
+                             double knot1,
+                             ...);
 
 /**
  * Sets the knot of \p spline at \p index.
@@ -928,9 +967,9 @@ tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
  * @param[in] spline
  * 	The spline whose knot is set at \p index.
  * @param[in] index
- * 	The zero-based index of the knot to set.
+ * 	Zero-based index of the knot to be set.
  * @param[in] knot
- * 	The knot to be set at \p index.
+ * 	The value.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -943,8 +982,11 @@ tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
  * 	If setting the knot at \p index results in a knot vector containing
  * 	\p knot with multiplicity greater than the order of \p spline.
  */
-tsError TINYSPLINE_API ts_bspline_set_knot_at(tsBSpline *spline, size_t index,
-	tsReal knot, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_set_knot_at(tsBSpline *spline,
+                       size_t index,
+                       tsReal knot,
+                       tsStatus *status);
 /*! @} */
 
 
@@ -983,7 +1025,7 @@ tsBSpline TINYSPLINE_API ts_bspline_init();
  * @param[in] num_control_points
  * 	The number of control points of \p spline.
  * @param[in] dimension
- * 	The dimension of each control point of \p spline.
+ * 	The dimension of the control points of \p spline.
  * @param[in] degree
  * 	The degree of \p spline.
  * @param[in] type
@@ -995,18 +1037,22 @@ tsBSpline TINYSPLINE_API ts_bspline_init();
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
+ * 	If \p dimension is \c 0.
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= \p num_control_points.
  * @return TS_NUM_KNOTS
- * 	If \p type == ::TS_BEZIERS and
+ * 	If \p type is ::TS_BEZIERS and
  * 	(\p num_control_points % \p degree + 1) != 0.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
-	size_t dimension, size_t degree, tsBSplineType type, tsBSpline *spline,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_new(size_t num_control_points,
+               size_t dimension,
+               size_t degree,
+               tsBSplineType type,
+               tsBSpline *spline,
+               tsStatus *status);
 
 /**
  * Creates a new spline with given control points (varargs) and stores the
@@ -1014,12 +1060,12 @@ tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
  * minimum dimensionality one), the first component of the first control point
  * has a named parameter. Note that, by design of varargs in C, the last named
  * parameter must not be float. Thus, \p first is of type double instead of
- * tsReal.
+ * ::tsReal.
  *
  * @param[in] num_control_points
  * 	The number of control points of \p spline.
  * @param[in] dimension
- * 	The dimension of each control point of \p spline.
+ * 	The dimension of the control points of \p spline.
  * @param[in] degree
  * 	The degree of \p spline.
  * @param[in] type
@@ -1029,32 +1075,40 @@ tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @param[in] first
- * 	The first component of the first control point to be set.
+ * 	The first component of the first control point.
  * @param[in] ...
  * 	The remaining components (control points).
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
+ * 	If \p dimension is \c 0.
  * @return TS_DEG_GE_NCTRLP
  * 	If \p degree >= \p num_control_points.
  * @return TS_NUM_KNOTS
- * 	If \p type == ::TS_BEZIERS and
+ * 	If \p type is ::TS_BEZIERS and
  * 	(\p num_control_points % \p degree + 1) != 0.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_new_with_control_points(
-	size_t num_control_points, size_t dimension, size_t degree,
-	tsBSplineType type, tsBSpline *spline, tsStatus *status,
-	double first, ...);
+tsError TINYSPLINE_API
+ts_bspline_new_with_control_points(size_t num_control_points,
+                                   size_t dimension,
+                                   size_t degree,
+                                   tsBSplineType type,
+                                   tsBSpline *spline,
+                                   tsStatus *status,
+                                   double first,
+                                   ...);
 
 /**
- * Creates a deep copy of \p src and stores the copied values in \p dest. Does
- * nothing, if \p src == \p dest.
+ * Creates a deep copy of \p src and stores the copied data in \p dest. \p src
+ * and \p dest can be the same instance.
+ *
+ * \b Note: Unlike \e memcpy and \e memmove, the first parameter is the source
+ * and the second parameter is the destination.
  *
  * @param[in] src
- * 	The spline to deep copy.
+ * 	The spline to be deep copied.
  * @param[out] dest
  * 	The output spline.
  * @param[out] status
@@ -1064,29 +1118,35 @@ tsError TINYSPLINE_API ts_bspline_new_with_control_points(
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_copy(const tsBSpline *src,
+                tsBSpline *dest,
+                tsStatus *status);
 
 /**
  * Moves the ownership of the data of \p src to \p dest. After calling this
- * function, the data of \p src points to NULL. Does not free the data of
- * \p dest. Does nothing, if \p src == \p dest.
+ * function, the data of \p src points to NULL. Does not release the data of \p
+ * dest. \p src and \p dest can be the same instance (in this case, the data of
+ * \p src remains).
  *
- * @param[out] src
- * 	The spline whose values are moved to \p dest.
+ * @param[in, out] src
+ * 	The spline whose data is moved to \p dest.
  * @param[out] dest
- * 	The spline that receives the values of \p src.
+ * 	The spline that receives the data of \p src.
  */
-void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
+void TINYSPLINE_API
+ts_bspline_move(tsBSpline *src,
+                tsBSpline *dest);
 
 /**
- * Frees the data of \p spline. After calling this function, the data of
- * \p spline points to NULL.
+ * Releases the data of \p spline. After calling this function, the data of \p
+ * spline points to NULL.
  *
  * @param[out] spline
- * 	The spline to free.
+ * 	The spline to be released.
  */
-void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
+void TINYSPLINE_API
+ts_bspline_free(tsBSpline *spline);
 /*! @} */
 
 
@@ -1101,16 +1161,16 @@ void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
  * @{
  */
 /**
- * Represents the output of De Boor's algorithm. It is used to evaluate a
- * spline at given knots by iteratively computing a net of intermediate values
- * until the result is available:
+ * Represents the output of De Boor's algorithm. De Boor's algorithm is used to
+ * evaluate a spline at a certain knot by iteratively computing a net of
+ * intermediate points until the resulting point is available:
  *
  *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
  *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
  *
- * All points of a net are stored in 'points' (ts_deboornet_points). The
- * resultant point is the last point in 'points' and, for the sake of
- * convenience, can be accessed with 'ts_deboornet_result'.
+ * All points of a net are stored in \c points (::ts_deboornet_points). The
+ * resulting point is the last point in \c points and, for the sake of
+ * convenience, can be accessed with ::ts_deboornet_result.
  *
  * Two dimensional points are stored as follows:
  *
@@ -1121,42 +1181,50 @@ void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
  *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
  *
  * ... and so on. The output also supports homogeneous coordinates
- * (cf. tsBSpline).
+ * (cf. ::tsBSpline).
  *
- * There is a special case in which the evaluation of a knot value 'u' returns
- * two results instead of one. It occurs when the multiplicity of 'u' ( s(u) )
- * is equals to the order of a spline, indicating that the corresponding spline
- * is discontinuous at 'u'. This is common practice for B-Splines (and NURBS)
- * consisting of connected Bezier curves where the endpoint of curve 'c_i' is
- * equal to the start point of curve 'c_i+1'. Yet, the end point of 'c_i' and
- * the start point of 'c_i+1' may still be completely different, yielding to
- * visible gaps. In such case (s(u) == order), 'points' stores only the two
- * resultant points (there is no net to calculate) and 'result' points to the
- * *first* point in 'points'. Since having gaps in splines is unusual, both
- * points in 'points' are generally equals, making it easy to handle this
- * special case by accessing 'result' as usual. However, you can access both
- * points if necessary:
+ * There is a special case in which the evaluation of a knot \c u returns two
+ * results instead of one. It occurs when the multiplicity of \c u (\c s(u)) is
+ * equals to the order of the evaluated spline, indicating that the spline is
+ * discontinuous at \c u. This is common practice for B-Splines (and NURBS)
+ * consisting of connected Bezier curves where the endpoint of curve \c c_i is
+ * equal to the start point of curve \c c_i+1. Yet, the end point of \c c_i and
+ * the start point of \c c_i+1 may still be completely different, yielding to
+ * visible gaps (if distance of the points is large enough). In such case (\c
+ * s(u) == \c order), ::ts_deboornet_points stores only the two resulting
+ * points (there is no net to calculate) and ::ts_deboornet_result points to
+ * the \e first point in ::ts_deboornet_points. Since having gaps in splines is
+ * unusual, both points in ::ts_deboornet_points are generally equal, making it
+ * easy to handle this special case by simply calling
+ * ::ts_deboornet_result. However, one can access both points if necessary:
  *
- *     ts_deboornet_result(...)[0] ...       // Stores the first component of
+ *     ts_deboornet_result(...)[0] ...       // Access the first component of
  *                                           // the first result.
  *
- *     ts_deboornet_result(...)[dim(spline)] // Stores the first component of
+ *     ts_deboornet_result(...)[dim(spline)] // Access the first component of
  *                                           // the second result.
  *
  * As if this wasn't complicated enough, there is an exception for this special
- * case, yielding to exactly one result (just like the regular case) even if
- * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
- * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
- * evaluated at 'u = 0' or 'u = 1' then 'result' is *always* a single point
- * regardless of the multiplicity of 'u'.
+ * case, yielding to exactly one result (just like the regular case) even if \c
+ * s(u) == \c order. It occurs when \c u is the lower or upper bound of the
+ * domain of the evaluated spline. For instance, if \c b is a spline with
+ * domain [0, 1] and \c b is evaluated at \c u = \c 0 or \c u = \c 1, then
+ * ::ts_deboornet_result is \e always a single point regardless of the
+ * multiplicity of \c u.
  *
- * In summary, three different types of evaluation exist: i) the regular case,
- * in which all points of the corresponding net are returned, ii) a special
- * case, in which exactly two points are returned (required for splines with
- * gaps), and iii) the exception of ii), in which exactly one point is returned
- * even if 's(u) == order'. All in all this looks quite complex (and actually
- * it is), but for most applications you do not have to deal with this. Just
- * use 'ts_deboornet_result' to access the outcome of De Boor's algorithm.
+ * In summary, there are three different types of evaluation:
+ *
+ * 1. The regular case, in which all points of the net are returned.
+ *
+ * 2. A special case, in which two results are returned (required for splines
+ * with gaps).
+ *
+ * 3. The exception of 2., in which exactly one result is returned (even if \c
+ * s(u) == \c order).
+ *
+ * All in all this looks quite complex (and actually it is), but for most
+ * applications you do not have to deal with this. Just use
+ * ::ts_deboornet_result to access the outcome of De Boor's algorithm.
  */
 typedef struct
 {

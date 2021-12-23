@@ -10,6 +10,9 @@
 		<summary>@TINYSPLINE_SUMMARY@</summary>
 		<description>@TINYSPLINE_DESCRIPTION@</description>
 		<copyright>@TINYSPLINE_LICENSE@</copyright>
+		<dependencies>
+			@TINYSPLINE_NUGET_DEPENDENCIES@
+		</dependencies>
 	</metadata>
 	<files>
 		@TINYSPLINE_NUGET_FILES@

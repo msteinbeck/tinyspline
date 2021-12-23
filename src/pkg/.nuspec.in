@@ -6,6 +6,8 @@
 		<authors>@TINYSPLINE_AUTHOR@</authors>
 		<owners>@TINYSPLINE_AUTHOR@</owners>
 		<projectUrl>@TINYSPLINE_URL@</projectUrl>
+		<repository type="@TINYSPLINE_REPOSITORY_TYPE@"
+		            url="@TINYSPLINE_REPOSITORY@" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>@TINYSPLINE_SUMMARY@</summary>
 		<description>@TINYSPLINE_DESCRIPTION@</description>

@@ -1791,14 +1791,14 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  *
  *     t(input, [additional_input], output, [additional_output], status)
  *
- * Note: None of the transformations releases the memory of the output spline
- *       before assigning the transformation result to it. Thus, when using the
- *       same output spline multiple times, make sure to release its memory
- *       before each call (after the first one). If not, severe memory leaks
- *       are to be expected:
+ * \b Note: None of the transformations releases the memory of the output
+ * spline before assigning the transformation result to it. Thus, when using
+ * the same output spline multiple times, make sure to release its memory
+ * before each call (after the first one). If not, severe memory leaks are to
+ * be expected:
  *
- *     tsBSpline in = ...                  // an arbitrary spline
- *     tsBSpline out = ts_bspline_init();  // stores the result
+ *     tsBSpline in = ...                   // an arbitrary spline
+ *     tsBSpline out = ts_bspline_init();   // stores the result
  *
  *     ts_bspline_to_beziers(&in, &out);    // first transformation
  *     ...                                  // some code
@@ -1812,9 +1812,9 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  * assigned to it. So even if a transformation fails, the internal state of the
  * supplied splines stays intact (i.e., it remains unchanged).
  *
- * Note: It is not necessary to release the memory of a spline which is passed
- *       as input and output argument at the same time before calling the next
- *       transformation (in fact that would fail due to a null pointer):
+ * \b Note: It is not necessary to release the memory of a spline which is
+ * passed as input and output argument at the same time before calling the next
+ * transformation (in fact that would fail due to a null pointer):
  *
  *     tsBSpline spline = ...                      // an arbitrary spline
  *     ts_bspline_to_beziers(&spline, &spline);    // first transformation

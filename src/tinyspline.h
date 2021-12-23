@@ -12,7 +12,7 @@
  * If TinySpline is built as shared library with MSVC, the macros \c
  * TINYSPLINE_SHARED_EXPORT and \c TINYSPLINE_SHARED_IMPORT define the
  * Microsoft specific directives \c __declspec(dllexport) and \c
- * __declspec(dllimport) respectively. More information on these
+ * __declspec(dllimport), respectively. More information on these
  * directives can be found at:
  *
  *     https://docs.microsoft.com/en-us/cpp/cpp/dllexport-dllimport
@@ -180,7 +180,7 @@ typedef double tsReal;
 
 /*! @name Error Handling
  *
- * There are three types of error handling in Tinyspline.
+ * There are three types of error handling in TinySpline.
  *
  * 1. Return value: Functions that can fail return a special error code
  * (::tsError). If the error code is not \c 0 (::TS_SUCCESS), an error occurred
@@ -591,15 +591,10 @@ typedef struct
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Data Types                                                               *
-*                                                                             *
-* Using the PIMPL design pattern, the internal fields of the data types are   *
-* encapsulated and can only be accessed by calling the corresponding field    *
-* access functions.                                                           *
-*                                                                             *
-******************************************************************************/
+/*! @name Utility Structs and Enums
+ *
+ * @{
+ */
 /**
  * Describes the structure of the knot vector. More details can be found at:
  *
@@ -620,6 +615,41 @@ typedef enum
 	TS_BEZIERS = 2
 } tsBSplineType;
 
+/**
+ * A three-dimensional TNB-vector with position. More details can be found at:
+ *
+ *     https://en.wikipedia.org/wiki/Frenet-Serret_formulas
+ *     https://www.math.tamu.edu/~tkiffe/calc3/tnb/tnb.html
+ *
+ * TNB stands for \e tangent, \e normal, and \e binormal.
+ */
+typedef struct
+{
+	/** Position of the TNB-vector. */
+	tsReal position[3];
+
+	/** Tangent of the TNB-vector. */
+	tsReal tangent[3];
+
+	/** Normal of the TNB-vector. */
+	tsReal normal[3];
+
+	/** Binormal of the TNB-vector. */
+	tsReal binormal[3];
+} tsFrame;
+/*! @} */
+
+
+
+/*! @name B-Spline Data
+ *
+ * The internal state of ::tsBSpline is protected using the PIMPL design
+ * pattern (see https://en.cppreference.com/w/cpp/language/pimpl for more
+ * details). The data of an instance can be accessed with the functions listed
+ * in this section.
+ *
+ * @{
+ */
 /**
  * Represents a B-Spline, which may also be used for NURBS, Bezier curves,
  * lines, and points. NURBS use homogeneous coordinates to store their control
@@ -651,99 +681,6 @@ typedef struct
 	struct tsBSplineImpl *pImpl; /**< The actual implementation. */
 } tsBSpline;
 
-/**
- * Represents the output of De Boor's algorithm. It is used to evaluate a
- * spline at given knots by iteratively computing a net of intermediate values
- * until the result is available:
- *
- *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
- *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
- *
- * All points of a net are stored in 'points' (ts_deboornet_points). The
- * resultant point is the last point in 'points' and, for the sake of
- * convenience, can be accessed with 'ts_deboornet_result'.
- *
- * Two dimensional points are stored as follows:
- *
- *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
- *
- * Tree dimensional points are stored as follows:
- *
- *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
- *
- * ... and so on. The output also supports homogeneous coordinates
- * (cf. tsBSpline).
- *
- * There is a special case in which the evaluation of a knot value 'u' returns
- * two results instead of one. It occurs when the multiplicity of 'u' ( s(u) )
- * is equals to the order of a spline, indicating that the corresponding spline
- * is discontinuous at 'u'. This is common practice for B-Splines (and NURBS)
- * consisting of connected Bezier curves where the endpoint of curve 'c_i' is
- * equal to the start point of curve 'c_i+1'. Yet, the end point of 'c_i' and
- * the start point of 'c_i+1' may still be completely different, yielding to
- * visible gaps. In such case (s(u) == order), 'points' stores only the two
- * resultant points (there is no net to calculate) and 'result' points to the
- * *first* point in 'points'. Since having gaps in splines is unusual, both
- * points in 'points' are generally equals, making it easy to handle this
- * special case by accessing 'result' as usual. However, you can access both
- * points if necessary:
- *
- *     ts_deboornet_result(...)[0] ...       // Stores the first component of
- *                                           // the first result.
- *
- *     ts_deboornet_result(...)[dim(spline)] // Stores the first component of
- *                                           // the second result.
- *
- * As if this wasn't complicated enough, there is an exception for this special
- * case, yielding to exactly one result (just like the regular case) even if
- * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
- * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
- * evaluated at 'u = 0' or 'u = 1' then 'result' is *always* a single point
- * regardless of the multiplicity of 'u'.
- *
- * In summary, three different types of evaluation exist: i) the regular case,
- * in which all points of the corresponding net are returned, ii) a special
- * case, in which exactly two points are returned (required for splines with
- * gaps), and iii) the exception of ii), in which exactly one point is returned
- * even if 's(u) == order'. All in all this looks quite complex (and actually
- * it is), but for most applications you do not have to deal with this. Just
- * use 'ts_deboornet_result' to access the outcome of De Boor's algorithm.
- */
-typedef struct
-{
-	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
-} tsDeBoorNet;
-
-/**
- * A three-dimensional TNB-vector with position. More details can be found at:
- *
- *     https://en.wikipedia.org/wiki/Frenet-Serret_formulas
- *     https://www.math.tamu.edu/~tkiffe/calc3/tnb/tnb.html
- *
- * TNB stands for \e tangent, \e normal, and \e binormal.
- */
-typedef struct
-{
-	/** Position of the TNB-vector. */
-	tsReal position[3];
-
-	/** Tangent of the TNB-vector. */
-	tsReal tangent[3];
-
-	/** Normal of the TNB-vector. */
-	tsReal normal[3];
-
-	/** Binormal of the TNB-vector. */
-	tsReal binormal[3];
-} tsFrame;
-
-
-
-/******************************************************************************
-*                                                                             *
-* :: Field Access Functions                                                   *
-*                                                                             *
-******************************************************************************/
 /**
  * Returns the degree of \p spline.
  *
@@ -1008,8 +945,223 @@ tsError TINYSPLINE_API ts_bspline_set_knots_varargs(tsBSpline *spline,
  */
 tsError TINYSPLINE_API ts_bspline_set_knot_at(tsBSpline *spline, size_t index,
 	tsReal knot, tsStatus *status);
+/*! @} */
 
-/* ------------------------------------------------------------------------- */
+
+
+/*! @name B-Spline Initialization
+ *
+ * The following functions are used to create and release ::tsBSpline instances
+ * as well as to copy and move the internal data of a ::tsBSpline instance to
+ * another instance.
+ *
+ * \b Note: It is recommended to initialize an instance with
+ * ::ts_bspline_init. This way, ::ts_bspline_free can be called in ::TS_CATCH
+ * and ::TS_FINALLY blocks (see Section Error Handling for more details)
+ * without further checking. For example:
+ *
+ *     tsBSpline spline = ts_bspline_init();
+ *     TS_TRY(...)
+ *         ...
+ *     TS_FINALLY
+ *         ts_bspline_free(&spline);
+ *     TS_END_TRY
+ *
+ * @{
+ */
+/**
+ * Creates a new spline whose data points to NULL.
+ *
+ * @return
+ * 	A new spline whose data points to NULL.
+ */
+tsBSpline TINYSPLINE_API ts_bspline_init();
+
+/**
+ * Creates a new spline and stores the result in \p spline.
+ *
+ * @param[in] num_control_points
+ * 	The number of control points of \p spline.
+ * @param[in] dimension
+ * 	The dimension of each control point of \p spline.
+ * @param[in] degree
+ * 	The degree of \p spline.
+ * @param[in] type
+ * 	How to setup the knot vector of \p spline.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension == 0.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p degree >= \p num_control_points.
+ * @return TS_NUM_KNOTS
+ * 	If \p type == ::TS_BEZIERS and
+ * 	(\p num_control_points % \p degree + 1) != 0.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
+	size_t dimension, size_t degree, tsBSplineType type, tsBSpline *spline,
+	tsStatus *status);
+
+/**
+ * Creates a new spline with given control points (varargs) and stores the
+ * result in \p spline. As all splines have at least one control point (with
+ * minimum dimensionality one), the first component of the first control point
+ * has a named parameter. Note that, by design of varargs in C, the last named
+ * parameter must not be float. Thus, \p first is of type double instead of
+ * tsReal.
+ *
+ * @param[in] num_control_points
+ * 	The number of control points of \p spline.
+ * @param[in] dimension
+ * 	The dimension of each control point of \p spline.
+ * @param[in] degree
+ * 	The degree of \p spline.
+ * @param[in] type
+ * 	How to setup the knot vector of \p spline.
+ * @param[out] spline
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @param[in] first
+ * 	The first component of the first control point to be set.
+ * @param[in] ...
+ * 	The remaining components (control points).
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_DIM_ZERO
+ * 	If \p dimension == 0.
+ * @return TS_DEG_GE_NCTRLP
+ * 	If \p degree >= \p num_control_points.
+ * @return TS_NUM_KNOTS
+ * 	If \p type == ::TS_BEZIERS and
+ * 	(\p num_control_points % \p degree + 1) != 0.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError TINYSPLINE_API ts_bspline_new_with_control_points(
+	size_t num_control_points, size_t dimension, size_t degree,
+	tsBSplineType type, tsBSpline *spline, tsStatus *status,
+	double first, ...);
+
+/**
+ * Creates a deep copy of \p src and stores the copied values in \p dest. Does
+ * nothing, if \p src == \p dest.
+ *
+ * @param[in] src
+ * 	The spline to deep copy.
+ * @param[out] dest
+ * 	The output spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If allocating memory failed.
+ */
+tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
+	tsStatus *status);
+
+/**
+ * Moves the ownership of the data of \p src to \p dest. After calling this
+ * function, the data of \p src points to NULL. Does not free the data of
+ * \p dest. Does nothing, if \p src == \p dest.
+ *
+ * @param[out] src
+ * 	The spline whose values are moved to \p dest.
+ * @param[out] dest
+ * 	The spline that receives the values of \p src.
+ */
+void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
+
+/**
+ * Frees the data of \p spline. After calling this function, the data of
+ * \p spline points to NULL.
+ *
+ * @param[out] spline
+ * 	The spline to free.
+ */
+void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
+/*! @} */
+
+
+
+/*! @name De Boor Net Data
+ *
+ * The internal state of ::tsDeBoorNet is protected using the PIMPL design
+ * pattern (see https://en.cppreference.com/w/cpp/language/pimpl for more
+ * details). The data of an instance can be accessed with the functions listed
+ * in this section.
+ *
+ * @{
+ */
+/**
+ * Represents the output of De Boor's algorithm. It is used to evaluate a
+ * spline at given knots by iteratively computing a net of intermediate values
+ * until the result is available:
+ *
+ *     https://en.wikipedia.org/wiki/De_Boor%27s_algorithm
+ *     https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/de-Boor.html
+ *
+ * All points of a net are stored in 'points' (ts_deboornet_points). The
+ * resultant point is the last point in 'points' and, for the sake of
+ * convenience, can be accessed with 'ts_deboornet_result'.
+ *
+ * Two dimensional points are stored as follows:
+ *
+ *     [x_0, y_0, x_1, y_1, ..., x_n-1, y_n-1]
+ *
+ * Tree dimensional points are stored as follows:
+ *
+ *     [x_0, y_0, z_0, x_1, y_1, z_1, ..., x_n-1, y_n-1, z_n-1]
+ *
+ * ... and so on. The output also supports homogeneous coordinates
+ * (cf. tsBSpline).
+ *
+ * There is a special case in which the evaluation of a knot value 'u' returns
+ * two results instead of one. It occurs when the multiplicity of 'u' ( s(u) )
+ * is equals to the order of a spline, indicating that the corresponding spline
+ * is discontinuous at 'u'. This is common practice for B-Splines (and NURBS)
+ * consisting of connected Bezier curves where the endpoint of curve 'c_i' is
+ * equal to the start point of curve 'c_i+1'. Yet, the end point of 'c_i' and
+ * the start point of 'c_i+1' may still be completely different, yielding to
+ * visible gaps. In such case (s(u) == order), 'points' stores only the two
+ * resultant points (there is no net to calculate) and 'result' points to the
+ * *first* point in 'points'. Since having gaps in splines is unusual, both
+ * points in 'points' are generally equals, making it easy to handle this
+ * special case by accessing 'result' as usual. However, you can access both
+ * points if necessary:
+ *
+ *     ts_deboornet_result(...)[0] ...       // Stores the first component of
+ *                                           // the first result.
+ *
+ *     ts_deboornet_result(...)[dim(spline)] // Stores the first component of
+ *                                           // the second result.
+ *
+ * As if this wasn't complicated enough, there is an exception for this special
+ * case, yielding to exactly one result (just like the regular case) even if
+ * 's(u) == order'. It occurs when 'u' is the lower or upper bound of a
+ * spline's domain. For instance, if 'b' is a spline with domain [0, 1] and is
+ * evaluated at 'u = 0' or 'u = 1' then 'result' is *always* a single point
+ * regardless of the multiplicity of 'u'.
+ *
+ * In summary, three different types of evaluation exist: i) the regular case,
+ * in which all points of the corresponding net are returned, ii) a special
+ * case, in which exactly two points are returned (required for splines with
+ * gaps), and iii) the exception of ii), in which exactly one point is returned
+ * even if 's(u) == order'. All in all this looks quite complex (and actually
+ * it is), but for most applications you do not have to deal with this. Just
+ * use 'ts_deboornet_result' to access the outcome of De Boor's algorithm.
+ */
+typedef struct
+{
+	struct tsDeBoorNetImpl *pImpl; /**< The actual implementation. */
+} tsDeBoorNet;
 
 /**
  * Returns the knot (sometimes referred to as 'u' or 't') of \p net.
@@ -1162,135 +1314,30 @@ size_t TINYSPLINE_API ts_deboornet_sof_result(const tsDeBoorNet *net);
  */
 tsError TINYSPLINE_API ts_deboornet_result(const tsDeBoorNet *net,
 	tsReal **result, tsStatus *status);
+/*! @} */
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Constructors, Destructors, Copy, and Move Functions                      *
-*                                                                             *
-******************************************************************************/
-/**
- * Creates a new spline whose data points to NULL.
+/*! @name De Boor Net Initialization
  *
- * @return
- * 	A new spline whose data points to NULL.
- */
-tsBSpline TINYSPLINE_API ts_bspline_init();
-
-/**
- * Creates a new spline and stores the result in \p spline.
+ * The following functions are used to create and release ::tsDeBoorNet
+ * instances as well as to copy and move the internal data of a ::tsDeBoorNet
+ * instance to another instance.
  *
- * @param[in] num_control_points
- * 	The number of control points of \p spline.
- * @param[in] dimension
- * 	The dimension of each control point of \p spline.
- * @param[in] degree
- * 	The degree of \p spline.
- * @param[in] type
- * 	How to setup the knot vector of \p spline.
- * @param[out] spline
- * 	The output spline.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p degree >= \p num_control_points.
- * @return TS_NUM_KNOTS
- * 	If \p type == ::TS_BEZIERS and
- * 	(\p num_control_points % \p degree + 1) != 0.
- * @return TS_MALLOC
- * 	If allocating memory failed.
- */
-tsError TINYSPLINE_API ts_bspline_new(size_t num_control_points,
-	size_t dimension, size_t degree, tsBSplineType type, tsBSpline *spline,
-	tsStatus *status);
-
-/**
- * Creates a new spline with given control points (varargs) and stores the
- * result in \p spline. As all splines have at least one control point (with
- * minimum dimensionality one), the first component of the first control point
- * has a named parameter. Note that, by design of varargs in C, the last named
- * parameter must not be float. Thus, \p first is of type double instead of
- * tsReal.
+ * \b Note: It is recommended to initialize an instance with
+ * ::ts_deboornet_init. This way, ::ts_deboornet_free can be called in
+ * ::TS_CATCH and ::TS_FINALLY blocks (see Section Error Handling for more
+ * details) without further checking. For example:
  *
- * @param[in] num_control_points
- * 	The number of control points of \p spline.
- * @param[in] dimension
- * 	The dimension of each control point of \p spline.
- * @param[in] degree
- * 	The degree of \p spline.
- * @param[in] type
- * 	How to setup the knot vector of \p spline.
- * @param[out] spline
- * 	The output spline.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @param[in] first
- * 	The first component of the first control point to be set.
- * @param[in] ...
- * 	The remaining components (control points).
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_DIM_ZERO
- * 	If \p dimension == 0.
- * @return TS_DEG_GE_NCTRLP
- * 	If \p degree >= \p num_control_points.
- * @return TS_NUM_KNOTS
- * 	If \p type == ::TS_BEZIERS and
- * 	(\p num_control_points % \p degree + 1) != 0.
- * @return TS_MALLOC
- * 	If allocating memory failed.
- */
-tsError TINYSPLINE_API ts_bspline_new_with_control_points(
-	size_t num_control_points, size_t dimension, size_t degree,
-	tsBSplineType type, tsBSpline *spline, tsStatus *status,
-	double first, ...);
-
-/**
- * Creates a deep copy of \p src and stores the copied values in \p dest. Does
- * nothing, if \p src == \p dest.
+ *     tsDeBoorNet net = ts_deboornet_init();
+ *     TS_TRY(...)
+ *         ...
+ *     TS_FINALLY
+ *         ts_deboornet_free(&net);
+ *     TS_END_TRY
  *
- * @param[in] src
- * 	The spline to deep copy.
- * @param[out] dest
- * 	The output spline.
- * @param[out] status
- * 	The status of this function. May be NULL.
- * @return TS_SUCCESS
- * 	On success.
- * @return TS_MALLOC
- * 	If allocating memory failed.
+ * @{
  */
-tsError TINYSPLINE_API ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
-	tsStatus *status);
-
-/**
- * Moves the ownership of the data of \p src to \p dest. After calling this
- * function, the data of \p src points to NULL. Does not free the data of
- * \p dest. Does nothing, if \p src == \p dest.
- *
- * @param[out] src
- * 	The spline whose values are moved to \p dest.
- * @param[out] dest
- * 	The spline that receives the values of \p src.
- */
-void TINYSPLINE_API ts_bspline_move(tsBSpline *src, tsBSpline *dest);
-
-/**
- * Frees the data of \p spline. After calling this function, the data of
- * \p spline points to NULL.
- *
- * @param[out] spline
- * 	The spline to free.
- */
-void TINYSPLINE_API ts_bspline_free(tsBSpline *spline);
-
-/* ------------------------------------------------------------------------- */
-
 /**
  * Creates a new net whose data points to NULL.
  *
@@ -1337,6 +1384,7 @@ void TINYSPLINE_API ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
  * 	The net to free.
  */
 void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
+/*! @} */
 
 
 

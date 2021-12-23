@@ -66,10 +66,6 @@ set(TINYSPLINE_ISSUE_TRACKER
 	"https://github.com/msteinbeck/tinyspline/issues"
 	CACHE INTERNAL "")
 
-set(TINYSPLINE_REPOSITORY_TYPE
-	"git"
-	CACHE INTERNAL "")
-
 set(TINYSPLINE_REPOSITORY
 	"https://github.com/msteinbeck/tinyspline.git"
 	CACHE INTERNAL "")

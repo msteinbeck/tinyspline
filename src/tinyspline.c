@@ -59,89 +59,105 @@ struct tsDeBoorNetImpl
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Forward Declarations & Internal Utility Functions                        *
-*                                                                             *
-******************************************************************************/
-void ts_int_bspline_init(tsBSpline *_spline_)
+/*! @name Internal Functions
+ *
+ * @{
+ */
+void
+ts_int_bspline_init(tsBSpline *spline)
 {
-	_spline_->pImpl = NULL;
+	spline->pImpl = NULL;
 }
 
-size_t ts_int_bspline_sof_state(const tsBSpline *spline)
+size_t
+ts_int_bspline_sof_state(const tsBSpline *spline)
 {
 	return sizeof(struct tsBSplineImpl) +
-		ts_bspline_sof_control_points(spline) +
-		ts_bspline_sof_knots(spline);
+	       ts_bspline_sof_control_points(spline) +
+	       ts_bspline_sof_knots(spline);
 }
 
-tsReal * ts_int_bspline_access_ctrlp(const tsBSpline *spline)
+tsReal *
+ts_int_bspline_access_ctrlp(const tsBSpline *spline)
 {
 	return (tsReal *) (& spline->pImpl[1]);
 }
 
-tsReal * ts_int_bspline_access_knots(const tsBSpline *spline)
+tsReal *
+ts_int_bspline_access_knots(const tsBSpline *spline)
 {
-	return ts_int_bspline_access_ctrlp(spline)
-		+ ts_bspline_len_control_points(spline);
+	return ts_int_bspline_access_ctrlp(spline) +
+	       ts_bspline_len_control_points(spline);
 }
 
-tsError ts_int_bspline_access_ctrlp_at(const tsBSpline *spline, size_t index,
-	tsReal **ctrlp, tsStatus *status)
+tsError
+ts_int_bspline_access_ctrlp_at(const tsBSpline *spline,
+                               size_t index,
+                               tsReal **ctrlp,
+                               tsStatus *status)
 {
-	if (index >= ts_bspline_num_control_points(spline)) {
+	const size_t num = ts_bspline_num_control_points(spline);
+	if (index >= num) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			"index (%lu) >= num(control_points) (%lu)",
-			(unsigned long) index,
-			(unsigned long) ts_bspline_num_control_points(spline))
+		            "index (%lu) >= num(control_points) (%lu)",
+		            (unsigned long) index,
+		            (unsigned long) num)
 	}
 	*ctrlp = ts_int_bspline_access_ctrlp(spline) +
-		index * ts_bspline_dimension(spline);
+	         index * ts_bspline_dimension(spline);
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_int_bspline_access_knot_at(const tsBSpline *spline, size_t index,
-	tsReal *knot, tsStatus *status)
+tsError
+ts_int_bspline_access_knot_at(const tsBSpline *spline,
+                              size_t index,
+                              tsReal *knot,
+                              tsStatus *status)
 {
-	if (index >= ts_bspline_num_knots(spline)) {
+	const size_t num = ts_bspline_num_knots(spline);
+	if (index >= num) {
 		TS_RETURN_2(status, TS_INDEX_ERROR,
-			"index (%lu) >= num(knots) (%lu)",
-			(unsigned long) index,
-			(unsigned long) ts_bspline_num_knots(spline))
+		            "index (%lu) >= num(knots) (%lu)",
+		            (unsigned long) index,
+		            (unsigned long) num)
 	}
 	*knot = ts_int_bspline_access_knots(spline)[index];
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_int_deboornet_init(tsDeBoorNet *_deBoorNet_)
+void
+ts_int_deboornet_init(tsDeBoorNet *net)
 {
-	_deBoorNet_->pImpl = NULL;
+	net->pImpl = NULL;
 }
 
-size_t ts_int_deboornet_sof_state(const tsDeBoorNet *net)
+size_t
+ts_int_deboornet_sof_state(const tsDeBoorNet *net)
 {
 	return sizeof(struct tsDeBoorNetImpl) +
-		ts_deboornet_sof_points(net) +
-		ts_deboornet_sof_result(net);
+	       ts_deboornet_sof_points(net) +
+	       ts_deboornet_sof_result(net);
 }
 
-tsReal * ts_int_deboornet_access_points(const tsDeBoorNet *net)
+tsReal *
+ts_int_deboornet_access_points(const tsDeBoorNet *net)
 {
 	return (tsReal *) (& net->pImpl[1]);
 }
 
-tsReal * ts_int_deboornet_access_result(const tsDeBoorNet *net)
+tsReal *
+ts_int_deboornet_access_result(const tsDeBoorNet *net)
 {
 	if (ts_deboornet_num_result(net) == 2) {
 		return ts_int_deboornet_access_points(net);
 	} else {
 		return ts_int_deboornet_access_points(net) +
-			/* Last point in `points`. */
-			(ts_deboornet_len_points(net) -
-			ts_deboornet_dimension(net));
+		       /* Last point in `points`. */
+		       (ts_deboornet_len_points(net) -
+		        ts_deboornet_dimension(net));
 	}
 }
+/*! @} */
 
 
 

@@ -539,7 +539,7 @@ if(BUILD_SHARED_LIBS)
 		# automatically imported (which is required to link against the
 		# shared libraries). By default, TINYSPLINE_SHARED also
 		# specifies the behavior of the C++ interface. However, it can
-		# be configures independently by defining TINYSPLINECXX_API as
+		# be configured independently by defining TINYSPLINECXX_API as
 		# __declspec(dllexport) (export) or __declspec(dllimport)
 		# (import). Note that TINYSPLINE_EXPORT should not be added to
 		# the following lists. Otherwise, it will be added to install

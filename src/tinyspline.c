@@ -391,6 +391,192 @@ ts_bspline_set_knot_at(tsBSpline *spline,
 
 
 
+/*! @name B-Spline Initialization
+ *
+ * @{
+ */
+tsBSpline
+ts_bspline_init()
+{
+	tsBSpline spline;
+	ts_int_bspline_init(&spline);
+	return spline;
+}
+
+tsError
+ts_int_bspline_generate_knots(const tsBSpline *spline,
+                              tsBSplineType type,
+                              tsStatus *status)
+{
+	const size_t n_knots = ts_bspline_num_knots(spline);
+	const size_t deg = ts_bspline_degree(spline);
+	const size_t order = ts_bspline_order(spline);
+	tsReal fac; /**< Factor used to calculate the knot values. */
+	size_t i; /**< Used in for loops. */
+	tsReal *knots; /**< Pointer to the knots of \p _result_. */
+
+	/* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
+	if (type == TS_BEZIERS && n_knots % order != 0) {
+		TS_RETURN_2(status, TS_NUM_KNOTS,
+		            "num(knots) (%lu) %% order (%lu) != 0",
+		            (unsigned long) n_knots, (unsigned long) order)
+	}
+
+	knots = ts_int_bspline_access_knots(spline);
+
+	if (type == TS_OPENED) {
+		knots[0] = TS_DOMAIN_DEFAULT_MIN; /* n_knots >= 2 */
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
+		      / (n_knots - 1); /* n_knots >= 2 */
+		for (i = 1; i < n_knots-1; i++)
+			knots[i] = TS_DOMAIN_DEFAULT_MIN + i*fac;
+		knots[i] = TS_DOMAIN_DEFAULT_MAX; /* n_knots >= 2 */
+	} else if (type == TS_CLAMPED) {
+		/* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
+		      / (n_knots - 2*deg - 1);
+		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
+		for (i = order ;i < n_knots-order; i++)
+			knots[i] = TS_DOMAIN_DEFAULT_MIN + (i-deg)*fac;
+		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
+	} else if (type == TS_BEZIERS) {
+		/* n_knots >= 2*order implies n_knots/order >= 2 */
+		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
+		      / (n_knots/order - 1);
+		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
+		for (i = order; i < n_knots-order; i += order)
+			ts_arr_fill(knots + i,
+			            order,
+			            TS_DOMAIN_DEFAULT_MIN + (i/order)*fac);
+		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
+	}
+	TS_RETURN_SUCCESS(status)
+}
+
+tsError
+ts_bspline_new(size_t num_control_points,
+               size_t dimension,
+               size_t degree,
+               tsBSplineType type,
+               tsBSpline *spline,
+               tsStatus *status)
+{
+	const size_t order = degree + 1;
+	const size_t num_knots = num_control_points + order;
+	const size_t len_ctrlp = num_control_points * dimension;
+
+	const size_t sof_real = sizeof(tsReal);
+	const size_t sof_impl = sizeof(struct tsBSplineImpl);
+	const size_t sof_ctrlp_vec = len_ctrlp * sof_real;
+	const size_t sof_knots_vec = num_knots * sof_real;
+	const size_t sof_spline = sof_impl + sof_ctrlp_vec + sof_knots_vec;
+	tsError err;
+
+	ts_int_bspline_init(spline);
+
+	if (dimension < 1) {
+		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
+	}
+	if (num_knots > TS_MAX_NUM_KNOTS) {
+		TS_RETURN_2(status, TS_NUM_KNOTS,
+		            "unsupported number of knots: %lu > %i",
+		            (unsigned long) num_knots, TS_MAX_NUM_KNOTS)
+	}
+	if (degree >= num_control_points) {
+		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
+		            "degree (%lu) >= num(control_points) (%lu)",
+		            (unsigned long) degree,
+		            (unsigned long) num_control_points)
+	}
+
+	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
+	if (!spline->pImpl)
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+
+	spline->pImpl->deg = degree;
+	spline->pImpl->dim = dimension;
+	spline->pImpl->n_ctrlp = num_control_points;
+	spline->pImpl->n_knots = num_knots;
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_int_bspline_generate_knots(
+		        spline, type, status))
+	TS_CATCH(err)
+		ts_bspline_free(spline);
+	TS_END_TRY_RETURN(err)
+}
+
+tsError
+ts_bspline_new_with_control_points(size_t num_control_points,
+                                   size_t dimension,
+                                   size_t degree,
+                                   tsBSplineType type,
+                                   tsBSpline *spline,
+                                   tsStatus *status,
+                                   double first,
+                                   ...)
+{
+	tsReal *ctrlp = NULL;
+	va_list argp;
+	size_t i;
+	tsError err;
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_bspline_new(
+		        num_control_points, dimension,
+		        degree, type, spline, status))
+	TS_CATCH(err)
+		ts_bspline_free(spline);
+	TS_END_TRY_ROE(err)
+	ctrlp = ts_int_bspline_access_ctrlp(spline);
+
+	ctrlp[0] = (tsReal) first;
+	va_start(argp, first);
+	for (i = 1; i < ts_bspline_len_control_points(spline); i++)
+		ctrlp[i] = (tsReal) va_arg(argp, double);
+	va_end(argp);
+
+	TS_RETURN_SUCCESS(status)
+}
+
+tsError
+ts_bspline_copy(const tsBSpline *src,
+                tsBSpline *dest,
+                tsStatus *status)
+{
+	size_t size;
+	if (src == dest)
+		TS_RETURN_SUCCESS(status)
+	ts_int_bspline_init(dest);
+	size = ts_int_bspline_sof_state(src);
+	dest->pImpl = (struct tsBSplineImpl *) malloc(size);
+	if (!dest->pImpl)
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	memcpy(dest->pImpl, src->pImpl, size);
+	TS_RETURN_SUCCESS(status)
+}
+
+void
+ts_bspline_move(tsBSpline *src,
+                tsBSpline *dest)
+{
+	if (src == dest)
+		return;
+	dest->pImpl = src->pImpl;
+	ts_int_bspline_init(src);
+}
+
+void
+ts_bspline_free(tsBSpline *spline)
+{
+	if (spline->pImpl)
+		free(spline->pImpl);
+	ts_int_bspline_init(spline);
+}
+/*! @} */
+
+
+
 /*! @name De Boor Net Data
  *
  * @{
@@ -489,173 +675,6 @@ ts_deboornet_result(const tsDeBoorNet *net,
 	TS_RETURN_SUCCESS(status)
 }
 /*! @} */
-
-
-
-/******************************************************************************
-*                                                                             *
-* :: Constructors, Destructors, Copy, and Move Functions                      *
-*                                                                             *
-******************************************************************************/
-tsBSpline ts_bspline_init()
-{
-	tsBSpline spline;
-	ts_int_bspline_init(&spline);
-	return spline;
-}
-
-tsError ts_int_bspline_generate_knots(const tsBSpline *spline,
-	tsBSplineType type, tsStatus *status)
-{
-	const size_t n_knots = ts_bspline_num_knots(spline);
-	const size_t deg = ts_bspline_degree(spline);
-	const size_t order = ts_bspline_order(spline);
-	tsReal fac; /**< Factor used to calculate the knot values. */
-	size_t i; /**< Used in for loops. */
-	tsReal *knots; /**< Pointer to the knots of \p _result_. */
-
-	/* order >= 1 implies 2*order >= 2 implies n_knots >= 2 */
-	if (type == TS_BEZIERS && n_knots % order != 0) {
-		TS_RETURN_2(status, TS_NUM_KNOTS,
-			"num(knots) (%lu) %% order (%lu) != 0",
-			(unsigned long) n_knots, (unsigned long) order)
-	}
-
-	knots = ts_int_bspline_access_knots(spline);
-
-	if (type == TS_OPENED) {
-		knots[0] = TS_DOMAIN_DEFAULT_MIN; /* n_knots >= 2 */
-		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
-			/ (n_knots - 1); /* n_knots >= 2 */
-		for (i = 1; i < n_knots-1; i++)
-			knots[i] = TS_DOMAIN_DEFAULT_MIN + i*fac;
-		knots[i] = TS_DOMAIN_DEFAULT_MAX; /* n_knots >= 2 */
-	} else if (type == TS_CLAMPED) {
-		/* n_knots >= 2*order == 2*(deg+1) == 2*deg + 2 > 2*deg - 1 */
-		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
-			/ (n_knots - 2*deg - 1);
-		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
-		for (i = order ;i < n_knots-order; i++)
-			knots[i] = TS_DOMAIN_DEFAULT_MIN + (i-deg)*fac;
-		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
-	} else if (type == TS_BEZIERS) {
-		/* n_knots >= 2*order implies n_knots/order >= 2 */
-		fac = (TS_DOMAIN_DEFAULT_MAX - TS_DOMAIN_DEFAULT_MIN)
-			/ (n_knots/order - 1);
-		ts_arr_fill(knots, order, TS_DOMAIN_DEFAULT_MIN);
-		for (i = order; i < n_knots-order; i += order)
-			ts_arr_fill(knots + i, order,
-				TS_DOMAIN_DEFAULT_MIN + (i/order)*fac);
-		ts_arr_fill(knots + i, order, TS_DOMAIN_DEFAULT_MAX);
-	}
-	TS_RETURN_SUCCESS(status)
-}
-
-tsError ts_bspline_new(size_t num_control_points, size_t dimension,
-	size_t degree, tsBSplineType type, tsBSpline *spline, tsStatus *status)
-{
-	const size_t order = degree + 1;
-	const size_t num_knots = num_control_points + order;
-	const size_t len_ctrlp = num_control_points * dimension;
-
-	const size_t sof_real = sizeof(tsReal);
-	const size_t sof_impl = sizeof(struct tsBSplineImpl);
-	const size_t sof_ctrlp_vec = len_ctrlp * sof_real;
-	const size_t sof_knots_vec = num_knots * sof_real;
-	const size_t sof_spline = sof_impl + sof_ctrlp_vec + sof_knots_vec;
-	tsError err;
-
-	ts_int_bspline_init(spline);
-
-	if (dimension < 1) {
-		TS_RETURN_0(status, TS_DIM_ZERO, "unsupported dimension: 0")
-	}
-	if (num_knots > TS_MAX_NUM_KNOTS) {
-		TS_RETURN_2(status, TS_NUM_KNOTS,
-			"unsupported number of knots: %lu > %i",
-			(unsigned long) num_knots, TS_MAX_NUM_KNOTS)
-	}
-	if (degree >= num_control_points) {
-		TS_RETURN_2(status, TS_DEG_GE_NCTRLP,
-			"degree (%lu) >= num(control_points) (%lu)",
-			(unsigned long) degree,
-			(unsigned long) num_control_points)
-	}
-
-	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
-	if (!spline->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
-
-	spline->pImpl->deg = degree;
-	spline->pImpl->dim = dimension;
-	spline->pImpl->n_ctrlp = num_control_points;
-	spline->pImpl->n_knots = num_knots;
-
-	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_int_bspline_generate_knots(
-			spline, type, status))
-	TS_CATCH(err)
-		ts_bspline_free(spline);
-	TS_END_TRY_RETURN(err)
-}
-
-tsError ts_bspline_new_with_control_points(
-	size_t num_control_points, size_t dimension, size_t degree,
-	tsBSplineType type, tsBSpline *spline, tsStatus *status,
-	double first, ...)
-{
-	tsReal *ctrlp = NULL;
-	va_list argp;
-	size_t i;
-	tsError err;
-
-	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_bspline_new(
-			num_control_points, dimension, degree, type, spline,
-			status))
-	TS_CATCH(err)
-		ts_bspline_free(spline);
-	TS_END_TRY_ROE(err)
-	ctrlp = ts_int_bspline_access_ctrlp(spline);
-
-	ctrlp[0] = (tsReal) first;
-	va_start(argp, first);
-	for (i = 1; i < ts_bspline_len_control_points(spline); i++)
-		ctrlp[i] = (tsReal) va_arg(argp, double);
-	va_end(argp);
-
-	TS_RETURN_SUCCESS(status)
-}
-
-tsError ts_bspline_copy(const tsBSpline *src, tsBSpline *dest,
-	tsStatus *status)
-{
-	size_t size;
-	if (src == dest)
-		TS_RETURN_SUCCESS(status)
-	ts_int_bspline_init(dest);
-	size = ts_int_bspline_sof_state(src);
-	dest->pImpl = (struct tsBSplineImpl *) malloc(size);
-	if (!dest->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
-	memcpy(dest->pImpl, src->pImpl, size);
-	TS_RETURN_SUCCESS(status)
-}
-
-void ts_bspline_move(tsBSpline *src, tsBSpline *dest)
-{
-	if (src == dest)
-		return;
-	dest->pImpl = src->pImpl;
-	ts_int_bspline_init(src);
-}
-
-void ts_bspline_free(tsBSpline *spline)
-{
-	if (spline->pImpl)
-		free(spline->pImpl);
-	ts_int_bspline_init(spline);
-}
 
 /* ------------------------------------------------------------------------- */
 

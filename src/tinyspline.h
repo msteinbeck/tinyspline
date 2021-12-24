@@ -1429,14 +1429,18 @@ ts_deboornet_result(const tsDeBoorNet *net,
  * @return
  * 	A new net whose data points to NULL.
  */
-tsDeBoorNet TINYSPLINE_API ts_deboornet_init();
+tsDeBoorNet TINYSPLINE_API
+ts_deboornet_init();
 
 /**
- * Creates a deep copy of \p src and stores the copied values in \p dest. Does
- * nothing, if \p src == \p dest.
+ * Creates a deep copy of \p src and stores the copied data in \p dest. \p src
+ * and \p dest can be the same instance.
+ *
+ * \b Note: Unlike \e memcpy and \e memmove, the first parameter is the source
+ * and the second parameter is the destination.
  *
  * @param[in] src
- * 	The net to deep copy.
+ * 	The net to be deep copied.
  * @param[out] dest
  * 	The output net.
  * @param[out] status
@@ -1446,29 +1450,35 @@ tsDeBoorNet TINYSPLINE_API ts_deboornet_init();
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_deboornet_copy(const tsDeBoorNet *src,
-	tsDeBoorNet *dest, tsStatus *status);
+tsError TINYSPLINE_API
+ts_deboornet_copy(const tsDeBoorNet *src,
+                  tsDeBoorNet *dest,
+                  tsStatus *status);
 
 /**
  * Moves the ownership of the data of \p src to \p dest. After calling this
- * function, the data of \p src points to NULL. Does not free the data of
- * \p dest. Does nothing, if \p src == \p dest.
+ * function, the data of \p src points to NULL. Does not release the data of \p
+ * dest. \p src and \p dest can be the same instance (in this case, the data of
+ * \p src remains).
  *
  * @param[out] src
- * 	The net whose values are moved to \p dest.
+ * 	The net whose data is moved to \p dest.
  * @param[out] dest
- * 	The net that receives the values of \p src.
+ * 	The net that receives the data of \p src.
  */
-void TINYSPLINE_API ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest);
+void TINYSPLINE_API
+ts_deboornet_move(tsDeBoorNet *src,
+                  tsDeBoorNet *dest);
 
 /**
- * Frees the data of \p net. After calling this function, the data of \p net
+ * Releases the data of \p net. After calling this function, the data of \p net
  * points to NULL.
  *
  * @param[out] net
- * 	The net to free.
+ * 	The net to be released.
  */
-void TINYSPLINE_API ts_deboornet_free(tsDeBoorNet *net);
+void TINYSPLINE_API
+ts_deboornet_free(tsDeBoorNet *net);
 /*! @} */
 
 

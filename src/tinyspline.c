@@ -2600,13 +2600,14 @@ ts_bspline_morph(const tsBSpline *source,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Serialization and Persistence Functions                                  *
-*                                                                             *
-******************************************************************************/
-tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
-	tsStatus *status)
+/*! @name Serialization and Persistence
+ *
+ * @{
+ */
+tsError
+ts_int_bspline_to_json(const tsBSpline *spline,
+                       JSON_Value **value,
+                       tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t dim = ts_bspline_dimension(spline);
@@ -2630,17 +2631,17 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		*value = json_value_init_object();
 		if (!*value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		ctrlp_value = json_value_init_array();
 		if (!ctrlp_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		knots_value = json_value_init_array();
 		if (!knots_value) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 
 		/* Although the following functions cannot fail, that is, they
@@ -2651,45 +2652,49 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		spline_object = json_value_get_object(*value);
 		if (!spline_object) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 
 		/* Set degree and dimension. */
-		if (JSONSuccess != json_object_set_number(
-				spline_object, "degree", (double) deg)) {
+		if (JSONSuccess != json_object_set_number(spline_object,
+		                                          "degree",
+		                                          (double) deg)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
-		if (JSONSuccess != json_object_set_number(
-				spline_object, "dimension", (double) dim)) {
+		if (JSONSuccess != json_object_set_number(spline_object,
+		                                          "dimension",
+		                                          (double) dim)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 
 		/* Set control points. */
 		if (JSONSuccess != json_object_set_value(spline_object,
-				"control_points", ctrlp_value)) {
+		                                         "control_points",
+		                                         ctrlp_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		ctrlp_array = json_array(ctrlp_value);
 		if (!ctrlp_array) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		for (i = 0; i < len_ctrlp; i++) {
 			if (JSONSuccess != json_array_append_number(
-					ctrlp_array, (double) ctrlp[i])) {
+				    ctrlp_array, (double) ctrlp[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					"out of memory")
+				           "out of memory")
 			}
 		}
 
 		/* Set knots. */
-		if (JSONSuccess != json_object_set_value(
-				spline_object, "knots", knots_value)) {
+		if (JSONSuccess != json_object_set_value(spline_object,
+		                                         "knots",
+		                                         knots_value)) {
 			TS_THROW_0(values, err, status, TS_MALLOC,
-				"out of memory")
+			           "out of memory")
 		}
 		knots_array = json_array(knots_value);
 		if (!knots_array) {
@@ -2698,9 +2703,9 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 		}
 		for (i = 0; i < len_knots; i++) {
 			if (JSONSuccess != json_array_append_number(
-					knots_array, (double) knots[i])) {
+				    knots_array, (double) knots[i])) {
 				TS_THROW_0(values, err, status, TS_MALLOC,
-					"out of memory")
+				           "out of memory")
 			}
 		}
 	TS_CATCH(err)
@@ -2714,8 +2719,10 @@ tsError ts_int_bspline_to_json(const tsBSpline * spline, JSON_Value **value,
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
-	tsBSpline *_spline_, tsStatus *status)
+tsError
+ts_int_bspline_parse_json(const JSON_Value *spline_value,
+                          tsBSpline *spline,
+                          tsStatus *status)
 {
 	size_t deg, dim, len_ctrlp, num_knots;
 	tsReal *ctrlp, *knots;
@@ -2731,7 +2738,7 @@ tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
 	size_t i;
 	tsError err;
 
-	ts_int_bspline_init(_spline_);
+	ts_int_bspline_init(spline);
 
 	/* Read spline object. */
 	if (json_value_get_type(spline_value) != JSONObject)
@@ -2745,8 +2752,9 @@ tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
 	if (json_value_get_type(deg_value) != JSONNumber)
 		TS_RETURN_0(status, TS_PARSE_ERROR, "degree is not a number")
 	if (json_value_get_number(deg_value) < -0.01f) {
-		TS_RETURN_1(status, TS_PARSE_ERROR, "degree (%f) < 0",
-			json_value_get_number(deg_value))
+		TS_RETURN_1(status, TS_PARSE_ERROR,
+		            "degree (%f) < 0",
+		            json_value_get_number(deg_value))
 	}
 	deg = (size_t) json_value_get_number(deg_value);
 
@@ -2754,11 +2762,12 @@ tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
 	dim_value = json_object_get_value(spline_object, "dimension");
 	if (json_value_get_type(dim_value) != JSONNumber) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			"dimension is not a number")
+		            "dimension is not a number")
 	}
 	if (json_value_get_number(dim_value) < 0.99f) {
-		TS_RETURN_1(status, TS_PARSE_ERROR, "dimension (%f) < 1",
-			json_value_get_number(deg_value))
+		TS_RETURN_1(status, TS_PARSE_ERROR,
+		            "dimension (%f) < 1",
+		            json_value_get_number(deg_value))
 	}
 	dim = (size_t) json_value_get_number(dim_value);
 
@@ -2766,67 +2775,70 @@ tsError ts_int_bspline_parse_json(const JSON_Value *spline_value,
 	ctrlp_value = json_object_get_value(spline_object, "control_points");
 	if (json_value_get_type(ctrlp_value) != JSONArray) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			"control_points is not an array")
+		            "control_points is not an array")
 	}
 	ctrlp_array = json_value_get_array(ctrlp_value);
 	len_ctrlp = json_array_get_count(ctrlp_array);
 	if (len_ctrlp % dim != 0) {
 		TS_RETURN_2(status, TS_PARSE_ERROR,
-			"len(control_points) (%lu) %% dimension (%lu) != 0",
-			(unsigned long) len_ctrlp, (unsigned long) dim)
+		           "len(control_points) (%lu) %% dimension (%lu) != 0",
+		            (unsigned long) len_ctrlp, (unsigned long) dim)
 	}
 
 	/* Read number of knots. */
 	knots_value = json_object_get_value(spline_object, "knots");
 	if (json_value_get_type(knots_value) != JSONArray) {
 		TS_RETURN_0(status, TS_PARSE_ERROR,
-			"knots is not an array")
+		            "knots is not an array")
 	}
 	knots_array = json_value_get_array(knots_value);
 	num_knots = json_array_get_count(knots_array);
 
 	/* Create spline. */
 	TS_TRY(try, err, status)
-		TS_CALL(try, err, ts_bspline_new(len_ctrlp/dim,
-				dim, deg, TS_CLAMPED, _spline_, status))
-		if (num_knots != ts_bspline_num_knots(_spline_))
+		TS_CALL(try, err, ts_bspline_new(
+		        len_ctrlp/dim, dim, deg,
+		        TS_CLAMPED, spline, status))
+		if (num_knots != ts_bspline_num_knots(spline))
 			TS_THROW_2(try, err, status, TS_NUM_KNOTS,
-				"unexpected num(knots): (%lu) != (%lu)",
-				(unsigned long) num_knots,
-				(unsigned long) ts_bspline_num_knots(_spline_))
+			           "unexpected num(knots): (%lu) != (%lu)",
+			           (unsigned long) num_knots,
+			          (unsigned long) ts_bspline_num_knots(spline))
 
 		/* Set control points. */
-		ctrlp = ts_int_bspline_access_ctrlp(_spline_);
+		ctrlp = ts_int_bspline_access_ctrlp(spline);
 		for (i = 0; i < len_ctrlp; i++) {
 			real_value = json_array_get_value(ctrlp_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
 				TS_THROW_1(try, err, status, TS_PARSE_ERROR,
-					"control_points: value at index %lu is not a number",
-					(unsigned long) i)
+				"control_points: value at index %lu is not a number",
+				           (unsigned long) i)
 			ctrlp[i] = (tsReal) json_value_get_number(real_value);
 		}
 		TS_CALL(try, err, ts_bspline_set_control_points(
-			_spline_, ctrlp, status))
+		        spline, ctrlp, status))
 
 		/* Set knots. */
-		knots = ts_int_bspline_access_knots(_spline_);
+		knots = ts_int_bspline_access_knots(spline);
 		for (i = 0; i < num_knots; i++) {
 			real_value = json_array_get_value(knots_array, i);
 			if (json_value_get_type(real_value) != JSONNumber)
 			TS_THROW_1(try, err, status, TS_PARSE_ERROR,
-				"knots: value at index %lu is not a number",
-				(unsigned long) i)
+			           "knots: value at index %lu is not a number",
+			           (unsigned long) i)
 			knots[i] = (tsReal) json_value_get_number(real_value);
 		}
 		TS_CALL(try, err, ts_bspline_set_knots(
-			_spline_, knots, status))
+		        spline, knots, status))
 	TS_CATCH(err)
-		ts_bspline_free(_spline_);
+		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_to_json(const tsBSpline *spline, char **json,
-	tsStatus *status)
+tsError
+ts_bspline_to_json(const tsBSpline *spline,
+                   char **json,
+                   tsStatus *status)
 {
 	tsError err;
 	JSON_Value *value = NULL;
@@ -2839,8 +2851,10 @@ tsError ts_bspline_to_json(const tsBSpline *spline, char **json,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_parse_json(const char *json, tsBSpline *spline,
-	tsStatus *status)
+tsError
+ts_bspline_parse_json(const char *json,
+                      tsBSpline *spline,
+                      tsStatus *status)
 {
 	tsError err;
 	JSON_Value *value = NULL;
@@ -2849,18 +2863,20 @@ tsError ts_bspline_parse_json(const char *json, tsBSpline *spline,
 		value = json_parse_string(json);
 		if (!value) {
 			TS_RETURN_0(status, TS_PARSE_ERROR,
-				"invalid json input")
+			            "invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_parse_json(
-			value, spline, status))
+		        value, spline, status))
 	TS_FINALLY
 		if (value)
 			json_value_free(value);
 	TS_END_TRY_RETURN(err)
 }
 
-tsError ts_bspline_save(const tsBSpline *spline, const char *path,
-	tsStatus *status)
+tsError
+ts_bspline_save(const tsBSpline *spline,
+                const char *path,
+                tsStatus *status)
 {
 	tsError err;
 	JSON_Status json_status;
@@ -2873,7 +2889,10 @@ tsError ts_bspline_save(const tsBSpline *spline, const char *path,
 	TS_RETURN_SUCCESS(status)
 }
 
-tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
+tsError
+ts_bspline_load(const char *path,
+                tsBSpline *spline,
+                tsStatus *status)
 {
 	tsError err;
 	FILE *file = NULL;
@@ -2883,15 +2902,15 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 		file = fopen(path, "r");
 		if (!file) {
 			TS_THROW_0(try, err, status, TS_IO_ERROR,
-				"unable to open file")
+			           "unable to open file")
 		}
 		value = json_parse_file(path);
 		if (!value) {
 			TS_RETURN_0(status, TS_PARSE_ERROR,
-				"invalid json input")
+			            "invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_parse_json(
-			value, spline, status))
+		        value, spline, status))
 	TS_FINALLY
 		if (file)
 			fclose(file);
@@ -2901,6 +2920,7 @@ tsError ts_bspline_load(const char *path, tsBSpline *spline, tsStatus *status)
 		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
 }
+/*! @} */
 
 
 

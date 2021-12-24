@@ -3,7 +3,7 @@
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h>   /* fabs, sqrt */
-#include <string.h> /* memcpy, memmove, strcmp */
+#include <string.h> /* memcpy, memmove */
 #include <stdio.h>  /* FILE, fopen */
 #include <stdarg.h> /* varargs */
 

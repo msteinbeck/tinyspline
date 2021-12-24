@@ -740,7 +740,7 @@ ts_bspline_num_control_points(const tsBSpline *spline);
 
 /**
  * Returns the size of the control point array of \p spline. This function may
- * be useful when copying control points using memcpy or memmove.
+ * be useful when copying control points using \e memcpy or \e memmove.
  *
  * @param[in] spline
  * 	The spline whose size of the control point array is read.
@@ -852,7 +852,7 @@ ts_bspline_num_knots(const tsBSpline *spline);
 
 /**
  * Returns the size of the knot array of \p spline. This function may be useful
- * when copying knots using memcpy or memmove.
+ * when copying knots using \e memcpy or \e memmove.
  *
  * @param[in] spline
  * 	The spline whose size of the knot array is read.
@@ -1232,24 +1232,26 @@ typedef struct
 } tsDeBoorNet;
 
 /**
- * Returns the knot (sometimes referred to as 'u' or 't') of \p net.
+ * Returns the knot (sometimes also referred to as \c u or \c t) of \p net.
  *
  * @param[in] net
  * 	The net whose knot is read.
  * @return
  * 	The knot of \p net.
  */
-tsReal TINYSPLINE_API ts_deboornet_knot(const tsDeBoorNet *net);
+tsReal TINYSPLINE_API
+ts_deboornet_knot(const tsDeBoorNet *net);
 
 /**
- * Returns the index [u_k, u_k+1) with u being the knot of \p net.
+ * Returns the index of the knot of \p net.
  *
  * @param[in] net
  * 	The net whose index is read.
  * @return
- * 	The index [u_k, u_k+1) with u being the knot of \p net.
+ * 	The index [u_k, u_k+1) with \c u being the knot of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_index(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_index(const tsDeBoorNet *net);
 
 /**
  * Returns the multiplicity of the knot of \p net.
@@ -1259,42 +1261,46 @@ size_t TINYSPLINE_API ts_deboornet_index(const tsDeBoorNet *net);
  * @return
  * 	The multiplicity of the knot of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_multiplicity(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_multiplicity(const tsDeBoorNet *net);
 
 /**
  * Returns the number of insertion that were necessary to evaluate the knot of
  * \p net.
  *
  * @param[in] net
- * 	The net with its knot whose number of insertions is read.
+ * 	The net whose number of insertions of its knot is read.
  * @return
  * 	The number of insertions that were necessary to evaluate the knot of \p
  * 	net.
  */
-size_t TINYSPLINE_API ts_deboornet_num_insertions(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_num_insertions(const tsDeBoorNet *net);
 
 /**
- * Returns the dimension of \p net. The dimension of a net describes the number
- * of components for each point in ts_bspline_get_points(spline).
+ * Returns the dimensionality of \p net, that is, the number of components of
+ * its points (::ts_deboornet_points) and result (::ts_deboornet_result).
  * One-dimensional nets are possible, albeit their benefit might be
  * questionable.
  *
  * @param[in] net
  * 	The net whose dimension is read.
  * @return
- * 	The dimension of \p net.
+ * 	The dimensionality of \p net (>= 1).
  */
-size_t TINYSPLINE_API ts_deboornet_dimension(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_dimension(const tsDeBoorNet *net);
 
 /**
  * Returns the length of the point array of \p net.
  *
  * @param[in] net
- * 	The net with its point array whose length is read.
+ * 	The net whose length of the point array is read.
  * @return
  * 	The length of the point array of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_len_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_len_points(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points of \p net.
@@ -1304,26 +1310,29 @@ size_t TINYSPLINE_API ts_deboornet_len_points(const tsDeBoorNet *net);
  * @return
  * 	The number of points of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_num_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_num_points(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the point array of \p net. This function may be useful
- * when copying points using memcpy or memmove.
+ * when copying points using \e memcpy or \e memmove.
  *
  * @param[in] net
- * 	The net with its point array whose size is read.
+ * 	The net whose size of the point array is read.
  * @return
  * 	The size of the point array of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_sof_points(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_sof_points(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the points of \p net.
  *
  * @param[in] net
- * 	The net whose points is read.
+ * 	The net whose points are read.
  * @param[out] points
- * 	The output array.
+ * 	The output array. \b Note: It is the responsibility of the client to
+ * 	release the allocated memory after use.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -1331,40 +1340,45 @@ size_t TINYSPLINE_API ts_deboornet_sof_points(const tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_deboornet_points(const tsDeBoorNet *net,
-	tsReal **points, tsStatus *status);
+tsError TINYSPLINE_API
+ts_deboornet_points(const tsDeBoorNet *net,
+                    tsReal **points,
+                    tsStatus *status);
 
 /**
  * Returns the length of the result array of \p net.
  *
  * @param[in] net
- * 	The net with its result array whose length is read.
+ * 	The net whose length of the result array is read.
  * @return
  * 	The length of the result array of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_len_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_len_result(const tsDeBoorNet *net);
 
 /**
  * Returns the number of points in the result array of \p net
  * (1 <= num_result <= 2).
  *
  * @param[in] net
- * 	The net with its result array whose number of points is read.
+ * 	The net whose number of points in the result array is read.
  * @return
  * 	The number of points in the result array of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_num_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_num_result(const tsDeBoorNet *net);
 
 /**
  * Returns the size of the result array of \p net. This function may be useful
- * when copying results using memcpy or memmove.
+ * when copying results using \e memcpy or \e memmove.
  *
  * @param[in] net
- * 	The net with its result array whose size is read.
+ * 	The net whose size of the result array is read.
  * @return TS_SUCCESS
  * 	The size of the result array of \p net.
  */
-size_t TINYSPLINE_API ts_deboornet_sof_result(const tsDeBoorNet *net);
+size_t TINYSPLINE_API
+ts_deboornet_sof_result(const tsDeBoorNet *net);
 
 /**
  * Returns a deep copy of the result of \p net.
@@ -1372,7 +1386,8 @@ size_t TINYSPLINE_API ts_deboornet_sof_result(const tsDeBoorNet *net);
  * @param[in] net
  * 	The net whose result is read.
  * @param[out] result
- * 	The output array.
+ * 	The output array. \b Note: It is the responsibility of the client to
+ * 	release the allocated memory after use.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -1380,8 +1395,10 @@ size_t TINYSPLINE_API ts_deboornet_sof_result(const tsDeBoorNet *net);
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_deboornet_result(const tsDeBoorNet *net,
-	tsReal **result, tsStatus *status);
+tsError TINYSPLINE_API
+ts_deboornet_result(const tsDeBoorNet *net,
+                    tsReal **result,
+                    tsStatus *status);
 /*! @} */
 
 

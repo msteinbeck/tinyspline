@@ -2303,20 +2303,20 @@ ts_bspline_morph(const tsBSpline *source,
 
 
 
-/******************************************************************************
-*                                                                             *
-* :: Serialization and Persistence Functions                                  *
-*                                                                             *
-* The following section contains functions to serialize and persist the data  *
-* types listed above.                                                         *
-*                                                                             *
-******************************************************************************/
+/*! @name Serialization and Persistence
+ *
+ * The following functions can be used to serialize and persist (i.e., store
+ * the serialized data in a file) splines. There are also functions to load
+ * serialized splines.
+ *
+ * @{
+ */
 /**
  * Serializes \p spline to a null-terminated JSON string and stores the result
  * in \p json.
  *
  * @param[in] spline
- * 	The spline to serialize.
+ * 	The spline to be serialized.
  * @param[out] json
  * 	The serialized JSON string.
  * @param[out] status
@@ -2326,16 +2326,18 @@ ts_bspline_morph(const tsBSpline *source,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_to_json(const tsBSpline *spline, char **json,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_to_json(const tsBSpline *spline,
+                   char **json,
+                   tsStatus *status);
 
 /**
  * Parses \p json and stores the result in \p spline.
  *
  * @param[in] json
- * 	The JSON string to parse.
+ * 	The JSON string to be parsed.
  * @param[out] spline
- * 	The deserialized spline.
+ * 	The output spline.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -2343,14 +2345,14 @@ tsError TINYSPLINE_API ts_bspline_to_json(const tsBSpline *spline, char **json,
  * @return TS_PARSE_ERROR
  * 	If an error occurred while parsing \p json.
  * @return TS_DIM_ZERO
- * 	If the dimension is 0.
+ * 	If the dimension is \c 0.
  * @return TS_LCTRLP_DIM_MISMATCH
- * 	If the length of the control point vector modulo dimension is not 0.
+ * 	If the length of the control point array modulo dimension is not \c 0.
  * @return TS_DEG_GE_NCTRLP
  * 	If the degree is greater or equals to the number of control points.
  * @return TS_NUM_KNOTS
- * 	If the number of knots stored in \p json does not match to the number
- * 	of control points and the degree of the spline.
+ * 	If the number of knots does not match to the number of control points
+ * 	plus the degree of the spline.
  * @return TS_KNOTS_DECR
  * 	If the knot vector is decreasing.
  * @return TS_MULTIPLICITY
@@ -2358,14 +2360,16 @@ tsError TINYSPLINE_API ts_bspline_to_json(const tsBSpline *spline, char **json,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_parse_json(const char *json,
-	tsBSpline *spline, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_parse_json(const char *json,
+                      tsBSpline *spline,
+                      tsStatus *status);
 
 /**
  * Saves \p spline as JSON ASCII file.
  *
  * @param[in] spline
- * 	The spline to save.
+ * 	The spline to be saved.
  * @param[in] path
  * 	Path of the JSON file.
  * @param[out] status
@@ -2377,14 +2381,16 @@ tsError TINYSPLINE_API ts_bspline_parse_json(const char *json,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_save(const tsBSpline *spline,
-	const char *path, tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_save(const tsBSpline *spline,
+                const char *path,
+                tsStatus *status);
 
 /**
  * Loads \p spline from a JSON ASCII file.
  *
  * @param[in] path
- * 	Path of the JSON file.
+ * 	Path of the JSON file to be loaded.
  * @param[out] spline
  * 	The output spline.
  * @param[ou] status
@@ -2396,14 +2402,14 @@ tsError TINYSPLINE_API ts_bspline_save(const tsBSpline *spline,
  * @return TS_PARSE_ERROR
  * 	If an error occurred while parsing the contents of \p path.
  * @return TS_DIM_ZERO
- * 	If the dimension is 0.
+ * 	If the dimension is \c 0.
  * @return TS_LCTRLP_DIM_MISMATCH
- * 	If the length of the control point vector modulo dimension is not 0.
+ * 	If the length of the control point array modulo dimension is not \c 0.
  * @return TS_DEG_GE_NCTRLP
  * 	If the degree is greater or equals to the number of control points.
  * @return TS_NUM_KNOTS
- * 	If the number of knots stored in \p json does not match to the number
- * 	of control points and the degree of the spline.
+ * 	If the number of knots does not match to the number of control points
+ * 	plus the degree of the spline.
  * @return TS_KNOTS_DECR
  * 	If the knot vector is decreasing.
  * @return TS_MULTIPLICITY
@@ -2411,8 +2417,10 @@ tsError TINYSPLINE_API ts_bspline_save(const tsBSpline *spline,
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */
-tsError TINYSPLINE_API ts_bspline_load(const char *path, tsBSpline *spline,
-	tsStatus *status);
+tsError TINYSPLINE_API
+ts_bspline_load(const char *path,
+                tsBSpline *spline,
+                tsStatus *status);
 
 
 

@@ -676,23 +676,30 @@ ts_deboornet_result(const tsDeBoorNet *net,
 }
 /*! @} */
 
-/* ------------------------------------------------------------------------- */
 
-tsDeBoorNet ts_deboornet_init()
+
+/*! @name De Boor Net Initialization
+ *
+ * @{
+ */
+tsDeBoorNet
+ts_deboornet_init()
 {
 	tsDeBoorNet net;
 	ts_int_deboornet_init(&net);
 	return net;
 }
 
-tsError ts_int_deboornet_new(const tsBSpline *spline, tsDeBoorNet *net,
-	tsStatus *status)
+tsError
+ts_int_deboornet_new(const tsBSpline *spline,
+                     tsDeBoorNet *net,
+                     tsStatus *status)
 {
 	const size_t dim = ts_bspline_dimension(spline);
 	const size_t deg = ts_bspline_degree(spline);
 	const size_t order = ts_bspline_order(spline);
 	const size_t num_points = (size_t)(order * (order+1) * 0.5f);
-	/* Handle case order == 1 which generates too few points. */
+	/* Handle `order == 1' which generates too few points. */
 	const size_t fixed_num_points = num_points < 2 ? 2 : num_points;
 
 	const size_t sof_real = sizeof(tsReal);
@@ -713,15 +720,18 @@ tsError ts_int_deboornet_new(const tsBSpline *spline, tsDeBoorNet *net,
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_deboornet_free(tsDeBoorNet *net)
+void
+ts_deboornet_free(tsDeBoorNet *net)
 {
 	if (net->pImpl)
 		free(net->pImpl);
 	ts_int_deboornet_init(net);
 }
 
-tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
-	tsStatus *status)
+tsError
+ts_deboornet_copy(const tsDeBoorNet *src,
+                  tsDeBoorNet *dest,
+                  tsStatus *status)
 {
 	size_t size;
 	if (src == dest)
@@ -735,13 +745,16 @@ tsError ts_deboornet_copy(const tsDeBoorNet *src, tsDeBoorNet *dest,
 	TS_RETURN_SUCCESS(status)
 }
 
-void ts_deboornet_move(tsDeBoorNet *src, tsDeBoorNet *dest)
+void
+ts_deboornet_move(tsDeBoorNet *src,
+                  tsDeBoorNet *dest)
 {
 	if (src == dest)
 		return;
 	dest->pImpl = src->pImpl;
 	ts_int_deboornet_init(src);
 }
+/*! @} */
 
 
 

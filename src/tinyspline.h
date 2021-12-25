@@ -9,8 +9,8 @@
 
 /*! @name Library Export/Import
  *
- * If TinySpline is built with MSVC, the macros \c TINYSPLINE_SHARED_EXPORT and
- * \c TINYSPLINE_SHARED_IMPORT define the Microsoft specific directives \c
+ * If TinySpline is built for Windows, the macros \c TINYSPLINE_SHARED_EXPORT
+ * and \c TINYSPLINE_SHARED_IMPORT define the Microsoft specific directives \c
  * __declspec(dllexport) and \c __declspec(dllimport), respectively. More
  * information on these directives can be found at:
  *
@@ -34,14 +34,14 @@
  * <em>as static library</em>, TINYSPLINE_API is set empty (i.e., it defines
  * nothing).
  *
- * If you consume TinySpline as shared library built with MSVC, all you need is
- * to define \c TINYSPLINE_SHARED. This will automatically import all required
- * symbols. When compiling TinySpline, the build system should set all
+ * If you consume TinySpline as shared library built for Windows, all you need
+ * is to define \c TINYSPLINE_SHARED. This will automatically import all
+ * required symbols. When compiling TinySpline, the build system should set all
  * necessary defines.
  *
  * @{
  */
-#ifdef _MSC_VER
+#if defined(_WIN32) || defined(__CYGWIN__)
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
 #elif defined(__ELF__)

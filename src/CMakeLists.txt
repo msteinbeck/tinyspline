@@ -563,8 +563,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal"
-		"-fvisibility=hidden")
+		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")
 	endif()
@@ -575,8 +574,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal"
-		"-fvisibility=hidden")
+		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS "-Werror")
 	endif()
@@ -615,8 +613,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal"
-		"-fvisibility=hidden")
+		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")
 	endif()
@@ -627,8 +624,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal"
-		"-fvisibility=hidden")
+		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS "-Werror")
 	endif()
@@ -821,6 +817,7 @@ target_compile_definitions(tinyspline
 set_target_properties(tinyspline PROPERTIES
 	OUTPUT_NAME "${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}"
 	DEFINE_SYMBOL TINYSPLINE_SHARED
+	C_VISIBILITY_PRESET hidden
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
 	PUBLIC_HEADER "tinyspline.h")
 target_link_libraries(tinyspline
@@ -896,6 +893,7 @@ if(TINYSPLINE_ENABLE_CXX)
 		set_target_properties(${target} PROPERTIES
 			OUTPUT_NAME ${name}
 			DEFINE_SYMBOL TINYSPLINE_SHARED
+			CXX_VISIBILITY_PRESET hidden
 			COMPILE_FLAGS ${flags})
 		if(NOT ${ARGS_EMSCRIPTEN})
 			set_property(TARGET ${target} APPEND PROPERTY

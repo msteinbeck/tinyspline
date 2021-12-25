@@ -9,23 +9,30 @@
 
 /*! @name Library Export/Import
  *
- * If TinySpline is built as shared library with MSVC, the macros \c
- * TINYSPLINE_SHARED_EXPORT and \c TINYSPLINE_SHARED_IMPORT define the
- * Microsoft specific directives \c __declspec(dllexport) and \c
- * __declspec(dllimport), respectively. More information on these
- * directives can be found at:
+ * If TinySpline is built with MSVC, the macros \c TINYSPLINE_SHARED_EXPORT and
+ * \c TINYSPLINE_SHARED_IMPORT define the Microsoft specific directives \c
+ * __declspec(dllexport) and \c __declspec(dllimport), respectively. More
+ * information on these directives can be found at:
  *
  *     https://docs.microsoft.com/en-us/cpp/cpp/dllexport-dllimport
  *
- * Depending on whether TinySpline is compiled or linked against, \c
- * TINYSPLINE_API points to \c TINYSPLINE_SHARED_EXPORT (compiled) or \c
- * TINYSPLINE_SHARED_IMPORT (linked against). All elements of TinySpline that
- * needs to be exported/imported are annotated with \c TINYSPLINE_API. This
- * eliminates the need for a module-definition (.def) file.
+ * If TinySpline is built to the ELF object format, \c TINYSPLINE_SHARED_EXPORT
+ * defines <tt>__attribute__ ((visibility ("default")))</tt> which, in
+ * combination with \c -fvisibility=hidden, behaves similar to \c
+ * __declspec(dllexport). TINYSPLINE_SHARED_IMPORT is set empty (i.e., it
+ * defines nothing).
  *
- * If TinySpline is built with any other compiler than MSVC, \c
- * TINYSPLINE_SHARED_EXPORT, \c TINYSPLINE_SHARED_IMPORT, and \c TINYSPLINE_API
- * are empty (i.e., they define nothing).
+ * If none of the above applies, \c TINYSPLINE_SHARED_EXPORT and \c
+ * TINYSPLINE_SHARED_IMPORT are set empty (i.e., they define nothing).
+ *
+ * Depending on whether TinySpline is compiled <em>as shared library</em> or
+ * linked against <em>as shared library</em>, \c TINYSPLINE_API points to \c
+ * TINYSPLINE_SHARED_EXPORT (compiled) or \c TINYSPLINE_SHARED_IMPORT (linked
+ * against). All elements of TinySpline that needs to be exported/imported are
+ * annotated with \c TINYSPLINE_API. This eliminates the need for a
+ * module-definition (.def) file. If TinySpline is compiled or linked against
+ * <em>as static library</em>, TINYSPLINE_API is set empty (i.e., it defines
+ * nothing).
  *
  * If you consume TinySpline as shared library built with MSVC, all you need is
  * to define \c TINYSPLINE_SHARED. This will automatically import all required
@@ -37,6 +44,9 @@
 #ifdef _MSC_VER
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
+#elif defined(__ELF__)
+#define TINYSPLINE_SHARED_EXPORT __attribute__ ((visibility ("default")))
+#define TINYSPLINE_SHARED_IMPORT
 #else
 #define TINYSPLINE_SHARED_EXPORT
 #define TINYSPLINE_SHARED_IMPORT

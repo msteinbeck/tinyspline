@@ -563,7 +563,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal")
+		"-Wfloat-equal"
+		"-fvisibility=hidden")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")
 	endif()
@@ -574,7 +575,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal")
+		"-Wfloat-equal"
+		"-fvisibility=hidden")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS "-Werror")
 	endif()
@@ -613,7 +615,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal")
+		"-Wfloat-equal"
+		"-fvisibility=hidden")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")
 	endif()
@@ -624,7 +627,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS
 		"-Wall"
 		"-Wextra"
-		"-Wfloat-equal")
+		"-Wfloat-equal"
+		"-fvisibility=hidden")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS "-Werror")
 	endif()

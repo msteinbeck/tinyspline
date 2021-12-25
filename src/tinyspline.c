@@ -1,3 +1,4 @@
+#define TINYSPLINE_EXPORT
 #include "tinyspline.h"
 #include "parson.h" /* serialization */
 

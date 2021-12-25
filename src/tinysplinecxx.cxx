@@ -1,4 +1,6 @@
+#define TINYSPLINE_EXPORT
 #include "tinysplinecxx.h"
+
 #include <stdlib.h>
 #include <cstring>
 #include <stdexcept>

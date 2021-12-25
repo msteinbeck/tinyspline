@@ -498,12 +498,6 @@ endif()
 # TINYSPLINE_CXX_DEFINITIONS
 #   Preprocessor definitions for the C++ interface (as list).
 #
-# TINYSPLINE_PKGCONFIG_C_FLAGS
-#   Cflags added to the pkg-config file of the C library.
-#
-# TINYSPLINE_PKGCONFIG_CXX_FLAGS
-#   Cflags added to the pkg-config file of the C++ library.
-#
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
 #
@@ -524,61 +518,28 @@ endif()
 # TINYSPLINE_BINDING_CXX_FLAGS
 #   C++ binding specific flags.
 #
+# TINYSPLINE_PKGCONFIG_C_FLAGS
+#   Cflags added to the pkg-config file of the C library.
+#
+# TINYSPLINE_PKGCONFIG_CXX_FLAGS
+#   Cflags added to the pkg-config file of the C++ library.
+#
 # TINYSPLINE_RUNTIME_LIBS
 #   Stores the names of the files that are copied (and stripped) from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
 # TINYSPLINE_C_DEFINITIONS
 # TINYSPLINE_CXX_DEFINITIONS
-if(BUILD_SHARED_LIBS)
-	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-		# Enables the export/import of the symbols of the shared C and
-		# C++ library. The export of symbols (which is required to
-		# build the shared libraries) is enabled by additionally
-		# supplying TINYSPLINE_EXPORT. If missing, symbols are
-		# automatically imported (which is required to link against the
-		# shared libraries). By default, TINYSPLINE_SHARED also
-		# specifies the behavior of the C++ interface. However, it can
-		# be configured independently by defining TINYSPLINECXX_API as
-		# __declspec(dllexport) (export) or __declspec(dllimport)
-		# (import). Note that TINYSPLINE_EXPORT should not be added to
-		# the following lists. Otherwise, it will be added to install
-		# targets (CMake, pkg-config etc.) so that targets linking
-		# against the C/C++ library forcibly reuse this definition
-		# (which means that symbols are supposed to be exported
-		# although they must be imported). Instead, TINYSPLINE_EXPORT
-		# is added to the compile flags of the corresponding CMake
-		# targets (see below).
-		list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_SHARED")
-		list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_SHARED")
-	endif()
-endif()
-if(TINYSPLINE_FLOAT_PRECISION)
-	list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
-	list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
-endif()
-
-# TINYSPLINE_PKGCONFIG_C_FLAGS
-foreach(def ${TINYSPLINE_C_DEFINITIONS})
-	set(TINYSPLINE_PKGCONFIG_C_FLAGS
-		"${TINYSPLINE_PKGCONFIG_C_FLAGS} -D${def}")
-endforeach()
-string(STRIP "${TINYSPLINE_PKGCONFIG_C_FLAGS}"
-	TINYSPLINE_PKGCONFIG_C_FLAGS)
-# TINYSPLINE_PKGCONFIG_CXX_FLAGS
-foreach(def ${TINYSPLINE_CXX_DEFINITIONS})
-	set(TINYSPLINE_PKGCONFIG_CXX_FLAGS
-		"${TINYSPLINE_PKGCONFIG_CXX_FLAGS} -D${def}")
-endforeach()
-string(STRIP "${TINYSPLINE_PKGCONFIG_CXX_FLAGS}"
-	TINYSPLINE_PKGCONFIG_CXX_FLAGS)
-
 # TINYSPLINE_CXX11_COMPLIANT
 # TINYSPLINE_C_LINK_LIBRARIES
 # TINYSPLINE_CXX_LINK_LIBRARIES
 # TINYSPLINE_LIBRARY_C_FLAGS
 # TINYSPLINE_LIBRARY_CXX_FLAGS
 # TINYSPLINE_BINDING_CXX_FLAGS
+if(TINYSPLINE_FLOAT_PRECISION)
+	list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
+	list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
+endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
@@ -674,6 +635,21 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(TINYSPLINE_BINDING_CXX_FLAGS
 		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+	# TINYSPLINE_C_DEFINITIONS
+	# TINYSPLINE_CXX_DEFINITIONS
+	if(BUILD_SHARED_LIBS)
+		# Unlike with GCC and CLang, TINYSPLINE_SHARED needs to be
+		# added to TINYSPLINE_C_DEFINITIONS and
+		# TINYSPLINE_CXX_DEFINITIONS when building TinySpline as shared
+		# library with MSVC because this adds TINYSPLINE_SHARED to the
+		# install targets (CMake, pkg-config etc.) so that clients set
+		# this definition when linking against the C/C++ library (which
+		# is necessary to properly import the symbols of the shared
+		# library; see __declspec(dllimport)).
+		list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_SHARED")
+		list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_SHARED")
+	endif()
+
 	# TINYSPLINE_CXX11_COMPLIANT
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
 			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
@@ -687,10 +663,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "/WX")
 	endif()
-	if("${TINYSPLINE_C_DEFINITIONS}" MATCHES "TINYSPLINE_SHARED")
-		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS
-			"/DTINYSPLINE_EXPORT")
-	endif()
 	list(JOIN TINYSPLINE_LIBRARY_C_FLAGS " "
 		TINYSPLINE_LIBRARY_C_FLAGS)
 
@@ -699,26 +671,33 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS "/WX")
 	endif()
-	if("${TINYSPLINE_C_DEFINITIONS}" MATCHES "TINYSPLINE_SHARED")
-		list(APPEND TINYSPLINE_LIBRARY_CXX_FLAGS
-			"/DTINYSPLINE_EXPORT")
-	endif()
 	list(JOIN TINYSPLINE_LIBRARY_CXX_FLAGS " "
 		TINYSPLINE_LIBRARY_CXX_FLAGS)
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
 	set(TINYSPLINE_BINDING_CXX_FLAGS
 		"${TINYSPLINE_BINDING_CXX_FLAGS} /w /DSWIG")
-
-	# Automatically create a module definition (.def) file with all global
-	# symbols found in the input .obj files for a shared library.
-	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 string(STRIP "${TINYSPLINE_C_LINK_LIBRARIES}" TINYSPLINE_C_LINK_LIBRARIES)
 string(STRIP "${TINYSPLINE_CXX_LINK_LIBRARIES}" TINYSPLINE_CXX_LINK_LIBRARIES)
 string(STRIP "${TINYSPLINE_LIBRARY_C_FLAGS}" TINYSPLINE_LIBRARY_C_FLAGS)
 string(STRIP "${TINYSPLINE_LIBRARY_CXX_FLAGS}" TINYSPLINE_LIBRARY_CXX_FLAGS)
 string(STRIP "${TINYSPLINE_BINDING_CXX_FLAGS}" TINYSPLINE_BINDING_CXX_FLAGS)
+
+# TINYSPLINE_PKGCONFIG_C_FLAGS
+foreach(def ${TINYSPLINE_C_DEFINITIONS})
+	set(TINYSPLINE_PKGCONFIG_C_FLAGS
+		"${TINYSPLINE_PKGCONFIG_C_FLAGS} -D${def}")
+endforeach()
+string(STRIP "${TINYSPLINE_PKGCONFIG_C_FLAGS}"
+	TINYSPLINE_PKGCONFIG_C_FLAGS)
+# TINYSPLINE_PKGCONFIG_CXX_FLAGS
+foreach(def ${TINYSPLINE_CXX_DEFINITIONS})
+	set(TINYSPLINE_PKGCONFIG_CXX_FLAGS
+		"${TINYSPLINE_PKGCONFIG_CXX_FLAGS} -D${def}")
+endforeach()
+string(STRIP "${TINYSPLINE_PKGCONFIG_CXX_FLAGS}"
+	TINYSPLINE_PKGCONFIG_CXX_FLAGS)
 
 # TINYSPLINE_RUNTIME_LIBS
 set(TINYSPLINE_RUNTIME_LIBS "")
@@ -837,6 +816,7 @@ target_compile_definitions(tinyspline
 	PUBLIC ${TINYSPLINE_C_DEFINITIONS})
 set_target_properties(tinyspline PROPERTIES
 	OUTPUT_NAME "${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}"
+	DEFINE_SYMBOL TINYSPLINE_SHARED
 	COMPILE_FLAGS "${TINYSPLINE_LIBRARY_C_FLAGS}"
 	PUBLIC_HEADER "tinyspline.h")
 target_link_libraries(tinyspline
@@ -911,6 +891,7 @@ if(TINYSPLINE_ENABLE_CXX)
 			PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
 		set_target_properties(${target} PROPERTIES
 			OUTPUT_NAME ${name}
+			DEFINE_SYMBOL TINYSPLINE_SHARED
 			COMPILE_FLAGS ${flags})
 		if(NOT ${ARGS_EMSCRIPTEN})
 			set_property(TARGET ${target} APPEND PROPERTY

@@ -536,6 +536,15 @@ endif()
 # TINYSPLINE_LIBRARY_C_FLAGS
 # TINYSPLINE_LIBRARY_CXX_FLAGS
 # TINYSPLINE_BINDING_CXX_FLAGS
+if(BUILD_SHARED_LIBS and ${TINYSPLINE_PLATFORM_IS_WINDOWS})
+	# Add TINYSPLINE_SHARED to the list of compiler definitions in order to
+	# export it to the install targets (CMake, pkg-config etc.). This
+	# ensures that that clients set this definition when linking against
+	# the C/C++ library (which is necessary to properly import the symbols
+	# of the shared library; see __declspec(dllimport)).
+	list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_SHARED")
+	list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_SHARED")
+endif()
 if(TINYSPLINE_FLOAT_PRECISION)
 	list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
 	list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
@@ -635,21 +644,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(TINYSPLINE_BINDING_CXX_FLAGS
 		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# TINYSPLINE_C_DEFINITIONS
-	# TINYSPLINE_CXX_DEFINITIONS
-	if(BUILD_SHARED_LIBS)
-		# Unlike with GCC and CLang, TINYSPLINE_SHARED needs to be
-		# added to TINYSPLINE_C_DEFINITIONS and
-		# TINYSPLINE_CXX_DEFINITIONS when building TinySpline as shared
-		# library with MSVC because this adds TINYSPLINE_SHARED to the
-		# install targets (CMake, pkg-config etc.) so that clients set
-		# this definition when linking against the C/C++ library (which
-		# is necessary to properly import the symbols of the shared
-		# library; see __declspec(dllimport)).
-		list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_SHARED")
-		list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_SHARED")
-	endif()
-
 	# TINYSPLINE_CXX11_COMPLIANT
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
 			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)

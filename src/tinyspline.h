@@ -16,11 +16,11 @@
  *
  *     https://docs.microsoft.com/en-us/cpp/cpp/dllexport-dllimport
  *
- * If TinySpline is built to the ELF object format, \c TINYSPLINE_SHARED_EXPORT
- * defines <tt>__attribute__ ((visibility ("default")))</tt> which, in
- * combination with \c -fvisibility=hidden, behaves similar to \c
- * __declspec(dllexport). TINYSPLINE_SHARED_IMPORT is set empty (i.e., it
- * defines nothing).
+ * If TinySpline is built to the ELF (most Unix like environments) or Mach (OS
+ * X) object format, \c TINYSPLINE_SHARED_EXPORT defines the directive
+ * <tt>__attribute__ ((visibility ("default")))</tt> which, in combination with
+ * \c -fvisibility=hidden, behaves similar to \c __declspec(dllexport). \c
+ * TINYSPLINE_SHARED_IMPORT is set empty (i.e., it defines nothing).
  *
  * If none of the above applies, \c TINYSPLINE_SHARED_EXPORT and \c
  * TINYSPLINE_SHARED_IMPORT are set empty (i.e., they define nothing).
@@ -31,7 +31,7 @@
  * against). All elements of TinySpline that needs to be exported/imported are
  * annotated with \c TINYSPLINE_API. This eliminates the need for a
  * module-definition (.def) file. If TinySpline is compiled or linked against
- * <em>as static library</em>, TINYSPLINE_API is set empty (i.e., it defines
+ * <em>as static library</em>, \c TINYSPLINE_API is set empty (i.e., it defines
  * nothing).
  *
  * If you consume TinySpline as shared library built for Windows, all you need
@@ -44,7 +44,7 @@
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
-#elif defined(__ELF__)
+#elif defined(__ELF__) || defined(__MACH__)
 #define TINYSPLINE_SHARED_EXPORT __attribute__ ((visibility ("default")))
 #define TINYSPLINE_SHARED_IMPORT
 #else

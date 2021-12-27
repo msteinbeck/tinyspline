@@ -219,9 +219,9 @@ jobs:
         path: packages
 
     - name: Install Package
-      working-directory: ${{runner.workspace}}/packages
       shell: bash
       run: |
+        cd $GITHUB_WORKSPACE/packages/tinyspline
         if [ "$RUNNER_OS" == "Linux" ]; then
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*linux*.whl" -exec python -m pip install {} \;
         elif [ "$RUNNER_OS" == "macOS" ]; then
@@ -231,6 +231,5 @@ jobs:
         fi
 
     - name: Run Tests
-      working-directory: ${{runner.workspace}}/test/python
       shell: bash
-      run: python tests.py
+      run: python $GITHUB_WORKSPACE/test/python/tests.py

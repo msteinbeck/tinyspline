@@ -202,7 +202,7 @@ jobs:
         path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/tinyspline/
         if-no-files-found: error
 
-  test python:
+  test-python:
     needs: [package]
     runs-on: ${{ matrix.os }}
     strategy:

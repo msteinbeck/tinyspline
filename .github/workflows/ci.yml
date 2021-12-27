@@ -201,3 +201,36 @@ jobs:
         name: tinyspline
         path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/tinyspline/
         if-no-files-found: error
+
+  test python:
+    needs: [package]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        python: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: packages
+
+    - name: Install Package
+      working-directory: ${{runner.workspace}}/packages
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*linux*.whl" -exec python -m pip install {} \;
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" -exec python -m pip install {} \;
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+            find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*win*.whl" -exec python -m pip install {} \;
+        fi
+
+    - name: Run Tests
+      working-directory: ${{runner.workspace}}/test/python
+      shell: bash
+      run: python tests.py

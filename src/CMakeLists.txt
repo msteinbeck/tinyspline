@@ -976,7 +976,9 @@ endif()
 #   At least one binding should be created.
 ###############################################################################
 # Pass ``-module`` option to ``SWIG`` compiler if ``SWIG_MODULE_NAME`` is
-# specified. Although this script passes the ``-module`` option explicitly (see
+# specified.
+#
+# Although this script passes the ``-module`` option explicitly (see
 # ``SWIG_ARGS`` in ``tinyspline_add_swig_library``), we enable the new behavior
 # as the old one will be removed in future releases of CMake.
 cmake_policy(SET CMP0086 NEW)
@@ -984,6 +986,14 @@ cmake_policy(SET CMP0086 NEW)
 # Generate standard names for SWIG targets, i.e., the actual name of a SWIG
 # target corresponds to the name passed to ``swig_add_library``.
 cmake_policy(SET CMP0078 NEW)
+
+# Starting with CMake 3.21, ``UseSWIG`` generates now a library using default
+# naming conventions.
+#
+# Although this script already fixes the library prefix of the C# binding (see
+# ``tinyspline_add_swig_library``), we enable the new behavior as the old one
+# will be removed in future releases of CMake.
+cmake_policy(SET CMP0122 NEW)
 
 # TINYSPLINE_BINDINGS_FOLDER_NAME
 set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")

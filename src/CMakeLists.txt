@@ -993,7 +993,9 @@ cmake_policy(SET CMP0078 NEW)
 # Although this script already fixes the library prefix of the C# binding (see
 # ``tinyspline_add_swig_library``), we enable the new behavior as the old one
 # will be removed in future releases of CMake.
-cmake_policy(SET CMP0122 NEW)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0")
+	cmake_policy(SET CMP0122 NEW)
+endif()
 
 # TINYSPLINE_BINDINGS_FOLDER_NAME
 set(TINYSPLINE_BINDINGS_FOLDER_NAME "bindings")

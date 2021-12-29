@@ -229,9 +229,6 @@ jobs:
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*linux*.whl" -exec python -m pip install {} \;
         elif [ "$RUNNER_OS" == "macOS" ]; then
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" -exec python -m pip install {} \;
-            rpath=$(dirname $(dirname $(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")))/lib
-            libpython=$(basename $(find ${rpath} -maxdepth 1 -name *.dylib))
-            find $(python -c "import site; print(site.getsitepackages()[0])") -name '*tinysplinepython*' -exec install_name_tool -add_rpath ${rpath} {} \; -exec install_name_tool -change @rpath/Python @rpath/${libpython} {} \; -exec otool -L {} \;
         elif [ "$RUNNER_OS" == "Windows" ]; then
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*win*.whl" -exec python -m pip install {} \;
         fi

@@ -187,10 +187,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python && \
 			cmake --build . --target tinysplinelua && \
-				find lib -name '*tinysplinelua*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/lua@5.1/lib \
-						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
@@ -198,16 +194,6 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/2.7 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/2.7 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python2.framework/Versions/2.7 \
-						{} \\; && \
 				python2 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
@@ -222,10 +208,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.5/Python && \
 			cmake --build . --target tinysplinelua && \
-				find lib -name '*tinysplinelua*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/lua@5.2/lib \
-						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
@@ -233,16 +215,6 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.5 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/3.5 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.5 \
-						{} \\; && \
 				python3 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
@@ -257,13 +229,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.6/Python && \
 			cmake --build . --target tinysplinelua && \
-				find lib -name '*tinysplinelua*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/lua@5.3/lib \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/lua/lib \
-						{} \\; && \
 				sed -i '/supported_platforms/,/}/d' *.rockspec && \
 				sed -i '/dependencies/,/}/d' *.rockspec && \
 				luarocks make --pack-binary-rock && \
@@ -271,16 +236,6 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/macosx64 && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.6 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/3.6 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.6 \
-						{} \\; && \
 				/opt/linux/python36/bin/python3 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
@@ -292,16 +247,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.7/Python && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.7 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/3.7 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.7 \
-						{} \\; && \
 				/opt/linux/python37/bin/python3 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
@@ -313,16 +258,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.8/Python && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.8 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/3.8 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8 \
-						{} \\; && \
 				/opt/linux/python38/bin/python3 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
@@ -334,16 +269,6 @@ docker run \
 				-DPYTHON_INCLUDE_DIR=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Headers \
 				-DPYTHON_LIBRARY=/opt/osxcross/target/macports/pkgs/opt/local/Library/Frameworks/Python.framework/Versions/3.9/Python && \
 			cmake --build . --target tinysplinepython && \
-				find lib -name '*tinysplinepython*' \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						@@HOMEBREW_PREFIX@@/opt/python/Frameworks/Python.framework/Versions/3.9 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/System/Library/Frameworks/Python.framework/Versions/3.9 \
-						{} \\; \
-					-exec x86_64-apple-darwin17-install_name_tool -add_rpath \
-						/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9 \
-						{} \\; && \
 				/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \

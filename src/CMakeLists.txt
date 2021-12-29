@@ -1040,7 +1040,11 @@ function (tinyspline_add_swig_library)
 		OUTPUT_DIR ${ARGS_OUTPUT}
 		SOURCES "swig/${ARGS_TARGET}.i"
 			${TINYSPLINE_CXX_SOURCE_FILES})
-	swig_link_libraries(${ARGS_TARGET} INTERFACE ${ARGS_LIBS})
+	# On Linux, we can (and for the sake of portability should) omit
+	# linking libraries.
+	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
+		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
+	endif()
 	set_target_properties(${ARGS_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
@@ -1084,6 +1088,17 @@ function (tinyspline_add_swig_library)
 				"$<TARGET_FILE_NAME:${ARGS_TARGET}>"
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
 	endif()
+	if(EXISTS "${TINYSPLINE_MACOSX_RELINK_SCRIPT}")
+		add_custom_command(
+			TARGET ${ARGS_TARGET}
+			POST_BUILD
+			COMMAND
+				${CMAKE_COMMAND} -E echo
+				"Relinking $<TARGET_FILE_NAME:${ARGS_TARGET}>"
+			COMMAND
+				${TINYSPLINE_MACOSX_RELINK_SCRIPT}
+				"$<TARGET_FILE:${ARGS_TARGET}>")
+	endif()
 endfunction()
 
 if(${TINYSPLINE_BINDING_REQUESTED})
@@ -1099,6 +1114,33 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 	find_package(SWIG 3.0.1 REQUIRED)
 	include(${SWIG_USE_FILE})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+	if(CMAKE_INSTALL_NAME_TOOL)
+		if(NOT CMAKE_OTOOL)
+			message(STATUS "Found install_name_tool without otool")
+			message(STATUS "Trying to find corresponding otool")
+			get_filename_component(CMAKE_OTOOL
+				${CMAKE_INSTALL_NAME_TOOL} NAME)
+			string(REPLACE "-" ";" CMAKE_OTOOL ${CMAKE_OTOOL})
+			list(REMOVE_AT CMAKE_OTOOL -1)
+			list(APPEND CMAKE_OTOOL "otool")
+			list(JOIN CMAKE_OTOOL "-" CMAKE_OTOOL)
+			get_filename_component(CMAKE_OTOOL_HINTS
+				${CMAKE_INSTALL_NAME_TOOL} DIRECTORY)
+			find_program(CMAKE_OTOOL "${CMAKE_OTOOL}"
+				HINTS CMAKE_OTOOL_HINTS)
+			if(NOT CMAKE_OTOOL)
+				message(FATAL_ERROR "Cannot find otool")
+			else()
+				set(CMAKE_OTOOL ${CMAKE_OTOOL}
+					CACHE FILEPATH "otool")
+			endif()
+		endif()
+		set(TINYSPLINE_MACOSX_RELINK_SCRIPT
+			"${TINYSPLINE_BINARY_DIR}/macosx-relink.sh")
+		configure_file("pkg/macosx-relink.sh.in"
+			${TINYSPLINE_MACOSX_RELINK_SCRIPT} @ONLY)
+	endif()
 
 	# C#
 	if(${TINYSPLINE_ENABLE_CSHARP})

@@ -1040,7 +1040,12 @@ function (tinyspline_add_swig_library)
 		OUTPUT_DIR ${ARGS_OUTPUT}
 		SOURCES "swig/${ARGS_TARGET}.i"
 			${TINYSPLINE_CXX_SOURCE_FILES})
-	swig_link_libraries(${ARGS_TARGET} INTERFACE ${ARGS_LIBS})
+	if(${TINYSPLINE_PLATFORM_IS_WINDOWS})
+		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
+	else()
+		# Don't add the libraries as explicit dependency.
+		swig_link_libraries(${ARGS_TARGET} INTERFACE ${ARGS_LIBS})
+	endif()
 	set_target_properties(${ARGS_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")

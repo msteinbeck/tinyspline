@@ -209,7 +209,7 @@ docker run \
 						/Library/Developer/CommandLineTools/Library/Frameworks/Python2.framework/Versions/2.7 \
 						{} \\; && \
 				python2 setup.py bdist_wheel && \
-				for w in dist/*.whl; do mv \$w \${w/linux/macosx_10_13}; done && \
+				for w in dist/*.whl; do mv \$w \${w/mu-linux/m-macosx_10_13}; done && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/macosx64 && \
 		rm -rf ..?* .[!.]* * && \

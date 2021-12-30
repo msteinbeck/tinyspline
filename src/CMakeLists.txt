@@ -493,30 +493,33 @@ endif()
 ### Setup compiler suite.
 #
 # TINYSPLINE_C_DEFINITIONS
-#   Preprocessor definitions for the C interface (as list).
+#   C preprocessor definitions (as list).
 #
 # TINYSPLINE_CXX_DEFINITIONS
-#   Preprocessor definitions for the C++ interface (as list).
+#   C++ preprocessor definitions (as list).
+#
+# TINYSPLINE_BINDING_CXX_DEFINITIONS
+#   C++ binding preprocessor definitions (as list).
 #
 # TINYSPLINE_CXX11_COMPLIANT
 #   Does the C++ compiler support C++11? (Required by some bindings)
 #
 # TINYSPLINE_C_LINK_LIBRARIES
 #   Additional libraries to link against when building TinySpline's C interface
-#   from source or when linking against it statically. (as list).
+#   from source or when linking against it statically (as list).
 #
 # TINYSPLINE_CXX_LINK_LIBRARIES
 #   Additional libraries to link against when building TinySpline's C++
-#   interface from source or when linking against it statically. (as list).
+#   interface from source or when linking against it statically (as list).
 #
 # TINYSPLINE_LIBRARY_C_FLAGS
-#   C library specific flags.
+#   C library flags.
 #
 # TINYSPLINE_LIBRARY_CXX_FLAGS
-#   C++ library specific flags.
+#   C++ library flags.
 #
 # TINYSPLINE_BINDING_CXX_FLAGS
-#   C++ binding specific flags.
+#   C++ binding flags.
 #
 # TINYSPLINE_PKGCONFIG_C_FLAGS
 #   Cflags added to the pkg-config file of the C library.
@@ -530,6 +533,7 @@ endif()
 ###############################################################################
 # TINYSPLINE_C_DEFINITIONS
 # TINYSPLINE_CXX_DEFINITIONS
+# TINYSPLINE_BINDING_CXX_DEFINITIONS
 # TINYSPLINE_CXX11_COMPLIANT
 # TINYSPLINE_C_LINK_LIBRARIES
 # TINYSPLINE_CXX_LINK_LIBRARIES
@@ -548,7 +552,9 @@ endif()
 if(TINYSPLINE_FLOAT_PRECISION)
 	list(APPEND TINYSPLINE_C_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
 	list(APPEND TINYSPLINE_CXX_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
+	list(APPEND TINYSPLINE_BINDING_CXX_DEFINITIONS "TINYSPLINE_FLOAT_PRECISION")
 endif()
+list(APPEND TINYSPLINE_BINDING_CXX_DEFINITIONS "SWIG")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
@@ -592,7 +598,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
 	set(TINYSPLINE_BINDING_CXX_FLAGS
-		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
+		"${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# TINYSPLINE_CXX11_COMPLIANT
 	# http://stackoverflow.com/questions/10408849/how-can-i-use-c-11-features-in-clang
@@ -642,7 +648,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
 	set(TINYSPLINE_BINDING_CXX_FLAGS
-		"${TINYSPLINE_BINDING_CXX_FLAGS} -w -DSWIG")
+		"${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 	# TINYSPLINE_CXX11_COMPLIANT
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
@@ -670,7 +676,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
 	# TINYSPLINE_BINDING_CXX_FLAGS
 	set(TINYSPLINE_BINDING_CXX_FLAGS
-		"${TINYSPLINE_BINDING_CXX_FLAGS} /w /DSWIG")
+		"${TINYSPLINE_BINDING_CXX_FLAGS} /w")
 endif()
 string(STRIP "${TINYSPLINE_C_LINK_LIBRARIES}" TINYSPLINE_C_LINK_LIBRARIES)
 string(STRIP "${TINYSPLINE_CXX_LINK_LIBRARIES}" TINYSPLINE_CXX_LINK_LIBRARIES)
@@ -1049,7 +1055,7 @@ function (tinyspline_add_swig_library)
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
 		COMPILE_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} ${ARGS_FLAGS}")
 	target_compile_definitions(${ARGS_TARGET}
-		PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
+		PUBLIC ${TINYSPLINE_BINDING_CXX_DEFINITIONS})
 	# Fix library prefix for C#.
 	if(${ARGS_LANG} STREQUAL "csharp")
 		set_property(TARGET ${ARGS_TARGET}
@@ -1691,19 +1697,20 @@ Platform:
 
 Interface Configuration:
   [C/C++] Shared libraries (default: OFF): ${BUILD_SHARED_LIBS}
-  With single precision  (default: OFF): ${TINYSPLINE_FLOAT_PRECISION}
+  With single precision  (default: OFF):   ${TINYSPLINE_FLOAT_PRECISION}
 
 Compiler Configuration:
-  Compiler:        ${CMAKE_CXX_COMPILER}
-  C flags:         ${TINYSPLINE_SUMMARY_C_FLAGS}
-  C libraries:     ${TINYSPLINE_C_LINK_LIBRARIES}
-  C Definitions:   ${TINYSPLINE_C_DEFINITIONS}
-  C++ flags:       ${TINYSPLINE_SUMMARY_CXX_FLAGS}
-  C++ libraries:   ${TINYSPLINE_CXX_LINK_LIBRARIES}
-  C++ Definitions: ${TINYSPLINE_CXX_DEFINITIONS}
-  Binding flags:   ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
-  Runtime libs:    ${TINYSPLINE_RUNTIME_LIBS}
-  Toolchain file:  ${CMAKE_TOOLCHAIN_FILE}
+  Compiler:            ${CMAKE_CXX_COMPILER}
+  C flags:             ${TINYSPLINE_SUMMARY_C_FLAGS}
+  C libraries:         ${TINYSPLINE_C_LINK_LIBRARIES}
+  C Definitions:       ${TINYSPLINE_C_DEFINITIONS}
+  C++ flags:           ${TINYSPLINE_SUMMARY_CXX_FLAGS}
+  C++ libraries:       ${TINYSPLINE_CXX_LINK_LIBRARIES}
+  C++ Definitions:     ${TINYSPLINE_CXX_DEFINITIONS}
+  Binding flags:       ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
+  Binding Definitions: ${TINYSPLINE_BINDING_CXX_DEFINITIONS}
+  Runtime libs:        ${TINYSPLINE_RUNTIME_LIBS}
+  Toolchain file:      ${CMAKE_TOOLCHAIN_FILE}
 
 Available Interfaces:
   C++:          ${TINYSPLINE_WITH_CXX}

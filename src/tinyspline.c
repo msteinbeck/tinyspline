@@ -397,7 +397,7 @@ ts_bspline_set_knot_at(tsBSpline *spline,
  * @{
  */
 tsBSpline
-ts_bspline_init()
+ts_bspline_init(void)
 {
 	tsBSpline spline;
 	ts_int_bspline_init(&spline);
@@ -684,7 +684,7 @@ ts_deboornet_result(const tsDeBoorNet *net,
  * @{
  */
 tsDeBoorNet
-ts_deboornet_init()
+ts_deboornet_init(void)
 {
 	tsDeBoorNet net;
 	ts_int_deboornet_init(&net);

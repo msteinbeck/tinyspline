@@ -578,6 +578,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
+		"-Wstrict-prototypes"
 		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")
@@ -628,6 +629,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		"-pedantic"
 		"-Wall"
 		"-Wextra"
+		"-Wstrict-prototypes"
 		"-Wfloat-equal")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
 		list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "-Werror")

@@ -1027,7 +1027,8 @@ ts_bspline_set_knot_at(tsBSpline *spline,
  * @return
  * 	A new spline whose data points to NULL.
  */
-tsBSpline TINYSPLINE_API ts_bspline_init();
+tsBSpline TINYSPLINE_API
+ts_bspline_init(void);
 
 /**
  * Creates a new spline and stores the result in \p spline.
@@ -1440,7 +1441,7 @@ ts_deboornet_result(const tsDeBoorNet *net,
  * 	A new net whose data points to NULL.
  */
 tsDeBoorNet TINYSPLINE_API
-ts_deboornet_init();
+ts_deboornet_init(void);
 
 /**
  * Creates a deep copy of \p src and stores the copied data in \p dest. \p src

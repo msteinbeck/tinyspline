@@ -40,8 +40,8 @@ RUN apt-get update &&                          \
     python2 -m pip install setuptools wheel && \
     python3 -m pip install setuptools wheel && \
     wget -P /usr/local/src/swig \
-        http://prdownloads.sourceforge.net/swig/swig-4.0.1.tar.gz && \
-    tar -xf /usr/local/src/swig/swig-4.0.1.tar.gz \
+        http://prdownloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
+    tar -xf /usr/local/src/swig/swig-4.0.2.tar.gz \
         -C /usr/local/src/swig \
         --strip 1 && \
     cd /usr/local/src/swig && \
@@ -50,8 +50,8 @@ RUN apt-get update &&                          \
         make && \
         make install && \
     wget -P /usr/local/src/cmake \
-        https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz && \
-    tar -xf /usr/local/src/cmake/cmake-3.18.4.tar.gz \
+        https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1.tar.gz && \
+    tar -xf /usr/local/src/cmake/cmake-3.22.1.tar.gz \
         -C /usr/local/src/cmake \
         --strip 1 && \
     cd /usr/local/src/cmake && \
@@ -169,33 +169,6 @@ RUN apt-get update &&                          \
     tar -xf /usr/local/src/lua54/lua-5.4.2_Linux54_64_lib.tar.gz \
         -C /opt/linux/lua54 && \
     cd /usr/local/src && rm -rf ..?* .[!.]* *
-
-# Install macosx build tools (osxcross) and libraries (macports).
-ENV PATH /opt/osxcross/target/bin:${PATH}
-RUN export SDK_VERSION=10.13 &&                               \
-    export MACOSX_DEPLOYMENT_TARGET=${SDK_VERSION} &&         \
-    export UNATTENDED=1 &&                                    \
-    cd /opt &&                                                \
-    git clone https://github.com/tpoechtrager/osxcross.git && \
-    cd osxcross &&                                            \
-    git checkout 1b731164dfd56de2ff20b530ec70c7a88a7b6ea6 &&  \
-    wget -P tarballs https://github.com/phracker/MacOSX-SDKs/releases/download/${SDK_VERSION}/MacOSX${SDK_VERSION}.sdk.tar.xz && \
-    ./build.sh &&                                             \
-    osxcross-macports install                                 \
-        lua51                                                 \
-        lua52                                                 \
-        lua                                                   \
-        openjdk8                                              \
-        python27                                              \
-        python35                                              \
-        python36                                              \
-        python37                                              \
-        python38                                              \
-        python39                                              \
-        ruby24                                                \
-        ruby25                                                \
-        ruby26                                                \
-        ruby27
 
 # Install windows build tools (mingw) and libraries.
 RUN mkdir -p /opt/wincross/archives                && \

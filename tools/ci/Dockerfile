@@ -50,8 +50,8 @@ RUN apt-get update &&                          \
         make && \
         make install && \
     wget -P /usr/local/src/cmake \
-        https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1.tar.gz && \
-    tar -xf /usr/local/src/cmake/cmake-3.22.1.tar.gz \
+        https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz && \
+    tar -xf /usr/local/src/cmake/cmake-3.18.4.tar.gz \
         -C /usr/local/src/cmake \
         --strip 1 && \
     cd /usr/local/src/cmake && \

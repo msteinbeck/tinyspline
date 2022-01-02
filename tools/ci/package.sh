@@ -10,6 +10,7 @@ if [ ! -d "${LINUX_X86_64}" ]; then
 	exit 1
 fi
 MACOSX_X86_64="${SCRIPT_DIR}/build/macosx64"
+mkdir -p ${MACOSX_X86_64} # TODO: Fix build pipeline
 if [ ! -d "${MACOSX_X86_64}" ]; then
 	echo "MacOSX (x86_64) is missing.  Aborting."
 	exit 1

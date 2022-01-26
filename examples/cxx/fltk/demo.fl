@@ -109,6 +109,13 @@ sample->redraw();}
             xywh {580 143 300 25}
             code0 {sampleShowPoints->value(sample->drawPoints());}
           }
+          Fl_Light_Button sampleShowControlPoints {
+            label {Show control points}
+            callback {sample->drawControlPoints(((Fl_Button *)o)->value());
+sample->redraw();}
+            xywh {580 188 300 25}
+            code0 {sampleShowControlPoints->value(sample->drawControlPoints());}
+          }
           Fl_Text_Display sampleInfo {
             label Info
             xywh {580 275 300 300} box THIN_DOWN_FRAME

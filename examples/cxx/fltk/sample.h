@@ -6,7 +6,7 @@ class Sample : public Fl_Widget
 public:
 	Sample(int X, int Y, int W, int H, const char *L = NULL)
 	: Fl_Widget(X, Y, W, H, L), m_num(50), m_type(TS_CLAMPED),
-	m_drawPoints(false)
+	m_drawPoints(false), m_drawControlPoints(true)
 	{}
 
 	void draw()
@@ -42,6 +42,19 @@ public:
 		for (size_t i = 0; i < pts.size() / 2; i++)
 			fl_vertex(pts[i * 2], pts[i * 2 + 1]);
 		fl_end_line();
+
+		// Draw control points.
+		if (m_drawControlPoints) {
+			double radius = 3;
+			for (size_t i = 0; i < ctrlp.size() / 2; i++) {
+				tinyspline::real x = ctrlp[i * 2];
+				tinyspline::real y = ctrlp[i * 2 + 1];
+				fl_rectf(fl_transform_x(x, y) - radius,
+				         fl_transform_y(x, y) - radius,
+				         radius * 2, radius * 2,
+				         FL_RED);
+			}
+		}
 
 		// Draw sampled points.
 		if (m_drawPoints) {
@@ -91,8 +104,19 @@ public:
 		m_drawPoints = drawPoints;
 	}
 
+	bool drawControlPoints() const
+	{
+		return m_drawControlPoints;
+	}
+
+	void drawControlPoints(bool drawControlPoints)
+	{
+		m_drawControlPoints = drawControlPoints;
+	}
+
 private:
 	size_t m_num;
 	tinyspline::BSpline::type m_type;
 	bool m_drawPoints;
+	bool m_drawControlPoints;
 };

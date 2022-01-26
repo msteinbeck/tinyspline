@@ -1,5 +1,5 @@
 #include <FL/fl_draw.H>
-#include "tinysplinecxx.h"
+#include <tinysplinecxx.h>
 
 class Eval : public Fl_Widget
 {
@@ -10,16 +10,16 @@ public:
 
 	void draw()
 	{
-		// Set up spline.
+		// Set up the spline to be drawn.
 		tinyspline::BSpline spline(7, 2, m_degree);
 		std::vector<tinyspline::real> ctrlp = spline.controlPoints();
-		ctrlp[0]  = 50;  ctrlp[1]  = 100; // P1
-		ctrlp[2]  = 200; ctrlp[3]  = 80;  // P2
-		ctrlp[4]  = 300; ctrlp[5]  = 450; // P3
-		ctrlp[6]  = 520; ctrlp[7]  = 80;  // P4
-		ctrlp[8]  = 500; ctrlp[9]  = 450; // P5
-		ctrlp[10] = 350; ctrlp[11] = 550; // P6
-		ctrlp[12] = 50;  ctrlp[13] = 500; // P7
+		ctrlp[0]  = 50;  ctrlp[1]  = 50;  // P1
+		ctrlp[2]  = 180; ctrlp[3]  = 30;  // P2
+		ctrlp[4]  = 200; ctrlp[5]  = 350; // P3
+		ctrlp[6]  = 500; ctrlp[7]  = 30;  // P4
+		ctrlp[8]  = 480; ctrlp[9]  = 400; // P5
+		ctrlp[10] = 330; ctrlp[11] = 500; // P6
+		ctrlp[12] = 50;  ctrlp[13] = 380; // P7
 		spline.setControlPoints(ctrlp);
 
 		// Evaluate m_knot.
@@ -27,9 +27,17 @@ public:
 		std::vector<tinyspline::real> points = net.points();
 		std::vector<tinyspline::real> result = net.result();
 
+		// Make drawing functions relative to widget. Points (x, y
+		// coordinates) must be transformed using `fl_transform_x' and
+		// `fl_transform_y'.
+		fl_push_matrix();
+		fl_translate(x(), y());
+
 		// Clear background.
 		fl_color(FL_WHITE);
-		fl_rectf(x(), y(), w(), h());
+		fl_rectf(fl_transform_x(0, 0),
+		         fl_transform_y(0, 0),
+		         w(), h());
 
 		// Draw spline.
 		if (spline.degree()) {
@@ -43,20 +51,21 @@ public:
 			std::vector<tinyspline::real> pts =
 				spline.degree() == 1 // sequence of lines
 				? spline.controlPoints()
-				: spline.sample();
+				: spline.sample(100);
 			for (size_t i = 0; i < pts.size() / 2; i++)
 				fl_vertex(pts[i * 2], pts[i * 2 + 1]);
 			fl_end_line();
 		}
 
 		// Draw control points.
-		fl_color(FL_RED);
+		double radius = 3;
 		for (size_t i = 0; i < ctrlp.size() / 2; i++) {
-			fl_rectf(
-				(int) ctrlp[i * 2] - 3,
-				(int) ctrlp[i * 2 + 1] - 3,
-				6, 6
-				);
+			tinyspline::real x = ctrlp[i * 2];
+			tinyspline::real y = ctrlp[i * 2 + 1];
+			fl_rectf(fl_transform_x(x, y) - radius,
+			         fl_transform_y(x, y) - radius,
+			         radius * 2, radius * 2,
+			         FL_RED);
 		}
 
 		// Draw De Boor control net.
@@ -83,10 +92,8 @@ public:
 				fl_line_style(FL_SOLID, 2);
 				fl_begin_line();
 				for (int j = 0; j < i; j++) {
-					fl_vertex(
-						points[offset + j * 2],
-						points[offset + j * 2 + 1]
-						);
+					fl_vertex(points[offset + j * 2],
+					          points[offset + j * 2 + 1]);
 				}
 				fl_end_line();
 				fl_line_style(0);
@@ -95,8 +102,15 @@ public:
 		}
 
 		// Draw evaluated point.
-		fl_color(FL_BLUE);
-		fl_rectf((int) result[0] - 3, (int) result[1] - 3, 6, 6);
+		tinyspline::real x = result[0];
+		tinyspline::real y = result[1];
+		fl_rectf(fl_transform_x(x, y) - radius,
+		         fl_transform_y(x, y) - radius,
+		         radius * 2, radius * 2,
+		         FL_BLUE);
+
+		// Reset translation.
+		fl_pop_matrix();
 	}
 
 	size_t degree() const

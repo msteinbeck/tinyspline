@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0305
+version 1.0308
 header_name {.h}
 code_name {.cxx}
 Function {make_window()} {open
@@ -85,7 +85,7 @@ sample->redraw();}
           }
           Fl_Group {} {
             label {Knot vector:} open
-            xywh {665 92 214 45} align 4
+            xywh {670 92 209 45} align 4
           } {
             Fl_Round_Button sampleClamped {
               label Clamped
@@ -112,7 +112,7 @@ sample->redraw();}
           Fl_Text_Display sampleInfo {
             label Info
             xywh {580 275 300 300} box THIN_DOWN_FRAME
-            code0 {evalInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
+            code0 {sampleInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
           }
         }
       }
@@ -152,11 +152,16 @@ else
       }
     }
   }
-  code {Fl_Text_Buffer *buff = new Fl_Text_Buffer();
-evalInfo->buffer(buff);
-buff->append("Spline evaluation is one of the most important functions as it forms the basis for almost all other functions.");
-buff->append("\\n\\nThe result of an evaluation is a so called 'De Boor control net'. It stores the evaluated point as well as all points that were part of the calucation process.");
-buff->append("\\n\\nUse the knot slider to evaluate the spline on the left at a certain knot. The degree of the spline can be changed with the degree slider.");} {}
+  code {Fl_Text_Buffer *evalBuff = new Fl_Text_Buffer();
+evalInfo->buffer(evalBuff);
+evalBuff->append("Spline evaluation is one of the most essential functions as it forms the basis for many other functions.");
+evalBuff->append("\\n\\nThe result of an evaluation is a so-called 'De Boor control net'. It stores the evaluated point as well as all points that were part of the calucation process.");
+evalBuff->append("\\n\\nUse the knot slider to evaluate the spline on the left at a certain knot. The degree of the spline can be changed with the degree slider.");} {}
+  code {Fl_Text_Buffer *sampleBuff = new Fl_Text_Buffer();
+sampleInfo->buffer(sampleBuff);
+sampleBuff->append("Splines can be approximated as polyline (a chain of lines) by evaluating consecutive points. The more points are evaluated, the more precise the approximation becomes.");
+sampleBuff->append("\\n\\nThe multiple evaluation of a spline, so as to approximate it as polyline, is also known as sampling. In this context, resolution means the number of points to be evaluated.");
+sampleBuff->append("\\n\\nUse the samples slider to sample the spline on the left with the specified resolution. Whether the spline should touch its first and last control points can be set with the knot vector toggle.");} {}
 }
 
 Function {evalAutoplay_cb(void *)} {open

@@ -136,15 +136,15 @@ public:
 		if (m_knot > 1.0) m_knot = 1.0;
 	}
 
-    	bool drawNet() const
-    	{
+	bool drawNet() const
+	{
 		return m_drawNet;
-    	}
+	}
 
-    	void drawNet(bool mDrawNet)
-    	{
+	void drawNet(bool mDrawNet)
+	{
 		m_drawNet = mDrawNet;
-    	}
+	}
 
 private:
 	size_t m_degree;

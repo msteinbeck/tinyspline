@@ -124,7 +124,38 @@ sample->redraw();}
         }
       }
       Fl_Group {} {
-        label Frames open
+        label Interpolation
+        xywh {25 35 865 560}
+      } {
+        Fl_Box interpolation {
+          xywh {25 50 525 525}
+          code0 {\#include "interpolation.h"}
+          class Interpolation
+        }
+        Fl_Group {} {
+          xywh {579 50 301 525}
+        } {
+          Fl_Light_Button interpolationCubicNatural {
+            label {Cubic Natural}
+            xywh {580 50 300 25}
+          }
+          Fl_Light_Button interpolationCatmullRom {
+            label {Catmull-Rom}
+            xywh {580 95 300 25}
+          }
+          Fl_Value_Slider {} {
+            label alpha
+            xywh {670 130 210 25} type Horizontal align 4 value 0.5
+          }
+          Fl_Text_Display interpolationInfo {
+            label Info
+            xywh {580 275 300 300} box THIN_DOWN_FRAME
+            code0 {interpolationInfo->wrap_mode(Fl_Text_Display::WRAP_AT_BOUNDS, 0);}
+          }
+        }
+      }
+      Fl_Group {} {
+        label Frames
         xywh {25 35 865 560} hide
       } {
         Fl_Box frames {

@@ -20,7 +20,9 @@ jobs:
     - name: Install System Tools
       if: runner.os == 'Linux'
       shell: bash
-      run: sudo apt install -y valgrind
+      run: |
+        sudo apt update -y
+        sudo apt install -y valgrind
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build

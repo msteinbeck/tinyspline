@@ -18,6 +18,17 @@ void run()
 	ctrlp[12] = 220; ctrlp[13] = 500;
 	start.setControlPoints(ctrlp);
 
+	std::vector<real> knots = start.uniformKnotSeq(20);
+	FrameSeq seq = start.computeRMF(knots);
+	assert(seq.size() == 20);
+	for (size_t i = 0; i < seq.size(); i++) {
+		Frame frame = seq.at(i);
+		Vec3 pos = start(knots[i]).resultVec3();
+		Vec3 tan = start.derive()(knots[i]).resultVec3().norm();
+		assert(frame.position().distance(pos) <= POINT_EPSILON);
+		assert(frame.tangent().distance(tan) <= POINT_EPSILON);
+	}
+
 	BSpline end(5, 2, 4);
 	ctrlp.resize(end.numControlPoints() * end.dimension());
 	//       X                Y

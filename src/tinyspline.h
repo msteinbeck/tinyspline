@@ -2447,6 +2447,23 @@ ts_bspline_load(const char *path,
  * @{
  */
 /**
+ * Initializes vector \p out with \p x and \p y.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 2.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	The x value.
+ * @param[in] y
+ * 	The y value.
+ */
+void TINYSPLINE_API
+ts_vec2_init(tsReal *out,
+             tsReal x,
+             tsReal y);
+
+/**
  * Initializes vector \p out with \p x, \p y, and \p z.
  *
  * @pre
@@ -2468,9 +2485,29 @@ ts_vec3_init(tsReal *out,
 
 /**
  * Copies the values of vector \p x (a vector with dimensionality \p dim) to
+ * vector \p out (a vector with dimensionality \c 2). If \p dim is less than \c
+ * 2, the remaining values of \p out are set to \c 0. Excess values in \p x
+ * (i.e., \p dim is greater than \c 2) are ignored.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 2.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	Vector to read the values from.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ */
+void TINYSPLINE_API
+ts_vec2_set(tsReal *out,
+            const tsReal *x,
+            size_t dim);
+
+/**
+ * Copies the values of vector \p x (a vector with dimensionality \p dim) to
  * vector \p out (a vector with dimensionality \c 3). If \p dim is less than \c
- * 3, the remaining values of \p out are set to \c 0. Superfluous values in \p
- * x (i.e., if \p dim is greater than \c 3) are ignored.
+ * 3, the remaining values of \p out are set to \c 0. Excess values in \p x
+ * (i.e., \p dim is greater than \c 3) are ignored.
  *
  * @pre
  * 	\p out has dimensionality \c 3.

@@ -2929,6 +2929,15 @@ ts_bspline_load(const char *path,
  * @{
  */
 void
+ts_vec2_init(tsReal *out,
+             tsReal x,
+             tsReal y)
+{
+	out[0] = x;
+	out[1] = y;
+}
+
+void
 ts_vec3_init(tsReal *out,
              tsReal x,
              tsReal y,
@@ -2937,6 +2946,17 @@ ts_vec3_init(tsReal *out,
 	out[0] = x;
 	out[1] = y;
 	out[2] = z;
+}
+
+void
+ts_vec2_set(tsReal *out,
+            const tsReal *x,
+            size_t dim)
+{
+	const size_t n = dim > 2 ? 2 : dim;
+	memmove(out, x, n * sizeof(tsReal));
+	if (dim < 2)
+		ts_arr_fill(out + dim, 2 - dim, (tsReal) 0.0);
 }
 
 void

@@ -194,7 +194,131 @@ std::string tinyspline::Domain::toString() const
 
 
 
-/*! @name Vector3
+/*! @name Vec2
+ *
+ * @{
+ */
+tinyspline::Vec2::Vec2()
+{
+	const real v = (real) 0.0;
+	ts_vec2_init(vals, v, v);
+}
+
+tinyspline::Vec2::Vec2(real x,
+                       real y)
+{
+	ts_vec2_init(vals, x, y);
+}
+
+tinyspline::Vec2::Vec2(const Vec2 &other)
+{
+	memcpy(vals, other.vals, sizeof(vals));
+}
+
+tinyspline::Vec2 &
+tinyspline::Vec2::operator=(const tinyspline::Vec2 &other)
+{
+	if (&other != this)
+		memcpy(vals, other.vals, sizeof(vals));
+	return *this;
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::operator+(const tinyspline::Vec2 &other)
+{
+	return add(other);
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::operator-(const tinyspline::Vec2 &other)
+{
+	return subtract(other);
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::operator*(real scalar)
+{
+	return multiply(scalar);
+}
+
+tinyspline::real
+tinyspline::Vec2::x() const
+{
+	return vals[0];
+}
+
+void
+tinyspline::Vec2::setX(real val)
+{
+	vals[0] = val;
+}
+
+tinyspline::real
+tinyspline::Vec2::y() const
+{
+	return vals[1];
+}
+
+void
+tinyspline::Vec2::setY(real val)
+{
+	vals[1] = val;
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::add(const tinyspline::Vec2 &other) const
+{
+	real out[2];
+	ts_vec_add(vals, other.vals, 2, out);
+	return Vec2(out[0], out[1]);
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::subtract(const tinyspline::Vec2 &other) const
+{
+	real out[2];
+	ts_vec_sub(vals, other.vals, 2, out);
+	return Vec2(out[0], out[1]);
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::multiply(real scalar) const
+{
+	real out[2];
+	ts_vec_mul(vals, 2, scalar, out);
+	return Vec2(out[0], out[1]);
+}
+
+tinyspline::Vec2
+tinyspline::Vec2::norm() const
+{
+	real out[2];
+	ts_vec_norm(vals, 2, out);
+	return Vec2(out[0], out[1]);
+}
+
+tinyspline::real
+tinyspline::Vec2::magnitude() const
+{
+	return ts_vec_mag(vals, 2);
+}
+
+tinyspline::real
+tinyspline::Vec2::dot(const tinyspline::Vec2 &other) const
+{
+	return ts_vec_dot(vals, other.vals, 2);
+}
+
+tinyspline::real
+tinyspline::Vec2::distance(const tinyspline::Vec2 &other) const
+{
+	return ts_distance(vals, other.vals, 2);
+}
+/*! @} */
+
+
+
+/*! @name Vec3
  *
  * @{
  */
@@ -204,7 +328,9 @@ tinyspline::Vec3::Vec3()
 	ts_vec3_init(vals, v, v, v);
 }
 
-tinyspline::Vec3::Vec3(real x, real y, real z)
+tinyspline::Vec3::Vec3(real x,
+                       real y,
+                       real z)
 {
 	ts_vec3_init(vals, x, y, z);
 }

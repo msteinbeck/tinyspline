@@ -112,6 +112,36 @@ public:
  *
  * @{
  */
+class TINYSPLINECXX_API Vec2 {
+public:
+	Vec2();
+	Vec2(real x, real y);
+	Vec2(const Vec2 &other);
+
+	Vec2 &operator=(const Vec2 &other);
+	Vec2 operator+(const Vec2 &other);
+	Vec2 operator-(const Vec2 &other);
+	Vec2 operator*(real scalar);
+
+	real x() const;
+	void setX(real val);
+	real y() const;
+	void setY(real val);
+
+	Vec2 add(const Vec2 &other) const;
+	Vec2 subtract(const Vec2 &other) const;
+	Vec2 multiply(real scalar) const;
+	Vec2 norm() const;
+	real magnitude() const;
+	real dot(const Vec2 &other) const;
+	real distance(const Vec2 &other) const;
+
+	std::string toString() const;
+
+private:
+	real vals[2];
+};
+
 class TINYSPLINECXX_API Vec3 {
 public:
 	Vec3();

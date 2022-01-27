@@ -135,8 +135,9 @@ public:
 	Vec3 multiply(real scalar) const;
 	Vec3 cross(const Vec3 &other) const;
 	Vec3 norm() const;
-	tsReal magnitude() const;
-	tsReal dot(const Vec3 &other) const;
+	real magnitude() const;
+	real dot(const Vec3 &other) const;
+	real distance(const Vec3 &other) const;
 
 	std::string toString() const;
 

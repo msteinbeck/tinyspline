@@ -328,6 +328,12 @@ tinyspline::Vec3::dot(const tinyspline::Vec3 &other) const
 	return ts_vec_dot(vals, other.vals, 3);
 }
 
+tinyspline::real
+tinyspline::Vec3::distance(const tinyspline::Vec3 &other) const
+{
+	return ts_distance(vals, other.vals, 3);
+}
+
 std::string
 tinyspline::Vec3::toString() const
 {

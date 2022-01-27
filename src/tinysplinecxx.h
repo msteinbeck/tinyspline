@@ -150,15 +150,18 @@ private:
 
 /*! @name Spline Framing
  *
- * Wrapper classes for ::tsFrame (::Frame) and sequences of ::tsFrame
- * (::FrameSeq). To reduce the amount of copied data, access the vectors
- * (position, tangent, normal, and binormal) with Frame::values and
- * FrameSeq::values.
+ * Object-oriented representation of ::tsFrame (::Frame) and sequences of
+ * ::tsFrame (::FrameSeq). Instances of ::FrameSeq are created by
+ * ::BSpline::computeRMF.
  *
  * @{
  */
 class TINYSPLINECXX_API Frame {
 public:
+	Frame(Vec3 &position,
+	      Vec3 &tangent,
+	      Vec3 &normal,
+	      Vec3 &binormal);
 	Frame(const Frame &other);
 	Frame &operator=(const Frame &other);
 
@@ -166,30 +169,28 @@ public:
 	Vec3 tangent() const;
 	Vec3 normal() const;
 	Vec3 binormal() const;
-	std::vector<real> values() const;
 
 	std::string toString() const;
 
 private:
-	real vals[12]; // 4 * Vec3
-	Frame(const real *values);
-	friend class FrameSeq;
+	Vec3 m_position,
+	     m_tangent,
+	     m_normal,
+	     m_binormal;
 };
 
 class TINYSPLINECXX_API FrameSeq {
 public:
 	FrameSeq(const FrameSeq &other);
-	~FrameSeq();
 	FrameSeq &operator=(const FrameSeq &other);
 
 	size_t size() const;
 	Frame at(size_t idx) const;
-	std::vector<real> values() const;
 
 	std::string toString() const;
 
 private:
-	std::vector<real> *vals;
+	std::vector<Frame> m_frames;
 	FrameSeq(real *values, size_t len);
 	friend class BSpline;
 };

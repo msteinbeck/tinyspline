@@ -32,6 +32,8 @@ namespace tinyspline {
 typedef tsReal real;
 class BSpline;
 class Morphism;
+class Vec2;
+class Vec3;
 
 class TINYSPLINECXX_API DeBoorNet {
 public:
@@ -50,7 +52,36 @@ public:
 	size_t dimension() const;
 	std::vector<real> points() const;
 	std::vector<real> result() const;
-	tsDeBoorNet * data();
+
+	/**
+	* Returns the result at \p idx as ::Vec2. Note that, by design, \p idx
+	* cannot be greater than \c 1. It is safe to call this method even if
+	* ::dimension is less than \c 2. In this case, the missing components
+	* are set to \c 0. If ::dimension is greater than \c 2, the excess
+	* values are ignored.
+	*
+	* @return
+	* 	The result at \p idx as ::Vec2.
+	* @throws std::out_of_range
+	* 	If \p idx is greater than \c 1, or if \p idx is \c 1, but there
+	* 	is only one result.
+	*/
+	Vec2 resultVec2(size_t idx = 0) const;
+
+	/**
+	* Returns the result at \p idx as ::Vec3. Note that, by design, \p idx
+	* cannot be greater than \c 1. It is safe to call this method even if
+	* ::dimension is less than \c 3. In this case, the missing components
+	* are set to \c 0. If ::dimension is greater than \c 3, the excess
+	* values are ignored.
+	*
+	* @return
+	* 	The result at \p idx as ::Vec3.
+	* @throws std::out_of_range
+	* 	If \p idx is greater than \c 1, or if \p idx is \c 1, but there
+	* 	is only one result.
+	*/
+	Vec3 resultVec3(size_t idx = 0) const;
 
 	/* Debug */
 	std::string toString() const;

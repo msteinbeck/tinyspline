@@ -124,12 +124,15 @@ public:
 	std::string toString() const;
 
 private:
-    real _min;
-    real _max;
+	real m_min,
+	     m_max;
 
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:
-	Domain() : _min(TS_DOMAIN_DEFAULT_MIN), _max(TS_DOMAIN_DEFAULT_MAX) {}
+	Domain()
+	: m_min(TS_DOMAIN_DEFAULT_MIN),
+	  m_max(TS_DOMAIN_DEFAULT_MAX)
+	{}
 	void setMin(real) { cannotWrite(); }
 	void setMax(real) { cannotWrite(); }
 #endif

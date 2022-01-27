@@ -151,66 +151,70 @@ tinyspline::DeBoorNet::resultVec3(size_t idx) const
 	return Vec3(vec_data[0], vec_data[1], vec_data[2]);
 }
 
-std::string tinyspline::DeBoorNet::toString() const
+std::string
+tinyspline::DeBoorNet::toString() const
 {
 	std::ostringstream oss;
-	oss << "DeBoorNet{";
-	oss << "knot: " << knot();
-	oss << ", index: " << index();
-	oss << ", multiplicity: " << multiplicity();
-	oss << ", insertions: " << numInsertions();
-	oss << ", dimension: " << dimension();
-	oss << ", points: " << ts_deboornet_num_points(&net);
-	oss << "}";
+	oss << "DeBoorNet{"
+	    << "knot: " << knot()
+	    << ", index: " << index()
+	    << ", multiplicity: " << multiplicity()
+	    << ", insertions: " << numInsertions()
+	    << ", dimension: " << dimension()
+	    << ", points: " << ts_deboornet_num_points(&net)
+	    << "}";
 	return oss.str();
 }
 /*! @} */
 
 
 
-/******************************************************************************
-*                                                                             *
-* Domain                                                                      *
-*                                                                             *
-******************************************************************************/
-tinyspline::Domain::Domain(tinyspline::real min, tinyspline::real max)
-{
-	_min = min;
-	_max = max;
-}
+/*! @name Domain
+ *
+ * @{
+ */
+tinyspline::Domain::Domain(tinyspline::real min,
+                           tinyspline::real max)
+: m_min(min), m_max(max)
+{}
 
 tinyspline::Domain::Domain(const tinyspline::Domain &other)
-{
-	_min = other._min;
-	_max = other._max;
-}
+: m_min(other.m_min), m_max(other.m_max)
+{}
 
-tinyspline::Domain & tinyspline::Domain::operator=(
-	const tinyspline::Domain &other)
+tinyspline::Domain &
+tinyspline::Domain::operator=(const tinyspline::Domain &other)
 {
 	if (&other != this) {
-		_min = other.min();
-		_max = other.max();
+		m_min = other.m_min;
+		m_max = other.m_max;
 	}
 	return *this;
 }
 
-tinyspline::real tinyspline::Domain::min() const
+tinyspline::real
+tinyspline::Domain::min() const
 {
-	return _min;
+	return m_min;
 }
 
-tinyspline::real tinyspline::Domain::max() const
+tinyspline::real
+tinyspline::Domain::max() const
 {
-	return _max;
+	return m_max;
 }
 
-std::string tinyspline::Domain::toString() const
+std::string
+tinyspline::Domain::toString() const
 {
 	std::ostringstream oss;
-	oss << "Domain{min: " << _min << ", max: " << _max << "}";
+        oss << "Domain{"
+            << "min: " << m_min
+            << ", max: " << m_max
+            << "}";
 	return oss.str();
 }
+/*! @} */
 
 
 
@@ -333,6 +337,17 @@ tinyspline::real
 tinyspline::Vec2::distance(const tinyspline::Vec2 &other) const
 {
 	return ts_distance(vals, other.vals, 2);
+}
+
+std::string
+tinyspline::Vec2::toString() const
+{
+	std::ostringstream oss;
+	oss << "Vec2{"
+	    << "x: " << x()
+	    << ", y: " << y()
+	    << "}";
+	return oss.str();
 }
 /*! @} */
 
@@ -485,9 +500,10 @@ tinyspline::Vec3::toString() const
 {
 	std::ostringstream oss;
 	oss << "Vec3{"
-	    << "x: " << vals[0]
-	    << ", y: " << vals[1]
-	    << ", z: " << vals[2] << "}";
+	    << "x: " << x()
+	    << ", y: " << y()
+	    << ", z: " << z()
+	    << "}";
 	return oss.str();
 }
 /*! @} */
@@ -502,17 +518,17 @@ tinyspline::Frame::Frame(Vec3 &position,
                          Vec3 &tangent,
                          Vec3 &normal,
                          Vec3 &binormal)
-	: m_position(position),
-	  m_tangent(tangent),
-	  m_normal(normal),
-	  m_binormal(binormal)
+: m_position(position),
+  m_tangent(tangent),
+  m_normal(normal),
+  m_binormal(binormal)
 {}
 
 tinyspline::Frame::Frame(const Frame &other)
-	: m_position(other.m_position),
-	  m_tangent(other.m_tangent),
-	  m_normal(other.m_normal),
-	  m_binormal(other.m_binormal)
+: m_position(other.m_position),
+  m_tangent(other.m_tangent),
+  m_normal(other.m_normal),
+  m_binormal(other.m_binormal)
 {}
 
 tinyspline::Frame &
@@ -556,10 +572,11 @@ tinyspline::Frame::toString() const
 {
 	std::ostringstream oss;
 	oss << "Frame{"
-	    << "position: " << position().toString()
-	    << ", tangent: " << tangent().toString()
-	    << ", normal: " << normal().toString()
-	    << ", binormal: " << binormal().toString() << "}";
+	    << "position: " << m_position.toString()
+	    << ", tangent: " << m_tangent.toString()
+	    << ", normal: " << m_normal.toString()
+	    << ", binormal: " << m_binormal.toString()
+	    << "}";
 	return oss.str();
 }
 /*! @} */
@@ -598,7 +615,7 @@ tinyspline::FrameSeq::FrameSeq(real *values, size_t len)
 }
 
 tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
-	: m_frames(other.m_frames)
+: m_frames(other.m_frames)
 {}
 
 tinyspline::FrameSeq &
@@ -625,9 +642,9 @@ std::string
 tinyspline::FrameSeq::toString() const
 {
 	std::ostringstream oss;
-	oss << "FrameSeq{";
-	oss << "frames: " << size();
-	oss << "}";
+	oss << "FrameSeq{"
+	    << "frames: " << size()
+	    << "}";
 	return oss.str();
 }
 /*! @} */

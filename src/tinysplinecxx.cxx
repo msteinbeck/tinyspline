@@ -783,6 +783,7 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 	tsReal *knots = (tsReal *) malloc(num * sizeof(tsReal));
 	ts_bspline_uniform_knot_seq(&spline, num, knots);
 	std_real_vector_out vec = std_real_vector_init(knots, knots + num);
+	free(knots);
 	return vec;
 }
 

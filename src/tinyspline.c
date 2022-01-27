@@ -1675,7 +1675,7 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			ts_vec3_set(frames[i+1].tangent, xn, 3);
 			ts_vec3_set(frames[i+1].normal, xc, 3);
 		}
-	TS_CATCH(err)
+	TS_FINALLY
 		ts_bspline_free(&deriv);
 		ts_deboornet_free(&curr);
 		ts_deboornet_free(&next);

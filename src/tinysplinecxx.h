@@ -173,7 +173,7 @@ public:
 	std::string toString() const;
 
 private:
-	real vals[2];
+	real m_vals[2];
 };
 
 class TINYSPLINECXX_API Vec3 {
@@ -206,7 +206,7 @@ public:
 	std::string toString() const;
 
 private:
-	real vals[3];
+	real m_vals[3];
 };
 /*! @} */
 

@@ -209,8 +209,8 @@ tinyspline::Domain::toString() const
 {
 	std::ostringstream oss;
         oss << "Domain{"
-            << "min: " << m_min
-            << ", max: " << m_max
+            << "min: " << min()
+            << ", max: " << max()
             << "}";
 	return oss.str();
 }
@@ -572,10 +572,10 @@ tinyspline::Frame::toString() const
 {
 	std::ostringstream oss;
 	oss << "Frame{"
-	    << "position: " << m_position.toString()
-	    << ", tangent: " << m_tangent.toString()
-	    << ", normal: " << m_normal.toString()
-	    << ", binormal: " << m_binormal.toString()
+	    << "position: " << position().toString()
+	    << ", tangent: " << tangent().toString()
+	    << ", normal: " << normal().toString()
+	    << ", binormal: " << binormal().toString()
 	    << "}";
 	return oss.str();
 }
@@ -1129,13 +1129,13 @@ std::string tinyspline::BSpline::toString() const
 {
 	Domain d = domain();
 	std::ostringstream oss;
-	oss << "BSpline{";
-	oss << "dimension: " << dimension();
-	oss << ", degree: " << degree();
-	oss << ", domain: [" << d.min() << ", " << d.max() << "]";
-	oss << ", control points: " << numControlPoints();
-	oss << ", knots: " << ts_bspline_num_knots(&spline);
-	oss << "}";
+	oss << "BSpline{"
+	    << "dimension: " << dimension()
+	    << ", degree: " << degree()
+	    << ", domain: [" << d.min() << ", " << d.max() << "]"
+	    << ", control points: " << numControlPoints()
+	    << ", knots: " << ts_bspline_num_knots(&spline)
+	    << "}";
 	return oss.str();
 }
 
@@ -1195,10 +1195,10 @@ tinyspline::Morphism::operator()(real t)
 std::string tinyspline::Morphism::toString() const
 {
 	std::ostringstream oss;
-	oss << "Morphism{";
-	oss << "buffer: " << buffer.toString();
-	oss << ", epsilon: " << _epsilon;
-	oss << "}";
+	oss << "Morphism{"
+	    << "buffer: " << buffer.toString()
+	    << ", epsilon: " << epsilon()
+	    << "}";
 	return oss.str();
 }
 /*! @} */

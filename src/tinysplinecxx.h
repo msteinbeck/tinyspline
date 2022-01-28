@@ -323,6 +323,8 @@ public:
 	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
 
+	static bool knotsEqual(real x, real y);
+
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
 	DeBoorNet operator()(real u) const;
@@ -424,17 +426,9 @@ private:
 };
 /*! @} */
 
-
-
-class TINYSPLINECXX_API Utils {
-public:
-	static bool knotsEqual(real x, real y);
-
-private:
-	Utils() {}
-};
-
 }
+
+
 
 #ifdef TINYSPLINE_EMSCRIPTEN
 // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html

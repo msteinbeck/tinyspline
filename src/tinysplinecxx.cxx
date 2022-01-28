@@ -778,6 +778,12 @@ tinyspline::BSpline tinyspline::BSpline::load(std::string path)
 	return BSpline(data);
 }
 
+bool
+tinyspline::BSpline::knotsEqual(real x, real y)
+{
+	return ts_knots_equal(x, y);
+}
+
 tinyspline::BSpline & tinyspline::BSpline::operator=(
 	const tinyspline::BSpline &other)
 {
@@ -1215,18 +1221,6 @@ std::string tinyspline::Morphism::toString() const
 	return oss.str();
 }
 /*! @} */
-
-
-
-/******************************************************************************
-*                                                                             *
-* Utils                                                                       *
-*                                                                             *
-******************************************************************************/
-bool tinyspline::Utils::knotsEqual(tinyspline::real x, tinyspline::real y)
-{
-	return ts_knots_equal(x, y) == 1;
-}
 
 #ifdef _MSC_VER
 #pragma warning(pop)

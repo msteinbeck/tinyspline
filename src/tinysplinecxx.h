@@ -130,6 +130,47 @@ private:
 
 
 
+/*! @name Utility Classes
+ *
+ * Little helper classes, such as value classes or classes with only static
+ * methods.
+ *
+ * @{
+ */
+class TINYSPLINECXX_API Domain {
+public:
+	/* Constructors & Destructors */
+	Domain(tsReal min, tsReal max);
+	Domain(const Domain &other);
+
+	/* Operators */
+	Domain &operator=(const Domain &other);
+
+	/* Accessors */
+	real min() const;
+	real max() const;
+
+	/* Debug */
+	std::string toString() const;
+
+private:
+	real m_min,
+	     m_max;
+
+#ifdef TINYSPLINE_EMSCRIPTEN
+public:
+	Domain()
+	: m_min(TS_DOMAIN_DEFAULT_MIN),
+	  m_max(TS_DOMAIN_DEFAULT_MAX)
+	{}
+	void setMin(real) { cannotWrite(); }
+	void setMax(real) { cannotWrite(); }
+#endif
+};
+/*! @} */
+
+
+
 class TINYSPLINECXX_API DeBoorNet {
 public:
 	/* Constructors & Destructors */
@@ -199,37 +240,6 @@ public:
 	void setDimension(size_t) { cannotWrite(); }
 	void setPoints(std::vector<real>) { cannotWrite(); }
 	void setResult(std::vector<real>) { cannotWrite(); }
-#endif
-};
-
-class TINYSPLINECXX_API Domain {
-public:
-	/* Constructors & Destructors */
-	Domain(tsReal min, tsReal max);
-	Domain(const Domain &other);
-
-	/* Operators */
-	Domain &operator=(const Domain &other);
-
-	/* Accessors */
-	real min() const;
-	real max() const;
-
-	/* Debug */
-	std::string toString() const;
-
-private:
-	real m_min,
-	     m_max;
-
-#ifdef TINYSPLINE_EMSCRIPTEN
-public:
-	Domain()
-	: m_min(TS_DOMAIN_DEFAULT_MIN),
-	  m_max(TS_DOMAIN_DEFAULT_MAX)
-	{}
-	void setMin(real) { cannotWrite(); }
-	void setMax(real) { cannotWrite(); }
 #endif
 };
 

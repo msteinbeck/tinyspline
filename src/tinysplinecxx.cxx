@@ -337,6 +337,55 @@ tinyspline::Vec3::toString() const
 
 
 
+/*! @name Domain
+ *
+ * @{
+ */
+tinyspline::Domain::Domain(tinyspline::real min,
+                           tinyspline::real max)
+: m_min(min), m_max(max)
+{}
+
+tinyspline::Domain::Domain(const tinyspline::Domain &other)
+: m_min(other.m_min), m_max(other.m_max)
+{}
+
+tinyspline::Domain &
+tinyspline::Domain::operator=(const tinyspline::Domain &other)
+{
+	if (&other != this) {
+		m_min = other.m_min;
+		m_max = other.m_max;
+	}
+	return *this;
+}
+
+tinyspline::real
+tinyspline::Domain::min() const
+{
+	return m_min;
+}
+
+tinyspline::real
+tinyspline::Domain::max() const
+{
+	return m_max;
+}
+
+std::string
+tinyspline::Domain::toString() const
+{
+	std::ostringstream oss;
+        oss << "Domain{"
+            << "min: " << min()
+            << ", max: " << max()
+            << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
 /*! @name DeBoorNet
  *
  * @{
@@ -466,55 +515,6 @@ tinyspline::DeBoorNet::toString() const
 	    << ", dimension: " << dimension()
 	    << ", points: " << ts_deboornet_num_points(&net)
 	    << "}";
-	return oss.str();
-}
-/*! @} */
-
-
-
-/*! @name Domain
- *
- * @{
- */
-tinyspline::Domain::Domain(tinyspline::real min,
-                           tinyspline::real max)
-: m_min(min), m_max(max)
-{}
-
-tinyspline::Domain::Domain(const tinyspline::Domain &other)
-: m_min(other.m_min), m_max(other.m_max)
-{}
-
-tinyspline::Domain &
-tinyspline::Domain::operator=(const tinyspline::Domain &other)
-{
-	if (&other != this) {
-		m_min = other.m_min;
-		m_max = other.m_max;
-	}
-	return *this;
-}
-
-tinyspline::real
-tinyspline::Domain::min() const
-{
-	return m_min;
-}
-
-tinyspline::real
-tinyspline::Domain::max() const
-{
-	return m_max;
-}
-
-std::string
-tinyspline::Domain::toString() const
-{
-	std::ostringstream oss;
-        oss << "Domain{"
-            << "min: " << min()
-            << ", max: " << max()
-            << "}";
 	return oss.str();
 }
 /*! @} */

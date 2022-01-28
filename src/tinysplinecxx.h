@@ -243,15 +243,15 @@ private:
 	     m_binormal;
 };
 
-class TINYSPLINECXX_API FrameSeq {
+class FrameSeq {
 public:
-	FrameSeq(const FrameSeq &other);
-	FrameSeq &operator=(const FrameSeq &other);
+	TINYSPLINECXX_API FrameSeq(const FrameSeq &other);
+	TINYSPLINECXX_API FrameSeq &operator=(const FrameSeq &other);
 
-	size_t size() const;
-	Frame at(size_t idx) const;
+	size_t TINYSPLINECXX_API size() const;
+	Frame TINYSPLINECXX_API at(size_t idx) const;
 
-	std::string toString() const;
+	std::string TINYSPLINECXX_API toString() const;
 
 private:
 	std::vector<Frame> m_frames;

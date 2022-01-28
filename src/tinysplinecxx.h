@@ -12,9 +12,10 @@
 
 /*! @name Swig Type Mapping
  *
- * Non-accessor methods (i.e., methods that do not return or set an attribute)
- * must take/return std::vector as pointer. Otherwise, they won't be type
- * mapped by Swig to the std::vector representation of the target language.
+ * Methods that do not return or set the value of a class attribute (let's call
+ * these methods `non-accessor methods') must return/take instances of
+ * std::vector as pointer. Otherwise, they aren't type mapped by Swig to the
+ * std::vector representation of the target language.
  *
  * @{
  */

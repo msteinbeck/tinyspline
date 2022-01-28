@@ -112,7 +112,7 @@ tinyspline::DeBoorNet::points() const
 	real *begin = points;
 	real *end = begin + num_points * dimension();
 	std::vector<real> vec = std::vector<real>(begin, end);
-	free(points);
+	std::free(points);
 	return vec;
 }
 
@@ -127,7 +127,7 @@ tinyspline::DeBoorNet::result() const
 	real *begin = result;
 	real *end = begin + num_result * dimension();
 	std::vector<real> vec = std::vector<real>(begin, end);
-	free(result);
+	std::free(result);
 	return vec;
 }
 
@@ -236,14 +236,14 @@ tinyspline::Vec2::Vec2(real x,
 
 tinyspline::Vec2::Vec2(const Vec2 &other)
 {
-	memcpy(vals, other.vals, sizeof(vals));
+	std::memcpy(vals, other.vals, sizeof(vals));
 }
 
 tinyspline::Vec2 &
 tinyspline::Vec2::operator=(const tinyspline::Vec2 &other)
 {
 	if (&other != this)
-		memcpy(vals, other.vals, sizeof(vals));
+		std::memcpy(vals, other.vals, sizeof(vals));
 	return *this;
 }
 
@@ -372,14 +372,14 @@ tinyspline::Vec3::Vec3(real x,
 
 tinyspline::Vec3::Vec3(const Vec3 &other)
 {
-	memcpy(vals, other.vals, sizeof(vals));
+	std::memcpy(vals, other.vals, sizeof(vals));
 }
 
 tinyspline::Vec3 &
 tinyspline::Vec3::operator=(const tinyspline::Vec3 &other)
 {
 	if (&other != this)
-		memcpy(vals, other.vals, sizeof(vals));
+		std::memcpy(vals, other.vals, sizeof(vals));
 	return *this;
 }
 
@@ -812,7 +812,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	tinyspline::real *end = begin + num_ctrlp * dimension();
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(ctrlp);
+	std::free(ctrlp);
 	return vec;
 }
 
@@ -825,7 +825,7 @@ std_real_vector_out tinyspline::BSpline::controlPointAt(size_t index) const
 	tinyspline::real *begin  = ctrlp;
 	tinyspline::real *end = begin + dimension();
 	std_real_vector_out vec = std_real_vector_init(begin, end);
-	free(ctrlp);
+	std::free(ctrlp);
 	return vec;
 }
 
@@ -840,7 +840,7 @@ std::vector<tinyspline::real> tinyspline::BSpline::knots() const
 	tinyspline::real *end = begin + num_knots;
 	std::vector<tinyspline::real> vec =
 		std::vector<tinyspline::real>(begin, end);
-	free(knots);
+	std::free(knots);
 	return vec;
 }
 
@@ -880,7 +880,7 @@ std_real_vector_out tinyspline::BSpline::evalAll(
 	tinyspline::real *end = begin +
 		std_real_vector_read(us)size() * dimension();
 	std_real_vector_out vec = std_real_vector_init(begin, end);
-	free(points);
+	std::free(points);
 	return vec;
 }
 
@@ -895,7 +895,7 @@ std_real_vector_out tinyspline::BSpline::sample(size_t num) const
 	tinyspline::real *begin = points;
 	tinyspline::real *end = begin + actualNum * dimension();
 	std_real_vector_out vec = std_real_vector_init(begin, end);
-	free(points);
+	std::free(points);
 	return vec;
 }
 
@@ -934,7 +934,8 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
 	tsStatus status;
 	size_t size = std_real_vector_read(knots)size();
 	const tsReal *data = std_real_vector_read(knots)data();
-	tsFrame *frames = (tsFrame *) malloc(size * sizeof(tsFrame));
+	tsFrame *frames = (tsFrame *) std::malloc(size * sizeof(tsFrame));
+	if (!frames) throw std::bad_alloc();
 	if (firstNormal && size > 0) {
 		ts_vec3_init(frames[0].normal,
 		             firstNormal->x(),
@@ -952,10 +953,11 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
 std_real_vector_out
 tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {
-	tsReal *knots = (tsReal *) malloc(num * sizeof(tsReal));
+	tsReal *knots = (tsReal *) std::malloc(num * sizeof(tsReal));
+	if (!knots) throw std::bad_alloc();
 	ts_bspline_uniform_knot_seq(&spline, num, knots);
 	std_real_vector_out vec = std_real_vector_init(knots, knots + num);
-	free(knots);
+	std::free(knots);
 	return vec;
 }
 
@@ -966,7 +968,7 @@ std::string tinyspline::BSpline::toJson() const
 	if (ts_bspline_to_json(&spline, &json, &status))
 		throw std::runtime_error(status.message);
 	std::string string(json);
-	free(json);
+	std::free(json);
 	return string;
 }
 

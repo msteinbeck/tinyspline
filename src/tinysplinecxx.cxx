@@ -587,55 +587,65 @@ tinyspline::Frame::toString() const
  *
  * @{
  */
-tinyspline::FrameSeq::FrameSeq(real *values, size_t len)
-{
-	if (len % 12 != 0)
-		throw std::runtime_error("len(values) % 12 != 0");
-	const size_t numFrames = len / 12;
-	m_frames.reserve(numFrames);
-	for (size_t i = 0; i < numFrames; i++) {
-		const size_t idx = i * 12;
-		Vec3 position = Vec3(values[idx    ],
-		                     values[idx + 1],
-		                     values[idx + 2]);
-		Vec3 tangent  = Vec3(values[idx + 3],
-		                     values[idx + 4],
-		                     values[idx + 5]);
-		Vec3 normal   = Vec3(values[idx + 6],
-		                     values[idx + 7],
-		                     values[idx + 8]);
-		Vec3 binormal = Vec3(values[idx + 9],
-		                     values[idx + 10],
-		                     values[idx + 11]);
-		m_frames.push_back(Frame(position,
-		                         tangent,
-		                         normal,
-		                         binormal));
-	}
-}
+tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
+                               size_t len)
+: m_frames(frames), m_size(len)
+{}
 
 tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
-: m_frames(other.m_frames)
-{}
+: m_frames(NULL), m_size(other.m_size)
+{
+	const size_t sf = m_size * sizeof(tsFrame);
+	m_frames = (tsFrame *) std::malloc(sf);
+	if (!m_frames) throw std::bad_alloc();
+	std::memcpy(m_frames, other.m_frames, sf);
+}
+
+tinyspline::FrameSeq::~FrameSeq()
+{
+	std::free(m_frames);
+}
 
 tinyspline::FrameSeq &
 tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
 {
-	if (&other != this)
-		m_frames = other.m_frames;
+	if (&other != this) {
+		const size_t sf = other.m_size * sizeof(tsFrame);
+		tsFrame *data = (tsFrame *) std::malloc(sf);
+		if (!data) throw std::bad_alloc();
+		std::memcpy(data, other.m_frames, sf);
+		std::free(m_frames);
+		m_frames = data;
+		m_size = other.m_size;
+	}
 	return *this;
 }
 
 size_t
 tinyspline::FrameSeq::size() const
 {
-	return m_frames.size();
+	return m_size;
 }
 
 tinyspline::Frame
 tinyspline::FrameSeq::at(size_t idx) const
 {
-	return m_frames.at(idx);
+	if (idx >= m_size)
+		throw std::out_of_range( "idx >= size");
+	tsFrame frame = m_frames[idx];
+	Vec3 position = Vec3(frame.position[0],
+	                     frame.position[1],
+	                     frame.position[2]);
+	Vec3 tangent = Vec3(frame.tangent[0],
+	                    frame.tangent[1],
+	                    frame.tangent[2]);
+	Vec3 normal = Vec3(frame.normal[0],
+	                   frame.normal[1],
+	                   frame.normal[2]);
+	Vec3 binormal = Vec3(frame.binormal[0],
+	                     frame.binormal[1],
+	                     frame.binormal[2]);
+	return Frame(position, tangent, normal, binormal);
 }
 
 std::string
@@ -935,8 +945,7 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
 	                           firstNormal != NULL,
 	                           frames, &status))
 		throw std::runtime_error(status.message);
-	FrameSeq seq = FrameSeq((real *) frames, size * 12);
-	free(frames);
+	FrameSeq seq = FrameSeq(frames, size);
 	return seq;
 }
 

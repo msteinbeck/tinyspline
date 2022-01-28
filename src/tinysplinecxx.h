@@ -49,9 +49,12 @@ std::string exceptionMessage(int ptr) {
 
 namespace tinyspline {
 
+/*! @name API Configuration
+ *
+ * @{
+ */
 typedef tsReal real;
-class BSpline;
-class Morphism;
+/*! @} */
 
 
 
@@ -285,6 +288,7 @@ private:
 
 
 
+class Morphism;
 class TINYSPLINECXX_API BSpline {
 public:
 	typedef tsBSplineType type;

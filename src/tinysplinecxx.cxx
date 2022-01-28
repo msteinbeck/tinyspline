@@ -337,6 +337,157 @@ tinyspline::Vec3::toString() const
 
 
 
+/*! @name Frame
+ *
+ * @{
+ */
+tinyspline::Frame::Frame(Vec3 &position,
+                         Vec3 &tangent,
+                         Vec3 &normal,
+                         Vec3 &binormal)
+: m_position(position),
+  m_tangent(tangent),
+  m_normal(normal),
+  m_binormal(binormal)
+{}
+
+tinyspline::Frame::Frame(const Frame &other)
+: m_position(other.m_position),
+  m_tangent(other.m_tangent),
+  m_normal(other.m_normal),
+  m_binormal(other.m_binormal)
+{}
+
+tinyspline::Frame &
+tinyspline::Frame::operator=(const tinyspline::Frame &other)
+{
+	if (&other != this) {
+		m_position = other.m_position;
+		m_tangent = other.m_tangent;
+		m_normal = other.m_normal;
+		m_binormal = other.m_binormal;
+	}
+	return *this;
+}
+
+tinyspline::Vec3
+tinyspline::Frame::position() const
+{
+	return m_position;
+}
+
+tinyspline::Vec3
+tinyspline::Frame::tangent() const
+{
+	return m_tangent;
+}
+
+tinyspline::Vec3
+tinyspline::Frame::normal() const
+{
+	return m_normal;
+}
+
+tinyspline::Vec3
+tinyspline::Frame::binormal() const
+{
+	return m_binormal;
+}
+
+std::string
+tinyspline::Frame::toString() const
+{
+	std::ostringstream oss;
+	oss << "Frame{"
+	    << "position: " << position().toString()
+	    << ", tangent: " << tangent().toString()
+	    << ", normal: " << normal().toString()
+	    << ", binormal: " << binormal().toString()
+	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name FrameSeq
+ *
+ * @{
+ */
+tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
+                               size_t len)
+: m_frames(frames), m_size(len)
+{}
+
+tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
+: m_frames(NULL), m_size(other.m_size)
+{
+	const size_t sf = m_size * sizeof(tsFrame);
+	m_frames = (tsFrame *) std::malloc(sf);
+	if (!m_frames) throw std::bad_alloc();
+	std::memcpy(m_frames, other.m_frames, sf);
+}
+
+tinyspline::FrameSeq::~FrameSeq()
+{
+	std::free(m_frames);
+}
+
+tinyspline::FrameSeq &
+tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
+{
+	if (&other != this) {
+		const size_t sf = other.m_size * sizeof(tsFrame);
+		tsFrame *data = (tsFrame *) std::malloc(sf);
+		if (!data) throw std::bad_alloc();
+		std::memcpy(data, other.m_frames, sf);
+		std::free(m_frames);
+		m_frames = data;
+		m_size = other.m_size;
+	}
+	return *this;
+}
+
+size_t
+tinyspline::FrameSeq::size() const
+{
+	return m_size;
+}
+
+tinyspline::Frame
+tinyspline::FrameSeq::at(size_t idx) const
+{
+	if (idx >= m_size)
+		throw std::out_of_range( "idx >= size");
+	tsFrame frame = m_frames[idx];
+	Vec3 position = Vec3(frame.position[0],
+	                     frame.position[1],
+	                     frame.position[2]);
+	Vec3 tangent = Vec3(frame.tangent[0],
+	                    frame.tangent[1],
+	                    frame.tangent[2]);
+	Vec3 normal = Vec3(frame.normal[0],
+	                   frame.normal[1],
+	                   frame.normal[2]);
+	Vec3 binormal = Vec3(frame.binormal[0],
+	                     frame.binormal[1],
+	                     frame.binormal[2]);
+	return Frame(position, tangent, normal, binormal);
+}
+
+std::string
+tinyspline::FrameSeq::toString() const
+{
+	std::ostringstream oss;
+	oss << "FrameSeq{"
+	    << "frames: " << size()
+	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
 /*! @name Domain
  *
  * @{
@@ -514,157 +665,6 @@ tinyspline::DeBoorNet::toString() const
 	    << ", insertions: " << numInsertions()
 	    << ", dimension: " << dimension()
 	    << ", points: " << ts_deboornet_num_points(&net)
-	    << "}";
-	return oss.str();
-}
-/*! @} */
-
-
-
-/*! @name Frame
- *
- * @{
- */
-tinyspline::Frame::Frame(Vec3 &position,
-                         Vec3 &tangent,
-                         Vec3 &normal,
-                         Vec3 &binormal)
-: m_position(position),
-  m_tangent(tangent),
-  m_normal(normal),
-  m_binormal(binormal)
-{}
-
-tinyspline::Frame::Frame(const Frame &other)
-: m_position(other.m_position),
-  m_tangent(other.m_tangent),
-  m_normal(other.m_normal),
-  m_binormal(other.m_binormal)
-{}
-
-tinyspline::Frame &
-tinyspline::Frame::operator=(const tinyspline::Frame &other)
-{
-	if (&other != this) {
-		m_position = other.m_position;
-		m_tangent = other.m_tangent;
-		m_normal = other.m_normal;
-		m_binormal = other.m_binormal;
-	}
-	return *this;
-}
-
-tinyspline::Vec3
-tinyspline::Frame::position() const
-{
-	return m_position;
-}
-
-tinyspline::Vec3
-tinyspline::Frame::tangent() const
-{
-	return m_tangent;
-}
-
-tinyspline::Vec3
-tinyspline::Frame::normal() const
-{
-	return m_normal;
-}
-
-tinyspline::Vec3
-tinyspline::Frame::binormal() const
-{
-	return m_binormal;
-}
-
-std::string
-tinyspline::Frame::toString() const
-{
-	std::ostringstream oss;
-	oss << "Frame{"
-	    << "position: " << position().toString()
-	    << ", tangent: " << tangent().toString()
-	    << ", normal: " << normal().toString()
-	    << ", binormal: " << binormal().toString()
-	    << "}";
-	return oss.str();
-}
-/*! @} */
-
-
-
-/*! @name FrameSeq
- *
- * @{
- */
-tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
-                               size_t len)
-: m_frames(frames), m_size(len)
-{}
-
-tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
-: m_frames(NULL), m_size(other.m_size)
-{
-	const size_t sf = m_size * sizeof(tsFrame);
-	m_frames = (tsFrame *) std::malloc(sf);
-	if (!m_frames) throw std::bad_alloc();
-	std::memcpy(m_frames, other.m_frames, sf);
-}
-
-tinyspline::FrameSeq::~FrameSeq()
-{
-	std::free(m_frames);
-}
-
-tinyspline::FrameSeq &
-tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
-{
-	if (&other != this) {
-		const size_t sf = other.m_size * sizeof(tsFrame);
-		tsFrame *data = (tsFrame *) std::malloc(sf);
-		if (!data) throw std::bad_alloc();
-		std::memcpy(data, other.m_frames, sf);
-		std::free(m_frames);
-		m_frames = data;
-		m_size = other.m_size;
-	}
-	return *this;
-}
-
-size_t
-tinyspline::FrameSeq::size() const
-{
-	return m_size;
-}
-
-tinyspline::Frame
-tinyspline::FrameSeq::at(size_t idx) const
-{
-	if (idx >= m_size)
-		throw std::out_of_range( "idx >= size");
-	tsFrame frame = m_frames[idx];
-	Vec3 position = Vec3(frame.position[0],
-	                     frame.position[1],
-	                     frame.position[2]);
-	Vec3 tangent = Vec3(frame.tangent[0],
-	                    frame.tangent[1],
-	                    frame.tangent[2]);
-	Vec3 normal = Vec3(frame.normal[0],
-	                   frame.normal[1],
-	                   frame.normal[2]);
-	Vec3 binormal = Vec3(frame.binormal[0],
-	                     frame.binormal[1],
-	                     frame.binormal[2]);
-	return Frame(position, tangent, normal, binormal);
-}
-
-std::string
-tinyspline::FrameSeq::toString() const
-{
-	std::ostringstream oss;
-	oss << "FrameSeq{"
-	    << "frames: " << size()
 	    << "}";
 	return oss.str();
 }

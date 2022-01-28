@@ -130,10 +130,64 @@ private:
 
 
 
+/*! @name Spline Framing
+ *
+ * Object-oriented representation of ::tsFrame (::Frame) and sequences of
+ * ::tsFrame (::FrameSeq). Instances of ::FrameSeq are created by
+ * ::BSpline::computeRMF.
+ *
+ * @{
+ */
+class TINYSPLINECXX_API Frame {
+public:
+	Frame(Vec3 &position,
+	      Vec3 &tangent,
+	      Vec3 &normal,
+	      Vec3 &binormal);
+	Frame(const Frame &other);
+	Frame &operator=(const Frame &other);
+
+	Vec3 position() const;
+	Vec3 tangent() const;
+	Vec3 normal() const;
+	Vec3 binormal() const;
+
+	std::string toString() const;
+
+private:
+	Vec3 m_position,
+	     m_tangent,
+	     m_normal,
+	     m_binormal;
+};
+
+class TINYSPLINECXX_API FrameSeq {
+public:
+	FrameSeq(const FrameSeq &other);
+	virtual ~FrameSeq();
+	FrameSeq &operator=(const FrameSeq &other);
+
+	size_t size() const;
+	Frame at(size_t idx) const;
+
+	std::string toString() const;
+
+private:
+	tsFrame *m_frames;
+	size_t m_size;
+	FrameSeq(tsFrame *frames,
+	         size_t len);
+	friend class BSpline;
+};
+/*! @} */
+
+
+
 /*! @name Utility Classes
  *
  * Little helper classes, such as value classes or classes with only static
- * methods.
+ * methods. These are primarily classes that do not really fit into another
+ * group or are too small to form their own group.
  *
  * @{
  */
@@ -242,59 +296,6 @@ public:
 	void setResult(std::vector<real>) { cannotWrite(); }
 #endif
 };
-
-
-
-/*! @name Spline Framing
- *
- * Object-oriented representation of ::tsFrame (::Frame) and sequences of
- * ::tsFrame (::FrameSeq). Instances of ::FrameSeq are created by
- * ::BSpline::computeRMF.
- *
- * @{
- */
-class TINYSPLINECXX_API Frame {
-public:
-	Frame(Vec3 &position,
-	      Vec3 &tangent,
-	      Vec3 &normal,
-	      Vec3 &binormal);
-	Frame(const Frame &other);
-	Frame &operator=(const Frame &other);
-
-	Vec3 position() const;
-	Vec3 tangent() const;
-	Vec3 normal() const;
-	Vec3 binormal() const;
-
-	std::string toString() const;
-
-private:
-	Vec3 m_position,
-	     m_tangent,
-	     m_normal,
-	     m_binormal;
-};
-
-class TINYSPLINECXX_API FrameSeq {
-public:
-	FrameSeq(const FrameSeq &other);
-	virtual ~FrameSeq();
-	FrameSeq &operator=(const FrameSeq &other);
-
-	size_t size() const;
-	Frame at(size_t idx) const;
-
-	std::string toString() const;
-
-private:
-	tsFrame *m_frames;
-	size_t m_size;
-	FrameSeq(tsFrame *frames,
-	         size_t len);
-	friend class BSpline;
-};
-/*! @} */
 
 
 

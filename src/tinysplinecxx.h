@@ -8,6 +8,16 @@
 #define TINYSPLINECXX_API TINYSPLINE_API
 #endif
 
+
+
+/*! @name Swig Type Mapping
+ *
+ * Non-accessor methods (i.e., methods that do not return or set an attribute)
+ * must take/return std::vector as pointer. Otherwise, they won't be type
+ * mapped by Swig to the std::vector representation of the target language.
+ *
+ * @{
+ */
 #ifdef SWIG
 #define std_real_vector_in std::vector<tinyspline::real> *
 #define std_real_vector_out std::vector<tinyspline::real> *
@@ -15,7 +25,14 @@
 #define std_real_vector_in std::vector<tinyspline::real> &
 #define std_real_vector_out std::vector<tinyspline::real>
 #endif
+/*! @} */
 
+
+
+/*! @name Emscripten Extensions
+ *
+ * @{
+ */
 #ifdef TINYSPLINE_EMSCRIPTEN
 #include <stdexcept>
 void inline cannotWrite() {
@@ -26,6 +43,9 @@ std::string exceptionMessage(int ptr) {
 	return std::string(reinterpret_cast<std::exception *>(ptr)->what());
 }
 #endif
+/*! @} */
+
+
 
 namespace tinyspline {
 

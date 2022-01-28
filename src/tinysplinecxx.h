@@ -52,8 +52,80 @@ namespace tinyspline {
 typedef tsReal real;
 class BSpline;
 class Morphism;
-class Vec2;
-class Vec3;
+
+
+
+/*! @name Vector Math
+ *
+ * Wrapper classes for TinySpline's vector math.
+ *
+ * @{
+ */
+class TINYSPLINECXX_API Vec2 {
+public:
+	Vec2();
+	Vec2(real x, real y);
+	Vec2(const Vec2 &other);
+
+	Vec2 &operator=(const Vec2 &other);
+	Vec2 operator+(const Vec2 &other);
+	Vec2 operator-(const Vec2 &other);
+	Vec2 operator*(real scalar);
+
+	real x() const;
+	void setX(real val);
+	real y() const;
+	void setY(real val);
+
+	Vec2 add(const Vec2 &other) const;
+	Vec2 subtract(const Vec2 &other) const;
+	Vec2 multiply(real scalar) const;
+	Vec2 norm() const;
+	real magnitude() const;
+	real dot(const Vec2 &other) const;
+	real distance(const Vec2 &other) const;
+
+	std::string toString() const;
+
+private:
+	real m_vals[2];
+};
+
+class TINYSPLINECXX_API Vec3 {
+public:
+	Vec3();
+	Vec3(real x, real y, real z);
+	Vec3(const Vec3 &other);
+
+	Vec3 &operator=(const Vec3 &other);
+	Vec3 operator+(const Vec3 &other);
+	Vec3 operator-(const Vec3 &other);
+	Vec3 operator*(real scalar);
+
+	real x() const;
+	void setX(real val);
+	real y() const;
+	void setY(real val);
+	real z() const;
+	void setZ(real val);
+
+	Vec3 add(const Vec3 &other) const;
+	Vec3 subtract(const Vec3 &other) const;
+	Vec3 multiply(real scalar) const;
+	Vec3 cross(const Vec3 &other) const;
+	Vec3 norm() const;
+	real magnitude() const;
+	real dot(const Vec3 &other) const;
+	real distance(const Vec3 &other) const;
+
+	std::string toString() const;
+
+private:
+	real m_vals[3];
+};
+/*! @} */
+
+
 
 class TINYSPLINECXX_API DeBoorNet {
 public:
@@ -157,78 +229,6 @@ public:
 	void setMax(real) { cannotWrite(); }
 #endif
 };
-
-
-
-/*! @name Vector Math
- *
- * Wrapper classes for TinySpline's vector math.
- *
- * @{
- */
-class TINYSPLINECXX_API Vec2 {
-public:
-	Vec2();
-	Vec2(real x, real y);
-	Vec2(const Vec2 &other);
-
-	Vec2 &operator=(const Vec2 &other);
-	Vec2 operator+(const Vec2 &other);
-	Vec2 operator-(const Vec2 &other);
-	Vec2 operator*(real scalar);
-
-	real x() const;
-	void setX(real val);
-	real y() const;
-	void setY(real val);
-
-	Vec2 add(const Vec2 &other) const;
-	Vec2 subtract(const Vec2 &other) const;
-	Vec2 multiply(real scalar) const;
-	Vec2 norm() const;
-	real magnitude() const;
-	real dot(const Vec2 &other) const;
-	real distance(const Vec2 &other) const;
-
-	std::string toString() const;
-
-private:
-	real m_vals[2];
-};
-
-class TINYSPLINECXX_API Vec3 {
-public:
-	Vec3();
-	Vec3(real x, real y, real z);
-	Vec3(const Vec3 &other);
-
-	Vec3 &operator=(const Vec3 &other);
-	Vec3 operator+(const Vec3 &other);
-	Vec3 operator-(const Vec3 &other);
-	Vec3 operator*(real scalar);
-
-	real x() const;
-	void setX(real val);
-	real y() const;
-	void setY(real val);
-	real z() const;
-	void setZ(real val);
-
-	Vec3 add(const Vec3 &other) const;
-	Vec3 subtract(const Vec3 &other) const;
-	Vec3 multiply(real scalar) const;
-	Vec3 cross(const Vec3 &other) const;
-	Vec3 norm() const;
-	real magnitude() const;
-	real dot(const Vec3 &other) const;
-	real distance(const Vec3 &other) const;
-
-	std::string toString() const;
-
-private:
-	real m_vals[3];
-};
-/*! @} */
 
 
 

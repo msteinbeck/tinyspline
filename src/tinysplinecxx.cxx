@@ -26,6 +26,14 @@
 #pragma warning(disable:5045)
 #endif
 
+
+
+/*! @name Swig Type Mapping
+ *
+ * See tinysplinecxx.h for more details.
+ *
+ * @{
+ */
 #ifdef SWIG
 #define std_real_vector_init new std::vector<tinyspline::real>
 #define std_real_vector_read(var) var->
@@ -33,187 +41,6 @@
 #define std_real_vector_init std::vector<tinyspline::real>
 #define std_real_vector_read(var) var.
 #endif
-
-/*! @name DeBoorNet
- *
- * @{
- */
-tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &data)
-: net(ts_deboornet_init())
-{
-	ts_deboornet_move(&data, &net);
-}
-
-tinyspline::DeBoorNet::DeBoorNet(const DeBoorNet &other)
-: net(ts_deboornet_init())
-{
-	tsStatus status;
-	if (ts_deboornet_copy(&other.net, &net, &status))
-		throw std::runtime_error(status.message);
-}
-
-tinyspline::DeBoorNet::~DeBoorNet()
-{
-	ts_deboornet_free(&net);
-}
-
-tinyspline::DeBoorNet &
-tinyspline::DeBoorNet::operator=(const DeBoorNet &other)
-{
-	if (&other != this) {
-		tsDeBoorNet data = ts_deboornet_init();
-		tsStatus status;
-		if (ts_deboornet_copy(&other.net, &data, &status))
-			throw std::runtime_error(status.message);
-		ts_deboornet_free(&net);
-		ts_deboornet_move(&data, &net);
-	}
-	return *this;
-}
-
-tinyspline::real
-tinyspline::DeBoorNet::knot() const
-{
-	return ts_deboornet_knot(&net);
-}
-
-size_t
-tinyspline::DeBoorNet::index() const
-{
-	return ts_deboornet_index(&net);
-}
-
-size_t
-tinyspline::DeBoorNet::multiplicity() const
-{
-	return ts_deboornet_multiplicity(&net);
-}
-
-size_t
-tinyspline::DeBoorNet::numInsertions() const
-{
-	return ts_deboornet_num_insertions(&net);
-}
-
-size_t
-tinyspline::DeBoorNet::dimension() const
-{
-	return ts_deboornet_dimension(&net);
-}
-
-std::vector<tinyspline::real>
-tinyspline::DeBoorNet::points() const
-{
-	tsReal *points;
-	tsStatus status;
-	if (ts_deboornet_points(&net, &points, &status))
-		throw std::runtime_error(status.message);
-	size_t num_points = ts_deboornet_num_points(&net);
-	real *begin = points;
-	real *end = begin + num_points * dimension();
-	std::vector<real> vec = std::vector<real>(begin, end);
-	std::free(points);
-	return vec;
-}
-
-std::vector<tinyspline::real>
-tinyspline::DeBoorNet::result() const
-{
-	tsReal *result;
-	tsStatus status;
-	if (ts_deboornet_result(&net, &result, &status))
-		throw std::runtime_error(status.message);
-	size_t num_result = ts_deboornet_num_result(&net);
-	real *begin = result;
-	real *end = begin + num_result * dimension();
-	std::vector<real> vec = std::vector<real>(begin, end);
-	std::free(result);
-	return vec;
-}
-
-tinyspline::Vec2
-tinyspline::DeBoorNet::resultVec2(size_t idx) const
-{
-	Vec3 vec3 = resultVec3(idx);
-	return Vec2(vec3.x(), vec3.y());
-}
-
-tinyspline::Vec3
-tinyspline::DeBoorNet::resultVec3(size_t idx) const
-{
-	const size_t num = ts_deboornet_num_result(&net);
-	if (idx >= num)
-		throw std::out_of_range( "idx >= num(result)");
-	std::vector<real> res = result();
-	const real *res_ptr = res.data() + idx * dimension();
-	real vec_data[3];
-	ts_vec3_set(vec_data, res_ptr, dimension());
-	return Vec3(vec_data[0], vec_data[1], vec_data[2]);
-}
-
-std::string
-tinyspline::DeBoorNet::toString() const
-{
-	std::ostringstream oss;
-	oss << "DeBoorNet{"
-	    << "knot: " << knot()
-	    << ", index: " << index()
-	    << ", multiplicity: " << multiplicity()
-	    << ", insertions: " << numInsertions()
-	    << ", dimension: " << dimension()
-	    << ", points: " << ts_deboornet_num_points(&net)
-	    << "}";
-	return oss.str();
-}
-/*! @} */
-
-
-
-/*! @name Domain
- *
- * @{
- */
-tinyspline::Domain::Domain(tinyspline::real min,
-                           tinyspline::real max)
-: m_min(min), m_max(max)
-{}
-
-tinyspline::Domain::Domain(const tinyspline::Domain &other)
-: m_min(other.m_min), m_max(other.m_max)
-{}
-
-tinyspline::Domain &
-tinyspline::Domain::operator=(const tinyspline::Domain &other)
-{
-	if (&other != this) {
-		m_min = other.m_min;
-		m_max = other.m_max;
-	}
-	return *this;
-}
-
-tinyspline::real
-tinyspline::Domain::min() const
-{
-	return m_min;
-}
-
-tinyspline::real
-tinyspline::Domain::max() const
-{
-	return m_max;
-}
-
-std::string
-tinyspline::Domain::toString() const
-{
-	std::ostringstream oss;
-        oss << "Domain{"
-            << "min: " << min()
-            << ", max: " << max()
-            << "}";
-	return oss.str();
-}
 /*! @} */
 
 
@@ -504,6 +331,190 @@ tinyspline::Vec3::toString() const
 	    << ", y: " << y()
 	    << ", z: " << z()
 	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name DeBoorNet
+ *
+ * @{
+ */
+tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &data)
+: net(ts_deboornet_init())
+{
+	ts_deboornet_move(&data, &net);
+}
+
+tinyspline::DeBoorNet::DeBoorNet(const DeBoorNet &other)
+: net(ts_deboornet_init())
+{
+	tsStatus status;
+	if (ts_deboornet_copy(&other.net, &net, &status))
+		throw std::runtime_error(status.message);
+}
+
+tinyspline::DeBoorNet::~DeBoorNet()
+{
+	ts_deboornet_free(&net);
+}
+
+tinyspline::DeBoorNet &
+tinyspline::DeBoorNet::operator=(const DeBoorNet &other)
+{
+	if (&other != this) {
+		tsDeBoorNet data = ts_deboornet_init();
+		tsStatus status;
+		if (ts_deboornet_copy(&other.net, &data, &status))
+			throw std::runtime_error(status.message);
+		ts_deboornet_free(&net);
+		ts_deboornet_move(&data, &net);
+	}
+	return *this;
+}
+
+tinyspline::real
+tinyspline::DeBoorNet::knot() const
+{
+	return ts_deboornet_knot(&net);
+}
+
+size_t
+tinyspline::DeBoorNet::index() const
+{
+	return ts_deboornet_index(&net);
+}
+
+size_t
+tinyspline::DeBoorNet::multiplicity() const
+{
+	return ts_deboornet_multiplicity(&net);
+}
+
+size_t
+tinyspline::DeBoorNet::numInsertions() const
+{
+	return ts_deboornet_num_insertions(&net);
+}
+
+size_t
+tinyspline::DeBoorNet::dimension() const
+{
+	return ts_deboornet_dimension(&net);
+}
+
+std::vector<tinyspline::real>
+tinyspline::DeBoorNet::points() const
+{
+	tsReal *points;
+	tsStatus status;
+	if (ts_deboornet_points(&net, &points, &status))
+		throw std::runtime_error(status.message);
+	size_t num_points = ts_deboornet_num_points(&net);
+	real *begin = points;
+	real *end = begin + num_points * dimension();
+	std::vector<real> vec = std::vector<real>(begin, end);
+	std::free(points);
+	return vec;
+}
+
+std::vector<tinyspline::real>
+tinyspline::DeBoorNet::result() const
+{
+	tsReal *result;
+	tsStatus status;
+	if (ts_deboornet_result(&net, &result, &status))
+		throw std::runtime_error(status.message);
+	size_t num_result = ts_deboornet_num_result(&net);
+	real *begin = result;
+	real *end = begin + num_result * dimension();
+	std::vector<real> vec = std::vector<real>(begin, end);
+	std::free(result);
+	return vec;
+}
+
+tinyspline::Vec2
+tinyspline::DeBoorNet::resultVec2(size_t idx) const
+{
+	Vec3 vec3 = resultVec3(idx);
+	return Vec2(vec3.x(), vec3.y());
+}
+
+tinyspline::Vec3
+tinyspline::DeBoorNet::resultVec3(size_t idx) const
+{
+	const size_t num = ts_deboornet_num_result(&net);
+	if (idx >= num)
+		throw std::out_of_range( "idx >= num(result)");
+	std::vector<real> res = result();
+	const real *res_ptr = res.data() + idx * dimension();
+	real vec_data[3];
+	ts_vec3_set(vec_data, res_ptr, dimension());
+	return Vec3(vec_data[0], vec_data[1], vec_data[2]);
+}
+
+std::string
+tinyspline::DeBoorNet::toString() const
+{
+	std::ostringstream oss;
+	oss << "DeBoorNet{"
+	    << "knot: " << knot()
+	    << ", index: " << index()
+	    << ", multiplicity: " << multiplicity()
+	    << ", insertions: " << numInsertions()
+	    << ", dimension: " << dimension()
+	    << ", points: " << ts_deboornet_num_points(&net)
+	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name Domain
+ *
+ * @{
+ */
+tinyspline::Domain::Domain(tinyspline::real min,
+                           tinyspline::real max)
+: m_min(min), m_max(max)
+{}
+
+tinyspline::Domain::Domain(const tinyspline::Domain &other)
+: m_min(other.m_min), m_max(other.m_max)
+{}
+
+tinyspline::Domain &
+tinyspline::Domain::operator=(const tinyspline::Domain &other)
+{
+	if (&other != this) {
+		m_min = other.m_min;
+		m_max = other.m_max;
+	}
+	return *this;
+}
+
+tinyspline::real
+tinyspline::Domain::min() const
+{
+	return m_min;
+}
+
+tinyspline::real
+tinyspline::Domain::max() const
+{
+	return m_max;
+}
+
+std::string
+tinyspline::Domain::toString() const
+{
+	std::ostringstream oss;
+        oss << "Domain{"
+            << "min: " << min()
+            << ", max: " << max()
+            << "}";
 	return oss.str();
 }
 /*! @} */

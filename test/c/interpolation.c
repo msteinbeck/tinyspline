@@ -99,7 +99,7 @@ interpolation_cubic_natural_single_point(CuTest *tc)
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline point = ts_bspline_init();
-	tsReal ctrlp[4] = { -5.0, 5.0, 3.2 };
+	tsReal ctrlp[3] = { -5.0, 5.0, 3.2 };
 
 	___GIVEN___
 	C(ts_bspline_new(1, 3, 0, TS_CLAMPED, &point, &status))
@@ -110,9 +110,9 @@ interpolation_cubic_natural_single_point(CuTest *tc)
 		ctrlp, 1, 3, &spline, &status))
 
 	___THEN___
-	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
-	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
-	CuAssertIntEquals(tc, 3, ts_bspline_dimension(&spline));
+	CuAssertIntEquals(tc, 3, (int) ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, (int) ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 3, (int) ts_bspline_dimension(&spline));
 	assert_equal_shape(tc, &spline, &point);
 
 	___TEARDOWN___
@@ -199,9 +199,9 @@ interpolation_catmull_rom(CuTest *tc)
 	/* POINT_EPSILON is slightly too small to compare the interpolated
 	 * points with their reference points. Thus, we use an adjusted epsilon
 	 * environment in this test to assert the distances. */
-	eps = 0.000017; /* from 1e-5f (0.00001) */
+	eps = (tsReal) 0.000017; /* from 1e-5f (0.00001) */
 #ifdef TINYSPLINE_FLOAT_PRECISION
-	eps = 0.0016; /* from 1e-3f (0.001) */
+	eps = (tsReal) 0.0016; /* from 1e-3f (0.001) */
 #endif
 
 	/* Points to be interpolated. */
@@ -268,9 +268,9 @@ interpolation_catmull_rom_single_point(CuTest *tc)
 		POINT_EPSILON, &spline, &status))
 
 	___THEN___
-	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
-	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
-	CuAssertIntEquals(tc, 2, ts_bspline_dimension(&spline));
+	CuAssertIntEquals(tc, 3, (int) ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, (int) ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 2, (int) ts_bspline_dimension(&spline));
 	assert_equal_shape(tc, &spline, &point);
 
 	___TEARDOWN___
@@ -297,9 +297,9 @@ interpolation_catmull_rom_same_point(CuTest *tc)
 		(tsReal) 0.2, &spline, &status))
 
 	___THEN___
-	CuAssertIntEquals(tc, 3, ts_bspline_degree(&spline));
-	CuAssertIntEquals(tc, 4, ts_bspline_num_control_points(&spline));
-	CuAssertIntEquals(tc, 2, ts_bspline_dimension(&spline));
+	CuAssertIntEquals(tc, 3, (int) ts_bspline_degree(&spline));
+	CuAssertIntEquals(tc, 4, (int) ts_bspline_num_control_points(&spline));
+	CuAssertIntEquals(tc, 2, (int) ts_bspline_dimension(&spline));
 	assert_equal_shape(tc, &spline, &point);
 
 	___TEARDOWN___

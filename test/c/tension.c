@@ -6,7 +6,6 @@ tension_beta_0(CuTest *tc)
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline line = ts_bspline_init();
-	size_t i;
 
 	___GIVEN___
 	C(ts_bspline_new_with_control_points(
@@ -37,7 +36,6 @@ tension_beta_1(CuTest *tc)
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline expected = ts_bspline_init();
-	size_t i;
 
 	___GIVEN___
 	C(ts_bspline_new_with_control_points(

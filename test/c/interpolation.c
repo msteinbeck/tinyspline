@@ -99,7 +99,7 @@ interpolation_cubic_natural_single_point(CuTest *tc)
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline point = ts_bspline_init();
-	tsReal ctrlp[3] = { -5.0, 5.0, 3.2 };
+	tsReal ctrlp[3] = { (tsReal) -5.0, (tsReal) 5.0, (tsReal) 3.2 };
 
 	___GIVEN___
 	C(ts_bspline_new(1, 3, 0, TS_CLAMPED, &point, &status))
@@ -285,7 +285,9 @@ interpolation_catmull_rom_same_point(CuTest *tc)
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline point = ts_bspline_init();
-	tsReal ctrlp[6] = { 1.0, 2.0, 1.1, 2.0, 1.0, 2.1 };
+	tsReal ctrlp[6] = { (tsReal) 1.0, (tsReal) 2.0,
+		            (tsReal) 1.1, (tsReal) 2.0,
+		            (tsReal) 1.0, (tsReal) 2.1 };
 
 	___GIVEN___
 	C(ts_bspline_new(1, 2, 0, TS_CLAMPED, &point, &status))

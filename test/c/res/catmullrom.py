@@ -80,7 +80,7 @@ px, py = zip(*Points)
 plt.plot(px, py, 'or')
 
 # Print x, y coordinates
-xy = "\n".join("{}, {},".format(a, b) for a, b in zip(x, y))
+xy = "\n".join("(tsReal) {}, (tsReal) {},".format(a, b) for a, b in zip(x, y))
 print(xy)
 
 plt.show()

@@ -1,4 +1,5 @@
 #include <testutils.h>
+#include <math.h>
 
 void
 vector_vec2_init(CuTest *tc)
@@ -186,6 +187,49 @@ vector_vec3_set_fill(CuTest *tc)
 }
 
 void
+vector_vec_mag_0_1(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vec[2] = { (tsReal) 0.0,
+	                        (tsReal) 1.0 };
+	tsReal mag;
+
+	___GIVEN___
+	mag = (tsReal) -1.0;
+
+	___WHEN___
+	mag = ts_vec_mag(vec, 2);
+
+	___THEN___
+	CuAssertDblEquals(tc, 1.0, mag, POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
+vector_vec_mag_2_3_4(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vec[3] = { (tsReal) 2.0,
+	                        (tsReal) 3.0,
+	                        (tsReal) 4.0 };
+	tsReal mag;
+
+	___GIVEN___
+	mag = (tsReal) -1.0;
+
+	___WHEN___
+	mag = ts_vec_mag(vec, 3);
+
+	___THEN___
+	CuAssertDblEquals(tc,
+	                  sqrt(2*2 + 3*3 + 4*4),
+	                  mag, POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
 vector_vec_mag_dim_0(CuTest *tc)
 {
 	___SETUP___
@@ -217,6 +261,8 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec3_set);
 	SUITE_ADD_TEST(suite, vector_vec3_set_ignore);
 	SUITE_ADD_TEST(suite, vector_vec3_set_fill);
+	SUITE_ADD_TEST(suite, vector_vec_mag_0_1);
+	SUITE_ADD_TEST(suite, vector_vec_mag_2_3_4);
 	SUITE_ADD_TEST(suite, vector_vec_mag_dim_0);
 	return suite;
 }

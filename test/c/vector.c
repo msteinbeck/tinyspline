@@ -250,6 +250,35 @@ vector_vec_mag_dim_0(CuTest *tc)
 	___TEARDOWN___
 }
 
+void
+vector_vec_norm_0(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vec[3] = { (tsReal) 0.0,
+	                        (tsReal) 0.0,
+	                        (tsReal) 0.0 };
+	tsReal norm[5], dist;
+
+	___GIVEN___
+	norm[0] = (tsReal) -1.0;
+	norm[1] = (tsReal) -1.0;
+	norm[2] = (tsReal) -1.0;
+	norm[3] = (tsReal) -1.0;
+	norm[4] = (tsReal) -1.0;
+
+	___WHEN___
+	ts_vec_norm(vec, 3, norm);
+	dist = ts_distance_varargs(tc, 3, norm, 0.0, 0.0, 0.0);
+
+	___THEN___
+	CuAssertDblEquals(tc, 0.0, dist, POINT_EPSILON);
+	/* Check for out-of-bounds */
+	CuAssertDblEquals(tc, -1.0, norm[3], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, norm[4], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
 CuSuite *
 get_vector_suite()
 {
@@ -264,5 +293,6 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec_mag_0_1);
 	SUITE_ADD_TEST(suite, vector_vec_mag_2_3_4);
 	SUITE_ADD_TEST(suite, vector_vec_mag_dim_0);
+	SUITE_ADD_TEST(suite, vector_vec_norm_0);
 	return suite;
 }

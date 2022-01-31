@@ -197,7 +197,7 @@ vector_vec_mag_0_1(CuTest *tc)
 {
 	___SETUP___
 	const tsReal vec[2] = { (tsReal) 0.0,
-	                        (tsReal) 1.0 };
+		                (tsReal) 1.0 };
 	tsReal mag;
 
 	___GIVEN___

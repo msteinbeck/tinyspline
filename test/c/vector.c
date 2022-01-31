@@ -185,6 +185,27 @@ vector_vec3_set_fill(CuTest *tc)
 	___TEARDOWN___
 }
 
+void
+vector_vec_mag_dim_0(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vec[3] = { (tsReal) -1.0,
+	                        (tsReal) -1.0,
+	                        (tsReal) -1.0 };
+	tsReal mag;
+
+	___GIVEN___
+	mag = (tsReal) -1.0;
+
+	___WHEN___
+	mag = ts_vec_mag(vec, 0);
+
+	___THEN___
+	CuAssertDblEquals(tc, 0.0, mag, POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
 CuSuite *
 get_vector_suite()
 {
@@ -196,5 +217,6 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec3_set);
 	SUITE_ADD_TEST(suite, vector_vec3_set_ignore);
 	SUITE_ADD_TEST(suite, vector_vec3_set_fill);
+	SUITE_ADD_TEST(suite, vector_vec_mag_dim_0);
 	return suite;
 }

@@ -3044,8 +3044,6 @@ ts_vec_mag(const tsReal *x,
 {
 	size_t i;
 	tsReal sum = 0;
-	if (!dim)
-		return (tsReal) 0.0;
 	for (i = 0; i < dim; i++)
 		sum += (x[i] * x[i]);
 	return (tsReal) sqrt(sum);

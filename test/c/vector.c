@@ -1,6 +1,12 @@
 #include <testutils.h>
 #include <math.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+/* unreferenced label */
+#pragma warning(disable:4102)
+#endif
+
 void
 vector_vec2_init(CuTest *tc)
 {
@@ -323,3 +329,7 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec_sub_same);
 	return suite;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

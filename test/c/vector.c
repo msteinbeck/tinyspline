@@ -1,6 +1,26 @@
 #include <testutils.h>
 
 void
+vector_vec2_init(CuTest *tc)
+{
+	___SETUP___
+	tsReal vec2[2];
+
+	___GIVEN___
+	vec2[0] = (tsReal) 0.0;
+	vec2[1] = (tsReal) 0.0;
+
+	___WHEN___
+	ts_vec2_init(vec2, (tsReal) 1.0, (tsReal) 2.0);
+
+	___THEN___
+	CuAssertDblEquals(tc, 1.0, vec2[0], POINT_EPSILON);
+	CuAssertDblEquals(tc, 2.0, vec2[1], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
 vector_vec2_set(CuTest *tc)
 {
 	___SETUP___
@@ -169,6 +189,7 @@ CuSuite *
 get_vector_suite()
 {
 	CuSuite* suite = CuSuiteNew();
+	SUITE_ADD_TEST(suite, vector_vec2_init);
 	SUITE_ADD_TEST(suite, vector_vec2_set);
 	SUITE_ADD_TEST(suite, vector_vec2_set_ignore);
 	SUITE_ADD_TEST(suite, vector_vec2_set_fill);

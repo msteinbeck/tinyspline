@@ -211,8 +211,8 @@ vector_vec_mag_2_3_4(CuTest *tc)
 {
 	___SETUP___
 	const tsReal vec[3] = { (tsReal) 2.0,
-	                        (tsReal) 3.0,
-	                        (tsReal) 4.0 };
+		                (tsReal) 3.0,
+		                (tsReal) 4.0 };
 	tsReal mag;
 
 	___GIVEN___
@@ -234,8 +234,8 @@ vector_vec_mag_dim_0(CuTest *tc)
 {
 	___SETUP___
 	const tsReal vec[3] = { (tsReal) -1.0,
-	                        (tsReal) -1.0,
-	                        (tsReal) -1.0 };
+		                (tsReal) -1.0,
+		                (tsReal) -1.0 };
 	tsReal mag;
 
 	___GIVEN___
@@ -255,8 +255,8 @@ vector_vec_norm_0(CuTest *tc)
 {
 	___SETUP___
 	const tsReal vec[3] = { (tsReal) 0.0,
-	                        (tsReal) 0.0,
-	                        (tsReal) 0.0 };
+		                (tsReal) 0.0,
+		                (tsReal) 0.0 };
 	tsReal norm[5], dist;
 
 	___GIVEN___

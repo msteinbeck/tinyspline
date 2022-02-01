@@ -1077,7 +1077,7 @@ function (tinyspline_add_swig_library)
 	endif()
 	if(${ARGS_CXX11})
 		set_property(TARGET ${ARGS_TARGET}
-			APPEND PROPERTY CXX_STANDARD 11)
+			PROPERTY CXX_STANDARD 11)
 		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY CXX_STANDARD_REQUIRED ON)
 		set_property(TARGET ${ARGS_TARGET}

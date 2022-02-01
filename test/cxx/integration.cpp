@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <testutils.h>
 #include <tinysplinecxx.h>
 
@@ -27,6 +28,14 @@ void run()
 		Vec3 tan = start.derive()(knots[i]).resultVec3().norm();
 		assert(frame.position().distance(pos) <= POINT_EPSILON);
 		assert(frame.tangent().distance(tan) <= POINT_EPSILON);
+		real angle_norm_tan = frame.normal().angle(frame.tangent());
+		real angle_norm_binorm = frame.normal().angle(frame.binormal());
+		real angle_binorm_tan = frame.binormal().angle(frame.tangent());
+		real angle_binorm_norm = frame.binormal().angle(frame.normal());
+		assert(std::fabs(angle_norm_tan - 90.0) <= ANGLE_EPSILON);
+		assert(std::fabs(angle_norm_binorm - 90.0) <= ANGLE_EPSILON);
+		assert(std::fabs(angle_binorm_tan - 90.0) <= ANGLE_EPSILON);
+		assert(std::fabs(angle_binorm_norm - 90.0) <= ANGLE_EPSILON);
 	}
 
 	BSpline end(5, 2, 4);

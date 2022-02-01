@@ -7,7 +7,7 @@ rmf_vectors_of_frames(CuTest *tc)
 	tsBSpline spline = ts_bspline_init();
 	tsBSpline derivative = ts_bspline_init();
 	tsDeBoorNet net = ts_deboornet_init();
-	tsReal knots[50], *result = NULL, dist;
+	tsReal knots[50], *result = NULL, dist, angle;
 	tsFrame frames[50];
 	size_t i;
 
@@ -54,6 +54,34 @@ rmf_vectors_of_frames(CuTest *tc)
 		ts_deboornet_free(&net);
 		free(result);
 		result = NULL;
+
+		/* Normal */
+		angle = (tsReal) 0.0;
+		angle = ts_vec_angle(frames[i].normal,
+		                     frames[i].tangent,
+		                     NULL,
+		                     3);
+		CuAssertDblEquals(tc, 90.0, angle, ANGLE_EPSILON);
+		angle = (tsReal) 0.0;
+		angle = ts_vec_angle(frames[i].normal,
+		                     frames[i].binormal,
+		                     NULL,
+		                     3);
+		CuAssertDblEquals(tc, 90.0, angle, ANGLE_EPSILON);
+
+		/* Binormal */
+		angle = (tsReal) 0.0;
+		angle = ts_vec_angle(frames[i].binormal,
+		                     frames[i].tangent,
+		                     NULL,
+		                     3);
+		CuAssertDblEquals(tc, 90.0, angle, ANGLE_EPSILON);
+		angle = (tsReal) 0.0;
+		angle = ts_vec_angle(frames[i].binormal,
+		                     frames[i].normal,
+		                     NULL,
+		                     3);
+		CuAssertDblEquals(tc, 90.0, angle, ANGLE_EPSILON);
 	}
 
 	___TEARDOWN___

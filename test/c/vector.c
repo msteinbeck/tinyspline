@@ -336,9 +336,9 @@ vector_vec_angle_domain(CuTest *tc)
 
 	___THEN___
 	/*  Always the smaller of the two possible angles. */
-	CuAssertDblEquals(tc, 45.0, angle_x_y, POINT_EPSILON);
-	CuAssertDblEquals(tc, 45.0, angle_y_x, POINT_EPSILON);
-	CuAssertDblEquals(tc, 45.0, angle_x_z, POINT_EPSILON);
+	CuAssertDblEquals(tc, 45.0, angle_x_y, ANGLE_EPSILON);
+	CuAssertDblEquals(tc, 45.0, angle_y_x, ANGLE_EPSILON);
+	CuAssertDblEquals(tc, 45.0, angle_x_z, ANGLE_EPSILON);
 
 	___TEARDOWN___
 }
@@ -363,7 +363,7 @@ vector_vec_angle_normalized(CuTest *tc)
 
 	___THEN___
 	/*  Always the smaller of the two possible angles. */
-	CuAssertDblEquals(tc, 90.0, angle, POINT_EPSILON);
+	CuAssertDblEquals(tc, 90.0, angle, ANGLE_EPSILON);
 
 	___TEARDOWN___
 }

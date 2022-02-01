@@ -10,6 +10,7 @@
 %rename (__tostring) tinyspline::Frame::toString;
 %rename (__tostring) tinyspline::FrameSeq::toString;
 %rename (__tostring) tinyspline::Morphism::toString;
+%rename (__tostring) tinyspline::Vec2::toString;
 %rename (__tostring) tinyspline::Vec3::toString;
 
 %rename("%(undercase)s", %$isfunction) "";

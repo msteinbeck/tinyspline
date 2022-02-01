@@ -5,6 +5,7 @@
 %ignore tinyspline::Domain::operator=;
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
+%ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
 
 %rename (__repr__) tinyspline::BSpline::toString;
@@ -13,6 +14,7 @@
 %rename (__repr__) tinyspline::Frame::toString;
 %rename (__repr__) tinyspline::FrameSeq::toString;
 %rename (__repr__) tinyspline::Morphism::toString;
+%rename (__repr__) tinyspline::Vec2::toString;
 %rename (__repr__) tinyspline::Vec3::toString;
 
 %rename("%(undercase)s", %$isfunction) "";

@@ -7,6 +7,10 @@
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec2::operator=;
+%ignore tinyspline::Vec2::operator+;
+%ignore tinyspline::Vec2::operator-;
+%ignore tinyspline::Vec2::operator*;
 %ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec3::operator+;
 %ignore tinyspline::Vec3::operator-;
@@ -18,6 +22,7 @@
 %rename (string) tinyspline::Frame::toString;
 %rename (string) tinyspline::FrameSeq::toString;
 %rename (string) tinyspline::Morphism::toString;
+%rename (string) tinyspline::Vec2::toString;
 %rename (string) tinyspline::Vec3::toString;
 
 %insert(cgo_comment_typedefs) %{

@@ -8,6 +8,7 @@
 %ignore tinyspline::Domain::operator=;
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
+%ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
 
 // Map std::vector<tinyspline::real> to R vector.

@@ -7,6 +7,10 @@
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+%ignore tinyspline::Vec2::operator=;
+%ignore tinyspline::Vec2::operator+;
+%ignore tinyspline::Vec2::operator-;
+%ignore tinyspline::Vec2::operator*;
 %ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec3::operator+;
 %ignore tinyspline::Vec3::operator-;
@@ -18,6 +22,7 @@
 %javamethodmodifiers tinyspline::Frame::toString "@Override public";
 %javamethodmodifiers tinyspline::FrameSeq::toString "@Override public";
 %javamethodmodifiers tinyspline::Morphism::toString "@Override public";
+%javamethodmodifiers tinyspline::Vec2::toString "@Override public";
 %javamethodmodifiers tinyspline::Vec3::toString "@Override public";
 
 // Automatically load native library.

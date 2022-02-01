@@ -5,6 +5,7 @@
 %ignore tinyspline::Domain::operator=;
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
+%ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
 
 %rename("%(undercase)s", %$isfunction) "";

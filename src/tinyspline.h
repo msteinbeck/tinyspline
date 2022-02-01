@@ -80,6 +80,11 @@ extern "C" {
  * @{
  */
 /**
+ * The mathematical constant pi.
+ */
+#define TS_PI 3.14159265358979323846
+
+/**
  * The maximum number of knots a spline can have. This constant is strongly
  * related to ::TS_KNOT_EPSILON in that the larger ::TS_MAX_NUM_KNOTS is, the
  * less precise ::TS_KNOT_EPSILON has to be (i.e., knots with greater distance
@@ -2581,6 +2586,35 @@ tsReal TINYSPLINE_API
 ts_vec_dot(const tsReal *x,
            const tsReal *y,
            size_t dim);
+
+/**
+ * Computes the angle in degrees between the vectors \p x and \p y. The angle
+ * returned is unsigned, that is, the smaller of the two possible angles is
+ * computed. The nullable parameter \p buf servers as a buffer in case \p x or
+ * \p y (or both) are not normalized. If \p buf is \c NULL, it is expected that
+ * \p x and \p y are already normalized. If \p buf is not \c NULL, a storage
+ * twice the size of \p dim is expected in which the normalized vectors of \p x
+ * and \p y are stored.
+ *
+ * @pre
+ * 	\p buf is either \c NULL or has length <tt>2 * dim</tt>.
+ * @param[in] x
+ * 	First vector.
+ * @param[in] y
+ * 	Second vector.
+ * @param[out] buf
+ * 	A buffer in which the normalized vectors of \p x and \y are stored. If
+ * 	\c NULL, it is expected that \p x and \p y are already normalized.
+ * @param[in] dim
+ * 	Dimensionality of \p x and \p y.
+ * @return
+ * 	The angle between \p x and \y with <tt>0.0 <= angle <= 180.0</tt>.
+ */
+tsReal TINYSPLINE_API
+ts_vec_angle(const tsReal *x,
+             const tsReal *y,
+             tsReal *buf,
+             size_t dim);
 
 /**
  * Computes the cross product (also known as vector product or directed area

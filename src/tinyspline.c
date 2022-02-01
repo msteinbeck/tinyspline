@@ -3,7 +3,7 @@
 #include "parson.h" /* serialization */
 
 #include <stdlib.h> /* malloc, free */
-#include <math.h>   /* fabs, sqrt */
+#include <math.h>   /* fabs, sqrt, acos */
 #include <string.h> /* memcpy, memmove */
 #include <stdio.h>  /* FILE, fopen */
 #include <stdarg.h> /* varargs */
@@ -3007,6 +3007,23 @@ ts_vec_dot(const tsReal *x,
 	for (i = 0; i < dim; i++)
 		dot += x[i] * y[i];
 	return dot;
+}
+
+tsReal
+ts_vec_angle(const tsReal *x,
+             const tsReal *y,
+             tsReal *buf,
+             size_t dim)
+{
+	tsReal angle;
+	if (buf) {
+		ts_vec_norm(x, dim, buf);
+		ts_vec_norm(y, dim, buf + dim);
+		angle = acos(ts_vec_dot(buf, buf + dim, dim));
+	} else {
+		angle = acos(ts_vec_dot(x, y, dim));
+	}
+	return angle * (tsReal) (180.0 / TS_PI);
 }
 
 void

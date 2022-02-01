@@ -311,6 +311,63 @@ vector_vec_sub_same(CuTest *tc)
 	___TEARDOWN___
 }
 
+void
+vector_vec_angle_domain(CuTest *tc)
+{
+	___SETUP___
+	tsReal x[2], y[2], z[2], buf[4];
+	tsReal angle_x_y, angle_y_x, angle_x_z;
+	angle_x_y = angle_y_x = angle_x_z = (tsReal) 0.0;
+
+	___GIVEN___
+	x[0] = (tsReal) 1.0;
+	x[1] = (tsReal) 0.0;
+
+	y[0] = (tsReal) 1.0;
+	y[1] = (tsReal) 1.0;
+
+	z[0] = (tsReal) 1.0;
+	z[1] = (tsReal) -1.0;
+
+	___WHEN___
+	angle_x_y = ts_vec_angle(x, y, buf, 2);
+	angle_y_x = ts_vec_angle(y, x, buf, 2);
+	angle_x_z = ts_vec_angle(x, z, buf, 2);
+
+	___THEN___
+	/*  Always the smaller of the two possible angles. */
+	CuAssertDblEquals(tc, 45.0, angle_x_y, POINT_EPSILON);
+	CuAssertDblEquals(tc, 45.0, angle_y_x, POINT_EPSILON);
+	CuAssertDblEquals(tc, 45.0, angle_x_z, POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
+vector_vec_angle_normalized(CuTest *tc)
+{
+	___SETUP___
+	tsReal x[3], y[3];
+	tsReal angle = (tsReal) 0.0;
+
+	___GIVEN___
+	x[0] = (tsReal) 1.0;
+	x[1] = (tsReal) 0.0;
+	x[2] = (tsReal) 0.0;
+	y[0] = (tsReal) 0.0;
+	y[1] = (tsReal) 1.0;
+	y[2] = (tsReal) 0.0;
+
+	___WHEN___
+	angle = ts_vec_angle(x, y, NULL, 3);
+
+	___THEN___
+	/*  Always the smaller of the two possible angles. */
+	CuAssertDblEquals(tc, 90.0, angle, POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
 CuSuite *
 get_vector_suite()
 {
@@ -327,6 +384,8 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec_mag_dim_0);
 	SUITE_ADD_TEST(suite, vector_vec_norm_0);
 	SUITE_ADD_TEST(suite, vector_vec_sub_same);
+	SUITE_ADD_TEST(suite, vector_vec_angle_domain);
+	SUITE_ADD_TEST(suite, vector_vec_angle_normalized);
 	return suite;
 }
 

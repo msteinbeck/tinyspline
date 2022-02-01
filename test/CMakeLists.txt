@@ -95,7 +95,8 @@ add_subdirectory(cxx)
 ###############################################################################
 add_custom_target(tests
 	DEPENDS tinyspline_tests tinysplinecxx_tests
-	COMMAND tinyspline_tests tinysplinecxx_tests
+	COMMAND tinyspline_tests
+	COMMAND tinysplinecxx_tests
 )
 add_custom_target(coverage
 	DEPENDS tinyspline_coverage

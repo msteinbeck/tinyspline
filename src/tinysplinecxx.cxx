@@ -67,7 +67,7 @@ tinyspline::Vec2::Vec2(const Vec2 &other)
 }
 
 tinyspline::Vec2 &
-tinyspline::Vec2::operator=(const tinyspline::Vec2 &other)
+tinyspline::Vec2::operator=(const Vec2 &other)
 {
 	if (&other != this)
 		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
@@ -75,13 +75,13 @@ tinyspline::Vec2::operator=(const tinyspline::Vec2 &other)
 }
 
 tinyspline::Vec2
-tinyspline::Vec2::operator+(const tinyspline::Vec2 &other)
+tinyspline::Vec2::operator+(const Vec2 &other)
 {
 	return add(other);
 }
 
 tinyspline::Vec2
-tinyspline::Vec2::operator-(const tinyspline::Vec2 &other)
+tinyspline::Vec2::operator-(const Vec2 &other)
 {
 	return subtract(other);
 }
@@ -117,7 +117,7 @@ tinyspline::Vec2::setY(real val)
 }
 
 tinyspline::Vec2
-tinyspline::Vec2::add(const tinyspline::Vec2 &other) const
+tinyspline::Vec2::add(const Vec2 &other) const
 {
 	Vec2 vec;
 	ts_vec_add(m_vals, other.m_vals, 2, vec.m_vals);
@@ -125,7 +125,7 @@ tinyspline::Vec2::add(const tinyspline::Vec2 &other) const
 }
 
 tinyspline::Vec2
-tinyspline::Vec2::subtract(const tinyspline::Vec2 &other) const
+tinyspline::Vec2::subtract(const Vec2 &other) const
 {
 	Vec2 vec;
 	ts_vec_sub(m_vals, other.m_vals, 2, vec.m_vals);
@@ -155,7 +155,7 @@ tinyspline::Vec2::magnitude() const
 }
 
 tinyspline::real
-tinyspline::Vec2::dot(const tinyspline::Vec2 &other) const
+tinyspline::Vec2::dot(const Vec2 &other) const
 {
 	return ts_vec_dot(m_vals, other.m_vals, 2);
 }
@@ -168,7 +168,7 @@ tinyspline::Vec2::angle(const Vec2 &other) const
 }
 
 tinyspline::real
-tinyspline::Vec2::distance(const tinyspline::Vec2 &other) const
+tinyspline::Vec2::distance(const Vec2 &other) const
 {
 	return ts_distance(m_vals, other.m_vals, 2);
 }
@@ -210,7 +210,7 @@ tinyspline::Vec3::Vec3(const Vec3 &other)
 }
 
 tinyspline::Vec3 &
-tinyspline::Vec3::operator=(const tinyspline::Vec3 &other)
+tinyspline::Vec3::operator=(const Vec3 &other)
 {
 	if (&other != this)
 		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
@@ -218,13 +218,13 @@ tinyspline::Vec3::operator=(const tinyspline::Vec3 &other)
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::operator+(const tinyspline::Vec3 &other)
+tinyspline::Vec3::operator+(const Vec3 &other)
 {
 	return add(other);
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::operator-(const tinyspline::Vec3 &other)
+tinyspline::Vec3::operator-(const Vec3 &other)
 {
 	return subtract(other);
 }
@@ -272,7 +272,7 @@ tinyspline::Vec3::setZ(real val)
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::add(const tinyspline::Vec3 &other) const
+tinyspline::Vec3::add(const Vec3 &other) const
 {
 	Vec3 vec;
 	ts_vec_add(m_vals, other.m_vals, 3, vec.m_vals);
@@ -280,7 +280,7 @@ tinyspline::Vec3::add(const tinyspline::Vec3 &other) const
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::subtract(const tinyspline::Vec3 &other) const
+tinyspline::Vec3::subtract(const Vec3 &other) const
 {
 	Vec3 vec;
 	ts_vec_sub(m_vals, other.m_vals, 3, vec.m_vals);
@@ -296,7 +296,7 @@ tinyspline::Vec3::multiply(real scalar) const
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::cross(const tinyspline::Vec3 &other) const
+tinyspline::Vec3::cross(const Vec3 &other) const
 {
 	Vec3 vec;
 	ts_vec3_cross(m_vals, other.m_vals, vec.m_vals);
@@ -318,7 +318,7 @@ tinyspline::Vec3::magnitude() const
 }
 
 tinyspline::real
-tinyspline::Vec3::dot(const tinyspline::Vec3 &other) const
+tinyspline::Vec3::dot(const Vec3 &other) const
 {
 	return ts_vec_dot(m_vals, other.m_vals, 3);
 }
@@ -331,7 +331,7 @@ tinyspline::Vec3::angle(const Vec3 &other) const
 }
 
 tinyspline::real
-tinyspline::Vec3::distance(const tinyspline::Vec3 &other) const
+tinyspline::Vec3::distance(const Vec3 &other) const
 {
 	return ts_distance(m_vals, other.m_vals, 3);
 }
@@ -373,7 +373,7 @@ tinyspline::Frame::Frame(const Frame &other)
 {}
 
 tinyspline::Frame &
-tinyspline::Frame::operator=(const tinyspline::Frame &other)
+tinyspline::Frame::operator=(const Frame &other)
 {
 	if (&other != this) {
 		m_position = other.m_position;
@@ -448,7 +448,7 @@ tinyspline::FrameSeq::~FrameSeq()
 }
 
 tinyspline::FrameSeq &
-tinyspline::FrameSeq::operator=(const tinyspline::FrameSeq &other)
+tinyspline::FrameSeq::operator=(const FrameSeq &other)
 {
 	if (&other != this) {
 		const size_t sf = other.m_size * sizeof(tsFrame);
@@ -506,17 +506,17 @@ tinyspline::FrameSeq::toString() const
  *
  * @{
  */
-tinyspline::Domain::Domain(tinyspline::real min,
-                           tinyspline::real max)
+tinyspline::Domain::Domain(real min,
+                           real max)
 : m_min(min), m_max(max)
 {}
 
-tinyspline::Domain::Domain(const tinyspline::Domain &other)
+tinyspline::Domain::Domain(const Domain &other)
 : m_min(other.m_min), m_max(other.m_max)
 {}
 
 tinyspline::Domain &
-tinyspline::Domain::operator=(const tinyspline::Domain &other)
+tinyspline::Domain::operator=(const Domain &other)
 {
 	if (&other != this) {
 		m_min = other.m_min;

@@ -87,6 +87,7 @@ public:
 	Vec2 norm() const;
 	real magnitude() const;
 	real dot(const Vec2 &other) const;
+	real angle(const Vec2 &other) const;
 	real distance(const Vec2 &other) const;
 
 	std::string toString() const;
@@ -120,6 +121,7 @@ public:
 	Vec3 norm() const;
 	real magnitude() const;
 	real dot(const Vec3 &other) const;
+	real angle(const Vec3 &other) const;
 	real distance(const Vec3 &other) const;
 
 	std::string toString() const;

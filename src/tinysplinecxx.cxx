@@ -161,6 +161,13 @@ tinyspline::Vec2::dot(const tinyspline::Vec2 &other) const
 }
 
 tinyspline::real
+tinyspline::Vec2::angle(const Vec2 &other) const
+{
+	real buf[4];
+	return ts_vec_angle(m_vals, other.m_vals, buf, 2);
+}
+
+tinyspline::real
 tinyspline::Vec2::distance(const tinyspline::Vec2 &other) const
 {
 	return ts_distance(m_vals, other.m_vals, 2);
@@ -314,6 +321,13 @@ tinyspline::real
 tinyspline::Vec3::dot(const tinyspline::Vec3 &other) const
 {
 	return ts_vec_dot(m_vals, other.m_vals, 3);
+}
+
+tinyspline::real
+tinyspline::Vec3::angle(const Vec3 &other) const
+{
+	real buf[6];
+	return ts_vec_angle(m_vals, other.m_vals, buf, 3);
 }
 
 tinyspline::real

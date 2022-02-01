@@ -3015,15 +3015,23 @@ ts_vec_angle(const tsReal *x,
              tsReal *buf,
              size_t dim)
 {
-	tsReal angle;
+	const tsReal *x_norm, *y_norm;
 	if (buf) {
 		ts_vec_norm(x, dim, buf);
 		ts_vec_norm(y, dim, buf + dim);
-		angle = acos(ts_vec_dot(buf, buf + dim, dim));
+		x_norm = buf;
+		y_norm = buf + dim;
 	} else {
-		angle = acos(ts_vec_dot(x, y, dim));
+		x_norm = x;
+		y_norm = y;
 	}
-	return angle * (tsReal) (180.0 / TS_PI);
+	return (tsReal) (
+		/* Use doubles as long as possible. */
+		acos(ts_vec_dot(x_norm,
+		                y_norm,
+		                dim))
+		* (180.0 / TS_PI) /* radiant to degree */
+		);
 }
 
 void

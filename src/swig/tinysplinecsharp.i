@@ -7,6 +7,28 @@
 %ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
+
+%ignore tinyspline::Vec2::operator=;
+%ignore tinyspline::Vec2::operator+;
+%ignore tinyspline::Vec2::operator-;
+%ignore tinyspline::Vec2::operator*;
+
+%typemap(cscode,noblock=1) tinyspline::Vec2 {
+	public static Vec2 operator+(Vec2 a, Vec2 b)
+	{ return a.Add(b); }
+
+	public static Vec2 operator-(Vec2 a, Vec2 b)
+	{ return a.Subtract(b); }
+
+#ifndef TINYSPLINE_FLOAT_PRECISION
+	public static Vec2 operator*(Vec2 vec, double val)
+	{ return vec.Multiply(val); }
+#endif
+
+	public static Vec2 operator*(Vec2 vec, float val)
+	{ return vec.Multiply(val); }
+}
+
 %ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec3::operator+;
 %ignore tinyspline::Vec3::operator-;
@@ -34,6 +56,7 @@
 %csmethodmodifiers tinyspline::Frame::toString "public override";
 %csmethodmodifiers tinyspline::FrameSeq::toString "public override";
 %csmethodmodifiers tinyspline::Morphism::toString "public override";
+%csmethodmodifiers tinyspline::Vec2::toString "public override";
 %csmethodmodifiers tinyspline::Vec3::toString "public override";
 
 // Capitalize first character of methods and properties.

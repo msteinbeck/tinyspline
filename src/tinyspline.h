@@ -780,7 +780,7 @@ ts_bspline_sof_control_points(const tsBSpline *spline);
  * @return
  * 	Pointer to the control point array of \p spline.
  */
-const tsReal * TINYSPLINE_API
+const tsReal TINYSPLINE_API *
 ts_bspline_control_points_ptr(const tsBSpline *spline);
 
 /**
@@ -913,7 +913,7 @@ ts_bspline_sof_knots(const tsBSpline *spline);
  * @return
  * 	Pointer to the knot vector of \p spline.
  */
-const tsReal * TINYSPLINE_API
+const tsReal TINYSPLINE_API *
 ts_bspline_knots_ptr(const tsBSpline *spline);
 
 /**

@@ -129,6 +129,41 @@ public:
 private:
 	real m_vals[3];
 };
+
+class TINYSPLINECXX_API Vec4 {
+public:
+	Vec4();
+	Vec4(real x, real y, real z, real w);
+	Vec4(const Vec4 &other);
+
+	Vec4 &operator=(const Vec4 &other);
+	Vec4 operator+(const Vec4 &other);
+	Vec4 operator-(const Vec4 &other);
+	Vec4 operator*(real scalar);
+
+	real x() const;
+	void setX(real val);
+	real y() const;
+	void setY(real val);
+	real z() const;
+	void setZ(real val);
+	real w() const;
+	void setW(real val);
+
+	Vec4 add(const Vec4 &other) const;
+	Vec4 subtract(const Vec4 &other) const;
+	Vec4 multiply(real scalar) const;
+	Vec4 norm() const;
+	real magnitude() const;
+	real dot(const Vec4 &other) const;
+	real angle(const Vec4 &other) const;
+	real distance(const Vec4 &other) const;
+
+	std::string toString() const;
+
+private:
+	real m_vals[4];
+};
 /*! @} */
 
 
@@ -275,6 +310,21 @@ public:
 	* 	is only one result.
 	*/
 	Vec3 resultVec3(size_t idx = 0) const;
+
+	/**
+	* Returns the result at \p idx as ::Vec4. Note that, by design, \p idx
+	* cannot be greater than \c 1. It is safe to call this method even if
+	* ::dimension is less than \c 4. In this case, the missing components
+	* are set to \c 0. If ::dimension is greater than \c 4, the excess
+	* values are ignored.
+	*
+	* @return
+	* 	The result at \p idx as ::Vec4.
+	* @throws std::out_of_range
+	* 	If \p idx is greater than \c 1, or if \p idx is \c 1, but there
+	* 	is only one result.
+	*/
+	Vec4 resultVec4(size_t idx = 0) const;
 
 	/* Debug */
 	std::string toString() const;

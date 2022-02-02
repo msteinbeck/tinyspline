@@ -351,6 +351,176 @@ tinyspline::Vec3::toString() const
 
 
 
+/*! @name Vec4
+ *
+ * @{
+ */
+tinyspline::Vec4::Vec4()
+{
+	const real v = (real) 0.0;
+	ts_vec4_init(m_vals, v, v, v, v);
+}
+
+tinyspline::Vec4::Vec4(real x,
+                       real y,
+                       real z,
+                       real w)
+{
+	ts_vec4_init(m_vals, x, y, z, w);
+}
+
+tinyspline::Vec4::Vec4(const Vec4 &other)
+{
+	std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
+}
+
+tinyspline::Vec4 &
+tinyspline::Vec4::operator=(const Vec4 &other)
+{
+	if (&other != this)
+		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
+	return *this;
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::operator+(const Vec4 &other)
+{
+	return add(other);
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::operator-(const Vec4 &other)
+{
+	return subtract(other);
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::operator*(real scalar)
+{
+	return multiply(scalar);
+}
+
+tinyspline::real
+tinyspline::Vec4::x() const
+{
+	return m_vals[0];
+}
+
+void
+tinyspline::Vec4::setX(real val)
+{
+	m_vals[0] = val;
+}
+
+tinyspline::real
+tinyspline::Vec4::y() const
+{
+	return m_vals[1];
+}
+
+void
+tinyspline::Vec4::setY(real val)
+{
+	m_vals[1] = val;
+}
+
+tinyspline::real
+tinyspline::Vec4::z() const
+{
+	return m_vals[2];
+}
+
+void
+tinyspline::Vec4::setZ(real val)
+{
+	m_vals[2] = val;
+}
+
+tinyspline::real
+tinyspline::Vec4::w() const
+{
+	return m_vals[3];
+}
+
+void
+tinyspline::Vec4::setW(real val)
+{
+	m_vals[3] = val;
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::add(const Vec4 &other) const
+{
+	Vec4 vec;
+	ts_vec_add(m_vals, other.m_vals, 4, vec.m_vals);
+	return vec;
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::subtract(const Vec4 &other) const
+{
+	Vec4 vec;
+	ts_vec_sub(m_vals, other.m_vals, 4, vec.m_vals);
+	return vec;
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::multiply(real scalar) const
+{
+	Vec4 vec;
+	ts_vec_mul(m_vals, 4, scalar, vec.m_vals);
+	return vec;
+}
+
+tinyspline::Vec4
+tinyspline::Vec4::norm() const
+{
+	Vec4 vec;
+	ts_vec_norm(m_vals, 4, vec.m_vals);
+	return vec;
+}
+
+tinyspline::real
+tinyspline::Vec4::magnitude() const
+{
+	return ts_vec_mag(m_vals, 4);
+}
+
+tinyspline::real
+tinyspline::Vec4::dot(const Vec4 &other) const
+{
+	return ts_vec_dot(m_vals, other.m_vals, 4);
+}
+
+tinyspline::real
+tinyspline::Vec4::angle(const Vec4 &other) const
+{
+	real buf[8];
+	return ts_vec_angle(m_vals, other.m_vals, buf, 4);
+}
+
+tinyspline::real
+tinyspline::Vec4::distance(const Vec4 &other) const
+{
+	return ts_distance(m_vals, other.m_vals, 4);
+}
+
+std::string
+tinyspline::Vec4::toString() const
+{
+	std::ostringstream oss;
+	oss << "Vec4{"
+	    << "x: " << x()
+	    << ", y: " << y()
+	    << ", z: " << z()
+	    << ", w: " << w()
+	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
 /*! @name Frame
  *
  * @{
@@ -651,21 +821,28 @@ tinyspline::DeBoorNet::result() const
 tinyspline::Vec2
 tinyspline::DeBoorNet::resultVec2(size_t idx) const
 {
-	Vec3 vec3 = resultVec3(idx);
-	return Vec2(vec3.x(), vec3.y());
+	Vec4 vec4 = resultVec4(idx);
+	return Vec2(vec4.x(), vec4.y());
 }
 
 tinyspline::Vec3
 tinyspline::DeBoorNet::resultVec3(size_t idx) const
+{
+	Vec4 vec4 = resultVec4(idx);
+	return Vec3(vec4.x(), vec4.y(), vec4.z());
+}
+
+tinyspline::Vec4
+tinyspline::DeBoorNet::resultVec4(size_t idx) const
 {
 	const size_t num = ts_deboornet_num_result(&net);
 	if (idx >= num)
 		throw std::out_of_range( "idx >= num(result)");
 	std::vector<real> res = result();
 	const real *res_ptr = res.data() + idx * dimension();
-	real vec_data[3];
-	ts_vec3_set(vec_data, res_ptr, dimension());
-	return Vec3(vec_data[0], vec_data[1], vec_data[2]);
+	real vals[4];
+	ts_vec4_set(vals, res_ptr, dimension());
+	return Vec4(vals[0], vals[1], vals[2], vals[3]);
 }
 
 std::string

@@ -218,10 +218,10 @@ ts_bspline_control_points(const tsBSpline *spline,
 }
 
 tsError
-ts_bspline_control_point_at(const tsBSpline *spline,
-                            size_t index,
-                            const tsReal **ctrlp,
-                            tsStatus *status)
+ts_bspline_control_point_at_ptr(const tsBSpline *spline,
+                                size_t index,
+                                const tsReal **ctrlp,
+                                tsStatus *status)
 {
 	tsReal *vals;
 	tsError err;

@@ -56,8 +56,8 @@ void save_load_load_equals_save(CuTest *tc)
 		(int) ts_bspline_num_control_points(&load));
 	CuAssertIntEquals(tc, 2, (int) ts_bspline_dimension(&save));
 	for (i = 0; i < ts_bspline_num_control_points(&save); i++) {
-		C(ts_bspline_control_point_at(&save, i, &svals, &status))
-		C(ts_bspline_control_point_at(&save, i, &lvals, &status))
+		C(ts_bspline_control_point_at_ptr(&save, i, &svals, &status))
+		C(ts_bspline_control_point_at_ptr(&save, i, &lvals, &status))
 		/* Compare each component. */
 		CuAssertDblEquals(tc, svals[0], lvals[0], EPSILON);
 		CuAssertDblEquals(tc, svals[1], lvals[1], EPSILON);

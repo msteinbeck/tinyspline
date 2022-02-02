@@ -826,10 +826,10 @@ ts_bspline_control_points(const tsBSpline *spline,
  * 	If \p index is out of range.
  */
 tsError TINYSPLINE_API
-ts_bspline_control_point_at(const tsBSpline *spline,
-                            size_t index,
-                            const tsReal **ctrlp,
-                            tsStatus *status);
+ts_bspline_control_point_at_ptr(const tsBSpline *spline,
+                                size_t index,
+                                const tsReal **ctrlp,
+                                tsStatus *status);
 
 /**
  * Sets the control points of \p spline. Creates a deep copy of \p ctrlp.

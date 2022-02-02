@@ -61,11 +61,11 @@ vector_vec2_set_ignore(CuTest *tc)
 	tsReal vec2[5];
 
 	___GIVEN___
-	vec2[0] = (tsReal) 0.0;
-	vec2[1] = (tsReal) 0.0;
-	vec2[2] = (tsReal) 0.0;
-	vec2[3] = (tsReal) 0.0;
-	vec2[4] = (tsReal) 0.0;
+	vec2[0] = (tsReal) -1.0;
+	vec2[1] = (tsReal) -1.0;
+	vec2[2] = (tsReal) -1.0;
+	vec2[3] = (tsReal) -1.0;
+	vec2[4] = (tsReal) -1.0;
 
 	___WHEN___
 	ts_vec2_set(vec2, vals, 5);
@@ -73,9 +73,9 @@ vector_vec2_set_ignore(CuTest *tc)
 	___THEN___
 	CuAssertDblEquals(tc, vals[0], vec2[0], POINT_EPSILON);
 	CuAssertDblEquals(tc, vals[1], vec2[1], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec2[2], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec2[3], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec2[4], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec2[2], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec2[3], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec2[4], POINT_EPSILON);
 
 	___TEARDOWN___
 }
@@ -145,11 +145,11 @@ vector_vec3_set_ignore(CuTest *tc)
 	tsReal vec3[5];
 
 	___GIVEN___
-	vec3[0] = (tsReal) 0.0;
-	vec3[1] = (tsReal) 0.0;
-	vec3[2] = (tsReal) 0.0;
-	vec3[3] = (tsReal) 0.0;
-	vec3[4] = (tsReal) 0.0;
+	vec3[0] = (tsReal) -1.0;
+	vec3[1] = (tsReal) -1.0;
+	vec3[2] = (tsReal) -1.0;
+	vec3[3] = (tsReal) -1.0;
+	vec3[4] = (tsReal) -1.0;
 
 	___WHEN___
 	ts_vec3_set(vec3, vals, 5);
@@ -158,8 +158,8 @@ vector_vec3_set_ignore(CuTest *tc)
 	CuAssertDblEquals(tc, vals[0], vec3[0], POINT_EPSILON);
 	CuAssertDblEquals(tc, vals[1], vec3[1], POINT_EPSILON);
 	CuAssertDblEquals(tc, vals[2], vec3[2], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec3[3], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec3[4], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec3[3], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec3[4], POINT_EPSILON);
 
 	___TEARDOWN___
 }
@@ -260,11 +260,11 @@ vector_vec4_set_ignore(CuTest *tc)
 	tsReal vec4[5];
 
 	___GIVEN___
-	vec4[0] = (tsReal) 0.0;
-	vec4[1] = (tsReal) 0.0;
-	vec4[2] = (tsReal) 0.0;
-	vec4[3] = (tsReal) 0.0;
-	vec4[4] = (tsReal) 0.0;
+	vec4[0] = (tsReal) -1.0;
+	vec4[1] = (tsReal) -1.0;
+	vec4[2] = (tsReal) -1.0;
+	vec4[3] = (tsReal) -1.0;
+	vec4[4] = (tsReal) -1.0;
 
 	___WHEN___
 	ts_vec4_set(vec4, vals, 5);
@@ -274,7 +274,7 @@ vector_vec4_set_ignore(CuTest *tc)
 	CuAssertDblEquals(tc, vals[1], vec4[1], POINT_EPSILON);
 	CuAssertDblEquals(tc, vals[2], vec4[2], POINT_EPSILON);
 	CuAssertDblEquals(tc, vals[3], vec4[3], POINT_EPSILON);
-	CuAssertDblEquals(tc, 0.0, vec4[4], POINT_EPSILON);
+	CuAssertDblEquals(tc, -1.0, vec4[4], POINT_EPSILON);
 
 	___TEARDOWN___
 }

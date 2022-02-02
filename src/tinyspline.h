@@ -2489,6 +2489,29 @@ ts_vec3_init(tsReal *out,
              tsReal z);
 
 /**
+ * Initializes vector \p out with \p x, \p y, \p z, and \p w.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 4.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	The x value.
+ * @param[in] y
+ * 	The y value.
+ * @param[in] z
+ * 	The z value.
+ * @param[in] w
+ * 	The w value.
+ */
+void TINYSPLINE_API
+ts_vec4_init(tsReal *out,
+             tsReal x,
+             tsReal y,
+             tsReal z,
+             tsReal w);
+
+/**
  * Copies the values of vector \p x (a vector with dimensionality \p dim) to
  * vector \p out (a vector with dimensionality \c 2). If \p dim is less than \c
  * 2, the remaining values of \p out are set to \c 0. Excess values in \p x
@@ -2525,6 +2548,26 @@ ts_vec2_set(tsReal *out,
  */
 void TINYSPLINE_API
 ts_vec3_set(tsReal *out,
+            const tsReal *x,
+            size_t dim);
+
+/**
+ * Copies the values of vector \p x (a vector with dimensionality \p dim) to
+ * vector \p out (a vector with dimensionality \c 4). If \p dim is less than \c
+ * 4, the remaining values of \p out are set to \c 0. Excess values in \p x
+ * (i.e., \p dim is greater than \c 4) are ignored.
+ *
+ * @pre
+ * 	\p out has dimensionality \c 4.
+ * @param[out] out
+ * 	Target vector.
+ * @param[in] x
+ * 	Vector to read the values from.
+ * @param[in] dim
+ * 	Dimensionality of \p x.
+ */
+void TINYSPLINE_API
+ts_vec4_set(tsReal *out,
             const tsReal *x,
             size_t dim);
 

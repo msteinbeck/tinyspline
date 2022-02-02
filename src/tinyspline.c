@@ -2949,6 +2949,19 @@ ts_vec3_init(tsReal *out,
 }
 
 void
+ts_vec4_init(tsReal *out,
+             tsReal x,
+             tsReal y,
+             tsReal z,
+             tsReal w)
+{
+	out[0] = x;
+	out[1] = y;
+	out[2] = z;
+	out[3] = w;
+}
+
+void
 ts_vec2_set(tsReal *out,
             const tsReal *x,
             size_t dim)
@@ -2968,6 +2981,17 @@ ts_vec3_set(tsReal *out,
 	memmove(out, x, n * sizeof(tsReal));
 	if (dim < 3)
 		ts_arr_fill(out + dim, 3 - dim, (tsReal) 0.0);
+}
+
+void
+ts_vec4_set(tsReal *out,
+            const tsReal *x,
+            size_t dim)
+{
+	const size_t n = dim > 4 ? 4 : dim;
+	memmove(out, x, n * sizeof(tsReal));
+	if (dim < 4)
+		ts_arr_fill(out + dim, 4 - dim, (tsReal) 0.0);
 }
 
 void

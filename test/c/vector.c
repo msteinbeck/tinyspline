@@ -193,6 +193,121 @@ vector_vec3_set_fill(CuTest *tc)
 }
 
 void
+vector_vec4_init(CuTest *tc)
+{
+	___SETUP___
+	tsReal vec4[4];
+
+	___GIVEN___
+	vec4[0] = (tsReal) 0.0;
+	vec4[1] = (tsReal) 0.0;
+	vec4[2] = (tsReal) 0.0;
+	vec4[3] = (tsReal) 0.0;
+
+	___WHEN___
+		ts_vec4_init(vec4,
+		             (tsReal) 1.0,
+		             (tsReal) 2.0,
+		             (tsReal) 3.0,
+		             (tsReal) 4.0);
+
+	___THEN___
+	CuAssertDblEquals(tc, 1.0, vec4[0], POINT_EPSILON);
+	CuAssertDblEquals(tc, 2.0, vec4[1], POINT_EPSILON);
+	CuAssertDblEquals(tc, 3.0, vec4[2], POINT_EPSILON);
+	CuAssertDblEquals(tc, 4.0, vec4[3], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
+vector_vec4_set(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vals[4] = { (tsReal) 1.0,
+		                 (tsReal) 2.0,
+		                 (tsReal) 3.0,
+		                 (tsReal) 4.0 };
+	tsReal vec4[4];
+
+	___GIVEN___
+	vec4[0] = (tsReal) 0.0;
+	vec4[1] = (tsReal) 0.0;
+	vec4[2] = (tsReal) 0.0;
+	vec4[3] = (tsReal) 0.0;
+
+	___WHEN___
+	ts_vec4_set(vec4, vals, 4);
+
+	___THEN___
+	CuAssertDblEquals(tc, vals[0], vec4[0], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[1], vec4[1], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[2], vec4[2], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[3], vec4[3], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
+vector_vec4_set_ignore(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vals[5] = { (tsReal) 1.0,
+		                 (tsReal) 2.0,
+		                 (tsReal) 3.0,
+		                 (tsReal) 4.0,
+		                 (tsReal) 5.0 };
+	tsReal vec4[5];
+
+	___GIVEN___
+	vec4[0] = (tsReal) 0.0;
+	vec4[1] = (tsReal) 0.0;
+	vec4[2] = (tsReal) 0.0;
+	vec4[3] = (tsReal) 0.0;
+	vec4[4] = (tsReal) 0.0;
+
+	___WHEN___
+	ts_vec4_set(vec4, vals, 5);
+
+	___THEN___
+	CuAssertDblEquals(tc, vals[0], vec4[0], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[1], vec4[1], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[2], vec4[2], POINT_EPSILON);
+	CuAssertDblEquals(tc, vals[3], vec4[3], POINT_EPSILON);
+	CuAssertDblEquals(tc, 0.0, vec4[4], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
+vector_vec4_set_fill(CuTest *tc)
+{
+	___SETUP___
+	const tsReal vals[1] = { (tsReal) 1.0 };
+	tsReal vec4[5];
+
+	___GIVEN___
+	vec4[0] = (tsReal) -1.0;
+	vec4[1] = (tsReal) -1.0;
+	vec4[2] = (tsReal) -1.0;
+	vec4[3] = (tsReal) -1.0;
+	vec4[4] = (tsReal) -1.0;
+
+	___WHEN___
+	ts_vec4_set(vec4, vals, 1);
+
+	___THEN___
+	CuAssertDblEquals(tc, vals[0], vec4[0], POINT_EPSILON);
+	CuAssertDblEquals(tc, 0.0, vec4[1], POINT_EPSILON);
+	CuAssertDblEquals(tc, 0.0, vec4[2], POINT_EPSILON);
+	CuAssertDblEquals(tc, 0.0, vec4[3], POINT_EPSILON);
+	/* Check for out-of-bounds */
+	CuAssertDblEquals(tc, -1.0, vec4[4], POINT_EPSILON);
+
+	___TEARDOWN___
+}
+
+void
 vector_vec_mag_0_1(CuTest *tc)
 {
 	___SETUP___
@@ -379,6 +494,10 @@ get_vector_suite()
 	SUITE_ADD_TEST(suite, vector_vec3_set);
 	SUITE_ADD_TEST(suite, vector_vec3_set_ignore);
 	SUITE_ADD_TEST(suite, vector_vec3_set_fill);
+	SUITE_ADD_TEST(suite, vector_vec4_init);
+	SUITE_ADD_TEST(suite, vector_vec4_set);
+	SUITE_ADD_TEST(suite, vector_vec4_set_ignore);
+	SUITE_ADD_TEST(suite, vector_vec4_set_fill);
 	SUITE_ADD_TEST(suite, vector_vec_mag_0_1);
 	SUITE_ADD_TEST(suite, vector_vec_mag_2_3_4);
 	SUITE_ADD_TEST(suite, vector_vec_mag_dim_0);

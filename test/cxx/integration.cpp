@@ -28,7 +28,11 @@ void run()
 	assert(tmp.distance(vec3) > POINT_EPSILON);
 	assert(vec3.y() - 100.0 <= POINT_EPSILON);
 
-	std::vector<real> knots = start.uniformKnotSeq(20);
+	std::vector<real> knots = start.knots();
+	knots[0] = (tsReal) -1000.0;
+	assert(start.knots()[0] <= TS_KNOT_EPSILON);
+
+	knots = start.uniformKnotSeq(20);
 	FrameSeq seq = start.computeRMF(knots);
 	assert(seq.size() == 20);
 	for (size_t i = 0; i < seq.size(); i++) {

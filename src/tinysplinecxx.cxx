@@ -1024,17 +1024,31 @@ std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
 	return vec;
 }
 
-std_real_vector_out tinyspline::BSpline::controlPointAt(size_t index) const
+tinyspline::Vec2
+tinyspline::BSpline::controlPointVec2(size_t idx) const
+{
+	const Vec4 vec4 = controlPointVec4(idx);
+	return Vec2(vec4.x(), vec4.y());
+}
+
+tinyspline::Vec3
+tinyspline::BSpline::controlPointVec3(size_t idx) const
+{
+	const Vec4 vec4 = controlPointVec4(idx);
+	return Vec3(vec4.x(), vec4.y(), vec4.z());
+}
+
+tinyspline::Vec4
+tinyspline::BSpline::controlPointVec4(size_t idx) const
 {
 	tsReal *ctrlp;
 	tsStatus status;
-	if (ts_bspline_control_point_at(&spline, index, &ctrlp, &status))
+	if (ts_bspline_control_point_at(&spline, idx, &ctrlp, &status))
 		throw std::runtime_error(status.message);
-	tinyspline::real *begin  = ctrlp;
-	tinyspline::real *end = begin + dimension();
-	std_real_vector_out vec = std_real_vector_init(begin, end);
+	real vals[4];
+	ts_vec4_set(vals, ctrlp, dimension());
 	std::free(ctrlp);
-	return vec;
+	return Vec4(vals[0], vals[1], vals[2], vals[3]);
 }
 
 std::vector<tinyspline::real> tinyspline::BSpline::knots() const
@@ -1206,24 +1220,40 @@ void tinyspline::BSpline::setControlPoints(
 		throw std::runtime_error(status.message);
 }
 
-void tinyspline::BSpline::setControlPointAt(size_t index,
-	const std_real_vector_in ctrlp)
+void
+tinyspline::BSpline::setControlPointVec2(size_t idx, Vec2 &cp)
 {
-	size_t actual = std_real_vector_read(ctrlp)size();
-	size_t expected = dimension();
-	if (expected != actual) {
-		char expected_str[32];
-		char actual_str[32];
-		sprintf(expected_str, "%lu", (unsigned long) expected);
-		sprintf(actual_str, "%lu", (unsigned long) actual);
-		throw std::runtime_error(
-			"Expected size: " + std::string(expected_str) +
-			", Actual size: " + std::string(actual_str));
+	Vec4 vec4(cp.x(), cp.y(), (real) 0.0, (real) 0.0);
+	setControlPointVec4(idx, vec4);
+}
+
+void
+tinyspline::BSpline::setControlPointVec3(size_t idx, Vec3 &cp)
+{
+	Vec4 vec4(cp.x(), cp.y(), cp.z(), (real) 0.0);
+	setControlPointVec4(idx, vec4);
+}
+
+void
+tinyspline::BSpline::setControlPointVec4(size_t idx, Vec4 &cp)
+{
+	std::vector<real> vals(dimension());
+	for (size_t i = 0; i < vals.size(); i++)
+		vals[i] = (real) 0.0;
+	switch (vals.size()) {
+		case 4: vals[3] = cp.w();
+		// fall through
+		case 3: vals[2] = cp.z();
+		// fall through
+		case 2: vals[1] = cp.y();
+		// fall through
+		case 1: vals[0] = cp.x();
 	}
 	tsStatus status;
-	tsError err = ts_bspline_set_control_point_at(
-		&spline, index, std_real_vector_read(ctrlp)data(), &status);
-	if (err < 0)
+	if (ts_bspline_set_control_point_at(&spline,
+	                                    idx,
+	                                    vals.data(),
+	                                    &status))
 		throw std::runtime_error(status.message);
 }
 

@@ -19,6 +19,15 @@ void run()
 	ctrlp[12] = 220; ctrlp[13] = 500;
 	start.setControlPoints(ctrlp);
 
+	Vec3 tmp(ctrlp[6], ctrlp[7], (real) 0.0);
+	Vec3 vec3 = start.controlPointVec3(3);
+	assert(vec3.distance(tmp) <= POINT_EPSILON);
+	vec3.setY(-100);
+	start.setControlPointVec3(3, vec3);
+	vec3 = start.controlPointVec3(3);
+	assert(tmp.distance(vec3) > POINT_EPSILON);
+	assert(vec3.y() - 100.0 <= POINT_EPSILON);
+
 	std::vector<real> knots = start.uniformKnotSeq(20);
 	FrameSeq seq = start.computeRMF(knots);
 	assert(seq.size() == 20);

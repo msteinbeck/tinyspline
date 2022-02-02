@@ -387,7 +387,9 @@ public:
 	size_t order() const;
 	size_t dimension() const;
 	std::vector<real> controlPoints() const;
-	std_real_vector_out controlPointAt(size_t index) const;
+	Vec2 controlPointVec2(size_t idx) const;
+	Vec3 controlPointVec3(size_t idx) const;
+	Vec4 controlPointVec4(size_t idx) const;
 	std::vector<real> knots() const;
 	real knotAt(size_t index) const;
 
@@ -411,7 +413,9 @@ public:
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
-	void setControlPointAt(size_t index, const std_real_vector_in ctrlp);
+	void setControlPointVec2(size_t idx, Vec2 &cp);
+	void setControlPointVec3(size_t idx, Vec3 &cp);
+	void setControlPointVec4(size_t idx, Vec4 &cp);
 	void setKnots(const std::vector<real> &knots);
 	void setKnotAt(size_t index, real knot);
 

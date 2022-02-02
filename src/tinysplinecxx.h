@@ -538,8 +538,6 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .property("domain", &BSpline::domain)
 
 	        /* Property by index */
-	        .function("controlPointAt", &BSpline::controlPointAt)
-	        .function("setControlPointAt", &BSpline::setControlPointAt)
 	        .function("knotAt", &BSpline::knotAt)
 	        .function("setKnotAt", &BSpline::setKnotAt)
 

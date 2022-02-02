@@ -899,6 +899,24 @@ size_t TINYSPLINE_API
 ts_bspline_sof_knots(const tsBSpline *spline);
 
 /**
+ * Returns the pointer to the knot vector of \p spline. Note that the return
+ * type of this function is \c const for a reason. Clients should only read the
+ * returned array. When suppressing the constness and writing to the array
+ * against better knowledge, the client is on its own with regard to the
+ * consistency of the internal state of \p spline. If the knot vector of a
+ * spline needs to be changed, use ::ts_bspline_knots to obtain a copy of the
+ * knot vector and ::ts_bspline_set_knots to copy the changed values back to
+ * the spline.
+ *
+ * @param[in] spline
+ * 	The spline whose pointer to the knot vector is returned.
+ * @return
+ * 	Pointer to the knot vector of \p spline.
+ */
+const tsReal * TINYSPLINE_API
+ts_bspline_knots_ptr(const tsBSpline *spline);
+
+/**
  * Returns a deep copy of the knots of \p spline.
  *
  * @param[in] spline

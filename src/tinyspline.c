@@ -273,6 +273,12 @@ ts_bspline_sof_knots(const tsBSpline *spline)
 	return ts_bspline_num_knots(spline) * sizeof(tsReal);
 }
 
+const tsReal *
+ts_bspline_knots_ptr(const tsBSpline *spline)
+{
+	return ts_int_bspline_access_knots(spline);
+}
+
 tsError
 ts_bspline_knots(const tsBSpline *spline,
                  tsReal **knots,

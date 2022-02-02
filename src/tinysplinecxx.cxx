@@ -1046,19 +1046,12 @@ tinyspline::BSpline::controlPointVec4(size_t idx) const
 	return Vec4(vals[0], vals[1], vals[2], vals[3]);
 }
 
-std::vector<tinyspline::real> tinyspline::BSpline::knots() const
+std::vector<tinyspline::real>
+tinyspline::BSpline::knots() const
 {
-	tsReal *knots;
-	tsStatus status;
-	if (ts_bspline_knots(&spline, &knots, &status))
-		throw std::runtime_error(status.message);
-	size_t num_knots = ts_bspline_num_knots(&spline);
-	tinyspline::real *begin = knots;
-	tinyspline::real *end = begin + num_knots;
-	std::vector<tinyspline::real> vec =
-		std::vector<tinyspline::real>(begin, end);
-	std::free(knots);
-	return vec;
+	const tsReal *knots = ts_bspline_knots_ptr(&spline);
+	size_t num = ts_bspline_num_knots(&spline);
+	return std::vector<real>(knots, knots + num);
 }
 
 tinyspline::real tinyspline::BSpline::knotAt(size_t index) const

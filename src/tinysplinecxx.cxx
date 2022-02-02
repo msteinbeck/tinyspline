@@ -1009,19 +1009,12 @@ size_t tinyspline::BSpline::dimension() const
 	return ts_bspline_dimension(&spline);
 }
 
-std::vector<tinyspline::real> tinyspline::BSpline::controlPoints() const
+std::vector<tinyspline::real>
+tinyspline::BSpline::controlPoints() const
 {
-	tsReal *ctrlp;
-	tsStatus status;
-	if (ts_bspline_control_points(&spline, &ctrlp, &status))
-		throw std::runtime_error(status.message);
-	size_t num_ctrlp = ts_bspline_num_control_points(&spline);
-	tinyspline::real *begin  = ctrlp;
-	tinyspline::real *end = begin + num_ctrlp * dimension();
-	std::vector<tinyspline::real> vec =
-		std::vector<tinyspline::real>(begin, end);
-	std::free(ctrlp);
-	return vec;
+	const real *ctrlps = ts_bspline_control_points_ptr(&spline);
+	const size_t len = ts_bspline_len_control_points(&spline);
+	return std::vector<real>(ctrlps, ctrlps + len);
 }
 
 tinyspline::Vec2

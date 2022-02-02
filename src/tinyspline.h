@@ -766,6 +766,24 @@ size_t TINYSPLINE_API
 ts_bspline_sof_control_points(const tsBSpline *spline);
 
 /**
+ * Returns the pointer to the control point array of \p spline. Note that the
+ * return type of this function is \c const for a reason. Clients should only
+ * read the returned array. When suppressing the constness and writing to the
+ * array against better knowledge, the client is on its own with regard to the
+ * consistency of the internal state of \p spline. If the control points of a
+ * spline need to be changed, use ::ts_bspline_control_points to obtain a copy
+ * of the control point array and ::ts_bspline_set_control_points to copy the
+ * changed values back to the spline.
+ *
+ * @param[in] spline
+ * 	The spline whose pointer to the control point array is returned.
+ * @return
+ * 	Pointer to the control point array of \p spline.
+ */
+const tsReal * TINYSPLINE_API
+ts_bspline_control_points_ptr(const tsBSpline *spline);
+
+/**
  * Returns a deep copy of the control points of \p spline.
  *
  * @param[in] spline

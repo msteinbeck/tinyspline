@@ -198,6 +198,12 @@ ts_bspline_sof_control_points(const tsBSpline *spline)
 	return ts_bspline_len_control_points(spline) * sizeof(tsReal);
 }
 
+const tsReal *
+ts_bspline_control_points_ptr(const tsBSpline *spline)
+{
+	return ts_int_bspline_access_ctrlp(spline);
+}
+
 tsError
 ts_bspline_control_points(const tsBSpline *spline,
                           tsReal **ctrlp,

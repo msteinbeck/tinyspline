@@ -10,6 +10,7 @@
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec4::operator=;
 
 // Map std::vector<tinyspline::real> to R vector.
 %typemap(scoerceout) std::vector<tinyspline::real> * %{ %}

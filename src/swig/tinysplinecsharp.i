@@ -50,6 +50,27 @@
 	{ return vec.Multiply(val); }
 }
 
+%ignore tinyspline::Vec4::operator=;
+%ignore tinyspline::Vec4::operator+;
+%ignore tinyspline::Vec4::operator-;
+%ignore tinyspline::Vec4::operator*;
+
+%typemap(cscode,noblock=1) tinyspline::Vec4 {
+	public static Vec4 operator+(Vec4 a, Vec4 b)
+	{ return a.Add(b); }
+
+	public static Vec4 operator-(Vec4 a, Vec4 b)
+	{ return a.Subtract(b); }
+
+#ifndef TINYSPLINE_FLOAT_PRECISION
+	public static Vec4 operator*(Vec4 vec, double val)
+	{ return vec.Multiply(val); }
+#endif
+
+	public static Vec4 operator*(Vec4 vec, float val)
+	{ return vec.Multiply(val); }
+}
+
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
 %csmethodmodifiers tinyspline::DeBoorNet::toString "public override";
 %csmethodmodifiers tinyspline::Domain::toString "public override";
@@ -58,6 +79,7 @@
 %csmethodmodifiers tinyspline::Morphism::toString "public override";
 %csmethodmodifiers tinyspline::Vec2::toString "public override";
 %csmethodmodifiers tinyspline::Vec3::toString "public override";
+%csmethodmodifiers tinyspline::Vec4::toString "public override";
 
 // Capitalize first character of methods and properties.
 %rename("%(camelcase)s", %$ismember, notregexmatch$name=

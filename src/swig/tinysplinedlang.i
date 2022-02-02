@@ -7,6 +7,7 @@
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec4::operator=;
 
 %dmethodmodifiers tinyspline::BSpline::toString "override public";
 %dmethodmodifiers tinyspline::DeBoorNet::toString "override public";
@@ -16,6 +17,7 @@
 %dmethodmodifiers tinyspline::Morphism::toString "override public";
 %dmethodmodifiers tinyspline::Vec2::toString "override public";
 %dmethodmodifiers tinyspline::Vec3::toString "override public";
+%dmethodmodifiers tinyspline::Vec4::toString "override public";
 
 %include "tinyspline.i"
 

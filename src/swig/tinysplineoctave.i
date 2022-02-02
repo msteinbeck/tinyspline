@@ -7,6 +7,7 @@
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec4::operator=;
 
 %rename("%(undercase)s", %$isfunction) "";
 %rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";

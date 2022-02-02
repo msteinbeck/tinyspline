@@ -15,6 +15,10 @@
 %ignore tinyspline::Vec3::operator+;
 %ignore tinyspline::Vec3::operator-;
 %ignore tinyspline::Vec3::operator*;
+%ignore tinyspline::Vec4::operator=;
+%ignore tinyspline::Vec4::operator+;
+%ignore tinyspline::Vec4::operator-;
+%ignore tinyspline::Vec4::operator*;
 
 %rename (string) tinyspline::BSpline::toString;
 %rename (string) tinyspline::DeBoorNet::toString;
@@ -24,6 +28,7 @@
 %rename (string) tinyspline::Morphism::toString;
 %rename (string) tinyspline::Vec2::toString;
 %rename (string) tinyspline::Vec3::toString;
+%rename (string) tinyspline::Vec4::toString;
 
 %insert(cgo_comment_typedefs) %{
 #cgo !windows LDFLAGS: -L${SRCDIR} -lm -lstdc++ -ltinysplinego

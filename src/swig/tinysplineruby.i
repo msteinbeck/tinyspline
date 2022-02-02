@@ -9,6 +9,7 @@
 %ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec4::operator=;
 
 %rename (inspect) tinyspline::BSpline::toString;
 %extend tinyspline::BSpline {std::string to_s() { return $self->toString(); }}
@@ -26,6 +27,8 @@
 %extend tinyspline::Vec2 {std::string to_s() { return $self->toString(); }}
 %rename (inspect) tinyspline::Vec3::toString;
 %extend tinyspline::Vec3 {std::string to_s() { return $self->toString(); }}
+%rename (inspect) tinyspline::Vec4::toString;
+%extend tinyspline::Vec4 {std::string to_s() { return $self->toString(); }}
 
 %rename("%(undercase)s", %$isfunction) "";
 %rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";

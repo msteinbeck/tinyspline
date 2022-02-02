@@ -1034,13 +1034,15 @@ tinyspline::BSpline::controlPointVec3(size_t idx) const
 tinyspline::Vec4
 tinyspline::BSpline::controlPointVec4(size_t idx) const
 {
-	tsReal *ctrlp;
+	const real *ctrlp;
 	tsStatus status;
-	if (ts_bspline_control_point_at(&spline, idx, &ctrlp, &status))
+	if (ts_bspline_control_point_at(&spline,
+	                                idx,
+	                                &ctrlp,
+	                                &status))
 		throw std::runtime_error(status.message);
 	real vals[4];
 	ts_vec4_set(vals, ctrlp, dimension());
-	std::free(ctrlp);
 	return Vec4(vals[0], vals[1], vals[2], vals[3]);
 }
 

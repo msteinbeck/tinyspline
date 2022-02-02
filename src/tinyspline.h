@@ -804,28 +804,31 @@ ts_bspline_control_points(const tsBSpline *spline,
                           tsStatus *status);
 
 /**
- * Returns a deep copy of the control point of \p spline at \p index.
+ * Returns the pointer to the control point of \p spline at \p index. Note that
+ * the type of the out parameter \p ctrlp is \c const for a reason. Clients
+ * should only read the returned array. When suppressing the constness of \p
+ * ctrlp and writing to the array against better knowledge, the client is on
+ * its own with regard to the consistency of the internal state of \p
+ * spline. If one of the control points of a spline needs to be changed, use
+ * ::ts_bspline_set_control_points to copy the new control point to the spline.
  *
  * @param[in] spline
- * 	The spline whose control point is read at \p index.
+ * 	The spline whose pointer to the control point at \p index is returned.
  * @param[in] index
- * 	Zero-based index of the control point to be copied.
+ * 	Zero-based index of the control point to be returned.
  * @param[out] ctrlp
- * 	The output array. \b Note: It is the responsibility of the client to
- * 	release the allocated memory after use.
+ * 	Pointer to the control point of \p spline at \p index.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_INDEX_ERROR
  * 	If \p index is out of range.
- * @return TS_MALLOC
- * 	If allocating memory failed.
  */
 tsError TINYSPLINE_API
 ts_bspline_control_point_at(const tsBSpline *spline,
                             size_t index,
-                            tsReal **ctrlp,
+                            const tsReal **ctrlp,
                             tsStatus *status);
 
 /**

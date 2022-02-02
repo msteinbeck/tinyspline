@@ -10,7 +10,8 @@ void save_load_load_equals_save(CuTest *tc)
 	___SETUP___
 	tsBSpline save = ts_bspline_init();
 	tsBSpline load = ts_bspline_init();
-	tsReal dist, knot[2], *svals = NULL, *lvals = NULL;
+	const tsReal *svals = NULL, *lvals = NULL;
+	tsReal dist, knot[2];
 	char *file = "save_load_test_file.txt";
 	size_t i;
 
@@ -63,16 +64,12 @@ void save_load_load_equals_save(CuTest *tc)
 		/* Compare distance. */
 		dist = ts_distance(svals, lvals, 2);
 		CuAssertDblEquals(tc, 0.0, dist, EPSILON);
-		free(svals);
-		free(lvals);
 		svals = lvals = NULL;
 	}
 
 	___TEARDOWN___
 	ts_bspline_free(&save);
 	ts_bspline_free(&load);
-	free(svals);
-	free(lvals);
 	remove(file);
 }
 

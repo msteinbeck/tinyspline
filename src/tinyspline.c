@@ -220,22 +220,15 @@ ts_bspline_control_points(const tsBSpline *spline,
 tsError
 ts_bspline_control_point_at(const tsBSpline *spline,
                             size_t index,
-                            tsReal **ctrlp,
+                            const tsReal **ctrlp,
                             tsStatus *status)
 {
-	tsReal *from;
-	size_t size;
+	tsReal *vals;
 	tsError err;
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_int_bspline_access_ctrlp_at(
-		        spline, index, &from, status))
-		size = ts_bspline_dimension(spline) * sizeof(tsReal);
-		*ctrlp = (tsReal*) malloc(size);
-		if (!*ctrlp) {
-			TS_THROW_0(try, err, status, TS_MALLOC,
-			           "out of memory")
-		}
-		memcpy(*ctrlp, from, size);
+		        spline, index, &vals, status))
+		*ctrlp = vals;
 	TS_CATCH(err)
 		*ctrlp = NULL;
 	TS_END_TRY_RETURN(err)

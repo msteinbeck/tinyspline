@@ -104,6 +104,16 @@
 	tinyspline::Vec3,
 	binormal,
 	binormal);
+%attribute(tinyspline::Vec2,
+	tinyspline::real,
+	x,
+	x,
+	setX);
+%attribute(tinyspline::Vec2,
+	tinyspline::real,
+	y,
+	y,
+	setY);
 %attribute(tinyspline::Vec3,
 	tinyspline::real,
 	x,
@@ -119,6 +129,26 @@
 	z,
 	z,
 	setZ);
+%attribute(tinyspline::Vec4,
+	tinyspline::real,
+	x,
+	x,
+	setX);
+%attribute(tinyspline::Vec4,
+	tinyspline::real,
+	y,
+	y,
+	setY);
+%attribute(tinyspline::Vec4,
+	tinyspline::real,
+	z,
+	z,
+	setZ);
+%attribute(tinyspline::Vec4,
+	tinyspline::real,
+	w,
+	w,
+	setW);
 #endif
 
 // Make strings directly accessible in target language.

@@ -66,7 +66,7 @@ void setup()
 	ts_bspline_set_control_points(&spline, ctrlp, NULL);
 	free(ctrlp);
 
-	ts_bspline_derive(&spline, 1, TS_CONTROL_POINT_EPSILON,
+	ts_bspline_derive(&spline, 1, TS_POINT_EPSILON,
 		&derivative, NULL);
 }
 

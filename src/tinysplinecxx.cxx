@@ -1179,13 +1179,10 @@ void tinyspline::BSpline::setControlPoints(
 	size_t expected = ts_bspline_len_control_points(&spline);
 	size_t actual = ctrlp.size();
 	if (expected != actual) {
-		char expected_str[32];
-		char actual_str[32];
-		sprintf(expected_str, "%lu", (unsigned long) expected);
-		sprintf(actual_str, "%lu", (unsigned long) actual);
-		throw std::runtime_error(
-			"Expected size: " + std::string(expected_str) +
-			", Actual size: " + std::string(actual_str));
+		std::ostringstream oss;
+		oss << "Expected size: " << expected
+		    << ", Actual size: " << actual;
+		throw std::runtime_error(oss.str());
 	}
 	tsStatus status;
 	if (ts_bspline_set_control_points(&spline, ctrlp.data(), &status))

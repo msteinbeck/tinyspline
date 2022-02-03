@@ -104,6 +104,18 @@
 	tinyspline::Vec3,
 	binormal,
 	binormal);
+%attributeval(tinyspline::Morphism,
+	tinyspline::BSpline,
+	origin,
+	origin);
+%attributeval(tinyspline::Morphism,
+	tinyspline::BSpline,
+	target,
+	target);
+%attribute(tinyspline::Morphism,
+	tinyspline::real,
+	epsilon,
+	epsilon);
 %attribute(tinyspline::Vec2,
 	tinyspline::real,
 	x,

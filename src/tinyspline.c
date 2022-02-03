@@ -674,6 +674,12 @@ ts_deboornet_sof_result(const tsDeBoorNet *net)
 	return ts_deboornet_len_result(net) * sizeof(tsReal);
 }
 
+const tsReal *
+ts_deboornet_result_ptr(const tsDeBoorNet *net)
+{
+	return ts_int_deboornet_access_result(net);
+}
+
 tsError
 ts_deboornet_result(const tsDeBoorNet *net,
                     tsReal **result,

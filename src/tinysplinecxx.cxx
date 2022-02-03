@@ -791,7 +791,7 @@ tinyspline::DeBoorNet::dimension() const
 std::vector<tinyspline::real>
 tinyspline::DeBoorNet::points() const
 {
-	const tsReal *points = ts_deboornet_points_ptr(&net);
+	const real *points = ts_deboornet_points_ptr(&net);
 	size_t len = ts_deboornet_len_points(&net);
 	return std::vector<real>(points, points + len);
 }
@@ -799,16 +799,9 @@ tinyspline::DeBoorNet::points() const
 std::vector<tinyspline::real>
 tinyspline::DeBoorNet::result() const
 {
-	tsReal *result;
-	tsStatus status;
-	if (ts_deboornet_result(&net, &result, &status))
-		throw std::runtime_error(status.message);
-	size_t num_result = ts_deboornet_num_result(&net);
-	real *begin = result;
-	real *end = begin + num_result * dimension();
-	std::vector<real> vec = std::vector<real>(begin, end);
-	std::free(result);
-	return vec;
+	const real *result = ts_deboornet_result_ptr(&net);
+	size_t len = ts_deboornet_len_result(&net);
+	return std::vector<real>(result, result + len);
 }
 
 tinyspline::Vec2
@@ -828,13 +821,11 @@ tinyspline::DeBoorNet::resultVec3(size_t idx) const
 tinyspline::Vec4
 tinyspline::DeBoorNet::resultVec4(size_t idx) const
 {
-	const size_t num = ts_deboornet_num_result(&net);
-	if (idx >= num)
+	if (idx >= ts_deboornet_num_result(&net))
 		throw std::out_of_range( "idx >= num(result)");
-	std::vector<real> res = result();
-	const real *res_ptr = res.data() + idx * dimension();
+	const real *result = ts_deboornet_result_ptr(&net);
 	real vals[4];
-	ts_vec4_set(vals, res_ptr, dimension());
+	ts_vec4_set(vals, result + idx * dimension(), dimension());
 	return Vec4(vals[0], vals[1], vals[2], vals[3]);
 }
 

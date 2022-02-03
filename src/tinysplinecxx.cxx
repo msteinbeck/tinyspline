@@ -791,16 +791,9 @@ tinyspline::DeBoorNet::dimension() const
 std::vector<tinyspline::real>
 tinyspline::DeBoorNet::points() const
 {
-	tsReal *points;
-	tsStatus status;
-	if (ts_deboornet_points(&net, &points, &status))
-		throw std::runtime_error(status.message);
-	size_t num_points = ts_deboornet_num_points(&net);
-	real *begin = points;
-	real *end = begin + num_points * dimension();
-	std::vector<real> vec = std::vector<real>(begin, end);
-	std::free(points);
-	return vec;
+	const tsReal *points = ts_deboornet_points_ptr(&net);
+	size_t len = ts_deboornet_len_points(&net);
+	return std::vector<real>(points, points + len);
 }
 
 std::vector<tinyspline::real>

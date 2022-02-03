@@ -636,6 +636,12 @@ ts_deboornet_sof_points(const tsDeBoorNet *net)
 	return ts_deboornet_len_points(net) * sizeof(tsReal);
 }
 
+const tsReal *
+ts_deboornet_points_ptr(const tsDeBoorNet *net)
+{
+	return ts_int_deboornet_access_points(net);
+}
+
 tsError
 ts_deboornet_points(const tsDeBoorNet *net,
                     tsReal **points,

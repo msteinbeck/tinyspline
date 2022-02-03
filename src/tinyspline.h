@@ -1381,6 +1381,22 @@ size_t TINYSPLINE_API
 ts_deboornet_sof_points(const tsDeBoorNet *net);
 
 /**
+ * Returns the pointer to the point array of \p net. Note that the return type
+ * of this function is \c const for a reason. Clients should only read the
+ * returned array. When suppressing the constness and writing to the array
+ * against better knowledge, the client is on its own with regard to the
+ * consistency of the internal state of \p net. To obtain a copy of the points
+ * of \p net, use ::ts_deboornet_points.
+ *
+ * @param[in] net
+ * 	The net whose pointer to the point array is returned.
+ * @return
+ * 	Pointer to the point array of \p net.
+ */
+const tsReal TINYSPLINE_API *
+ts_deboornet_points_ptr(const tsDeBoorNet *net);
+
+/**
  * Returns a deep copy of the points of \p net.
  *
  * @param[in] net

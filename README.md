@@ -1,7 +1,7 @@
 TinySpline
 ========
 
-![CI](https://github.com/msteinbeck/tinyspline/workflows/CI/badge.svg)
+![CI](https://github.com/msteinbeck/tinyspline/actions/workflows/ci.yml/badge.svg)
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/msteinbeck/tinyspline.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/msteinbeck/tinyspline/context:cpp)
 
 TinySpline is a small, yet powerful library for interpolating, transforming,

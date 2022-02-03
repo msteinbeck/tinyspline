@@ -1190,21 +1190,21 @@ void tinyspline::BSpline::setControlPoints(
 }
 
 void
-tinyspline::BSpline::setControlPointVec2(size_t idx, Vec2 &cp)
+tinyspline::BSpline::setControlPointVec2At(size_t idx, Vec2 &cp)
 {
 	Vec4 vec4(cp.x(), cp.y(), (real) 0.0, (real) 0.0);
-	setControlPointVec4(idx, vec4);
+	setControlPointVec4At(idx, vec4);
 }
 
 void
-tinyspline::BSpline::setControlPointVec3(size_t idx, Vec3 &cp)
+tinyspline::BSpline::setControlPointVec3At(size_t idx, Vec3 &cp)
 {
 	Vec4 vec4(cp.x(), cp.y(), cp.z(), (real) 0.0);
-	setControlPointVec4(idx, vec4);
+	setControlPointVec4At(idx, vec4);
 }
 
 void
-tinyspline::BSpline::setControlPointVec4(size_t idx, Vec4 &cp)
+tinyspline::BSpline::setControlPointVec4At(size_t idx, Vec4 &cp)
 {
 	std::vector<real> vals(dimension());
 	for (size_t i = 0; i < vals.size(); i++)

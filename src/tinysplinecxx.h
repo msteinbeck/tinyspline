@@ -413,9 +413,9 @@ public:
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
-	void setControlPointVec2(size_t idx, Vec2 &cp);
-	void setControlPointVec3(size_t idx, Vec3 &cp);
-	void setControlPointVec4(size_t idx, Vec4 &cp);
+	void setControlPointVec2At(size_t idx, Vec2 &cp);
+	void setControlPointVec3At(size_t idx, Vec3 &cp);
+	void setControlPointVec4At(size_t idx, Vec4 &cp);
 	void setKnots(const std::vector<real> &knots);
 	void setKnotAt(size_t index, real knot);
 

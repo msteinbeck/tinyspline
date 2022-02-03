@@ -136,9 +136,9 @@ extern "C" {
  * If the distance between two (control) points is less than or equal to this
  * threshold, they are considered equal. This constant is not used directly by
  * the C interface. Rather, it serves as a viable default value for functions
- * that require an epsilon environment in order to decide whether two (control)
- * points are equal or not. The C++ interface, for example, uses this as
- * default value for optional parameters.
+ * requiring an epsilon environment to decide whether two (control) points are
+ * equal or not. The C++ interface, for example, uses this as default value for
+ * optional parameters.
  */
 #ifdef TINYSPLINE_FLOAT_PRECISION
 #define TS_POINT_EPSILON 1e-3f

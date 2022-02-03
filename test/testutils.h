@@ -7,8 +7,8 @@
 #include <string.h>
 #include <tinyspline.h>
 
-#define POINT_EPSILON TS_CONTROL_POINT_EPSILON
-#define ANGLE_EPSILON TS_CONTROL_POINT_EPSILON
+#define POINT_EPSILON TS_POINT_EPSILON
+#define ANGLE_EPSILON TS_POINT_EPSILON
 
 #define ___SETUP___ tsStatus status;
 #define ___GIVEN___ TS_TRY(try, status.code, &status)

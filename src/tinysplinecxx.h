@@ -372,7 +372,7 @@ public:
 		size_t dimension, tsReal alpha = (tsReal) 0.5f,
 		std::vector<tinyspline::real> *first = NULL,
 		std::vector<tinyspline::real> *last = NULL,
-		tsReal epsilon = TS_CONTROL_POINT_EPSILON);
+		tsReal epsilon = TS_POINT_EPSILON);
 	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
 
@@ -398,11 +398,11 @@ public:
 	DeBoorNet eval(real u) const;
 	std_real_vector_out evalAll(const std_real_vector_in us) const;
 	std_real_vector_out sample(size_t num = 0) const;
-	DeBoorNet bisect(real value, real epsilon = TS_CONTROL_POINT_EPSILON,
+	DeBoorNet bisect(real value, real epsilon = TS_POINT_EPSILON,
 		bool persnickety = false, size_t index = 0,
 		bool ascending = true, size_t maxIter = 30) const;
 	Domain domain() const;
-	bool isClosed(real epsilon = TS_CONTROL_POINT_EPSILON) const;
+	bool isClosed(real epsilon = TS_POINT_EPSILON) const;
 	FrameSeq computeRMF(const std_real_vector_in knots,
 	                    Vec3 *firstNormal = NULL) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
@@ -425,13 +425,13 @@ public:
 	BSpline tension(real tension) const;
 	BSpline toBeziers() const;
 	BSpline derive(size_t n = 1,
-		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+		real epsilon = TS_POINT_EPSILON) const;
 	BSpline elevateDegree(size_t amount,
-		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+		real epsilon = TS_POINT_EPSILON) const;
 	BSpline alignWith(const BSpline &other, BSpline &otherAligned,
-		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+		real epsilon = TS_POINT_EPSILON) const;
 	Morphism morphTo(const BSpline &other,
-		real epsilon = TS_CONTROL_POINT_EPSILON) const;
+		real epsilon = TS_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;
@@ -465,7 +465,7 @@ class TINYSPLINECXX_API Morphism {
 public:
 	Morphism(const BSpline &origin,
 		 const BSpline &target,
-		 real epsilon = TS_CONTROL_POINT_EPSILON);
+		 real epsilon = TS_POINT_EPSILON);
 
 	BSpline origin() const;
 	BSpline target() const;

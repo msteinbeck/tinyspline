@@ -141,9 +141,9 @@ extern "C" {
  * default value for optional parameters.
  */
 #ifdef TINYSPLINE_FLOAT_PRECISION
-#define TS_CONTROL_POINT_EPSILON 1e-3f
+#define TS_POINT_EPSILON 1e-3f
 #else
-#define TS_CONTROL_POINT_EPSILON 1e-5f
+#define TS_POINT_EPSILON 1e-5f
 #endif
 
 /**
@@ -2283,7 +2283,7 @@ ts_bspline_to_beziers(const tsBSpline *spline,
  * 	elevation, the split points of the bezier curves are merged again. This
  * 	parameter is used to distinguish between the split points of the
  * 	decomposition process and the wanted discontinuity points. A viable
- * 	default value is ::TS_CONTROL_POINT_EPSILON.
+ * 	default value is ::TS_POINT_EPSILON.
  * @param[out] elevated
  * 	The elevated spline.
  * @param[out] status
@@ -2317,7 +2317,7 @@ ts_bspline_elevate_degree(const tsBSpline *spline,
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
  * 	is less than or equal to \p epsilon. A viable default value is
- * 	::TS_CONTROL_POINT_EPSILON.
+ * 	::TS_POINT_EPSILON.
  * @param[out] s1_out
  * 	The aligned version of \p s1.
  * @param[out] s2_out
@@ -2371,7 +2371,7 @@ ts_bspline_align(const tsBSpline *s1,
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
  * 	is less than or equal to \p epsilon. A viable default value is
- * 	::TS_CONTROL_POINT_EPSILON.
+ * 	::TS_POINT_EPSILON.
  * @param[out] out
  * 	The resulting spline.
  * @return[out] TS_SUCCESS

@@ -1760,24 +1760,20 @@ ts_bspline_eval_all(const tsBSpline *spline,
                     tsStatus *status);
 
 /**
- * Generates a sequence of \p num different knots (The knots are equally
- * distributed between the minimum and the maximum of the domain of \p spline),
- * passes this sequence to ts_bspline_eval_all, and stores the resultant points
- * in \p points. If \p num is 0, the following default is taken as fallback:
+ * Generates a sequence of \p num different knots, passes this sequence to
+ * ::ts_bspline_eval_all, and stores the resultant points in \p points. The
+ * sequence of knots is generated using ::ts_bspline_uniform_knot_seq. If \p
+ * num is 0, the default value \c 100 is used as fallback.
  *
- * 	num = (ts_bspline_num_control_points(spline) -
- * 		ts_bspline_degree(spline)) * 30;
- *
- * That is, the fallback generates 30 knots per Bezier segment. For the sake
- * of stability regarding future changes, the actual number of generated knots
- * (which only differs from \p num if \p num is 0) is stored in \p actual_num.
- * If \p num is 1, the point located at the minimum of the domain of \p spline
- * is evaluated.
+ * For the sake of stability regarding future changes, the actual number of
+ * generated knots (which only differs from \p num if \p num is 0) is stored in
+ * \p actual_num. If \p num is 1, the point located at the minimum of the
+ * domain of \p spline is evaluated.
  *
  * @param[in] spline
- * 	The spline to evaluate.
+ * 	The spline to be evaluate.
  * @param[in] num
- * 	The number of knots to generate.
+ * 	The number of knots to be generate.
  * @param[out] points
  * 	The output parameter.
  * @param[out] actual_num

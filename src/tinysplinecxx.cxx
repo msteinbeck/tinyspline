@@ -1002,21 +1002,21 @@ tinyspline::BSpline::controlPoints() const
 }
 
 tinyspline::Vec2
-tinyspline::BSpline::controlPointVec2(size_t idx) const
+tinyspline::BSpline::controlPointVec2At(size_t idx) const
 {
-	const Vec4 vec4 = controlPointVec4(idx);
+	const Vec4 vec4 = controlPointVec4At(idx);
 	return Vec2(vec4.x(), vec4.y());
 }
 
 tinyspline::Vec3
-tinyspline::BSpline::controlPointVec3(size_t idx) const
+tinyspline::BSpline::controlPointVec3At(size_t idx) const
 {
-	const Vec4 vec4 = controlPointVec4(idx);
+	const Vec4 vec4 = controlPointVec4At(idx);
 	return Vec3(vec4.x(), vec4.y(), vec4.z());
 }
 
 tinyspline::Vec4
-tinyspline::BSpline::controlPointVec4(size_t idx) const
+tinyspline::BSpline::controlPointVec4At(size_t idx) const
 {
 	const real *ctrlp;
 	tsStatus status;

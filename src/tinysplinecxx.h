@@ -387,9 +387,9 @@ public:
 	size_t order() const;
 	size_t dimension() const;
 	std::vector<real> controlPoints() const;
-	Vec2 controlPointVec2(size_t idx) const;
-	Vec3 controlPointVec3(size_t idx) const;
-	Vec4 controlPointVec4(size_t idx) const;
+	Vec2 controlPointVec2At(size_t idx) const;
+	Vec3 controlPointVec3At(size_t idx) const;
+	Vec4 controlPointVec4At(size_t idx) const;
 	std::vector<real> knots() const;
 	real knotAt(size_t index) const;
 

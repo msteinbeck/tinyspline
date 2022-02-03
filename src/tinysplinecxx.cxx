@@ -1357,45 +1357,45 @@ std::string tinyspline::BSpline::toString() const
  *
  * @{
  */
-tinyspline::Morphism::Morphism(const tinyspline::BSpline &source,
-			       const tinyspline::BSpline &target,
+tinyspline::Morphism::Morphism(const BSpline &origin,
+			       const BSpline &target,
 			       real epsilon)
-	: _source(source), _target(target), _epsilon(epsilon)
+: m_origin(origin), m_target(target), m_epsilon(epsilon)
 {
-	sourceAligned = source.alignWith(target, targetAligned, epsilon);
+	m_originAligned = origin.alignWith(target, m_targetAligned, epsilon);
 	// Make buffer compatible by copying one of the aligned splines.
-	buffer = sourceAligned;
+	m_buffer = m_originAligned;
 }
 
 tinyspline::BSpline
 tinyspline::Morphism::eval(real t)
 {
 	tsStatus status;
-	if (ts_bspline_morph(&sourceAligned.spline,
-			     &targetAligned.spline,
-			     t, _epsilon,
-			     &buffer.spline, &status)) {
+	if (ts_bspline_morph(&m_originAligned.spline,
+			     &m_targetAligned.spline,
+			     t, m_epsilon,
+			     &m_buffer.spline, &status)) {
 		throw std::runtime_error(status.message);
 	}
-	return buffer;
+	return m_buffer;
 }
 
 tinyspline::BSpline
-tinyspline::Morphism::source() const
+tinyspline::Morphism::origin() const
 {
-	return _source;
+	return m_origin;
 }
 
 tinyspline::BSpline
 tinyspline::Morphism::target() const
 {
-	return _target;
+	return m_target;
 }
 
 tinyspline::real
 tinyspline::Morphism::epsilon() const
 {
-	return _epsilon;
+	return m_epsilon;
 }
 
 tinyspline::BSpline
@@ -1408,7 +1408,7 @@ std::string tinyspline::Morphism::toString() const
 {
 	std::ostringstream oss;
 	oss << "Morphism{"
-	    << "buffer: " << buffer.toString()
+	    << "buffer: " << m_buffer.toString()
 	    << ", epsilon: " << epsilon()
 	    << "}";
 	return oss.str();

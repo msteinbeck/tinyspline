@@ -463,11 +463,11 @@ public:
  */
 class TINYSPLINECXX_API Morphism {
 public:
-	Morphism(const BSpline &source,
+	Morphism(const BSpline &origin,
 		 const BSpline &target,
 		 real epsilon = TS_CONTROL_POINT_EPSILON);
 
-	BSpline source() const;
+	BSpline origin() const;
 	BSpline target() const;
 	real epsilon() const;
 
@@ -476,10 +476,10 @@ public:
 
 	std::string toString() const;
 private:
-	BSpline _source, _target;
-	real _epsilon;
-	BSpline sourceAligned, targetAligned;
-	BSpline buffer;
+	BSpline m_origin, m_target;
+	real m_epsilon;
+	BSpline m_originAligned, m_targetAligned;
+	BSpline m_buffer;
 };
 /*! @} */
 

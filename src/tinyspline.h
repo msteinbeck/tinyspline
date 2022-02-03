@@ -2338,36 +2338,36 @@ ts_bspline_align(const tsBSpline *s1,
                  tsStatus *status);
 
 /**
- * Interpolates between \p source and \p target with respect to the time
+ * Interpolates between \p origin and \p target with respect to the time
  * parameter \p t (domain: [0, 1]; clamped if necessary). The resulting spline
  * is stored in \p out. Because it is to be expected that this function is
  * called several times in a row (e.g., to have a smooth transition from one
  * spline to another), memory for \p out is allocated only if it points to NULL
  * or if it has to be enlarged to store the result of the interpolation (which
- * can only happen if \p source or \p target---or both---have been changed
+ * can only happen if \p origin or \p target---or both---have been changed
  * since the last call). This way, this function can be used as follows:
  *
  *     tsReal t;
- *     tsBSpline source = ...
+ *     tsBSpline origin = ...
  *     tsBSpline target = ...
  *     tsBSpline morph = ts_bspline_init();
  *     for (t = (tsReal) 0.0; t <= (tsReal) 1.0; t += (tsReal) 0.001)
- *         ts_bspline_morph(&source, &target, t, ..., &morph, ...);
+ *         ts_bspline_morph(&origin, &target, t, ..., &morph, ...);
  *     ts_bspline_free(&morph);
  *
- * It should be noted that this function, if necessary, aligns \p source and \p
+ * It should be noted that this function, if necessary, aligns \p origin and \p
  * target using ::ts_bspline_align. In order to avoid the overhead of spline
- * alignment, \p source and \p target should be aligned in advance.
+ * alignment, \p origin and \p target should be aligned in advance.
  *
- * @param[in] source
+ * @param[in] origin
  * 	Origin spline.
  * @param[in] target
  * 	Target spline.
  * @param[in] t
- * 	The time parameter. If 0, \p out becomes \p source. If 1, \p out becomes
- * 	\p target. Note that the value is clamped to the domain [0, 1].
+ * 	The time parameter. If 0, \p out becomes \p origin. If 1, \p out becomes
+ * 	\p target. Note that the value passed is clamped to the domain [0, 1].
  * @param[in] epsilon
- * 	If \p source and \p target must be aligned, this parameter is passed
+ * 	If \p origin and \p target must be aligned, this parameter is passed
  * 	::ts_bspline_elevate_degree to check whether two control points, \c p1
  * 	and \c p2, are "equal", that is, the distance between \c p1 and \c p2
  * 	is less than or equal to \p epsilon. A viable default value is
@@ -2380,7 +2380,7 @@ ts_bspline_align(const tsBSpline *s1,
  * 	If memory allocation failed.
  */
 tsError TINYSPLINE_API
-ts_bspline_morph(const tsBSpline *source,
+ts_bspline_morph(const tsBSpline *origin,
                  const tsBSpline *target,
                  tsReal t,
                  tsReal epsilon,

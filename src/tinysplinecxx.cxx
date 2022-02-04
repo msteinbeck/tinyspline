@@ -1093,14 +1093,24 @@ std_real_vector_out tinyspline::BSpline::sample(size_t num) const
 	return vec;
 }
 
-tinyspline::DeBoorNet tinyspline::BSpline::bisect(tinyspline::real value,
-	tinyspline::real epsilon, bool persnickety, size_t index,
-	bool ascending, size_t maxIter) const
+tinyspline::DeBoorNet tinyspline::BSpline::bisect(real value,
+                                                  real epsilon,
+                                                  bool persnickety,
+                                                  size_t index,
+                                                  bool ascending,
+                                                  size_t maxIter) const
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	if (ts_bspline_bisect(&spline, value, epsilon, persnickety, index,
-			ascending, maxIter, &net, &status))
+	if (ts_bspline_bisect(&spline,
+	                      value,
+	                      epsilon,
+	                      persnickety,
+	                      index,
+	                      ascending,
+	                      maxIter,
+	                      &net,
+	                      &status))
 		throw std::runtime_error(status.message);
 	return DeBoorNet(net);
 }

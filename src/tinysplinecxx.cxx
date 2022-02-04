@@ -556,6 +556,15 @@ tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
 	std::memcpy(m_frames, other.m_frames, sf);
 }
 
+tinyspline::FrameSeq::FrameSeq(FrameSeq &&other)
+: m_frames(nullptr), m_size(0)
+{
+	m_frames = other.m_frames;
+	m_size = other.m_size;
+	other.m_frames = nullptr;
+	other.m_size = 0;
+}
+
 tinyspline::FrameSeq::~FrameSeq()
 {
 	std::free(m_frames);
@@ -572,6 +581,19 @@ tinyspline::FrameSeq::operator=(const FrameSeq &other)
 		std::free(m_frames);
 		m_frames = data;
 		m_size = other.m_size;
+	}
+	return *this;
+}
+
+tinyspline::FrameSeq &
+tinyspline::FrameSeq::operator=(FrameSeq &&other)
+{
+	if (&other != this) {
+		std::free(m_frames);
+		m_frames = other.m_frames;
+		m_size = other.m_size;
+		other.m_frames = nullptr;
+		other.m_size = 0;
 	}
 	return *this;
 }
@@ -669,6 +691,12 @@ tinyspline::DeBoorNet::DeBoorNet(const DeBoorNet &other)
 		throw std::runtime_error(status.message);
 }
 
+tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&other)
+: net(ts_deboornet_init())
+{
+	ts_deboornet_move(&other.net, &net);
+}
+
 tinyspline::DeBoorNet::~DeBoorNet()
 {
 	ts_deboornet_free(&net);
@@ -684,6 +712,16 @@ tinyspline::DeBoorNet::operator=(const DeBoorNet &other)
 			throw std::runtime_error(status.message);
 		ts_deboornet_free(&net);
 		ts_deboornet_move(&data, &net);
+	}
+	return *this;
+}
+
+tinyspline::DeBoorNet &
+tinyspline::DeBoorNet::operator=(DeBoorNet && other)
+{
+	if (&other != this) {
+		ts_deboornet_free(&net);
+		ts_deboornet_move(&other.net, &net);
 	}
 	return *this;
 }
@@ -807,6 +845,12 @@ tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
 		throw std::runtime_error(status.message);
 }
 
+tinyspline::BSpline::BSpline(BSpline &&other)
+: spline(ts_bspline_init())
+{
+	ts_bspline_move(&other.spline, &spline);
+}
+
 tinyspline::BSpline::BSpline(size_t numControlPoints, size_t dimension,
 	size_t degree, tinyspline::BSpline::type type)
 : spline(ts_bspline_init())
@@ -899,6 +943,16 @@ tinyspline::BSpline & tinyspline::BSpline::operator=(
 			throw std::runtime_error(status.message);
 		ts_bspline_free(&spline);
 		ts_bspline_move(&data, &spline);
+	}
+	return *this;
+}
+
+tinyspline::BSpline &
+tinyspline::BSpline::operator=(BSpline &&other)
+{
+	if (&other != this) {
+		ts_bspline_free(&spline);
+		ts_bspline_move(&other.spline, &spline);
 	}
 	return *this;
 }

@@ -194,8 +194,11 @@ private:
 class TINYSPLINECXX_API FrameSeq {
 public:
 	FrameSeq(const FrameSeq &other);
+	FrameSeq(FrameSeq &&other);
 	virtual ~FrameSeq();
+
 	FrameSeq &operator=(const FrameSeq &other);
+	FrameSeq &operator=(FrameSeq &&other);
 
 	size_t size() const;
 	Frame at(size_t idx) const;
@@ -255,10 +258,12 @@ class TINYSPLINECXX_API DeBoorNet {
 public:
 	/* Constructors & Destructors */
 	DeBoorNet(const DeBoorNet &other);
+	DeBoorNet(DeBoorNet &&other);
 	virtual ~DeBoorNet();
 
 	/* Operators */
 	DeBoorNet & operator=(const DeBoorNet &other);
+	DeBoorNet & operator=(DeBoorNet &&other);
 
 	/* Accessors */
 	real knot() const;
@@ -348,6 +353,7 @@ public:
 	/* Constructors & Destructors */
 	BSpline();
 	BSpline(const BSpline &other);
+	BSpline(BSpline &&other);
 	explicit BSpline(size_t numControlPoints, size_t dimension = 2,
 		size_t degree = 3,
 		tinyspline::BSpline::type type = TS_CLAMPED);
@@ -368,6 +374,7 @@ public:
 
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
+	BSpline & operator=(BSpline &&other);
 	DeBoorNet operator()(real u) const;
 
 	/* Accessors */

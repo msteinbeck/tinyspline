@@ -170,9 +170,10 @@
 %ignore tsError;
 %ignore tsStatus;
 %ignore tsDeBoorNet;
-%ignore tinyspline::DeBoorNet::data;
+%ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
 %ignore tsBSpline;
-%ignore tinyspline::BSpline::data;
+%ignore tinyspline::BSpline::BSpline(BSpline &&);
+%ignore tinyspline::FrameSeq::FrameSeq(FrameSeq &&);
 
 // Rename exported enums and enum values.
 %rename(BSplineType) tsBSplineType;

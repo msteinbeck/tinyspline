@@ -10,26 +10,6 @@
 
 
 
-/*! @name Swig Type Mapping
- *
- * Methods that do not return or set the value of a class attribute (let's call
- * these methods `non-accessor methods') must return/take instances of
- * std::vector as pointer. Otherwise, they aren't type mapped by Swig to the
- * std::vector representation of the target language.
- *
- * @{
- */
-#ifdef SWIG
-#define std_real_vector_in std::vector<tinyspline::real> *
-#define std_real_vector_out std::vector<tinyspline::real> *
-#else
-#define std_real_vector_in std::vector<tinyspline::real> &
-#define std_real_vector_out std::vector<tinyspline::real>
-#endif
-/*! @} */
-
-
-
 /*! @name Emscripten Extensions
  *
  * @{
@@ -55,6 +35,26 @@ namespace tinyspline {
  * @{
  */
 typedef tsReal real;
+/*! @} */
+
+
+
+/*! @name Swig Type Mapping
+ *
+ * Methods that do not return or set the value of a class attribute (let's call
+ * these methods `non-accessor methods') must return/take instances of
+ * std::vector as pointer. Otherwise, they aren't type mapped by Swig to the
+ * std::vector representation of the target language.
+ *
+ * @{
+ */
+#ifdef SWIG
+using std_real_vector_in = std::vector<tinyspline::real> *;
+using std_real_vector_out = std::vector<tinyspline::real> *;
+#else
+using std_real_vector_in = std::vector<tinyspline::real> &;
+using std_real_vector_out = std::vector<tinyspline::real>;
+#endif
 /*! @} */
 
 

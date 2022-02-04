@@ -1024,7 +1024,7 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return tinyspline::DeBoorNet(net);
 }
 
-std_real_vector_out
+tinyspline::std_real_vector_out
 tinyspline::BSpline::evalAll(const std_real_vector_in knots) const
 {
 	const size_t num_knots = std_real_vector_read(knots)size();
@@ -1045,7 +1045,7 @@ tinyspline::BSpline::evalAll(const std_real_vector_in knots) const
 	return vec;
 }
 
-std_real_vector_out
+tinyspline::std_real_vector_out
 tinyspline::BSpline::sample(size_t num) const
 {
 	tinyspline::real *points;
@@ -1129,7 +1129,7 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
 	return seq;
 }
 
-std_real_vector_out
+tinyspline::std_real_vector_out
 tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {
 	tsReal *knots = (tsReal *) std::malloc(num * sizeof(tsReal));

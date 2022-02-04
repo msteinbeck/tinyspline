@@ -490,7 +490,7 @@ endif()
 
 
 ###############################################################################
-### Setup compiler suite.
+### Set up the compiler suite.
 #
 # TINYSPLINE_C_DEFINITIONS
 #   C preprocessor definitions (as list).
@@ -500,9 +500,6 @@ endif()
 #
 # TINYSPLINE_BINDING_CXX_DEFINITIONS
 #   C++ binding preprocessor definitions (as list).
-#
-# TINYSPLINE_CXX11_COMPLIANT
-#   Does the C++ compiler support C++11? (Required by some bindings)
 #
 # TINYSPLINE_C_LINK_LIBRARIES
 #   Additional libraries to link against when building TinySpline's C interface
@@ -531,10 +528,14 @@ endif()
 #   Stores the names of the files that are copied (and stripped) from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
+# Enable C++11 globally.
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # TINYSPLINE_C_DEFINITIONS
 # TINYSPLINE_CXX_DEFINITIONS
 # TINYSPLINE_BINDING_CXX_DEFINITIONS
-# TINYSPLINE_CXX11_COMPLIANT
 # TINYSPLINE_C_LINK_LIBRARIES
 # TINYSPLINE_CXX_LINK_LIBRARIES
 # TINYSPLINE_LIBRARY_C_FLAGS
@@ -556,15 +557,6 @@ if(TINYSPLINE_FLOAT_PRECISION)
 endif()
 list(APPEND TINYSPLINE_BINDING_CXX_DEFINITIONS "SWIG")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-	# TINYSPLINE_CXX11_COMPLIANT
-	# http://stackoverflow.com/questions/10984442/how-to-detect-c11-support-of-a-compiler-with-cmake
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR
-			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.7)
-		set(TINYSPLINE_CXX11_COMPLIANT TRUE)
-	else()
-		set(TINYSPLINE_CXX11_COMPLIANT FALSE)
-	endif()
-
 	# TINYSPLINE_C_LINK_LIBRARIES
 	# TINYSPLINE_CXX_LINK_LIBRARIES
 	set(TINYSPLINE_C_LINK_LIBRARIES
@@ -601,15 +593,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	set(TINYSPLINE_BINDING_CXX_FLAGS
 		"${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	# TINYSPLINE_CXX11_COMPLIANT
-	# http://stackoverflow.com/questions/10408849/how-can-i-use-c-11-features-in-clang
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.3 OR
-			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 3.3)
-		set(TINYSPLINE_CXX11_COMPLIANT TRUE)
-	else()
-		set(TINYSPLINE_CXX11_COMPLIANT FALSE)
-	endif()
-
 	# TINYSPLINE_C_LINK_LIBRARIES
 	# TINYSPLINE_CXX_LINK_LIBRARIES
 	set(TINYSPLINE_C_LINK_LIBRARIES
@@ -652,14 +635,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set(TINYSPLINE_BINDING_CXX_FLAGS
 		"${TINYSPLINE_BINDING_CXX_FLAGS} -w")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-	# TINYSPLINE_CXX11_COMPLIANT
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 18 OR
-			CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18)
-		set(TINYSPLINE_CXX11_COMPLIANT TRUE)
-	else()
-		set(TINYSPLINE_CXX11_COMPLIANT FALSE)
-	endif()
-
 	# TINYSPLINE_LIBRARY_C_FLAGS
 	list(APPEND TINYSPLINE_LIBRARY_C_FLAGS "/W4")
 	if(TINYSPLINE_WARNINGS_AS_ERRORS)
@@ -1027,7 +1002,7 @@ endif()
 # Utility function for creating bindings.
 function (tinyspline_add_swig_library)
 	cmake_parse_arguments(ARGS
-		"CXX11"
+		""
 		"TARGET;TYPE;LANG;OUTPUT;LIBS;NAME"
 		"SWIG_ARGS;FLAGS"
 		${ARGN})
@@ -1074,14 +1049,6 @@ function (tinyspline_add_swig_library)
 			set_property(TARGET ${ARGS_TARGET}
 				APPEND PROPERTY PREFIX "lib")
 		endif()
-	endif()
-	if(${ARGS_CXX11})
-		set_property(TARGET ${ARGS_TARGET}
-			PROPERTY CXX_STANDARD 11)
-		set_property(TARGET ${ARGS_TARGET}
-			APPEND PROPERTY CXX_STANDARD_REQUIRED ON)
-		set_property(TARGET ${ARGS_TARGET}
-			APPEND PROPERTY CXX_EXTENSIONS OFF)
 	endif()
 	if (NOT ${ARGS_NAME} STREQUAL "")
 		set_property(TARGET ${ARGS_TARGET}
@@ -1324,8 +1291,6 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 					OR ${OCTAVE_VERSION_STRING} VERSION_EQUAL 4.2)
 				AND ${SWIG_VERSION} VERSION_LESS 3.0.12)
 			message(FATAL_ERROR "Octave 4.2 requires Swig 3.0.12 or later")
-		elseif(NOT ${TINYSPLINE_CXX11_COMPLIANT})
-			message(FATAL_ERROR "Octave requires C++11")
 		else()
 			include_directories(${OCTAVE_INCLUDE_DIRS})
 			tinyspline_add_swig_library(
@@ -1334,8 +1299,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 				OUTPUT ${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY}
 				LIBS ${OCTAVE_LIBRARIES}
 				NAME ${TINYSPLINE_PACKAGE_NAME}
-				SWIG_ARGS -module ${TINYSPLINE_PACKAGE_NAME}
-				CXX11)
+				SWIG_ARGS -module ${TINYSPLINE_PACKAGE_NAME})
 		endif()
 	endif()
 

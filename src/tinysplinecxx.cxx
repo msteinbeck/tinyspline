@@ -548,7 +548,7 @@ tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
 {}
 
 tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
-: m_frames(NULL), m_size(other.m_size)
+: m_frames(nullptr), m_size(other.m_size)
 {
 	const size_t sf = m_size * sizeof(tsFrame);
 	m_frames = (tsFrame *) std::malloc(sf);
@@ -892,10 +892,10 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
 		throw std::runtime_error("unsupported dimension: 0");
 	if (std_real_vector_read(points)size() % dimension != 0)
 		throw std::runtime_error("#points % dimension != 0");
-	tsReal *fst = NULL;
+	tsReal *fst = nullptr;
 	if (first && first->size() >= dimension)
 		fst = first->data();
-	tsReal *lst = NULL;
+	tsReal *lst = nullptr;
 	if (last && last->size() >= dimension)
 		lst = last->data();
 	tsBSpline data = ts_bspline_init();
@@ -1142,7 +1142,7 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
 	if (ts_bspline_compute_rmf(&spline,
 	                           knots_ptr,
 	                           num,
-	                           firstNormal != NULL,
+	                           firstNormal != nullptr,
 	                           frames,
 	                           &status))
 		throw std::runtime_error(status.message);

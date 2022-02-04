@@ -364,8 +364,8 @@ public:
 		size_t dimension);
 	static BSpline interpolateCatmullRom(const std_real_vector_in points,
 		size_t dimension, tsReal alpha = (tsReal) 0.5f,
-		std::vector<tinyspline::real> *first = NULL,
-		std::vector<tinyspline::real> *last = NULL,
+		std::vector<tinyspline::real> *first = nullptr,
+		std::vector<tinyspline::real> *last = nullptr,
 		tsReal epsilon = TS_POINT_EPSILON);
 	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
@@ -402,7 +402,7 @@ public:
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_POINT_EPSILON) const;
 	FrameSeq computeRMF(const std_real_vector_in knots,
-	                    Vec3 *firstNormal = NULL) const;
+	                    Vec3 *firstNormal = nullptr) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 
 	/* Serialization */

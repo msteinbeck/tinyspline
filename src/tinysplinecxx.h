@@ -396,7 +396,7 @@ public:
 	/* Query */
 	size_t numControlPoints() const;
 	DeBoorNet eval(real u) const;
-	std_real_vector_out evalAll(const std_real_vector_in us) const;
+	std_real_vector_out evalAll(const std_real_vector_in knots) const;
 	std_real_vector_out sample(size_t num = 0) const;
 	DeBoorNet bisect(real value,
 	                 real epsilon = (real) 0.0,

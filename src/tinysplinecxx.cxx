@@ -35,10 +35,12 @@
  * @{
  */
 #ifdef SWIG
-#define std_real_vector_init new std::vector<tinyspline::real>
+#define std_real_vector_init(var) \
+	std_real_vector_out var = new std::vector<tinyspline::real>
 #define std_real_vector_read(var) var->
 #else
-#define std_real_vector_init std::vector<tinyspline::real>
+#define std_real_vector_init(var) \
+	std_real_vector_out var
 #define std_real_vector_read(var) var.
 #endif
 /*! @} */
@@ -1061,34 +1063,43 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 	return tinyspline::DeBoorNet(net);
 }
 
-std_real_vector_out tinyspline::BSpline::evalAll(
-	const std_real_vector_in us) const
+std_real_vector_out
+tinyspline::BSpline::evalAll(const std_real_vector_in knots) const
 {
+	const size_t num_knots = std_real_vector_read(knots)size();
+	const real *knots_ptr = std_real_vector_read(knots)data();
 	tinyspline::real *points;
 	tsStatus status;
-	if (ts_bspline_eval_all(&spline, std_real_vector_read(us)data(),
-			std_real_vector_read(us)size(), &points, &status)) {
+	if (ts_bspline_eval_all(&spline,
+	                        knots_ptr,
+	                        num_knots,
+	                        &points,
+	                        &status)) {
 		throw std::runtime_error(status.message);
 	}
-	tinyspline::real *begin = points;
-	tinyspline::real *end = begin +
-		std_real_vector_read(us)size() * dimension();
-	std_real_vector_out vec = std_real_vector_init(begin, end);
+	real *first = points;
+	real *last = first + num_knots * dimension();
+	std_real_vector_init(vec)(first, last);
 	std::free(points);
 	return vec;
 }
 
-std_real_vector_out tinyspline::BSpline::sample(size_t num) const
+std_real_vector_out
+tinyspline::BSpline::sample(size_t num) const
 {
 	tinyspline::real *points;
 	size_t actualNum;
 	tsStatus status;
-	if (ts_bspline_sample(&spline, num, &points, &actualNum, &status)) {
+	if (ts_bspline_sample(&spline,
+	                      num,
+	                      &points,
+	                      &actualNum,
+	                      &status)) {
 		throw std::runtime_error(status.message);
 	}
-	tinyspline::real *begin = points;
-	tinyspline::real *end = begin + actualNum * dimension();
-	std_real_vector_out vec = std_real_vector_init(begin, end);
+	real *first = points;
+	real *last = first + actualNum * dimension();
+	std_real_vector_init(vec)(first, last);
 	std::free(points);
 	return vec;
 }
@@ -1136,21 +1147,24 @@ tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
                                 tinyspline::Vec3 *firstNormal) const
 {
 	tsStatus status;
-	size_t size = std_real_vector_read(knots)size();
-	const tsReal *data = std_real_vector_read(knots)data();
-	tsFrame *frames = (tsFrame *) std::malloc(size * sizeof(tsFrame));
+	size_t num = std_real_vector_read(knots)size();
+	const real *knots_ptr = std_real_vector_read(knots)data();
+	tsFrame *frames = (tsFrame *) std::malloc(num * sizeof(tsFrame));
 	if (!frames) throw std::bad_alloc();
-	if (firstNormal && size > 0) {
+	if (firstNormal && num > 0) {
 		ts_vec3_init(frames[0].normal,
 		             firstNormal->x(),
 		             firstNormal->y(),
 		             firstNormal->z());
 	}
-	if (ts_bspline_compute_rmf(&spline, data, size,
+	if (ts_bspline_compute_rmf(&spline,
+	                           knots_ptr,
+	                           num,
 	                           firstNormal != NULL,
-	                           frames, &status))
+	                           frames,
+	                           &status))
 		throw std::runtime_error(status.message);
-	FrameSeq seq = FrameSeq(frames, size);
+	FrameSeq seq = FrameSeq(frames, num);
 	return seq;
 }
 
@@ -1160,7 +1174,7 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 	tsReal *knots = (tsReal *) std::malloc(num * sizeof(tsReal));
 	if (!knots) throw std::bad_alloc();
 	ts_bspline_uniform_knot_seq(&spline, num, knots);
-	std_real_vector_out vec = std_real_vector_init(knots, knots + num);
+	std_real_vector_init(vec)(knots, knots + num);
 	std::free(knots);
 	return vec;
 }

@@ -1250,21 +1250,21 @@ tinyspline::BSpline::setControlPointVec4At(size_t idx, Vec4 &cp)
 		throw std::runtime_error(status.message);
 }
 
-void tinyspline::BSpline::setKnots(const std::vector<tinyspline::real> &knots)
+void
+tinyspline::BSpline::setKnots(const std::vector<real> &knots)
 {
 	size_t expected = ts_bspline_num_knots(&spline);
 	size_t actual = knots.size();
 	if (expected != actual) {
-		char expected_str[32];
-		char actual_str[32];
-		sprintf(expected_str, "%lu", (unsigned long) expected);
-		sprintf(actual_str, "%lu", (unsigned long) actual);
-		throw std::runtime_error(
-			"Expected size: " + std::string(expected_str) +
-			", Actual size: " + std::string(actual_str));
+		std::ostringstream oss;
+		oss << "Expected size: " << expected
+		    << ", Actual size: " << actual;
+		throw std::runtime_error(oss.str());
 	}
 	tsStatus status;
-	if (ts_bspline_set_knots(&spline, knots.data(), &status))
+	if (ts_bspline_set_knots(&spline,
+	                         knots.data(),
+	                         &status))
 		throw std::runtime_error(status.message);
 }
 

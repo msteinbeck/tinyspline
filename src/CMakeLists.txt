@@ -528,8 +528,12 @@ endif()
 #   Stores the names of the files that are copied (and stripped) from
 #   TINYSPLINE_RUNTIME_LIBRARIES to TINYSPLINE_OUTPUT_DIRECTORY.
 ###############################################################################
-# Enable C++11 globally.
-set(CMAKE_CXX_STANDARD 11)
+# Set C++ standard globally.
+if(EMSCRIPTEN)
+	set(CMAKE_CXX_STANDARD 17)
+else()
+	set(CMAKE_CXX_STANDARD 11)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

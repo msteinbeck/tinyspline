@@ -225,10 +225,6 @@ class TINYSPLINECXX_API Domain {
 public:
 	/* Constructors & Destructors */
 	Domain(tsReal min, tsReal max);
-	Domain(const Domain &other);
-
-	/* Operators */
-	Domain &operator=(const Domain &other);
 
 	/* Accessors */
 	real min() const;

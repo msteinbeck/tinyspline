@@ -625,20 +625,6 @@ tinyspline::Domain::Domain(real min,
 : m_min(min), m_max(max)
 {}
 
-tinyspline::Domain::Domain(const Domain &other)
-: m_min(other.m_min), m_max(other.m_max)
-{}
-
-tinyspline::Domain &
-tinyspline::Domain::operator=(const Domain &other)
-{
-	if (&other != this) {
-		m_min = other.m_min;
-		m_max = other.m_max;
-	}
-	return *this;
-}
-
 tinyspline::real
 tinyspline::Domain::min() const
 {

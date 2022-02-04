@@ -867,7 +867,7 @@ tinyspline::BSpline::~BSpline()
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
-	const std_real_vector_in points, size_t dimension)
+	std_real_vector_in points, size_t dimension)
 {
 	if (dimension == 0)
 		throw std::runtime_error("unsupported dimension: 0");
@@ -884,7 +884,7 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
-	const std_real_vector_in points, size_t dimension, tsReal alpha,
+	std_real_vector_in points, size_t dimension, tsReal alpha,
 	std::vector<tinyspline::real> *first,
 	std::vector<tinyspline::real> *last, tsReal epsilon)
 {
@@ -1046,7 +1046,7 @@ tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
 }
 
 tinyspline::std_real_vector_out
-tinyspline::BSpline::evalAll(const std_real_vector_in knots) const
+tinyspline::BSpline::evalAll(std_real_vector_in knots) const
 {
 	const size_t num_knots = std_real_vector_read(knots)size();
 	const real *knots_ptr = std_real_vector_read(knots)data();
@@ -1125,7 +1125,7 @@ bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
 }
 
 tinyspline::FrameSeq
-tinyspline::BSpline::computeRMF(const std_real_vector_in knots,
+tinyspline::BSpline::computeRMF(std_real_vector_in knots,
                                 tinyspline::Vec3 *firstNormal) const
 {
 	tsStatus status;

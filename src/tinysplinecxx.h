@@ -52,7 +52,7 @@ typedef tsReal real;
 using std_real_vector_in = std::vector<tinyspline::real> *;
 using std_real_vector_out = std::vector<tinyspline::real> *;
 #else
-using std_real_vector_in = std::vector<tinyspline::real> &;
+using std_real_vector_in = const std::vector<tinyspline::real> &;
 using std_real_vector_out = std::vector<tinyspline::real>;
 #endif
 /*! @} */
@@ -360,9 +360,9 @@ public:
 	virtual ~BSpline();
 
 	/* Create from static method */
-	static BSpline interpolateCubicNatural(const std_real_vector_in points,
+	static BSpline interpolateCubicNatural(std_real_vector_in points,
 		size_t dimension);
-	static BSpline interpolateCatmullRom(const std_real_vector_in points,
+	static BSpline interpolateCatmullRom(std_real_vector_in points,
 		size_t dimension, tsReal alpha = (tsReal) 0.5f,
 		std::vector<tinyspline::real> *first = nullptr,
 		std::vector<tinyspline::real> *last = nullptr,
@@ -391,7 +391,7 @@ public:
 	/* Query */
 	size_t numControlPoints() const;
 	DeBoorNet eval(real u) const;
-	std_real_vector_out evalAll(const std_real_vector_in knots) const;
+	std_real_vector_out evalAll(std_real_vector_in knots) const;
 	std_real_vector_out sample(size_t num = 0) const;
 	DeBoorNet bisect(real value,
 	                 real epsilon = (real) 0.0,
@@ -401,7 +401,7 @@ public:
 	                 size_t maxIter = 50) const;
 	Domain domain() const;
 	bool isClosed(real epsilon = TS_POINT_EPSILON) const;
-	FrameSeq computeRMF(const std_real_vector_in knots,
+	FrameSeq computeRMF(std_real_vector_in knots,
 	                    Vec3 *firstNormal = nullptr) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 

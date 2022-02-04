@@ -69,9 +69,7 @@ class TINYSPLINECXX_API Vec2 {
 public:
 	Vec2();
 	Vec2(real x, real y);
-	Vec2(const Vec2 &other);
 
-	Vec2 &operator=(const Vec2 &other);
 	Vec2 operator+(const Vec2 &other);
 	Vec2 operator-(const Vec2 &other);
 	Vec2 operator*(real scalar);
@@ -100,9 +98,7 @@ class TINYSPLINECXX_API Vec3 {
 public:
 	Vec3();
 	Vec3(real x, real y, real z);
-	Vec3(const Vec3 &other);
 
-	Vec3 &operator=(const Vec3 &other);
 	Vec3 operator+(const Vec3 &other);
 	Vec3 operator-(const Vec3 &other);
 	Vec3 operator*(real scalar);
@@ -134,9 +130,7 @@ class TINYSPLINECXX_API Vec4 {
 public:
 	Vec4();
 	Vec4(real x, real y, real z, real w);
-	Vec4(const Vec4 &other);
 
-	Vec4 &operator=(const Vec4 &other);
 	Vec4 operator+(const Vec4 &other);
 	Vec4 operator-(const Vec4 &other);
 	Vec4 operator*(real scalar);

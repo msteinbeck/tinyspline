@@ -63,19 +63,6 @@ tinyspline::Vec2::Vec2(real x,
 	ts_vec2_init(m_vals, x, y);
 }
 
-tinyspline::Vec2::Vec2(const Vec2 &other)
-{
-	std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-}
-
-tinyspline::Vec2 &
-tinyspline::Vec2::operator=(const Vec2 &other)
-{
-	if (&other != this)
-		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-	return *this;
-}
-
 tinyspline::Vec2
 tinyspline::Vec2::operator+(const Vec2 &other)
 {
@@ -204,19 +191,6 @@ tinyspline::Vec3::Vec3(real x,
                        real z)
 {
 	ts_vec3_init(m_vals, x, y, z);
-}
-
-tinyspline::Vec3::Vec3(const Vec3 &other)
-{
-	std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-}
-
-tinyspline::Vec3 &
-tinyspline::Vec3::operator=(const Vec3 &other)
-{
-	if (&other != this)
-		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-	return *this;
 }
 
 tinyspline::Vec3
@@ -369,19 +343,6 @@ tinyspline::Vec4::Vec4(real x,
                        real w)
 {
 	ts_vec4_init(m_vals, x, y, z, w);
-}
-
-tinyspline::Vec4::Vec4(const Vec4 &other)
-{
-	std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-}
-
-tinyspline::Vec4 &
-tinyspline::Vec4::operator=(const Vec4 &other)
-{
-	if (&other != this)
-		std::memcpy(m_vals, other.m_vals, sizeof(m_vals));
-	return *this;
 }
 
 tinyspline::Vec4

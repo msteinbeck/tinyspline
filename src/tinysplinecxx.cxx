@@ -498,25 +498,6 @@ tinyspline::Frame::Frame(Vec3 &position,
   m_binormal(binormal)
 {}
 
-tinyspline::Frame::Frame(const Frame &other)
-: m_position(other.m_position),
-  m_tangent(other.m_tangent),
-  m_normal(other.m_normal),
-  m_binormal(other.m_binormal)
-{}
-
-tinyspline::Frame &
-tinyspline::Frame::operator=(const Frame &other)
-{
-	if (&other != this) {
-		m_position = other.m_position;
-		m_tangent = other.m_tangent;
-		m_normal = other.m_normal;
-		m_binormal = other.m_binormal;
-	}
-	return *this;
-}
-
 tinyspline::Vec3
 tinyspline::Frame::position() const
 {

@@ -176,8 +176,6 @@ public:
 	      Vec3 &tangent,
 	      Vec3 &normal,
 	      Vec3 &binormal);
-	Frame(const Frame &other);
-	Frame &operator=(const Frame &other);
 
 	Vec3 position() const;
 	Vec3 tangent() const;

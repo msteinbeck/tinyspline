@@ -227,7 +227,7 @@ private:
 class TINYSPLINECXX_API Domain {
 public:
 	/* Constructors & Destructors */
-	Domain(tsReal min, tsReal max);
+	Domain(real min, real max);
 
 	/* Accessors */
 	real min() const;
@@ -363,10 +363,11 @@ public:
 	static BSpline interpolateCubicNatural(std_real_vector_in points,
 		size_t dimension);
 	static BSpline interpolateCatmullRom(std_real_vector_in points,
-		size_t dimension, tsReal alpha = (tsReal) 0.5f,
-		std::vector<tinyspline::real> *first = nullptr,
-		std::vector<tinyspline::real> *last = nullptr,
-		tsReal epsilon = TS_POINT_EPSILON);
+	                                     size_t dimension,
+	                                     real alpha = (real) 0.5,
+	                                     std::vector<real> *first = nullptr,
+	                                     std::vector<real> *last = nullptr,
+	                                     real epsilon = TS_POINT_EPSILON);
 	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
 

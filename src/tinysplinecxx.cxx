@@ -883,10 +883,13 @@ tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::interpolateCatmullRom(
-	std_real_vector_in points, size_t dimension, tsReal alpha,
-	std::vector<tinyspline::real> *first,
-	std::vector<tinyspline::real> *last, tsReal epsilon)
+tinyspline::BSpline
+tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
+                                           size_t dimension,
+                                           real alpha,
+                                           std::vector<real> *first,
+                                           std::vector<real> *last,
+                                           real epsilon)
 {
 	if (dimension == 0)
 		throw std::runtime_error("unsupported dimension: 0");

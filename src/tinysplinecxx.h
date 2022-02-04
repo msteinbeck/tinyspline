@@ -255,7 +255,7 @@ class TINYSPLINECXX_API DeBoorNet {
 public:
 	/* Constructors & Destructors */
 	DeBoorNet(const DeBoorNet &other);
-	~DeBoorNet();
+	virtual ~DeBoorNet();
 
 	/* Operators */
 	DeBoorNet & operator=(const DeBoorNet &other);
@@ -351,7 +351,7 @@ public:
 	explicit BSpline(size_t numControlPoints, size_t dimension = 2,
 		size_t degree = 3,
 		tinyspline::BSpline::type type = TS_CLAMPED);
-	~BSpline();
+	virtual ~BSpline();
 
 	/* Create from static method */
 	static BSpline interpolateCubicNatural(const std_real_vector_in points,

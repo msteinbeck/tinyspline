@@ -829,7 +829,7 @@ tinyspline::BSpline::BSpline(tsBSpline &data)
 tinyspline::BSpline::BSpline()
 : spline(ts_bspline_init())
 {
-	tsReal ctrlp[3] = { 0, 0, 0 };
+	real ctrlp[3] = { 0, 0, 0 };
 	tsStatus status;
 	if (ts_bspline_new(1, 3, 0, TS_CLAMPED, &spline, &status))
 		throw std::runtime_error(status.message);
@@ -895,10 +895,10 @@ tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
 		throw std::runtime_error("unsupported dimension: 0");
 	if (std_real_vector_read(points)size() % dimension != 0)
 		throw std::runtime_error("#points % dimension != 0");
-	tsReal *fst = nullptr;
+	real *fst = nullptr;
 	if (first && first->size() >= dimension)
 		fst = first->data();
-	tsReal *lst = nullptr;
+	real *lst = nullptr;
 	if (last && last->size() >= dimension)
 		lst = last->data();
 	tsBSpline data = ts_bspline_init();
@@ -1020,14 +1020,14 @@ tinyspline::BSpline::controlPointVec4At(size_t idx) const
 std::vector<tinyspline::real>
 tinyspline::BSpline::knots() const
 {
-	const tsReal *knots = ts_bspline_knots_ptr(&spline);
+	const real *knots = ts_bspline_knots_ptr(&spline);
 	size_t num = ts_bspline_num_knots(&spline);
 	return std::vector<real>(knots, knots + num);
 }
 
 tinyspline::real tinyspline::BSpline::knotAt(size_t index) const
 {
-	tsReal knot;
+	real knot;
 	tsStatus status;
 	if (ts_bspline_knot_at(&spline, index, &knot, &status))
 		throw std::runtime_error(status.message);
@@ -1156,7 +1156,7 @@ tinyspline::BSpline::computeRMF(std_real_vector_in knots,
 tinyspline::std_real_vector_out
 tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {
-	tsReal *knots = (tsReal *) std::malloc(num * sizeof(tsReal));
+	real *knots = (real *) std::malloc(num * sizeof(real));
 	if (!knots) throw std::bad_alloc();
 	ts_bspline_uniform_knot_seq(&spline, num, knots);
 	std_real_vector_init(vec)(knots, knots + num);

@@ -1156,12 +1156,9 @@ tinyspline::BSpline::computeRMF(std_real_vector_in knots,
 tinyspline::std_real_vector_out
 tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {
-	real *knots = (real *) std::malloc(num * sizeof(real));
-	if (!knots) throw std::bad_alloc();
-	ts_bspline_uniform_knot_seq(&spline, num, knots);
-	std_real_vector_init(vec)(knots, knots + num);
-	std::free(knots);
-	return vec;
+	std::vector<real> knots(num);
+	ts_bspline_uniform_knot_seq(&spline, num, knots.data());
+	return knots;
 }
 
 std::string tinyspline::BSpline::toJson() const

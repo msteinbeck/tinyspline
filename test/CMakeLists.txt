@@ -46,6 +46,12 @@ target_link_libraries(testutils PUBLIC cutest tinyspline)
 #
 # TINYSPLINE_COVERAGE_C_LIBRARIES
 #   C libraries for coverage executables.
+#
+# TINYSPLINE_COVERAGE_CXX_FLAGS
+#   C++ flags for coverage executables.
+#
+# TINYSPLINE_COVERAGE_CXX_LIBRARIES
+#   C++ libraries for coverage executables.
 ###############################################################################
 # TINYSPLINE_COVERAGE_AVAILABLE
 set(TINYSPLINE_COVERAGE_AVAILABLE FALSE)
@@ -71,14 +77,12 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 )
 
 # TINYSPLINE_COVERAGE_C_FLAGS
-set(TINYSPLINE_COVERAGE_C_FLAGS
-	"-g -O0 -fprofile-arcs -ftest-coverage"
-)
+set(TINYSPLINE_COVERAGE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+set(TINYSPLINE_COVERAGE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 
 # TINYSPLINE_COVERAGE_C_LIBRARIES
-set(TINYSPLINE_COVERAGE_C_LIBRARIES
-	"-lgcov"
-)
+set(TINYSPLINE_COVERAGE_C_LIBRARIES "-lgcov")
+set(TINYSPLINE_COVERAGE_CXX_LIBRARIES "-lgcov")
 
 
 
@@ -99,7 +103,7 @@ add_custom_target(tests
 	COMMAND tinysplinecxx_tests
 )
 add_custom_target(coverage
-	DEPENDS tinyspline_coverage
+	DEPENDS tinyspline_coverage tinysplinecxx_coverage
 )
 
 

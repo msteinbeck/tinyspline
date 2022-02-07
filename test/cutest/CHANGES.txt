@@ -53,3 +53,30 @@ LIST OF CHANGES
           if (pos > str->length)
                   pos = str->length;
           if (str->length + length + 1 >= str->size)
+
+- CuTest.h: Add 'extern "C"' to that CuTest can be linked into C++ binaries.
+
+  diff --git a/test/cutest/CuTest.h b/test/cutest/CuTest.h
+  index 8b32773..e410625 100644
+  --- a/test/cutest/CuTest.h
+  +++ b/test/cutest/CuTest.h
+  @@ -4,6 +4,10 @@
+   #include <setjmp.h>
+   #include <stdarg.h>
+
+  +#ifdef __cplusplus
+  +extern "C" {
+  +#endif
+  +
+   #define CUTEST_VERSION  "CuTest 1.5"
+
+   /* CuString */
+  @@ -113,4 +117,8 @@ void CuSuiteRun(CuSuite* testSuite);
+   void CuSuiteSummary(CuSuite* testSuite, CuString* summary);
+   void CuSuiteDetails(CuSuite* testSuite, CuString* details);
+
+  +#ifdef __cplusplus
+  +}
+  +#endif
+  +
+   #endif /* CU_TEST_H */

@@ -5,10 +5,18 @@ assert_equals(CuTest *tc,
               const BSpline &s1,
               const BSpline &s2)
 {
-	CuAssertIntEquals(tc, s1.degree(), s2.degree());
-	CuAssertIntEquals(tc, s1.numControlPoints(), s2.numControlPoints());
-	CuAssertIntEquals(tc, s1.knots().size(), s2.knots().size());
-	CuAssertIntEquals(tc, s1.dimension(), s2.dimension());
+	CuAssertIntEquals(tc,
+	                  (int) s1.degree(),
+	                  (int) s2.degree());
+	CuAssertIntEquals(tc,
+	                  (int) s1.numControlPoints(),
+	                  (int) s2.numControlPoints());
+	CuAssertIntEquals(tc,
+	                  (int) s1.knots().size(),
+	                  (int) s2.knots().size());
+	CuAssertIntEquals(tc,
+	                  (int) s1.dimension(),
+	                  (int) s2.dimension());
 	assert_equal_shape(tc, s1, s2);
 }
 

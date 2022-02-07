@@ -6,7 +6,7 @@ assert_equal_shape_eps(CuTest *tc,
                        const BSpline &s2,
                        double eps)
 {
-	real dim = s1.dimension() > s2.dimension()
+	size_t dim = s1.dimension() > s2.dimension()
 		? s1.dimension() : s2.dimension();
 
 	for (size_t k = 0; k < TS_MAX_NUM_KNOTS; k++) {

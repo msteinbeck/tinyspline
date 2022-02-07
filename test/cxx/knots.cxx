@@ -10,7 +10,7 @@ knots_read_values(CuTest* tc)
 	vector<real> knots = spline.knots();
 
 	// Then
-	CuAssertIntEquals(tc, 11, knots.size());
+	CuAssertIntEquals(tc, 11, (int) knots.size());
 	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
 	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
 	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);
@@ -32,13 +32,13 @@ knots_set_values(CuTest *tc)
 	vector<real> knots = spline.knots();
 
 	// When
-	knots[3]  = 0.1;
-	knots[10] = 2.0;
+	knots[3]  = (real) 0.1;
+	knots[10] = (real) 2.0;
 	spline.setKnots(knots);
 	knots = spline.knots();
 
 	// Then
-	CuAssertIntEquals(tc, 11, knots.size());
+	CuAssertIntEquals(tc, 11, (int) knots.size());
 	CuAssertDblEquals(tc, 0.0,  knots[0],  TS_KNOT_EPSILON);
 	CuAssertDblEquals(tc, 0.0,  knots[1],  TS_KNOT_EPSILON);
 	CuAssertDblEquals(tc, 0.0,  knots[2],  TS_KNOT_EPSILON);

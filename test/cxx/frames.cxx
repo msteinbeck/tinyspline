@@ -82,7 +82,7 @@ frames_frameseq_move_ctor(CuTest *tc)
 
 	// Then
 	assert_equals(tc, frames, move);
-	CuAssertIntEquals(tc, 0, toBeMoved.size());
+	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
 }
 
 void
@@ -134,7 +134,7 @@ frames_frameseq_move_assign(CuTest *tc)
 
 	// Then
 	assert_equals(tc, frames, move);
-	CuAssertIntEquals(tc, 0, toBeMoved.size());
+	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
 }
 
 void
@@ -182,6 +182,8 @@ frames_frameseq_invalid_idx(CuTest *tc)
 	try {
 		frames.at(1);
 	} catch (out_of_range &ex) {
+		string what(ex.what());
+		CuAssertTrue(tc, what.length() > 0);
 		return;
 	}
 	CuFail(tc, "Expected exception");

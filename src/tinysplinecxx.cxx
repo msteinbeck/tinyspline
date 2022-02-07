@@ -833,11 +833,14 @@ tinyspline::BSpline::BSpline(tsBSpline &data)
 tinyspline::BSpline::BSpline()
 : spline(ts_bspline_init())
 {
-	real ctrlp[3] = { 0, 0, 0 };
 	tsStatus status;
-	if (ts_bspline_new(1, 3, 0, TS_CLAMPED, &spline, &status))
-		throw std::runtime_error(status.message);
-	if (ts_bspline_set_control_points(&spline, ctrlp, &status))
+	if (ts_bspline_new_with_control_points(1,
+	                                       3,
+	                                       0,
+	                                       TS_CLAMPED,
+	                                       &spline,
+	                                       &status,
+	                                       0.0, 0.0, 0.0))
 		throw std::runtime_error(status.message);
 }
 
@@ -855,13 +858,19 @@ tinyspline::BSpline::BSpline(BSpline &&other)
 	ts_bspline_move(&other.spline, &spline);
 }
 
-tinyspline::BSpline::BSpline(size_t numControlPoints, size_t dimension,
-	size_t degree, tinyspline::BSpline::type type)
+tinyspline::BSpline::BSpline(size_t numControlPoints,
+                             size_t dimension,
+                             size_t degree,
+                             type type)
 : spline(ts_bspline_init())
 {
 	tsStatus status;
-	if (ts_bspline_new(numControlPoints, dimension, degree, type, &spline,
-			   &status))
+	if (ts_bspline_new(numControlPoints,
+	                   dimension,
+	                   degree,
+	                   type,
+	                   &spline,
+	                   &status))
 		throw std::runtime_error(status.message);
 }
 
@@ -940,8 +949,8 @@ tinyspline::BSpline::knotsEqual(real x, real y)
 	return ts_knots_equal(x, y);
 }
 
-tinyspline::BSpline & tinyspline::BSpline::operator=(
-	const tinyspline::BSpline &other)
+tinyspline::BSpline &
+tinyspline::BSpline::operator=(const BSpline &other)
 {
 	if (&other != this) {
 		tsBSpline data = ts_bspline_init();

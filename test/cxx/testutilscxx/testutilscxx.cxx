@@ -10,8 +10,16 @@ assert_equal_shape_eps(CuTest *tc,
 		? s1.dimension() : s2.dimension();
 
 	for (size_t k = 0; k < TS_MAX_NUM_KNOTS; k++) {
-		vector<real> p1 = s1.eval(k).result();
-		vector<real> p2 = s2.eval(k).result();
+		real min = s1.domain().min();
+		real max = s1.domain().max();
+		real knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+		knot = ( (max - min) * knot ) + min;
+		vector<real> p1 = s1.eval(knot).result();
+
+		min = s2.domain().min();
+		max = s2.domain().max();
+		knot = ( (max - min) * knot ) + min;
+		vector<real> p2 = s2.eval(knot).result();
 
 		real dist = ts_distance(p1.data(), p2.data(), dim);
 		CuAssertDblEquals(tc, 0, dist, (tsReal) eps);

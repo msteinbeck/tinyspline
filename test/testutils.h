@@ -47,8 +47,8 @@ assert_equal_shape_eps(CuTest *tc,
 /**
  * Asserts that \p s1 and \p s2 have equal shape by evaluating them at
  * different knots and comparing the distance of the evaluated points with
- * ::CTRLP_EPSILON (i.e., the distance of the evaluated points must be less
- * than or equal to ::CTRLP_EPSILON). The given splines may have different
+ * ::POINT_EPSILON (i.e., the distance of the evaluated points must be less
+ * than or equal to ::POINT_EPSILON). The given splines may have different
  * dimensions. In this case, the distance is computed with the lower dimension.
  *
  * Implementation detail: This function uses ::assert_equal_shape_eps.

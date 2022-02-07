@@ -35,6 +35,7 @@ knots_set_values(CuTest *tc)
 	knots[3]  = 0.1;
 	knots[10] = 2.0;
 	spline.setKnots(knots);
+	knots = spline.knots();
 
 	// Then
 	CuAssertIntEquals(tc, 11, knots.size());

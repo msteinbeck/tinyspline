@@ -1,11 +1,15 @@
 add_subdirectory(testutilscxx)
 
+
+
 ###############################################################################
 ### Set up the compiler suite.
 ###############################################################################
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 
 ###############################################################################
 ### Create unit tests.

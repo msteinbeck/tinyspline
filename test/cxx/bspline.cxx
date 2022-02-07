@@ -1,9 +1,9 @@
 #include <testutilscxx.h>
 
 void
-assert_equal(CuTest *tc,
-             const BSpline &s1,
-             const BSpline &s2)
+assert_equals(CuTest *tc,
+              const BSpline &s1,
+              const BSpline &s2)
 {
 	CuAssertIntEquals(tc, s1.degree(), s2.degree());
 	CuAssertIntEquals(tc, s1.numControlPoints(), s2.numControlPoints());
@@ -26,7 +26,7 @@ bspline_copy_ctor(CuTest *tc)
 	BSpline copy(spline);
 
 	// Then
-	assert_equal(tc, spline, copy);
+	assert_equals(tc, spline, copy);
 }
 
 void
@@ -44,7 +44,7 @@ bspline_move_ctor(CuTest *tc)
 	BSpline move(std::move(toBeMoved));
 
 	// Then
-	assert_equal(tc, spline, move);
+	assert_equals(tc, spline, move);
 }
 
 void
@@ -62,7 +62,7 @@ bspline_copy_assign(CuTest *tc)
 	copy = spline;
 
 	// Then
-	assert_equal(tc, spline, copy);
+	assert_equals(tc, spline, copy);
 }
 
 void
@@ -81,7 +81,7 @@ bspline_move_assign(CuTest *tc)
 	move = std::move(toBeMoved);
 
 	// Then
-	assert_equal(tc, spline, move);
+	assert_equals(tc, spline, move);
 }
 
 CuSuite *

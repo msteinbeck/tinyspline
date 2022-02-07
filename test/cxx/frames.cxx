@@ -2,9 +2,9 @@
 #include <stdexcept>
 
 void
-assert_equal(CuTest *tc,
-             const Frame &f1,
-             const Frame &f2)
+assert_equals(CuTest *tc,
+              const Frame &f1,
+              const Frame &f2)
 {
 	real pos = f1.position().distance(f2.position());
 	CuAssertDblEquals(tc, 0, pos, POINT_EPSILON);
@@ -17,13 +17,13 @@ assert_equal(CuTest *tc,
 }
 
 void
-assert_equal(CuTest *tc,
-             const FrameSeq &fs1,
-             const FrameSeq &fs2)
+assert_equals(CuTest *tc,
+              const FrameSeq &fs1,
+              const FrameSeq &fs2)
 {
 	CuAssertIntEquals(tc, (int) fs1.size(), (int) fs2.size());
 	for (size_t i = 0; i < fs1.size(); i++)
-		assert_equal(tc, fs1.at(i), fs2.at(i));
+		assert_equals(tc, fs1.at(i), fs2.at(i));
 }
 
 void
@@ -56,7 +56,7 @@ frames_frameseq_copy_ctor(CuTest *tc)
 	FrameSeq copy(frames);
 
 	// Then
-	assert_equal(tc, frames, copy);
+	assert_equals(tc, frames, copy);
 }
 
 void
@@ -81,7 +81,7 @@ frames_frameseq_move_ctor(CuTest *tc)
 	FrameSeq move(std::move(toBeMoved));
 
 	// Then
-	assert_equal(tc, frames, move);
+	assert_equals(tc, frames, move);
 	CuAssertIntEquals(tc, 0, toBeMoved.size());
 }
 
@@ -107,7 +107,7 @@ frames_frameseq_copy_assign(CuTest *tc)
 	copy = frames;
 
 	// Then
-	assert_equal(tc, frames, copy);
+	assert_equals(tc, frames, copy);
 }
 
 void
@@ -133,7 +133,7 @@ frames_frameseq_move_assign(CuTest *tc)
 	move = std::move(toBeMoved);
 
 	// Then
-	assert_equal(tc, frames, move);
+	assert_equals(tc, frames, move);
 	CuAssertIntEquals(tc, 0, toBeMoved.size());
 }
 

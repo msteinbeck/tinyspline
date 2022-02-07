@@ -187,6 +187,19 @@ frames_frameseq_invalid_idx(CuTest *tc)
 	CuFail(tc, "Expected exception");
 }
 
+void
+frames_frameseq_to_string(CuTest *tc)
+{
+	// When
+	FrameSeq frames;
+
+	// When
+	string s = frames.toString();
+
+	// Then
+	CuAssertTrue(tc, s.length() > 0);
+}
+
 CuSuite *
 get_frames_suite()
 {
@@ -197,5 +210,6 @@ get_frames_suite()
 	SUITE_ADD_TEST(suite, frames_frameseq_copy_assign);
 	SUITE_ADD_TEST(suite, frames_frameseq_move_assign);
 	SUITE_ADD_TEST(suite, frames_frameseq_invalid_idx);
+	SUITE_ADD_TEST(suite, frames_frameseq_to_string);
 	return suite;
 }

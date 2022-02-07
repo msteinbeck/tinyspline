@@ -81,8 +81,8 @@ frames_frameseq_move_ctor(CuTest *tc)
 	FrameSeq move(std::move(toBeMoved));
 
 	// Then
-	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
 	assert_equal(tc, frames, move);
+	CuAssertIntEquals(tc, 0, toBeMoved.size());
 }
 
 void
@@ -133,8 +133,8 @@ frames_frameseq_move_assign(CuTest *tc)
 	move = std::move(toBeMoved);
 
 	// Then
-	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
 	assert_equal(tc, frames, move);
+	CuAssertIntEquals(tc, 0, toBeMoved.size());
 }
 
 void

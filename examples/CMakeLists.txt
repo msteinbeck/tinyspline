@@ -1,5 +1,5 @@
 ###############################################################################
-### Setup GLUT.
+### Set up GLUT.
 ###############################################################################
 find_package(GLUT)
 if(GLUT_FOUND)
@@ -15,7 +15,7 @@ endif()
 
 
 ###############################################################################
-### Setup OpenGL.
+### Set up OpenGL.
 ###############################################################################
 # https://cmake.org/cmake/help/latest/module/FindOpenGL.html#linux-specific
 set(OpenGL_GL_PREFERENCE "GLVND")
@@ -29,8 +29,12 @@ endif()
 
 
 ###############################################################################
-### Add required compiler/platform specific C/C++ flags.
+### Set up the compiler suite.
 ###############################################################################
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(APPLE)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -framework OpenGL -framework GLUT")
   add_definitions(-DGL_SILENCE_DEPRECATION)

@@ -1,6 +1,7 @@
 #include <testutilscxx.h>
 
 CuSuite* get_knots_suite();
+CuSuite* get_frames_suite();
 
 int main()
 {
@@ -9,6 +10,7 @@ int main()
 	CuSuite* suite = CuSuiteNew();
 
 	CuSuiteAddSuite(suite, get_knots_suite());
+	CuSuiteAddSuite(suite, get_frames_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

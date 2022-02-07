@@ -51,7 +51,8 @@ knots_set_values(CuTest *tc)
 	CuAssertDblEquals(tc, 2.0,  knots[10], TS_KNOT_EPSILON);
 }
 
-CuSuite* get_knots_suite()
+CuSuite *
+get_knots_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, knots_read_values);

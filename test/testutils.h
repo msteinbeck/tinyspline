@@ -7,6 +7,10 @@
 #include <string.h>
 #include <tinyspline.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define POINT_EPSILON TS_POINT_EPSILON
 #define ANGLE_EPSILON TS_POINT_EPSILON
 
@@ -83,5 +87,9 @@ ts_distance_varargs(CuTest *tc,
                     tsReal *x,
                     double first,
                     ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* TINYSPLINE_TESTUTILS_H */

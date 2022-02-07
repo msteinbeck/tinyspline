@@ -195,6 +195,7 @@ private:
 
 class TINYSPLINECXX_API FrameSeq {
 public:
+	FrameSeq();
 	FrameSeq(const FrameSeq &other);
 	FrameSeq(FrameSeq &&other);
 	virtual ~FrameSeq();

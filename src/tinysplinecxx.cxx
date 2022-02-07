@@ -542,6 +542,10 @@ tinyspline::Frame::toString() const
  *
  * @{
  */
+tinyspline::FrameSeq::FrameSeq()
+: m_frames(nullptr), m_size(0)
+{}
+
 tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
                                size_t len)
 : m_frames(frames), m_size(len)

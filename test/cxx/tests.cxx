@@ -17,7 +17,7 @@ int main()
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
-	printf("C++:\n%s\n", output->buffer);
+	printf("C++ Library:\n%s\n", output->buffer);
 	fails = suite->failCount;
 
 	CuStringDelete(output);

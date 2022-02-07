@@ -554,35 +554,35 @@ tinyspline::FrameSeq::FrameSeq(tsFrame *frames,
 tinyspline::FrameSeq::FrameSeq(const FrameSeq &other)
 : m_frames(nullptr), m_size(other.m_size)
 {
-	const size_t sf = m_size * sizeof(tsFrame);
-	m_frames = (tsFrame *) std::malloc(sf);
-	if (!m_frames) throw std::bad_alloc();
-	std::memcpy(m_frames, other.m_frames, sf);
+	m_frames = new tsFrame[m_size];
+	std::copy(other.m_frames,
+	          other.m_frames + m_size,
+	          m_frames);
 }
 
 tinyspline::FrameSeq::FrameSeq(FrameSeq &&other)
-: m_frames(nullptr), m_size(0)
+: m_frames(nullptr), m_size(other.m_size)
 {
 	m_frames = other.m_frames;
-	m_size = other.m_size;
 	other.m_frames = nullptr;
 	other.m_size = 0;
 }
 
 tinyspline::FrameSeq::~FrameSeq()
 {
-	std::free(m_frames);
+	delete [] m_frames;
+	m_size = 0;
 }
 
 tinyspline::FrameSeq &
 tinyspline::FrameSeq::operator=(const FrameSeq &other)
 {
 	if (&other != this) {
-		const size_t sf = other.m_size * sizeof(tsFrame);
-		tsFrame *data = (tsFrame *) std::malloc(sf);
-		if (!data) throw std::bad_alloc();
-		std::memcpy(data, other.m_frames, sf);
-		std::free(m_frames);
+		tsFrame *data = new tsFrame[other.m_size];
+		std::copy(other.m_frames,
+		          other.m_frames + other.m_size,
+		          data);
+		delete [] m_frames;
 		m_frames = data;
 		m_size = other.m_size;
 	}
@@ -593,7 +593,7 @@ tinyspline::FrameSeq &
 tinyspline::FrameSeq::operator=(FrameSeq &&other)
 {
 	if (&other != this) {
-		std::free(m_frames);
+		delete [] m_frames;
 		m_frames = other.m_frames;
 		m_size = other.m_size;
 		other.m_frames = nullptr;
@@ -1138,8 +1138,7 @@ tinyspline::BSpline::computeRMF(std_real_vector_in knots,
 	tsStatus status;
 	size_t num = std_real_vector_read(knots)size();
 	const real *knots_ptr = std_real_vector_read(knots)data();
-	tsFrame *frames = (tsFrame *) std::malloc(num * sizeof(tsFrame));
-	if (!frames) throw std::bad_alloc();
+	tsFrame *frames = new tsFrame[num];
 	if (firstNormal && num > 0) {
 		ts_vec3_init(frames[0].normal,
 		             firstNormal->x(),

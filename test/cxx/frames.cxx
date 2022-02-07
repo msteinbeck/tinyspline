@@ -1,4 +1,141 @@
 #include <testutilscxx.h>
+#include <stdexcept>
+
+void
+assert_equal(CuTest *tc,
+             const Frame &f1,
+             const Frame &f2)
+{
+	real pos = f1.position().distance(f2.position());
+	CuAssertDblEquals(tc, 0, pos, POINT_EPSILON);
+	real tan = f1.tangent().distance(f2.tangent());
+	CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
+	real norm = f1.normal().distance(f2.normal());
+	CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
+	real binorm = f1.binormal().distance(f2.binormal());
+	CuAssertDblEquals(tc, 0, binorm, POINT_EPSILON);
+}
+
+void
+assert_equal(CuTest *tc,
+             const FrameSeq &fs1,
+             const FrameSeq &fs2)
+{
+	CuAssertIntEquals(tc, (int) fs1.size(), (int) fs2.size());
+	for (size_t i = 0; i < fs1.size(); i++)
+		assert_equal(tc, fs1.at(i), fs2.at(i));
+}
+
+void
+assert_orthogonal(CuTest *tc,
+                  const Vec3 &v1,
+                  const Vec3 &v2)
+{
+	real angle = v1.angle(v2);
+	CuAssertDblEquals(tc, 90, angle, ANGLE_EPSILON);
+}
+
+void
+frames_frameseq_copy_ctor(CuTest *tc)
+{
+	// Given
+	BSpline spline(7, 2);
+	spline.setControlPoints({
+			120, 100, // P1
+			270, 40,  // P2
+			370, 490, // P3
+			590, 40,  // P4
+			570, 490, // P5
+			420, 480, // P6
+			220, 500  // P7
+		});
+	FrameSeq frames = spline.computeRMF(
+		spline.uniformKnotSeq(10));
+
+	// When
+	FrameSeq copy(frames);
+
+	// Then
+	assert_equal(tc, frames, copy);
+}
+
+void
+frames_frameseq_move_ctor(CuTest *tc)
+{
+	// Given
+	BSpline spline(7, 2);
+	spline.setControlPoints({
+			120, 100, // P1
+			270, 40,  // P2
+			370, 490, // P3
+			590, 40,  // P4
+			570, 490, // P5
+			420, 480, // P6
+			220, 500  // P7
+		});
+	FrameSeq frames = spline.computeRMF(
+		spline.uniformKnotSeq(10));
+	FrameSeq toBeMoved(frames);
+
+	// When
+	FrameSeq move(std::move(toBeMoved));
+
+	// Then
+	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
+	assert_equal(tc, frames, move);
+}
+
+void
+frames_frameseq_copy_assign(CuTest *tc)
+{
+	// Given
+	BSpline spline(7, 2);
+	spline.setControlPoints({
+			120, 100, // P1
+			270, 40,  // P2
+			370, 490, // P3
+			590, 40,  // P4
+			570, 490, // P5
+			420, 480, // P6
+			220, 500  // P7
+		});
+	FrameSeq frames = spline.computeRMF(
+		spline.uniformKnotSeq(10));
+	FrameSeq copy;
+
+	// When
+	copy = frames;
+
+	// Then
+	assert_equal(tc, frames, copy);
+}
+
+void
+frames_frameseq_move_assign(CuTest *tc)
+{
+	// Given
+	BSpline spline(7, 2);
+	spline.setControlPoints({
+			120, 100, // P1
+			270, 40,  // P2
+			370, 490, // P3
+			590, 40,  // P4
+			570, 490, // P5
+			420, 480, // P6
+			220, 500  // P7
+		});
+	FrameSeq frames = spline.computeRMF(
+		spline.uniformKnotSeq(10));
+	FrameSeq toBeMoved(frames);
+	FrameSeq move;
+
+	// When
+	move = std::move(toBeMoved);
+
+	// Then
+	CuAssertIntEquals(tc, 0, (int) toBeMoved.size());
+	assert_equal(tc, frames, move);
+}
 
 void
 frames_vectors(CuTest *tc)
@@ -31,18 +168,23 @@ frames_vectors(CuTest *tc)
 		           .distance(frame.tangent());
 		CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
 
-		real norm_tan = frame.normal().angle(frame.tangent());
-		CuAssertDblEquals(tc, 90,norm_tan, ANGLE_EPSILON);
-
-		real norm_binorm = frame.normal().angle(frame.binormal());
-		CuAssertDblEquals(tc, 90, norm_binorm, ANGLE_EPSILON);
-
-		real binorm_tan = frame.binormal().angle(frame.tangent());
-		CuAssertDblEquals(tc, 90, binorm_tan, ANGLE_EPSILON);
-
-		real binorm_norm = frame.binormal().angle(frame.normal());
-		CuAssertDblEquals(tc, 90, binorm_norm, ANGLE_EPSILON);
+		assert_orthogonal(tc, frame.normal(), frame.tangent());
+		assert_orthogonal(tc, frame.normal(), frame.binormal());
+		assert_orthogonal(tc, frame.binormal(), frame.tangent());
 	}
+}
+
+void
+frames_frameseq_invalid_idx(CuTest *tc)
+{
+	FrameSeq frames;
+
+	try {
+		frames.at(1);
+	} catch (out_of_range &ex) {
+		return;
+	}
+	CuFail(tc, "Expected exception");
 }
 
 CuSuite *
@@ -50,5 +192,10 @@ get_frames_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, frames_vectors);
+	SUITE_ADD_TEST(suite, frames_frameseq_copy_ctor);
+	SUITE_ADD_TEST(suite, frames_frameseq_move_ctor);
+	SUITE_ADD_TEST(suite, frames_frameseq_copy_assign);
+	SUITE_ADD_TEST(suite, frames_frameseq_move_assign);
+	SUITE_ADD_TEST(suite, frames_frameseq_invalid_idx);
 	return suite;
 }

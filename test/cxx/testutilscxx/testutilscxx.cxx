@@ -2,8 +2,8 @@
 
 void
 assert_equal_shape_eps(CuTest *tc,
-                       BSpline &s1,
-                       BSpline &s2,
+                       const BSpline &s1,
+                       const BSpline &s2,
                        double eps)
 {
 	real dim = s1.dimension() > s2.dimension()
@@ -20,8 +20,8 @@ assert_equal_shape_eps(CuTest *tc,
 
 void
 assert_equal_shape(CuTest *tc,
-                   BSpline &s1,
-                   BSpline &s2)
+                   const BSpline &s1,
+                   const BSpline &s2)
 {
 	assert_equal_shape_eps(tc, s1, s2, POINT_EPSILON);
 }

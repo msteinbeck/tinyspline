@@ -12,8 +12,8 @@ using namespace std;
  */
 void
 assert_equal_shape_eps(CuTest *tc,
-                       BSpline &s1,
-                       BSpline &s2,
+                       const BSpline &s1,
+                       const BSpline &s2,
                        double eps);
 
 /**
@@ -21,7 +21,7 @@ assert_equal_shape_eps(CuTest *tc,
  */
 void
 assert_equal_shape(CuTest *tc,
-                   BSpline &s1,
-                   BSpline &s2);
+                   const BSpline &s1,
+                   const BSpline &s2);
 
 #endif /* TINYSPLINE_TESTUTILSCXX_H */

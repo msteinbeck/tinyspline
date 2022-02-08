@@ -3,6 +3,7 @@
 CuSuite* get_knots_suite();
 CuSuite* get_frames_suite();
 CuSuite* get_bspline_suite();
+CuSuite* get_deboornet_suite();
 
 int main()
 {
@@ -13,6 +14,7 @@ int main()
 	CuSuiteAddSuite(suite, get_knots_suite());
 	CuSuiteAddSuite(suite, get_frames_suite());
 	CuSuiteAddSuite(suite, get_bspline_suite());
+	CuSuiteAddSuite(suite, get_deboornet_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

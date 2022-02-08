@@ -23,7 +23,7 @@ endif()
 ### Build testutils.
 ###############################################################################
 add_library(testutils STATIC "testutils.c")
-target_include_directories(cutest PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(testutils PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(testutils PUBLIC cutest tinyspline)
 
 

@@ -86,17 +86,19 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 )
 
 # TINYSPLINE_COVERAGE_C_FLAGS
+# TINYSPLINE_COVERAGE_CXX_FLAGS
 set(TINYSPLINE_COVERAGE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 set(TINYSPLINE_COVERAGE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 
 # TINYSPLINE_COVERAGE_C_LIBRARIES
+# TINYSPLINE_COVERAGE_CXX_LIBRARIES
 set(TINYSPLINE_COVERAGE_C_LIBRARIES "-lgcov")
 set(TINYSPLINE_COVERAGE_CXX_LIBRARIES "-lgcov")
 
 
 
 ###############################################################################
-### Add subdirectories containing the unit tests.
+### Add subdirectories containing unit tests.
 ###############################################################################
 add_subdirectory(c)
 add_subdirectory(cxx)
@@ -104,7 +106,7 @@ add_subdirectory(cxx)
 
 
 ###############################################################################
-### Subsume unit tests and code coverage with custom targets.
+### Subsume unit tests and code coverage via custom targets.
 ###############################################################################
 add_custom_target(tests
 	DEPENDS tinyspline_tests tinysplinecxx_tests

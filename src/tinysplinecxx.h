@@ -351,20 +351,21 @@ public:
 class Morphism;
 class TINYSPLINECXX_API BSpline {
 public:
-	typedef tsBSplineType type;
+	enum Type { OPENED, CLAMPED, BEZIERS };
 
 	/* Constructors & Destructors */
 	BSpline();
 	BSpline(const BSpline &other);
 	BSpline(BSpline &&other);
-	explicit BSpline(size_t numControlPoints, size_t dimension = 2,
-		size_t degree = 3,
-		tinyspline::BSpline::type type = TS_CLAMPED);
+	explicit BSpline(size_t numControlPoints,
+	                 size_t dimension = 2,
+	                 size_t degree = 3,
+	                 Type type = Type::CLAMPED);
 	virtual ~BSpline();
 
 	/* Create from static method */
 	static BSpline interpolateCubicNatural(std_real_vector_in points,
-		size_t dimension);
+	                                       size_t dimension);
 	static BSpline interpolateCatmullRom(std_real_vector_in points,
 	                                     size_t dimension,
 	                                     real alpha = (real) 0.5,
@@ -579,10 +580,10 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .function("toString", &BSpline::toString)
 	;
 
-	enum_<BSpline::type>("BSplineType")
-	        .value("OPENED", BSpline::type::TS_OPENED)
-	        .value("CLAMPED", BSpline::type::TS_CLAMPED)
-	        .value("BEZIERS", BSpline::type::TS_BEZIERS)
+	enum_<BSpline::Type>("BSplineType")
+	        .value("OPENED", BSpline::Type::OPENED)
+	        .value("CLAMPED", BSpline::Type::CLAMPED)
+	        .value("BEZIERS", BSpline::Type::BEZIERS)
 	;
 }
 

@@ -166,20 +166,20 @@
 // Make strings directly accessible in target language.
 %include "std_string.i"
 
-// Ignore wrapped structs and data fields.
-%ignore tsError;
-%ignore tsStatus;
-%ignore tsDeBoorNet;
-%ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
-%ignore tsBSpline;
-%ignore tinyspline::BSpline::BSpline(BSpline &&);
-%ignore tinyspline::FrameSeq::FrameSeq(FrameSeq &&);
+// Proper enums.
+%include "enums.swg"
 
-// Rename exported enums and enum values.
-%rename(BSplineType) tsBSplineType;
-%rename(OPENED) TS_OPENED;
-%rename(CLAMPED) TS_CLAMPED;
-%rename(BEZIERS) TS_BEZIERS;
+// Ignore C elements and unsupported C++ features.
+%rename("$ignore", regexmatch$name="ts_") "";
+%ignore tsBSpline;
+%ignore tsBSplineType;
+%ignore tsDeBoorNet;
+%ignore tsError;
+%ignore tsFrame;
+%ignore tsStatus;
+%ignore tinyspline::BSpline::BSpline(BSpline &&);
+%ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
+%ignore tinyspline::FrameSeq::FrameSeq(FrameSeq &&);
 
 %{
 	#include "tinyspline.h"

@@ -5,7 +5,8 @@ class Sample : public Fl_Widget
 {
 public:
 	Sample(int X, int Y, int W, int H, const char *L = NULL)
-	: Fl_Widget(X, Y, W, H, L), m_num(50), m_type(TS_CLAMPED),
+	: Fl_Widget(X, Y, W, H, L), m_num(50),
+	m_type(tinyspline::BSpline::Type::CLAMPED),
 	m_drawPoints(false), m_drawControlPoints(true)
 	{}
 
@@ -83,16 +84,16 @@ public:
 		m_num = num;
 	}
 
-	tinyspline::BSpline::type knotVector() const
+	tinyspline::BSpline::Type knotVector() const
 	{
 		return m_type;
 	}
 
-	void knotVector(tinyspline::BSpline::type type)
+	void knotVector(tinyspline::BSpline::Type type)
 	{
-		m_type = type;
-		if (m_type != TS_CLAMPED && m_type != TS_OPENED)
-			m_type = TS_CLAMPED;
+		if (m_type == tinyspline::BSpline::Type::CLAMPED ||
+		    m_type == tinyspline::BSpline::Type::OPENED)
+			m_type = type;
 	}
 
 	bool drawPoints() const
@@ -116,7 +117,7 @@ public:
 
 private:
 	size_t m_num;
-	tinyspline::BSpline::type m_type;
+	tinyspline::BSpline::Type m_type;
 	bool m_drawPoints;
 	bool m_drawControlPoints;
 };

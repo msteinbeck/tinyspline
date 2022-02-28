@@ -861,14 +861,28 @@ tinyspline::BSpline::BSpline(BSpline &&other)
 tinyspline::BSpline::BSpline(size_t numControlPoints,
                              size_t dimension,
                              size_t degree,
-                             type type)
+                             Type type)
 : spline(ts_bspline_init())
 {
+	tsBSplineType c_type = TS_CLAMPED;
+	switch (type) {
+	case CLAMPED:
+		c_type = TS_CLAMPED;
+		break;
+	case OPENED:
+		c_type = TS_OPENED;
+		break;
+	case BEZIERS:
+		c_type = TS_BEZIERS;
+		break;
+	default:
+		throw std::runtime_error("unknown type");
+	}
 	tsStatus status;
 	if (ts_bspline_new(numControlPoints,
 	                   dimension,
 	                   degree,
-	                   type,
+	                   c_type,
 	                   &spline,
 	                   &status))
 		throw std::runtime_error(status.message);

@@ -31,7 +31,7 @@
 %extend tinyspline::Vec4 {std::string to_s() { return $self->toString(); }}
 
 %rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Ruby array.
 %typemap(out) std::vector<tinyspline::real> * {

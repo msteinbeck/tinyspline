@@ -523,7 +523,7 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .constructor<size_t>()
 	        .constructor<size_t, size_t>()
 	        .constructor<size_t, size_t, size_t>()
-	        .constructor<size_t, size_t, size_t, BSpline::type>()
+	        .constructor<size_t, size_t, size_t, BSpline::Type>()
 
 	        .class_function("interpolateCubicNatural",
 			&BSpline::interpolateCubicNatural)
@@ -581,9 +581,9 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	;
 
 	enum_<BSpline::Type>("BSplineType")
-	        .value("OPENED", BSpline::Type::OPENED)
-	        .value("CLAMPED", BSpline::Type::CLAMPED)
-	        .value("BEZIERS", BSpline::Type::BEZIERS)
+	        .value("Opened", BSpline::Type::Opened)
+	        .value("Clamped", BSpline::Type::Clamped)
+	        .value("Beziers", BSpline::Type::Beziers)
 	;
 }
 

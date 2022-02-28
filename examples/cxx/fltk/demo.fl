@@ -89,17 +89,17 @@ sample->redraw();}
           } {
             Fl_Round_Button sampleClamped {
               label Clamped
-              callback {sample->knotVector(tinyspline::BSpline::Type::CLAMPED);
+              callback {sample->knotVector(tinyspline::BSpline::Type::Clamped);
 eval->redraw();}
               xywh {684 105 82 20} type Radio down_box ROUND_DOWN_BOX
-              code0 {sampleClamped->value(sample->knotVector() == tinyspline::BSpline::Type::CLAMPED);}
+              code0 {sampleClamped->value(sample->knotVector() == tinyspline::BSpline::Type::Clamped);}
             }
             Fl_Round_Button sampleOpened {
               label Opened
-              callback {sample->knotVector(tinyspline::BSpline::Type::OPENED);
+              callback {sample->knotVector(tinyspline::BSpline::Type::Opened);
 eval->redraw();}
               xywh {787 105 77 20} type Radio down_box ROUND_DOWN_BOX
-              code0 {sampleOpened->value(sample->knotVector() == tinyspline::BSpline::Type::OPENED);}
+              code0 {sampleOpened->value(sample->knotVector() == tinyspline::BSpline::Type::Opened);}
             }
           }
           Fl_Light_Button sampleShowPoints {

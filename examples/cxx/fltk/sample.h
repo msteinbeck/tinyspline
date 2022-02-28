@@ -6,7 +6,7 @@ class Sample : public Fl_Widget
 public:
 	Sample(int X, int Y, int W, int H, const char *L = NULL)
 	: Fl_Widget(X, Y, W, H, L), m_num(50),
-	m_type(tinyspline::BSpline::Type::CLAMPED),
+	m_type(tinyspline::BSpline::Type::Clamped),
 	m_drawPoints(false), m_drawControlPoints(true)
 	{}
 
@@ -91,8 +91,8 @@ public:
 
 	void knotVector(tinyspline::BSpline::Type type)
 	{
-		if (m_type == tinyspline::BSpline::Type::CLAMPED ||
-		    m_type == tinyspline::BSpline::Type::OPENED)
+		if (m_type == tinyspline::BSpline::Type::Clamped ||
+		    m_type == tinyspline::BSpline::Type::Opened)
 			m_type = type;
 	}
 

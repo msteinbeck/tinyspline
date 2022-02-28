@@ -866,13 +866,13 @@ tinyspline::BSpline::BSpline(size_t numControlPoints,
 {
 	tsBSplineType c_type = TS_CLAMPED;
 	switch (type) {
-	case CLAMPED:
+	case Clamped:
 		c_type = TS_CLAMPED;
 		break;
-	case OPENED:
+	case Opened:
 		c_type = TS_OPENED;
 		break;
-	case BEZIERS:
+	case Beziers:
 		c_type = TS_BEZIERS;
 		break;
 	default:

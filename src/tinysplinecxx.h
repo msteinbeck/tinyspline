@@ -351,7 +351,7 @@ public:
 class Morphism;
 class TINYSPLINECXX_API BSpline {
 public:
-	enum Type { OPENED, CLAMPED, BEZIERS };
+	enum Type { Opened, Clamped, Beziers };
 
 	/* Constructors & Destructors */
 	BSpline();
@@ -360,7 +360,7 @@ public:
 	explicit BSpline(size_t numControlPoints,
 	                 size_t dimension = 2,
 	                 size_t degree = 3,
-	                 Type type = Type::CLAMPED);
+	                 Type type = Type::Clamped);
 	virtual ~BSpline();
 
 	/* Create from static method */

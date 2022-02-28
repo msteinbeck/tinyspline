@@ -166,9 +166,6 @@
 // Make strings directly accessible in target language.
 %include "std_string.i"
 
-// Proper enums.
-%include "enums.swg"
-
 // Ignore C elements and unsupported C++ features.
 %rename("$ignore", regexmatch$name="ts_") "";
 %ignore tsBSpline;

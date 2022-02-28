@@ -1,5 +1,8 @@
 %module tinysplinejava
 
+// Proper enums.
+%include "enums.swg"
+
 %ignore tinyspline::BSpline::operator();
 %ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::DeBoorNet::operator=;

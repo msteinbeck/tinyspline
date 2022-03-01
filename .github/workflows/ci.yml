@@ -90,9 +90,10 @@ jobs:
 
   python:
     needs: build
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [windows-latest, macOS-latest]
         python: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]
 
     steps:
@@ -114,7 +115,12 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+            cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
+        else
+            cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True
+        fi
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -124,7 +130,7 @@ jobs:
     - name: Deploy
       uses: actions/upload-artifact@v2
       with:
-        name: python-${{ matrix.python }}-win_amd64
+        name: python-${{ matrix.python }}-${{ matrix.os }}_amd64
         path: ${{runner.workspace}}/build/dist/*.whl
         if-no-files-found: error
 
@@ -188,7 +194,7 @@ jobs:
       shell: bash
       run: |
         cd $GITHUB_WORKSPACE/tools/ci/build
-        find actions -name '*.whl' -exec cp {} windows64 \;
+        find actions -name '*win_amd64.whl' -exec cp {} windows64 \;
 
     - name: Create Releases
       shell: bash

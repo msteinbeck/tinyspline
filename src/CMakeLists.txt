@@ -274,6 +274,9 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #
 # TINYSPLINE_PLATFORM
 #   Platform (target) specific identifier, e.g. 'linux-x86_64'.
+#
+# TINYSPLINE_MACOSX_TO_MACOSX
+#   True if host and target is macosx. False otherwise.
 ###############################################################################
 # Host
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
@@ -316,6 +319,13 @@ endif()
 set(TINYSPLINE_PLATFORM
 	"${TINYSPLINE_PLATFORM_NAME}-${TINYSPLINE_PLATFORM_ARCH}"
 	CACHE INTERNAL "")
+
+if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin"
+    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  set(TINYSPLINE_MACOSX_TO_MACOSX True CACHE INTERNAL "")
+else()
+  set(TINYSPLINE_MACOSX_TO_MACOSX False CACHE INTERNAL "")
+endif()
 
 
 
@@ -735,7 +745,7 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 	file(COPY ${file} DESTINATION ${TINYSPLINE_OUTPUT_DIRECTORY})
 	get_filename_component(name ${file} NAME)
 	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
-	if (CMAKE_STRIP)
+	if (CMAKE_STRIP AND NOT TINYSPLINE_MACOSX_TO_MACOSX)
 		execute_process(
 			COMMAND "${CMAKE_STRIP}" --strip-unneeded ${name}
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
@@ -1058,7 +1068,7 @@ function (tinyspline_add_swig_library)
 		set_property(TARGET ${ARGS_TARGET}
 			APPEND PROPERTY OUTPUT_NAME "${ARGS_NAME}")
 	endif()
-	if (CMAKE_STRIP)
+	if (CMAKE_STRIP AND NOT TINYSPLINE_MACOSX_TO_MACOSX)
 		add_custom_command(
 			TARGET ${ARGS_TARGET}
 			POST_BUILD

@@ -121,7 +121,7 @@ jobs:
         if [ "$RUNNER_OS" == "Windows" ]; then
             cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")" -DPYTHON_LIBRARY="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
         else
-            cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")" -DPYTHON_LIBRARY="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")/../../lib/libpython$(echo ${{ matrix.python }} | cut  -d'.' -f1-2).dylib"
+            cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")" -DPYTHON_LIBRARY=($(python -c "from sysconfig import get_paths; print(get_paths()['include'])")/../../lib/*.dylib)
         fi
 
     - name: Build

@@ -54,7 +54,7 @@ jobs:
       shell: bash
       run: ctest -C $BUILD_TYPE
 
-    - name: Memory Check
+    - name: Check Memory Consistency
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
@@ -131,15 +131,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: python setup.py bdist_wheel
-
-    - name: Install
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: find dist -name "*.whl" -exec python -m pip install {} \;
-
-    - name: Test
-      shell: bash
-      run: python $GITHUB_WORKSPACE/test/python/tests.py
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -230,7 +221,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-10.15]
         python: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9"]
 
     steps:
@@ -252,6 +243,8 @@ jobs:
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*linux*.whl" -exec python -m pip install {} \;
         elif [ "$RUNNER_OS" == "Windows" ]; then
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*win*.whl" -exec python -m pip install {} \;
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" -exec python -m pip install {} \;
         fi
 
     - name: Run Tests

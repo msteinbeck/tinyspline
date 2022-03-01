@@ -102,10 +102,12 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Install Dependencies
+    - name: Install System Tools
       shell: bash
       run: |
-        choco install swig
+        if [ "$RUNNER_OS" == "Windows" ]; then
+            choco install swig
+        fi
         python -m pip install -U pip setuptools
         python -m pip install wheel
 

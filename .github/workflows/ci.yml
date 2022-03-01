@@ -119,7 +119,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-            cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")" -DPYTHON_LIBRARY="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
+            cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")" -DPYTHON_LIBRARY="$(python -c "from sysconfig import get_paths; print(get_paths()['include'])")/../libs/python$(echo ${{ matrix.python }} | cut  -d'.' -f1-2 | tr -d '.').lib"
         else
             cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True
         fi

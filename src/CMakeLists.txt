@@ -747,6 +747,7 @@ foreach(file ${TINYSPLINE_RUNTIME_LIBRARIES})
 	list(APPEND TINYSPLINE_RUNTIME_LIBS ${name})
 	if (CMAKE_STRIP AND NOT TINYSPLINE_MACOSX_TO_MACOSX)
 		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E echo "Stripping ${name}"
 			COMMAND "${CMAKE_STRIP}" --strip-unneeded ${name}
 			WORKING_DIRECTORY "${TINYSPLINE_OUTPUT_DIRECTORY}")
 	endif()
@@ -1072,6 +1073,9 @@ function (tinyspline_add_swig_library)
 		add_custom_command(
 			TARGET ${ARGS_TARGET}
 			POST_BUILD
+			COMMAND
+				${CMAKE_COMMAND} -E echo
+				"Stripping $<TARGET_FILE_NAME:${ARGS_TARGET}>"
 			COMMAND
 				"${CMAKE_STRIP}" --strip-unneeded
 				"$<TARGET_FILE_NAME:${ARGS_TARGET}>"

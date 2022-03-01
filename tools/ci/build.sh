@@ -155,6 +155,10 @@ docker run \
 			chown $(id -u):$(id -g) *.tgz && \
 			cp -a *.tgz ${STORAGE}/wasm && \
 		popd && \
+	mkdir -p ${STORAGE}/macosx64 && \
+	chown $(id -u):$(id -g) ${STORAGE}/macosx64 && \
+		mkdir macosx64 && pushd macosx64 && \
+		popd && \
 	mkdir -p ${STORAGE}/windows64 && \
 	chown $(id -u):$(id -g) ${STORAGE}/windows64 && \
 		mkdir windows64 && pushd windows64 && \

@@ -88,6 +88,42 @@ jobs:
             PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make test
         fi
 
+  lua:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-10.15]
+        luaVersion: ["5.1", "5.2", "5.3", "5.4"]
+
+    steps:
+    - uses: actions/checkout@master
+    - uses: leafo/gh-actions-lua@v8.0.0
+      with:
+        luaVersion: ${{ matrix.luaVersion }}
+    - uses: leafo/gh-actions-luarocks@v4.0.0
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: |
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_LUA=True
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: luarocks make --pack-binary-rock
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: lua-${{ matrix.luaVersion }}-${{ matrix.os }}_amd64
+        path: ${{runner.workspace}}/build/*.rock
+        if-no-files-found: error
+
   python:
     needs: build
     runs-on: ${{ matrix.os }}

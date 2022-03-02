@@ -236,6 +236,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/tools/ci/build
         find actions -name '*win_amd64.whl' -exec cp {} windows64 \;
+        find actions -name '*macosx-x86_64.rock' -exec cp {} macosx64 \;
         find actions -name '*macosx*_x86_64.whl' -exec cp {} macosx64 \;
 
     - name: Create Releases

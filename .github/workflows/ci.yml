@@ -101,7 +101,6 @@ jobs:
     - uses: leafo/gh-actions-lua@v8.0.0
       with:
         luaVersion: ${{ matrix.luaVersion }}
-        luaCompileFlags: LUA_CFLAGS="-shared -fPIC"
     - uses: leafo/gh-actions-luarocks@v4.0.0
 
     - name: Create Build Environment
@@ -111,7 +110,7 @@ jobs:
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: |
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_LUA=True
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_LUA=True -DLUA_INCLUDE_DIR="$GITHUB_WORKSPACE/.lua/include" -DLUA_LIBRARIES="$GITHUB_WORKSPACE/.lua/lib/liblua.a"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

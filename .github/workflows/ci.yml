@@ -214,7 +214,7 @@ jobs:
         if-no-files-found: error
 
   package:
-    needs: [python, uwp]
+    needs: [lua, python, uwp]
     runs-on: ubuntu-latest
 
     steps:

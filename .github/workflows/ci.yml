@@ -259,7 +259,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-10.15]
-        luaVersion: ["5.1", "5.2", "5.3", "5.4"]
+        luaVersion: ["5.1", "5.2", "5.3", "5.4", "luajit"]
         exclude:
           - os: macos-10.15
             luaVersion: 5.1

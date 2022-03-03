@@ -260,6 +260,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-10.15]
         luaVersion: ["5.1", "5.2", "5.3", "5.4"]
+        exclude:
+          - os: macos-10.15
+            luaVersion: 5.1
 
     steps:
     - uses: actions/checkout@master

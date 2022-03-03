@@ -32,11 +32,10 @@
 }
 
 // Map Lua table to std::vector<tinyspline::real>.
-%typemap(in) std::vector<tinyspline::real> * (int idx) %{
+%typemap(in) std::vector<tinyspline::real> * %{
 	$1 = new std::vector<tinyspline::real>();
-	idx = lua_gettop(L);
 	lua_pushnil(L);
-	while (lua_next(L, idx)) {
+	while (lua_next(L, $input)) {
 		$1->push_back(lua_tonumber(L, -1));
 		lua_pop(L, 1);
 	}

@@ -253,6 +253,42 @@ jobs:
         path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/tinyspline/
         if-no-files-found: error
 
+  test-lua:
+    needs: [package]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-10.15, macos-latest]
+        luaVersion: ["5.1", "5.2", "5.3", "5.4"]
+
+    steps:
+    - uses: actions/checkout@master
+    - uses: leafo/gh-actions-lua@v8.0.0
+      with:
+        luaVersion: ${{ matrix.luaVersion }}
+    - uses: leafo/gh-actions-luarocks@v4.0.0
+
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: packages
+
+    - name: Install Package
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/packages/tinyspline
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            find . -name "*linux-x86_64.rock" -exec luarocks install {} \;
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+            find . -name "*windows-x86_64.rock" -exec luarocks install {} \;
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            find . -name "*macosx-x86_64.rock" -exec luarocks install {} \;
+        fi
+
+    - name: Run Tests
+      shell: bash
+      run: lua $GITHUB_WORKSPACE/test/lua/tests.lua
+
   test-python:
     needs: [package]
     runs-on: ${{ matrix.os }}

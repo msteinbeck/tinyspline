@@ -10,7 +10,7 @@
 %ignore tinyspline::Vec4::operator=;
 
 %rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Octave vector.
 %typemap(out) std::vector<tinyspline::real> * {

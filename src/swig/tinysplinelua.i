@@ -15,7 +15,7 @@
 %rename (__tostring) tinyspline::Vec4::toString;
 
 %rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Lua table.
 %typemap(out) std::vector<tinyspline::real> * {

@@ -20,7 +20,7 @@
 %rename (__repr__) tinyspline::Vec4::toString;
 
 %rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor) "";
+%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Python list.
 %typemap(out) std::vector<tinyspline::real> * (int size, PyObject *data) {

@@ -3,6 +3,23 @@ local ts = require("tinyspline")
 
 
 
+TestEnums = {}
+
+function TestEnums:testOpened()
+   -- Given
+   spline = ts.BSpline(7, 2, 3, ts.BSpline.Opened)
+
+   -- When
+
+   -- Then
+   expected = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 }
+   lu.assertAlmostEquals(spline.knots, expected, ts.TS_KNOT_EPSILON)
+end
+
+-- end TestEnums
+
+
+
 TestFrames = {}
 
 local function assertOrthogonal(v1, v2)

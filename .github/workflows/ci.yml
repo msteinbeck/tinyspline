@@ -286,8 +286,9 @@ jobs:
         fi
 
     - name: Run Tests
+      working-directory: ${{runner.workspace}}/test/lua
       shell: bash
-      run: lua $GITHUB_WORKSPACE/test/lua/tests.lua
+      run: lua tests.lua
 
   test-python:
     needs: [package]

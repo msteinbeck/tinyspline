@@ -196,7 +196,7 @@ docker run \
 				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/wincross/lua51/include \
-				-DLUA_LIBRARY=/opt/wincross/lua51/lua5.1.dll && \
+				-DLUA_LIBRARY=/opt/wincross/lua51/liblua5.1.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -212,7 +212,7 @@ docker run \
 				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/wincross/lua52/include \
-				-DLUA_LIBRARY=/opt/wincross/lua52/lua52.dll && \
+				-DLUA_LIBRARY=/opt/wincross/lua52/liblua52.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -228,7 +228,7 @@ docker run \
 				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/wincross/lua53/include \
-				-DLUA_LIBRARY=/opt/wincross/lua53/lua53.dll && \
+				-DLUA_LIBRARY=/opt/wincross/lua53/liblua53.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -244,7 +244,7 @@ docker run \
 				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/wincross/lua54/include \
-				-DLUA_LIBRARY=/opt/wincross/lua54/lua54.dll && \
+				-DLUA_LIBRARY=/opt/wincross/lua54/liblua54.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \

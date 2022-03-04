@@ -152,7 +152,7 @@ jobs:
     - name: Deploy
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.os }}_amd64
+        name: macos_amd64
         path: |
           ${{runner.workspace}}/build/*.nupkg
           ${{runner.workspace}}/build/target/*.jar

@@ -65,6 +65,20 @@ docker run \
 				cp -a *.nupkg ${STORAGE}/android-x86 && \
 		rm -rf ..?* .[!.]* * && \
 		popd && \
+	 mkdir -p ${STORAGE}/android-x86_64 && \
+	 chown $(id -u):$(id -g) ${STORAGE}/android-x86_64 && \
+		mkdir android-x86_64 && pushd android-x86_64 && \
+			cmake .. \
+				-DCMAKE_TOOLCHAIN_FILE=/opt/android/android-ndk-r23b/build/cmake/android.toolchain.cmake \
+				-DANDROID_ABI=x86_64 \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_CSHARP=True && \
+			cmake --build . --target tinysplinecsharp && \
+				nuget pack && \
+				chown $(id -u):$(id -g) *.nupkg && \
+				cp -a *.nupkg ${STORAGE}/android-x86_64 && \
+		rm -rf ..?* .[!.]* * && \
+		popd && \
 	 mkdir -p ${STORAGE}/linux64 && \
 	 chown $(id -u):$(id -g) ${STORAGE}/linux64 && \
 		mkdir linux64 && pushd linux64 && \

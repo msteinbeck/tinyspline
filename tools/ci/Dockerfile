@@ -50,14 +50,10 @@ RUN apt-get update &&                          \
         make && \
         make install && \
     wget -P /usr/local/src/cmake \
-        https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz && \
-    tar -xf /usr/local/src/cmake/cmake-3.18.4.tar.gz \
-        -C /usr/local/src/cmake \
+        https://github.com/Kitware/CMake/releases/download/v3.22.3/cmake-3.22.3-linux-x86_64.tar.gz && \
+    tar -xf /usr/local/src/cmake/cmake-3.22.3-linux-x86_64.tar.gz \
+        -C /usr/local \
         --strip 1 && \
-    cd /usr/local/src/cmake && \
-        ./configure && \
-        make && \
-        make install && \
     git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk && \
     cd /opt/emsdk && \
         ./emsdk install 2.0.20 && \

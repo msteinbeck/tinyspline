@@ -4,6 +4,11 @@ set -e
 SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
 
 ### Check build directories.
+ANDROID_ARM64="${SCRIPT_DIR}/build/android-arm64"
+if [ ! -d "${ANDROID_ARM64}" ]; then
+	echo "Android (arm64) is missing.  Aborting."
+	exit 1
+fi
 LINUX_X86_64="${SCRIPT_DIR}/build/linux64"
 if [ ! -d "${LINUX_X86_64}" ]; then
 	echo "Linux (x86_64) is missing.  Aborting."
@@ -48,6 +53,8 @@ fi
 find "${WINDOWS_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${MACOSX_X86_64}" -name '*.nupkg' -print0 | \
+	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+find "${ANDROID_ARM64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${LINUX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}

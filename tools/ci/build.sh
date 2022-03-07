@@ -23,6 +23,20 @@ docker run \
 	--volume "${VOLUME}:${STORAGE}" \
 	${IMAGE_NAME} /bin/bash -c \
 	"source ~/.bashrc && \
+	 mkdir -p ${STORAGE}/android-arm64 && \
+	 chown $(id -u):$(id -g) ${STORAGE}/android-arm64 && \
+		mkdir android-arm64 && pushd android-arm64 && \
+			cmake .. \
+				-DCMAKE_TOOLCHAIN_FILE=/opt/android/android-ndk-r23b/build/cmake/android.toolchain.cmake \
+				-DANDROID_ABI=arm64-v8a \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_CSHARP=True && \
+			cmake --build . --target tinysplinecsharp && \
+				nuget pack && \
+				chown $(id -u):$(id -g) *.nupkg && \
+				cp -a *.nupkg ${STORAGE}/android-arm64 && \
+		rm -rf ..?* .[!.]* * && \
+		popd && \
 	 mkdir -p ${STORAGE}/linux64 && \
 	 chown $(id -u):$(id -g) ${STORAGE}/linux64 && \
 		mkdir linux64 && pushd linux64 && \

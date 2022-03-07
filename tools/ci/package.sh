@@ -4,9 +4,24 @@ set -e
 SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
 
 ### Check build directories.
+ANDROID_ARM="${SCRIPT_DIR}/build/android-arm"
+if [ ! -d "${ANDROID_ARM}" ]; then
+	echo "Android (arm) is missing.  Aborting."
+	exit 1
+fi
 ANDROID_ARM64="${SCRIPT_DIR}/build/android-arm64"
 if [ ! -d "${ANDROID_ARM64}" ]; then
 	echo "Android (arm64) is missing.  Aborting."
+	exit 1
+fi
+ANDROID_X86="${SCRIPT_DIR}/build/android-x86"
+if [ ! -d "${ANDROID_X86}" ]; then
+	echo "Android (x86) is missing.  Aborting."
+	exit 1
+fi
+ANDROID_X86_64="${SCRIPT_DIR}/build/android-x86_64"
+if [ ! -d "${ANDROID_X86_64}" ]; then
+	echo "Android (x86_64) is missing.  Aborting."
 	exit 1
 fi
 LINUX_X86_64="${SCRIPT_DIR}/build/linux64"
@@ -54,7 +69,13 @@ find "${WINDOWS_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${MACOSX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+find "${ANDROID_ARM}" -name '*.nupkg' -print0 | \
+	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${ANDROID_ARM64}" -name '*.nupkg' -print0 | \
+	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+find "${ANDROID_X86}" -name '*.nupkg' -print0 | \
+	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
+find "${ANDROID_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}
 find "${LINUX_X86_64}" -name '*.nupkg' -print0 | \
 	xargs -0 -I{} unzip -d "${NUPKG_TMP_DIR}" -o {}

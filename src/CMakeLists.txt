@@ -260,9 +260,9 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 #   True if host is Windows. False otherwise.
 #
 # TINYSPLINE_PLATFORM_NAME
-#   Name of target platform in lowercase. Supported values are: 'linux',
-#   'macosx', 'windows', 'uwp' (Universal Windows Platform), 'wasm'
-#   (webassembly), and 'undefined' (fallback).
+#   Name of target platform in lowercase. Supported values are: 'android',
+#   linux', 'macosx', 'windows', 'uwp' (Universal Windows Platform), 'wasm'
+#   (WebAssembly), and 'undefined' (fallback).
 #
 # TINYSPLINE_PLATFORM_IS_WINDOWS
 #   True if target platform is Windows. False otherwise.
@@ -287,7 +287,10 @@ else()
 	set(TINYSPLINE_HOST_IS_WINDOWS False CACHE INTERNAL "")
 endif()
 # Platform
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+	set(TINYSPLINE_PLATFORM_NAME "android" CACHE INTERNAL "")
+	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	set(TINYSPLINE_PLATFORM_NAME "linux" CACHE INTERNAL "")
 	set(TINYSPLINE_PLATFORM_IS_WINDOWS False CACHE INTERNAL "")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
@@ -1528,7 +1531,9 @@ if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
 		${TINYSPLINE_CSHARP_INTERFACE_FILE}
 		NAME)
 	find_program(TINYSPLINE_DOTNET_EXECUTABLE dotnet)
-	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
+	if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "android")
+		set(TINYSPLINE_NUGET_RID "android")
+	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
 		set(TINYSPLINE_NUGET_RID "linux")
 	elseif(${TINYSPLINE_PLATFORM_NAME} STREQUAL "macosx")
 		set(TINYSPLINE_NUGET_RID "osx")

@@ -146,6 +146,15 @@ docker run \
 			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/linux/python310/include/python3.10 \
+				-DPYTHON_LIBRARY=/opt/linux/python310/lib/libpython3.10.so && \
+			/opt/linux/python310/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/linux64 && \
 		popd && \
 	mkdir -p ${STORAGE}/wasm && \
 	chown $(id -u):$(id -g) ${STORAGE}/wasm && \

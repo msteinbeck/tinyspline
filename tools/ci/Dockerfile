@@ -115,6 +115,20 @@ RUN apt-get update &&                          \
         make && \
         make install && \
         /opt/linux/python39/bin/python3 -m pip install wheel && \
+    wget -P /usr/local/src/python310 \
+        https://www.python.org/ftp/python/3.10.2/Python-3.10.2.tar.xz && \
+    tar -xf /usr/local/src/python310/Python-3.10.2.tar.xz \
+        -C /usr/local/src/python310 \
+        --strip 1 && \
+    cd /usr/local/src/python310 && \
+        ./configure \
+            --prefix=/opt/linux/python310 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python310/lib && \
+        make && \
+        make install && \
+        wget https://files.pythonhosted.org/packages/27/d6/003e593296a85fd6ed616ed962795b2f87709c3eee2bca4f6d0fe55c6d00/wheel-0.37.1-py2.py3-none-any.whl && \
+        /opt/linux/python310/bin/python3 -m pip install wheel-0.37.1-py2.py3-none-any.whl && \
     wget -P /usr/local/src/ruby24 \
         https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
     tar -xf /usr/local/src/ruby24/ruby-2.4.10.tar.gz \

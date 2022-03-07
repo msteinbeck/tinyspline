@@ -59,6 +59,10 @@ RUN apt-get update &&                          \
         ./emsdk install 2.0.20 && \
         ./emsdk activate 2.0.20 && \
         echo "source $(pwd)/emsdk_env.sh" >> $HOME/.bashrc && \
+    mkdir -p /opt/android && \
+    wget -P /usr/local/src/ndk23b \
+        https://dl.google.com/android/repository/android-ndk-r23b-linux.zip && \
+    unzip -d /opt/android /usr/local/src/ndk23b/android-ndk-r23b-linux.zip && \
     wget -P /usr/local/src/python36 \
         https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz && \
     tar -xf /usr/local/src/python36/Python-3.6.12.tar.xz \

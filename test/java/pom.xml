@@ -21,7 +21,7 @@
       <artifactId>tinyspline</artifactId>
       <version>latest</version>
       <scope>system</scope>
-      <systemPath>${basedir}/tinyspline.jar</systemPath>
+      <systemPath>${basedir}/../../build/lib/tinyspline.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

@@ -64,7 +64,7 @@
 		log("Reading libraries from properties file");
 		final java.util.List<String> libsToCopy = getRuntimeLibs(prop);
 		libsToCopy.add(getNativeLib(prop));
-		log("Libraries to load: %s", libsToCopy.toString());
+		log("Libraries to be loaded: %s", libsToCopy.toString());
 
 		// Copy libraries.
 		final java.util.Map<String, java.io.File> libs =

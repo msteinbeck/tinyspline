@@ -331,7 +331,7 @@
 	$1 = new std::vector<tinyspline::real>();
 	const jobject list = *(jobject*)&$input;
 
-	const jclass listClass = jenv->FindClass("java/util/ArrayList");
+	const jclass listClass = jenv->FindClass("java/util/List");
 	const jmethodID listSize = jenv->GetMethodID(listClass, "size", "()I");
 	const jmethodID listGet = jenv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
 #ifdef TINYSPLINE_FLOAT_PRECISION

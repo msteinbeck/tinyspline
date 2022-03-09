@@ -41,13 +41,18 @@
 	import java.io.IOException;
 	import java.io.InputStream;
 	import java.io.OutputStream;
+	import java.nio.file.Path;
+	import java.nio.file.Files;
+	import java.nio.file.attribute.PosixFilePermission;
 	import java.util.ArrayList;
 	import java.util.Arrays;
 	import java.util.HashMap;
+	import java.util.HashSet;
 	import java.util.Iterator;
 	import java.util.List;
 	import java.util.Map;
 	import java.util.Properties;
+	import java.util.Set;
 	import java.util.stream.Collectors;
 	import java.util.logging.Logger;
 %}
@@ -130,35 +135,39 @@
 	private static File createTmpDir() {
 		log("Creating temporary directory...");
 
-		File tmpDir;
+		final Path tmpDir;
 		try {
-			log("... creating a temporary file to obtain path ...");
-			tmpDir = File.createTempFile("tinyspline","");
-		} catch (IOException e) {
-			error(e, "Could not create file");
+			log("... using prefix: tinyspline ...");
+			tmpDir = Files.createTempDirectory("tinyspline");
+		} catch (Exception e) {
+			error(e, "Could not create directory");
 			// Just for the compiler.
 			throw new Error("<Unreachable>");
 		}
 
-		log(String.format("... deleting file: %s ...", tmpDir.getPath()));
-		if (!tmpDir.delete())
-			error("Could not delete file: %s", tmpDir.getPath());
-
-		log("... creating directory from file path ...");
-		if(!tmpDir.mkdir())
-			error("Could not create directory: %s", tmpDir.getPath());
-
 		log("... setting permissions ...");
-		tmpDir.setReadable(true, true);
-		tmpDir.setWritable(true, true);
-		tmpDir.setExecutable(true, true);
+		Set<PosixFilePermission> perms = new HashSet<>();
+		perms.add(PosixFilePermission.OWNER_READ);
+		perms.add(PosixFilePermission.OWNER_WRITE);
+		perms.add(PosixFilePermission.OWNER_EXECUTE);
+		try {
+			Files.setPosixFilePermissions(tmpDir, perms);
+		} catch (UnsupportedOperationException e) {
+			log("... posix permissions are not supported ...");
+			log("... falling back to default permission system ...");
+			tmpDir.toFile().setReadable(true, true);
+			tmpDir.toFile().setWritable(true, true);
+			tmpDir.toFile().setExecutable(true, true);
+		} catch (Exception e) {
+			error(e, "Could not set permissions");
+		}
 
 		log("... adding shutdown hook ...");
 		Runtime.getRuntime().addShutdownHook(new Thread(
 			new Runnable() {
 				@Override
 				public void run() {
-					try { delete(tmpDir); }
+					try { delete(tmpDir.toFile()); }
 					catch (Exception e) {}
 				}
 
@@ -167,12 +176,13 @@
 						Arrays.stream(file.listFiles())
 						      .forEach(this::delete);
 					}
-					file.delete();
+					try { Files.delete(file.toPath()); }
+					catch (IOException e) { /* ignored */ }
 				}
 			}));
 
 		log("... done");
-		return tmpDir;
+		return tmpDir.toFile();
 	}
 
 	private static String detectPlatform() {
@@ -199,8 +209,8 @@
 	}
 
 	private static InputStream loadResource(String path) {
-		final InputStream is = tinysplinejavaJNI.class
-		                       .getResourceAsStream("/" + path);
+		InputStream is = tinysplinejavaJNI.class
+		                 .getResourceAsStream("/" + path);
 		if (is == null) error("Missing resource: %s", path);
 		return is;
 	}
@@ -208,7 +218,7 @@
 	private static void closeQuietly(Closeable closeable) {
 		if (closeable != null) {
 			try { closeable.close(); }
-			catch (final IOException e) {}
+			catch (IOException e) { /* ignored */ }
 		}
 	}
 

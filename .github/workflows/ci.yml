@@ -289,6 +289,40 @@ jobs:
         path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/tinyspline/
         if-no-files-found: error
 
+  test-java:
+    needs: [package]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        java: ["11", "17"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v2
+      with:
+        distribution: "adopt"
+        java-version: ${{ matrix.java }}
+
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: packages
+
+    - name: Install Package
+      shell: bash
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/build/lib
+        cd $GITHUB_WORKSPACE/build/lib
+        unzip -d . $GITHUB_WORKSPACE/packages/tinyspline/tinyspline-java.zip
+        find . -name "*[0-9].jar" -exec mv {} tinyspline.jar \;
+
+    - name: Run Tests
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/test/java
+        mvn test
+
   test-lua:
     needs: [package]
     runs-on: ${{ matrix.os }}

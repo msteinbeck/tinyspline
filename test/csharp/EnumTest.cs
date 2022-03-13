@@ -4,7 +4,7 @@ using TinySpline;
 
 namespace csharp;
 
-public class Tests
+public class EnumTest
 {
     [Test]
     public void TestOpened()
@@ -15,8 +15,8 @@ public class Tests
         // When
 
         // Then
-        Assert.That(spline.Knots,
-            Is.EqualTo(new List<double> { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 })
-            .Within(tinysplinecsharp.TS_KNOT_EPSILON));
+        Assert.That(spline.Knots, Is.EqualTo(new List<double> {
+                   0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 })
+              .Within(tinysplinecsharp.TS_KNOT_EPSILON));
     }
 }

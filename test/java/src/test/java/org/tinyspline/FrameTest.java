@@ -38,11 +38,15 @@ public class FrameTest {
             Frame frame = frames.at(i);
 
             double pos = spline.eval(knots.get(i))
-                    .resultVec3().distance(frame.getPosition());
+                               .resultVec3()
+                               .distance(frame.getPosition());
             assertThat(pos).isEqualTo(0, offset(TS_POINT_EPSILON));
 
-            double tan = spline.derive().eval(knots.get(i))
-                    .resultVec3().norm().distance(frame.getTangent());
+            double tan = spline.derive()
+                               .eval(knots.get(i))
+                               .resultVec3()
+                               .norm()
+                               .distance(frame.getTangent());
             assertThat(tan).isEqualTo(0, offset(TS_POINT_EPSILON));
 
             assertOrthogonal(frame.getNormal(), frame.getTangent());

@@ -8,7 +8,7 @@ public class InterpolationTest
 {
     class Vec2EqualityComparer : IEqualityComparer<Vec2>
     {
-        public bool Equals(Vec2 v1, Vec2 v2)
+        public bool Equals(Vec2? v1, Vec2? v2)
         {
             if (v1 == null && v2 == null) return true;
             if (v1 == null || v2 == null) return false;

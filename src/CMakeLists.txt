@@ -407,6 +407,9 @@ set(TINYSPLINE_RUBY_CMAKE_TARGET "tinysplineruby" CACHE INTERNAL "")
 ###############################################################################
 option(BUILD_SHARED_LIBS "Build the C/C++ interface as shared library." FALSE)
 
+set(TINYSPLINE_BINDING_LINK_LIBRARIES "" CACHE STRING
+	"Additional libraries to link against when building one of the bindings")
+
 set(TINYSPLINE_INSTALL_INCLUDE_DIR "include" CACHE STRING
 	"Installation directory of header files (relative to CMAKE_INSTALL_PREFIX).")
 
@@ -1044,7 +1047,8 @@ function (tinyspline_add_swig_library)
 	# On Linux, we can (and for the sake of portability should) omit
 	# linking libraries.
 	if(NOT ${TINYSPLINE_PLATFORM_NAME} STREQUAL "linux")
-		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS})
+		swig_link_libraries(${ARGS_TARGET} ${ARGS_LIBS}
+		  ${TINYSPLINE_BINDING_LINK_LIBRARIES})
 	endif()
 	set_target_properties(${ARGS_TARGET} PROPERTIES
 		FOLDER ${TINYSPLINE_BINDINGS_FOLDER_NAME}
@@ -1067,6 +1071,12 @@ function (tinyspline_add_swig_library)
 			set_property(TARGET ${ARGS_TARGET}
 				APPEND PROPERTY PREFIX "lib")
 		endif()
+	endif()
+	# Fix library suffix for C# on macOS.
+	if(${ARGS_LANG} STREQUAL "csharp" AND
+	   ${TINYSPLINE_PLATFORM_NAME} STREQUAL "macosx")
+		set_property(TARGET ${ARGS_TARGET}
+			APPEND PROPERTY SUFFIX ".dylib")
 	endif()
 	if (NOT ${ARGS_NAME} STREQUAL "")
 		set_property(TARGET ${ARGS_TARGET}
@@ -1584,7 +1594,7 @@ target=\"runtimes/${TINYSPLINE_NUGET_RID}/native\" />")
 		set(TINYSPLINE_NUGET_FILES
 			"${TINYSPLINE_NUGET_FILES}\n\t\t<file \
 src=\"${TINYSPLINE_LIB_DIR}/${lib}\" \
-target=\"runtimes/${TINYSPLINE_NUGET_RID}/lib/native\" />")
+target=\"runtimes/${TINYSPLINE_NUGET_RID}/native\" />")
 	endforeach()
 	configure_file("pkg/.nuspec.in"
 		${TINYSPLINE_NUSPEC_FILE} @ONLY)
@@ -1696,6 +1706,7 @@ Compiler Configuration:
   C++ libraries:       ${TINYSPLINE_CXX_LINK_LIBRARIES}
   C++ Definitions:     ${TINYSPLINE_CXX_DEFINITIONS}
   Binding flags:       ${TINYSPLINE_SUMMARY_BINDING_FLAGS}
+  Binding libraries:   ${TINYSPLINE_BINDING_LINK_LIBRARIES}
   Binding Definitions: ${TINYSPLINE_BINDING_CXX_DEFINITIONS}
   Runtime libs:        ${TINYSPLINE_RUNTIME_LIBS}
   Toolchain file:      ${CMAKE_TOOLCHAIN_FILE}

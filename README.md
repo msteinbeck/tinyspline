@@ -26,7 +26,13 @@ In addition, the following package manager are supported:
 Conan (C/C++):  
 https://conan.io/center/tinyspline
 
-Luarocks (Lua; currently only Linux and macOS):
+NuGet (C#):
+
+```xml
+<PackageReference Include="tinyspline" version="0.4.0.1" />
+```
+
+Luarocks (Lua):
 ```bash
 luarocks install --server=https://msteinbeck.github.io/tinyspline/luarocks tinyspline
 ```
@@ -36,7 +42,7 @@ Maven (Java):
 <dependency>
    <groupId>org.tinyspline</groupId>
    <artifactId>tinyspline</artifactId>
-   <version>0.3.0-2</version>
+   <version>0.4.0-1</version>
 </dependency>
 ```
 
@@ -44,6 +50,9 @@ PyPI (Python):
 ```bash
 python -m pip install tinyspline
 ```
+
+On macOS, you may need to change the path to Python in
+`_tinysplinepython.so` via `install_name_tool`.
 
 #### Compiling From Source
 

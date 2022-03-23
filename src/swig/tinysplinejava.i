@@ -133,7 +133,7 @@
 	}
 
 	private static File createTmpDir() {
-		log("Creating temporary directory...");
+		log("Creating temporary directory ...");
 
 		final Path tmpDir;
 		try {

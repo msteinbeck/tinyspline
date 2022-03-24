@@ -34,7 +34,7 @@ NuGet (C#):
 
 Luarocks (Lua):
 ```bash
-luarocks install --server=https://msteinbeck.github.io/tinyspline/luarocks tinyspline
+luarocks install --server=https://tinyspline.github.io/lua tinyspline
 ```
 
 Maven (Java):

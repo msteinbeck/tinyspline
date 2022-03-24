@@ -51,7 +51,7 @@
 	tinyspline::real *data = (tinyspline::real *)malloc(size);
 	if (!data) throw std::bad_alloc();
 	memcpy(data, &$1->front(), size);
-	$result = {data, $1->size(), $1->size()};
+	$result = {data, (intgo) $1->size(), (intgo) $1->size()};
 }
 %typemap(newfree) std::vector<tinyspline::real> * {
 	delete $1;

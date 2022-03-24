@@ -31,9 +31,14 @@
 %rename (string) tinyspline::Vec4::toString;
 
 %insert(cgo_comment_typedefs) %{
-#cgo !windows LDFLAGS: -L${SRCDIR} -lm -lstdc++ -ltinysplinego
-#cgo windows,!stdcxxshared LDFLAGS: -L${SRCDIR} -ltinysplinego -Wl,-Bstatic -lstdc++
-#cgo windows,stdcxxshared LDFLAGS: -L${SRCDIR} -lstdc++-6 -ltinysplinego
+#cgo linux,386 LDFLAGS:    -L${SRCDIR} -L${SRCDIR}/linux-x86     -lm -lstdc++ -ltinysplinego
+#cgo linux,amd64 LDFLAGS:  -L${SRCDIR} -L${SRCDIR}/linux-x86_64  -lm -lstdc++ -ltinysplinego
+#cgo darwin,386 LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/macosx-x86    -lm -lstdc++ -ltinysplinego
+#cgo darwin,amd64 LDFLAGS: -L${SRCDIR} -L${SRCDIR}/macosx-x86_64 -lm -lstdc++ -ltinysplinego
+#cgo windows,386,!stdcxxshared LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/windows-x86    -ltinysplinego -Wl,-Bstatic -lstdc++
+#cgo windows,amd64,!stdcxxshared LDFLAGS: -L${SRCDIR} -L${SRCDIR}/windows-x86_64 -ltinysplinego -Wl,-Bstatic -lstdc++
+#cgo windows,386,stdcxxshared LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/windows-x86 -lstdc++-6    -ltinysplinego
+#cgo windows,amd64,stdcxxshared LDFLAGS: -L${SRCDIR} -L${SRCDIR}/windows-x86_64 -lstdc++-6 -ltinysplinego
 %}
 
 // Simplifies the API (no type cast required).

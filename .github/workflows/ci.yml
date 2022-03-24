@@ -139,7 +139,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: |
         export JAVA_HOME=$JAVA_HOME_8_X64
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_JAVA=True
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -147,6 +147,7 @@ jobs:
       run: |
         cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
         dotnet pack *.csproj
+        cmake --build . --target tinysplinego
         mvn package
 
     - name: Deploy
@@ -155,6 +156,7 @@ jobs:
         name: macos_amd64
         path: |
           ${{runner.workspace}}/build/*.nupkg
+          ${{runner.workspace}}/build/tinyspline-go.zip
           ${{runner.workspace}}/build/target/*.jar
         if-no-files-found: error
 

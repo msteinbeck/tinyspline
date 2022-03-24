@@ -288,11 +288,12 @@ jobs:
         mkdir build
         mv actions/docker/* build
         mkdir -p build/macosx64
-        find actions -name '*win_amd64.whl' -exec cp {} build/windows64 \;
-        find actions/macos_amd64 -name '*.jar' -exec cp {} build/macosx64 \;
-        find actions/macos_amd64 -name '*.nupkg' -exec cp {} build/macosx64 \;
-        find actions -name '*macosx-x86_64.rock' -exec cp {} build/macosx64 \;
-        find actions -name '*macosx*_x86_64.whl' -exec cp {} build/macosx64 \;
+        find actions -name '*win_amd64.whl' -exec mv {} build/windows64 \;
+        find actions/macos_amd64 -name '*.jar' -exec mv {} build/macosx64 \;
+        find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;
+        find actions -name '*macosx-x86_64.rock' -exec mv {} build/macosx64 \;
+        find actions -name '*macosx*_x86_64.whl' -exec mv {} build/macosx64 \;
+        tree .
 
     - name: Create Releases
       shell: bash

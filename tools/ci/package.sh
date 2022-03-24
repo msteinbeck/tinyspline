@@ -44,7 +44,7 @@ if [ ! -d "${WASM}" ]; then
 	echo "WebAssembly is missing.  Aborting."
 	exit 1
 fi
-ACTIONS="${SCRIPT_DIR}/build/actions"
+ACTIONS="${SCRIPT_DIR}/actions"
 if [ -d "${ACTIONS}" ]; then
 	echo "Found actions directory."
 	echo "Probably running in CI job."

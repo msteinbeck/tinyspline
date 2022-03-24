@@ -287,6 +287,7 @@ jobs:
         cd $GITHUB_WORKSPACE/tools/ci
         mkdir build
         mv actions/docker/* build
+        mkdir -p build/macosx64
         find actions -name '*win_amd64.whl' -exec cp {} build/windows64 \;
         find actions/macos_amd64 -name '*.jar' -exec cp {} build/macosx64 \;
         find actions/macos_amd64 -name '*.nupkg' -exec cp {} build/macosx64 \;

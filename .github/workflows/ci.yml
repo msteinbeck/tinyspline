@@ -88,6 +88,26 @@ jobs:
             PKG_CONFIG_PATH=~/tinyspline/lib64/pkgconfig make test
         fi
 
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/tools/ci
+        ./build.sh
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: docker
+        path: ${{runner.workspace}}/${{github.event.repository.name}}/tools/ci/build
+        if-no-files-found: error
+
   lua:
     needs: build
     runs-on: ${{ matrix.os }}
@@ -250,32 +270,28 @@ jobs:
         if-no-files-found: error
 
   package:
-    needs: [lua, macos, python, uwp]
+    needs: [docker, lua, macos, python, uwp]
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build Packages
-      shell: bash
-      run: |
-        cd $GITHUB_WORKSPACE/tools/ci
-        ./build.sh
-
     - name: Download Packages
       uses: actions/download-artifact@v2
       with:
-        path: tools/ci/build/actions
+        path: tools/ci/actions
 
     - name: Prepare Downloaded Packages
       shell: bash
       run: |
-        cd $GITHUB_WORKSPACE/tools/ci/build
-        find actions -name '*win_amd64.whl' -exec cp {} windows64 \;
-        find actions/macos_amd64 -name '*.jar' -exec cp {} macosx64 \;
-        find actions/macos_amd64 -name '*.nupkg' -exec cp {} macosx64 \;
-        find actions -name '*macosx-x86_64.rock' -exec cp {} macosx64 \;
-        find actions -name '*macosx*_x86_64.whl' -exec cp {} macosx64 \;
+        cd $GITHUB_WORKSPACE/tools/ci
+        mkdir build
+        mv actions/docker/* build
+        find actions -name '*win_amd64.whl' -exec cp {} build/windows64 \;
+        find actions/macos_amd64 -name '*.jar' -exec cp {} build/macosx64 \;
+        find actions/macos_amd64 -name '*.nupkg' -exec cp {} build/macosx64 \;
+        find actions -name '*macosx-x86_64.rock' -exec cp {} build/macosx64 \;
+        find actions -name '*macosx*_x86_64.whl' -exec cp {} build/macosx64 \;
 
     - name: Create Releases
       shell: bash

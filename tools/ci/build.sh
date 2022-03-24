@@ -112,6 +112,7 @@ docker run \
 				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
 				cp -a tinysplinedlang.tar.gz ${STORAGE}/linux64 && \
 			cmake --build . --target tinysplinego && \
+				cp -a tinyspline-go.zip ${STORAGE}/linux64 && \
 			mvn package && \
 				chown $(id -u):$(id -g) target/*.jar && \
 				cp -a target/*.jar ${STORAGE}/linux64 && \
@@ -236,6 +237,7 @@ docker run \
 				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
 				-DTINYSPLINE_ENABLE_DLANG=True \
+				-DTINYSPLINE_ENABLE_GO=True \
 				-DTINYSPLINE_ENABLE_JAVA=True \
 				-DJava_JAVAC_EXECUTABLE=/usr/bin/javac \
 				-DJava_JAR_EXECUTABLE=/usr/bin/jar && \
@@ -247,6 +249,8 @@ docker run \
 				tar czf tinysplinedlang.tar.gz dub && \
 				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
 				cp -a tinysplinedlang.tar.gz ${STORAGE}/windows64 && \
+			cmake --build . --target tinysplinego && \
+				cp -a tinyspline-go.zip ${STORAGE}/windows64 && \
 			mvn package && \
 				chown $(id -u):$(id -g) target/*.jar && \
 				cp -a target/*.jar ${STORAGE}/windows64 && \

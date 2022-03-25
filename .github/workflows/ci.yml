@@ -373,7 +373,7 @@ jobs:
       shell: bash
       run: |
         cd $GITHUB_WORKSPACE/test/go
-        go test all_test.go
+        go test
 
   test-java:
     needs: [package]

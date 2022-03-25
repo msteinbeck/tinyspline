@@ -1,7 +1,7 @@
 package main
 
 import (
-	ts "../../build/lib"
+	ts "github.com/tinyspline/go"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

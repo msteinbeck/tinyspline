@@ -37,7 +37,7 @@
 #cgo darwin,amd64 LDFLAGS: -L${SRCDIR} -L${SRCDIR}/macosx-x86_64 -lm -lstdc++ -ltinysplinego
 #cgo windows,386,!stdcxxshared LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/windows-x86    -ltinysplinego -Wl,-Bstatic -lstdc++
 #cgo windows,amd64,!stdcxxshared LDFLAGS: -L${SRCDIR} -L${SRCDIR}/windows-x86_64 -ltinysplinego -Wl,-Bstatic -lstdc++
-#cgo windows,386,stdcxxshared LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/windows-x86 -lstdc++-6    -ltinysplinego
+#cgo windows,386,stdcxxshared LDFLAGS:   -L${SRCDIR} -L${SRCDIR}/windows-x86    -lstdc++-6 -ltinysplinego
 #cgo windows,amd64,stdcxxshared LDFLAGS: -L${SRCDIR} -L${SRCDIR}/windows-x86_64 -lstdc++-6 -ltinysplinego
 %}
 

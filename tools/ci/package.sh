@@ -100,6 +100,18 @@ pushd "${NUPKG_TMP_DIR}"
 	zip -r "${OUTPUT}/${NUPKG_NAME}" ./*
 popd
 
+# Go
+GO_TMP_DIR="${SCRIPT_DIR}/go"
+find "${LINUX_X86_64}" -name '*go.zip' -print0 | \
+	xargs -0 -I{} unzip -d "${GO_TMP_DIR}" -o {}
+find "${MACOSX_X86_64}" -name '*go.zip' -print0 | \
+	xargs -0 -I{} unzip -d "${GO_TMP_DIR}" -o {}
+find "${WINDOWS_X86_64}" -name '*go.zip' -print0 | \
+	xargs -0 -I{} unzip -d "${GO_TMP_DIR}" -o {}
+pushd "${GO_TMP_DIR}"
+	zip -r "${OUTPUT}/tinyspline-go.zip" ./*
+popd
+
 # Java
 JAVA_ZIP_TMP_DIR="${SCRIPT_DIR}/java"
 mkdir -p "${JAVA_ZIP_TMP_DIR}"

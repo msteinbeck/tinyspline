@@ -289,6 +289,7 @@ jobs:
         mv actions/docker/* build
         mkdir -p build/macosx64
         find actions -name '*win_amd64.whl' -exec mv {} build/windows64 \;
+        find actions/macos_amd64 -name '*go.zip' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.jar' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;
         find actions -name '*macosx-x86_64.rock' -exec mv {} build/macosx64 \;
@@ -341,6 +342,38 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/test/csharp
         dotnet test
+
+  test-go:
+    needs: [package]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        go: ["1.13", "1.14", "1.15", "1.16", "1.17", "1.18"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: packages
+
+    - name: Install Package
+      shell: bash
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/build/lib
+        cd $GITHUB_WORKSPACE/build/lib
+        unzip -d . $GITHUB_WORKSPACE/packages/tinyspline/tinyspline-go.zip
+
+    - name: Run Tests
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/test/go
+        go test all_test.go
 
   test-java:
     needs: [package]

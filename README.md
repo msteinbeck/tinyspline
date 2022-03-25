@@ -27,9 +27,13 @@ Conan (C/C++):
 https://conan.io/center/tinyspline
 
 NuGet (C#):
-
 ```xml
 <PackageReference Include="tinyspline" version="0.4.0.1" />
+```
+
+Go:
+```bash
+go get github.com/tinyspline/go@v0.4.0
 ```
 
 Luarocks (Lua):

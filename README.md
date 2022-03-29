@@ -14,14 +14,33 @@ Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby are provided.
 ### License
 MIT License - see the LICENSE file in the source distribution.
 
+### Features
+
+- Object-oriented programming model
+- B-Splines of any degree and dimensionality
+- Spline interpolation
+  - Cubic natural
+  - Centripetal Catmull–Rom
+- Evaluation
+  - Knots
+  - Sampling (multiple knots at once)
+  - Components (find y for given x)
+- Knot insertion (refinement)
+- Bézier curve decomposition
+- Derivative
+- Degree elevation
+- Computation of rotation minimizing frames
+- Morphing
+- Serialization (JSON)
+- Vector math
+
 ### Installation
 
 #### Pre-built Binaries
 
-Releases can be downloaded from the 
-[releases](https://github.com/msteinbeck/tinyspline/releases) page.
-
-In addition, the following package manager are supported:
+Releases can be downloaded from the
+[releases](https://github.com/msteinbeck/tinyspline/releases) page. In
+addition, the following package manager are supported:
 
 Conan (C/C++):  
 https://conan.io/center/tinyspline
@@ -64,157 +83,47 @@ See [BUILD.md](BUILD.md).
 
 ### Getting Started
 
-Examples for each interface (target language) can be found in the
-[examples](examples) subdirectory.
+A variety of examples (unit tests) can be found in the [test](test)
+subdirectory. The [examples](examples) subdirectory contains at least one
+example for each interface (target language).
 
-The following listing uses the ANSI C interface:
+The following listing shows a python example:
 
-```c
-#include "tinyspline.h"
-#include <stdlib.h>
-#include <stdio.h>
+```python
+from tinyspline import *
+import matplotlib.pyplot as plt
 
-int main(int argc, char **argv)
-{
-	tsStatus status;   /**< Used for error handling. */
+spline = BSpline.interpolate_cubic_natural(
+  [
+     100, -100, # P1
+    -100,  200, # P2
+     100,  400, # P3
+     400,  300, # P4
+     700,  500  # P5
+  ], 2) # <- dimensionality of the points
 
-	tsBSpline spline;  /**< The spline to setup. */
-	tsReal *ctrlp;     /**< Pointer to the control points of `spline`. */
+# Draw spline as polyline.
+points = spline.sample(100)
+x = points[0::2]
+y = points[1::2]
+plt.plot(x, y)
 
-	tsBSpline beziers; /**< `spline` as a sequence of bezier curves. */
+# Draw point at knot 0.3.
+vec2 = spline.eval(0.3).result_vec2()
+plt.plot(vec2.x, vec2.y, 'ro')
 
-	tsDeBoorNet net;   /**< Used to evaluate `spline` and `beziers`. */
-	tsReal *result;    /**< Pointer to the result of `net`. */
+# Draw derivative at knot 0.7.
+pos = spline(0.7).result_vec2() # operator () -> eval
+der = spline.derive()(0.7).result_vec2().norm() * 200
+s = (pos - der)
+t = (pos + der)
+plt.plot([s.x, t.x], [s.y, t.y])
 
-/* ------------------------------------------------------------------------- */
-/* TinySpline includes a powerful, system-independent, and thread-safe error
- * handling system. Embed your code into a TS_TRY/TS_END_TRY block and use
- * TS_CALL when calling a TinySpline function. Likewise, you can use any of
- * the TS_THROW macros to raise an error if an external function (e.g.,
- * malloc) failed.
- *
- * Errors can be handled with TS_CATCH. TS_FINALLY contains code that is
- * executed in any case, therefore being perfectly suitable for cleaning up
- * resources. That said, error handling is entirely optional. You may omit
- * TS_TRY/TS_END_TRY, TS_CALL, and TS_THROW and pass NULL instead of a pointer
- * to a tsStatus object. */
-
-	spline = ts_bspline_init();
-	beziers = ts_bspline_init();
-	net = ts_deboornet_init();
-	ctrlp = result = NULL;
-	TS_TRY(try, status.code, &status)
-		/* Create a spline... */
-		TS_CALL(try, status.code, ts_bspline_new(
-			7, /* ... consisting of 7 control points... */
-			2, /* ... in 2D... */
-			3, /* ... of degree 3... */
-			TS_CLAMPED, /* ... using a clamped knot vector. */
-			&spline, &status))
-
-		/* Setup control points of `spline`. */
-		TS_CALL(try, status.code, ts_bspline_control_points(
-			&spline, &ctrlp, &status))
-		ctrlp[0]  = -1.75f; /* x0 */
-		ctrlp[1]  = -1.0f;  /* y0 */
-		ctrlp[2]  = -1.5f;  /* x1 */
-		ctrlp[3]  = -0.5f;  /* y1 */
-		ctrlp[4]  = -1.5f;  /* x2 */
-		ctrlp[5]  =  0.0f;  /* y2 */
-		ctrlp[6]  = -1.25f; /* x3 */
-		ctrlp[7]  =  0.5f;  /* y3 */
-		ctrlp[8]  = -0.75f; /* x4 */
-		ctrlp[9]  =  0.75f; /* y4 */
-		ctrlp[10] =  0.0f;  /* x5 */
-		ctrlp[11] =  0.5f;  /* y5 */
-		ctrlp[12] =  0.5f;  /* x6 */
-		ctrlp[13] =  0.0f;  /* y6 */
-		TS_CALL(try, status.code, ts_bspline_set_control_points(
-			&spline, ctrlp, &status))
-
-		/* Evaluate `spline` at u = 0.4. */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&spline, 0.4f, &net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		printf("x = %f, y = %f\n", result[0], result[1]);
-
-		/* Derive `spline` ... */
-		TS_CALL(try, status.code, ts_bspline_derive(
-			&spline, 1, TS_POINT_EPSILON,
-			&beziers, &status))
-		/* ... and subdivide it into a sequence of Bezier curves. */
-		TS_CALL(try, status.code, ts_bspline_to_beziers(
-			&beziers, &beziers, &status))
-
-		ts_deboornet_free(&net);
-		free(result);
-		/* Evaluate `beziers` at u = 0.3. */
-		TS_CALL(try, status.code, ts_bspline_eval(
-			&beziers, 0.3f, &net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-			&net, &result, &status))
-		printf("x = %f, y = %f\n", result[0], result[1]);
-	TS_CATCH(status.code)
-		puts(status.message);
-	TS_FINALLY
-		ts_bspline_free(&spline);
-		ts_bspline_free(&beziers);
-		ts_deboornet_free(&net);
-		if (ctrlp)
-			free(ctrlp);
-		if (result)
-			free(result);
-	TS_END_TRY
-
-	return status.code? 1 : 0;
-}
+plt.show()
 ```
-The same example using the C++ interface:
+The resulting image:
 
-```cpp
-#include <iostream>
-#include "tinysplinecxx.h"
-
-int main(int argc, char **argv)
-{
-	// Create a cubic spline with 7 control points in 2D using
-	// a clamped knot vector. This call is equivalent to:
-	// tinyspline::BSpline spline(7, 2, 3, TS_CLAMPED);
-	tinyspline::BSpline spline(7);
-
-	// Setup control points.
-	std::vector<tinyspline::real> ctrlp = spline.controlPoints();
-	ctrlp[0]  = -1.75; // x0
-	ctrlp[1]  = -1.0;  // y0
-	ctrlp[2]  = -1.5;  // x1
-	ctrlp[3]  = -0.5;  // y1
-	ctrlp[4]  = -1.5;  // x2
-	ctrlp[5]  =  0.0;  // y2
-	ctrlp[6]  = -1.25; // x3
-	ctrlp[7]  =  0.5;  // y3
-	ctrlp[8]  = -0.75; // x4
-	ctrlp[9]  =  0.75; // y4
-	ctrlp[10] =  0.0;  // x5
-	ctrlp[11] =  0.5;  // y5
-	ctrlp[12] =  0.5;  // x6
-	ctrlp[13] =  0.0;  // y6
-	spline.setControlPoints(ctrlp);
-
-	// Evaluate `spline` at u = 0.4 using 'eval'.
-	std::vector<tinyspline::real> result = spline.eval(0.4).result();
-	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
-
-	// Derive `spline` and subdivide it into a sequence of Bezier curves.
-	tinyspline::BSpline beziers = spline.derive().toBeziers();
-
-	// Evaluate `beziers` at u = 0.3 using '()' instead of 'eval'.
-	result = beziers(0.3).result();
-	std::cout << "x = " << result[0] << ", y = " << result[1] << std::endl;
-
-	return 0;
-}
-```
+![Getting Started](res/getting_started.png)
 
 ### Theoretical Backgrounds
 [[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html) is a very good starting point for B-Splines.

@@ -136,7 +136,7 @@ tinyspline::Vec2::multiply(real scalar) const
 }
 
 tinyspline::Vec2
-tinyspline::Vec2::norm() const
+tinyspline::Vec2::normalize() const
 {
 	Vec2 vec;
 	ts_vec_norm(m_vals, 2, vec.m_vals);
@@ -292,7 +292,7 @@ tinyspline::Vec3::cross(const Vec3 &other) const
 }
 
 tinyspline::Vec3
-tinyspline::Vec3::norm() const
+tinyspline::Vec3::normalize() const
 {
 	Vec3 vec;
 	ts_vec_norm(m_vals, 3, vec.m_vals);
@@ -454,7 +454,7 @@ tinyspline::Vec4::multiply(real scalar) const
 }
 
 tinyspline::Vec4
-tinyspline::Vec4::norm() const
+tinyspline::Vec4::normalize() const
 {
 	Vec4 vec;
 	ts_vec_norm(m_vals, 4, vec.m_vals);

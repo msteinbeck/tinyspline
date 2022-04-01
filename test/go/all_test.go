@@ -51,7 +51,7 @@ func TestFrames_TestVectors(t *testing.T) {
 		tan := spline.Derive().
 			Eval(knot).
 			ResultVec3().
-			Norm().
+			Normalize().
 			Distance(frame.GetTangent())
 		assert.InDelta(t, 0, tan, ts.TS_POINT_EPSILON)
 

@@ -48,7 +48,7 @@ public class FrameTest
             double tan = spline.Derive()
                                .Eval(knots[i])
                                .ResultVec3()
-                               .Norm()
+                               .Normalize()
                                .Distance(frame.Tangent);
             Assert.That(tan, Is.EqualTo(0)
                   .Within(tinysplinecsharp.TS_POINT_EPSILON));

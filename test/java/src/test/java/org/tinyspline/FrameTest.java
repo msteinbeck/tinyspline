@@ -45,7 +45,7 @@ public class FrameTest {
             double tan = spline.derive()
                                .eval(knots.get(i))
                                .resultVec3()
-                               .norm()
+                               .normalize()
                                .distance(frame.getTangent());
             assertThat(tan).isEqualTo(0, offset(TS_POINT_EPSILON));
 

@@ -160,11 +160,14 @@ frames_vectors(CuTest *tc)
 	for (size_t i = 0; i < knots.size(); i++) {
 		Frame frame = frames.at(i);
 
-		real pos = spline(knots[i]).resultVec3()
+		real pos = spline(knots[i])
+		           .resultVec3()
 		           .distance(frame.position());
 		CuAssertDblEquals(tc, 0, pos, POINT_EPSILON);
 
-		real tan = spline.derive()(knots[i]).resultVec3().norm()
+		real tan = spline.derive()(knots[i])
+		           .resultVec3()
+		           .normalize()
 		           .distance(frame.tangent());
 		CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
 

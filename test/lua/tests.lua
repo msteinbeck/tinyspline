@@ -48,10 +48,14 @@ function TestFrames:testVectors()
    for idx, knot in ipairs(knots) do
       frame = frames:at(idx - 1)
 
-      pos = spline(knot):result_vec3():distance(frame.position)
+      pos = spline(knot)
+         :result_vec3()
+         :distance(frame.position)
       lu.assertAlmostEquals(pos, 0, ts.TS_POINT_EPSILON)
 
-      tan = spline:derive()(knot):result_vec3():norm()
+      tan = spline:derive()(knot)
+         :result_vec3()
+         :normalize()
          :distance(frame.tangent)
       lu.assertAlmostEquals(tan, 0, ts.TS_POINT_EPSILON)
 

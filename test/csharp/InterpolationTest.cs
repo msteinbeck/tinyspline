@@ -23,7 +23,7 @@ public class InterpolationTest
     }
 
     [Test]
-    public void TestOpened()
+    public void TestCubicNatural()
     {
         // Given
         List<double> points = new List<double> {

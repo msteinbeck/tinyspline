@@ -14,7 +14,7 @@ public class FrameTest
     }
 
     [Test]
-    public void TestOpened()
+    public void TestVectors()
     {
         // Given
         BSpline spline = new BSpline(7, 2)

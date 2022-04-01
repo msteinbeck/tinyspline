@@ -80,6 +80,7 @@ public:
 	void setX(real val);
 	real y() const;
 	void setY(real val);
+	std::vector<real> values() const;
 
 	Vec2 add(const Vec2 &other) const;
 	Vec2 subtract(const Vec2 &other) const;
@@ -111,6 +112,7 @@ public:
 	void setY(real val);
 	real z() const;
 	void setZ(real val);
+	std::vector<real> values() const;
 
 	Vec3 add(const Vec3 &other) const;
 	Vec3 subtract(const Vec3 &other) const;
@@ -145,6 +147,7 @@ public:
 	void setZ(real val);
 	real w() const;
 	void setW(real val);
+	std::vector<real> values() const;
 
 	Vec4 add(const Vec4 &other) const;
 	Vec4 subtract(const Vec4 &other) const;

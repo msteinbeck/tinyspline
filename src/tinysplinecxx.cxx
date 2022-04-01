@@ -105,6 +105,12 @@ tinyspline::Vec2::setY(real val)
 	m_vals[1] = val;
 }
 
+std::vector<tinyspline::real>
+tinyspline::Vec2::values() const
+{
+	return std::vector<real>({ x(), y() });
+}
+
 tinyspline::Vec2
 tinyspline::Vec2::add(const Vec2 &other) const
 {
@@ -245,6 +251,12 @@ void
 tinyspline::Vec3::setZ(real val)
 {
 	m_vals[2] = val;
+}
+
+std::vector<tinyspline::real>
+tinyspline::Vec3::values() const
+{
+	return std::vector<real>({ x(), y(), z() });
 }
 
 tinyspline::Vec3
@@ -409,6 +421,12 @@ void
 tinyspline::Vec4::setW(real val)
 {
 	m_vals[3] = val;
+}
+
+std::vector<tinyspline::real>
+tinyspline::Vec4::values() const
+{
+	return std::vector<real>({ x(), y(), z(), w() });
 }
 
 tinyspline::Vec4

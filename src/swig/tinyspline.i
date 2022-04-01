@@ -126,6 +126,10 @@
 	y,
 	y,
 	setY);
+%attributeval(tinyspline::Vec2,
+	std::vector<tinyspline::real>,
+	values,
+	values);
 %attribute(tinyspline::Vec3,
 	tinyspline::real,
 	x,
@@ -141,6 +145,10 @@
 	z,
 	z,
 	setZ);
+%attributeval(tinyspline::Vec3,
+	std::vector<tinyspline::real>,
+	values,
+	values);
 %attribute(tinyspline::Vec4,
 	tinyspline::real,
 	x,
@@ -161,6 +169,10 @@
 	w,
 	w,
 	setW);
+%attributeval(tinyspline::Vec4,
+	std::vector<tinyspline::real>,
+	values,
+	values);
 #endif
 
 // Make strings directly accessible in target language.

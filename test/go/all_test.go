@@ -1,8 +1,8 @@
 package main
 
 import (
-	ts "github.com/tinyspline/go"
 	"github.com/stretchr/testify/assert"
+	ts "github.com/tinyspline/go"
 	"testing"
 )
 
@@ -105,4 +105,40 @@ func TestInterpolation_TestCubicNatural(t *testing.T) {
 	ae(spline.ControlPointVec2At(13), 5.0, 3.0)
 	ae(spline.ControlPointVec2At(14), 6.0, 4.0)
 	ae(spline.ControlPointVec2At(15), 7.0, 5.0)
+}
+
+func TestVec_TestValuesVec2(t *testing.T) {
+	// Given
+	vec := ts.NewVec2(1.0, 2.0)
+
+	// When
+	values := vec.GetValues()
+
+	// Then
+	expected := []float64{1.0, 2.0}
+	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
+}
+
+func TestVec_TestValuesVec3(t *testing.T) {
+	// Given
+	vec := ts.NewVec3(3.0, 2.0, 1.0)
+
+	// When
+	values := vec.GetValues()
+
+	// Then
+	expected := []float64{3.0, 2.0, 1.0}
+	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
+}
+
+func TestVec_TestValuesVec4(t *testing.T) {
+	// Given
+	vec := ts.NewVec4(1.0, 3.0, 2.0, 4.0)
+
+	// When
+	values := vec.GetValues()
+
+	// Then
+	expected := []float64{1.0, 3.0, 2.0, 4.0}
+	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
 }

@@ -121,4 +121,43 @@ end
 
 
 
+TestVec = {}
+
+function TestVec:testValuesVec2()
+   -- Given
+   vec = ts.Vec2(1, 2)
+
+   -- When
+   values = vec.values
+
+   -- Then
+   lu.assertAlmostEquals({ 1, 2 }, values, ts.TS_KNOT_EPSILON)
+end
+
+function TestVec:testValuesVec3()
+   -- Given
+   vec = ts.Vec3(3, 2, 1)
+
+   -- When
+   values = vec.values
+
+   -- Then
+   lu.assertAlmostEquals({ 3, 2, 1 }, values, ts.TS_KNOT_EPSILON)
+end
+
+function TestVec:testValuesVec4()
+   -- Given
+   vec = ts.Vec4(1, 3, 2, 4)
+
+   -- When
+   values = vec.values
+
+   -- Then
+   lu.assertAlmostEquals({ 1, 3, 2, 4 }, values, ts.TS_KNOT_EPSILON)
+end
+
+-- end TestVec
+
+
+
 os.exit( lu.run() )

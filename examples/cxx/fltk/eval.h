@@ -141,9 +141,9 @@ public:
 		return m_drawNet;
 	}
 
-	void drawNet(bool mDrawNet)
+	void drawNet(bool value)
 	{
-		m_drawNet = mDrawNet;
+		m_drawNet = value;
 	}
 
 private:

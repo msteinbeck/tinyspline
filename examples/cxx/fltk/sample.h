@@ -101,8 +101,8 @@ public:
 		return m_drawPoints;
 	}
 
-	void drawPoints(bool drawPoints) {
-		m_drawPoints = drawPoints;
+	void drawPoints(bool value) {
+		m_drawPoints = value;
 	}
 
 	bool drawControlPoints() const
@@ -110,9 +110,9 @@ public:
 		return m_drawControlPoints;
 	}
 
-	void drawControlPoints(bool drawControlPoints)
+	void drawControlPoints(bool value)
 	{
-		m_drawControlPoints = drawControlPoints;
+		m_drawControlPoints = value;
 	}
 
 private:

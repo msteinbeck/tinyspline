@@ -4,10 +4,10 @@ header_name {.h}
 code_name {.cxx}
 Function {make_window()} {open
 } {
-  Fl_Window {} {open
+  Fl_Window {} {open selected
     xywh {2324 294 900 600} type Double visible
   } {
-    Fl_Tabs {} {
+    Fl_Tabs {} {open
       xywh {10 10 880 585}
     } {
       Fl_Group {} {
@@ -124,28 +124,44 @@ sample->redraw();}
         }
       }
       Fl_Group {} {
-        label Interpolation
-        xywh {25 35 865 560}
+        label Interpolation open
+        xywh {25 35 865 560} hide
       } {
         Fl_Box interpolation {
           xywh {25 50 525 525}
           code0 {\#include "interpolation.h"}
           class Interpolation
         }
-        Fl_Group {} {
+        Fl_Group {} {open
           xywh {579 50 301 525}
         } {
           Fl_Light_Button interpolationCubicNatural {
             label {Cubic Natural}
+            callback {interpolation->drawCubicNatural(((Fl_Button *)o)->value());
+interpolation->redraw();}
             xywh {580 50 300 25}
+            code0 {interpolationCubicNatural->value(interpolation->drawCubicNatural());}
           }
           Fl_Light_Button interpolationCatmullRom {
             label {Catmull-Rom}
+            callback {interpolation->drawCatmullRom(((Fl_Button *)o)->value());
+interpolation->redraw();}
             xywh {580 95 300 25}
+            code0 {interpolationCatmullRom->value(interpolation->drawCatmullRom());}
           }
-          Fl_Value_Slider {} {
+          Fl_Value_Slider interpolationAlpha {
             label alpha
+            callback {interpolation->alpha(((Fl_Slider *)o)->value());
+interpolation->redraw();}
             xywh {670 130 210 25} type Horizontal align 4 value 0.5
+            code0 {interpolationAlpha->value(interpolation->alpha());}
+          }
+          Fl_Button interpolationReset {
+            label Reset
+            callback {interpolation->reset();
+interpolationAlpha->value(interpolation->alpha());
+interpolation->redraw();}
+            xywh {735 221 145 25}
           }
           Fl_Text_Display interpolationInfo {
             label Info

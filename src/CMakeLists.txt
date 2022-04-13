@@ -41,10 +41,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 #   Current version.
 #
 # TINYSPLINE_SUMMARY
-#   Short describtion.
+#   Short description.
 #
 # TINYSPLINE_DESCRIPTION
-#   Long describtion.
+#   Long description.
 ###############################################################################
 set(TINYSPLINE_PACKAGE_NAME
 	"tinyspline"

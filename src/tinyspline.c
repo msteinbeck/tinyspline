@@ -988,7 +988,12 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 	/* `num_points` >= 3 */
 	thomas = NULL;
 	TS_TRY(try, err, status)
-		thomas = (tsReal *) malloc(3 * num_int_points * sof_ctrlp);
+		thomas = (tsReal *) malloc(
+			/* `a', `b', `c' (note that `c' is equal to `a') */
+			2 * num_int_points * sizeof(tsReal) +
+			/* `d' and "result of the thomas algorithm" (which
+			   contains `num_points' points) */
+			num_points * dimension * sizeof(tsReal));
 		if (!thomas) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
 			           "out of memory")
@@ -997,10 +1002,10 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
 		 *     pst-bspline-doc.pdf */
 		a = c = thomas;
-		ts_arr_fill(a, len_int_points, 1);
-		b = a + len_int_points;
-		ts_arr_fill(b, len_int_points, 4);
-		d = b + len_int_points;
+		ts_arr_fill(a, num_int_points, 1);
+		b = a + num_int_points;
+		ts_arr_fill(b, num_int_points, 4);
+		d = b + num_int_points;
 		/* 6 * S_{i+1} */
 		for (i = 0; i < num_int_points; i++) {
 			for (j = 0; j < dimension; j++) {

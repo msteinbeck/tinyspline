@@ -113,5 +113,39 @@ class TestInterpolation(unittest.TestCase):
 
 
 
+class TestVec(unittest.TestCase):
+
+    def testValuesVec2(self):
+        # Given
+        vec = Vec2(1, 2)
+
+        # When
+        values = vec.values
+
+        # Then
+        assertKnotsAlmostEqual([1, 2], values, self)
+
+    def testValuesVec3(self):
+        # Given
+        vec = Vec3(3, 2, 1)
+
+        # When
+        values = vec.values
+
+        # Then
+        assertKnotsAlmostEqual([3, 2, 1], values, self)
+
+    def testValuesVec4(self):
+        # Given
+        vec = Vec4(1, 3, 2, 4)
+
+        # When
+        values = vec.values
+
+        # Then
+        assertKnotsAlmostEqual([1, 3, 2, 4], values, self)
+
+
+
 if __name__ == '__main__':
     unittest.main()

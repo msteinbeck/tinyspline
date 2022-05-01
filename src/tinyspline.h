@@ -7,6 +7,27 @@
 
 
 
+/*! @name Deprecation
+ *
+ * The macro \c TS_DEPRECATED can be used to mark functions as
+ * deprecated.
+ *
+ * @{
+ */
+#if defined(__GNUC__) || defined(__clang__)
+#define TS_DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define TS_DEPRECATED __declspec(deprecated)
+#elif defined(SWIG)
+#define TS_DEPRECATED
+#else
+#warning "WARNING: TS_DEPRECATED is not supported by compiler"
+#define TS_DEPRECATED
+#endif
+/*! @} */
+
+
+
 /*! @name Library Export/Import
  *
  * If TinySpline is built for Windows, the macros \c TINYSPLINE_SHARED_EXPORT

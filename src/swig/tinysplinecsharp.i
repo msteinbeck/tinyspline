@@ -74,6 +74,13 @@
 	{ return vec.Multiply(val); }
 }
 
+%csattributes tinyspline::Vec2::norm
+	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
+%csattributes tinyspline::Vec3::norm
+	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
+%csattributes tinyspline::Vec4::norm
+	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
+
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
 %csmethodmodifiers tinyspline::DeBoorNet::toString "public override";
 %csmethodmodifiers tinyspline::Domain::toString "public override";

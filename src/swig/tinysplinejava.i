@@ -23,6 +23,10 @@
 %ignore tinyspline::Vec4::operator-;
 %ignore tinyspline::Vec4::operator*;
 
+%javamethodmodifiers tinyspline::Vec2::norm "@Deprecated public";
+%javamethodmodifiers tinyspline::Vec3::norm "@Deprecated public";
+%javamethodmodifiers tinyspline::Vec4::norm "@Deprecated public";
+
 %javamethodmodifiers tinyspline::BSpline::toString "@Override public";
 %javamethodmodifiers tinyspline::DeBoorNet::toString "@Override public";
 %javamethodmodifiers tinyspline::Domain::toString "@Override public";

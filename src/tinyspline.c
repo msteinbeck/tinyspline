@@ -1710,6 +1710,126 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 	knots[num - 1] = max;
 	knots[0] = min;
 }
+
+tsError
+ts_bspline_cubic_polynomials(const tsBSpline *spline,
+                             tsReal eps,
+                             tsReal **vals,
+                             size_t *num,
+                             tsStatus *status)
+{
+	size_t dim, order;
+	tsBSpline beziers, worker;
+	const tsReal *ctrlp;
+	tsReal x1, y1, yp1, x2, y2, yp2;
+	tsReal xd[4], yd[4];
+	size_t nb, n, i, j, k;
+	tsError err;
+
+	/* Check input. */
+	*vals = NULL;
+	*num = 0;
+	dim = ts_bspline_dimension(spline);
+	order = ts_bspline_order(spline);
+	if (dim < 2) {
+	}
+	if (order >= 5) {
+	}
+
+	ts_int_bspline_init(&beziers);
+	ts_int_bspline_init(&worker);
+	TS_TRY(try, err, status)
+		/* Prepare `beziers'. */
+		if (order < 4) {
+			TS_CALL(try, err, ts_bspline_elevate_degree(
+			        spline, 4 - order, eps, &beziers, status))
+			/* Must be applied after degree elevation! */
+			TS_CALL(try, err, ts_bspline_to_beziers(
+			        &beziers, &beziers, status))
+		} else {
+			TS_CALL(try, err, ts_bspline_to_beziers(
+			        spline, &beziers, status))
+		}
+		nb = ts_bspline_num_control_points(&beziers) / 4;
+		/* `beziers' is now a cubic spline (order == 4). */
+
+		/* Set up output (`vals', `num'). */
+		*vals = malloc(nb * 6 * sizeof(tsReal));
+		if (!*vals) {
+			ts_bspline_free(&beziers);
+			/* `worker' has not yet been initialized. */
+			TS_RETURN_0(status, TS_MALLOC, "out of memory")
+		}
+		*num = nb;
+
+		/* For each cubic bezier curve... */
+		for (n = 0; n < nb; n++) {
+			ctrlp = ts_bspline_control_points_ptr(&beziers) + n * dim;
+			k = n * 6; /* base address of `n' in `vals'. */
+
+			/* Special case: very short curve. */
+			if (ts_distance(ctrlp, ctrlp + 3 * dim, 1)
+			    <= fabs(eps)) {
+				ts_arr_fill(*vals + k    , 3,           x1);
+				ts_arr_fill(*vals + k + 3, 3, (tsReal) 0.0);
+				continue;
+			}
+
+			/* Compute derivative (stored in `worker'). */
+			TS_CALL(try, err, ts_bspline_new(
+			        4, dim, 3, TS_CLAMPED, &worker, status))
+			TS_CALL(try, err, ts_bspline_set_control_points(
+			        &worker, ctrlp, status))
+			TS_CALL(try, err, ts_bspline_derive(
+			        &worker, 1, 0.0, &worker, status))
+
+			/* Compute input for hermite interpolation. */
+			x1 = ctrlp[0];
+			y1 = ctrlp[1];
+			x2 = ctrlp[3 * dim];
+			y2 = ctrlp[3 * dim + 1];
+			ctrlp = ts_bspline_control_points_ptr(&worker);
+			yp1 = ctrlp[1];
+			yp2 = ctrlp[2 * dim + 1];
+
+			/* Sets up divided difference table. */
+			/* See: https://people.math.sc.edu/Burkardt/cpp_src/hermite/hermite.cpp */
+			xd[0] = xd[1] = x1;
+			xd[2] = xd[3] = x2;
+			yd[0] = y1;
+			yd[1] = yp1;
+			yd[2] = (y2 - y1) / (x2 - x1);
+			yd[3] = yp2;
+			for (i = 2; i < 4; i++) {
+				for (j = 3; i <= j; j--) {
+					yd[j] = (yd[j] - yd[j-1]) /
+						(xd[j] - xd[j-i]);
+				}
+			}
+
+			/* Compute domain and coefficients. */
+			/* See: https://people.math.sc.edu/Burkardt/cpp_src/hermite/hermite.cpp */
+			(*vals)[k] = x1;
+			(*vals)[k+1] = x2;
+			memcpy((*vals) + k+2, yd, 4 * sizeof(tsReal));
+			for (j = 1; j <= 3; j++) {
+				for (i = 1; i <= 3 - j; i++) {
+					(*vals)[k+2 + 3 - i] -=
+						xd[4-i-j] * (*vals)[k+2 + 4-i];
+				}
+			}
+
+			/* Clean up. */
+			ts_bspline_free(&worker);
+		}
+	TS_CATCH(err)
+		*vals = NULL;
+		*num = 0;
+	TS_FINALLY
+		ts_bspline_free(&beziers);
+		ts_bspline_free(&worker);
+	TS_END_TRY_RETURN(err)
+}
 /*! @} */
 
 

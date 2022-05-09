@@ -2017,6 +2017,13 @@ void TINYSPLINE_API
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
                             size_t num,
                             tsReal *knots);
+
+tsError TINYSPLINE_API
+ts_bspline_cubic_polynomials(const tsBSpline *spline,
+                             tsReal eps,
+                             tsReal **vals,
+                             size_t *num,
+                             tsStatus *status);
 /*! @} */
 
 

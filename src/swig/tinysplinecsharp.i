@@ -115,10 +115,15 @@
 	"RealVector.getCPtr(new RealVector($csinput))"
 
 // Fix memory ownership of non-property methods returning
-// std::vector<tinyspline::real> as pointer.
-%newobject tinyspline::BSpline::controlPointAt;
-%newobject tinyspline::BSpline::evalAll;
-%newobject tinyspline::BSpline::sample;
+// std::vector<tinyspline::real> as pointer. As the memory for
+// RealVector is always owned by the client, it is safe to create all
+// instance with `cMemoryOwn = true` (effectively disabling Swig's
+// memory ownership prediction).
+%typemap(csout, excode=SWIGEXCODE) std::vector<tinyspline::real> * {
+    global::System.IntPtr cPtr = $imcall;
+    $csclassname ret = (cPtr == global::System.IntPtr.Zero) ? null : new $csclassname(cPtr, true);$excode
+    return ret;
+  }
 
 %include "tinyspline.i"
 

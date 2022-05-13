@@ -4,6 +4,8 @@
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 
+%include "snake_case.swg"
+
 %rename (__tostring) tinyspline::BSpline::toString;
 %rename (__tostring) tinyspline::DeBoorNet::toString;
 %rename (__tostring) tinyspline::Domain::toString;
@@ -13,9 +15,6 @@
 %rename (__tostring) tinyspline::Vec2::toString;
 %rename (__tostring) tinyspline::Vec3::toString;
 %rename (__tostring) tinyspline::Vec4::toString;
-
-%rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Lua table.
 %typemap(out) std::vector<tinyspline::real> * {

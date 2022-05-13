@@ -88,28 +88,28 @@ class TestInterpolation(unittest.TestCase):
         self.assertEqual(16, spline.num_control_points)
 
         # First bezier segment.
-        self.assertEquals(spline.control_point_vec_2at(0), 1.0, -1.0)
-        self.assertEquals(spline.control_point_vec_2at(1), 0.0, 0.0)
-        self.assertEquals(spline.control_point_vec_2at(2), -1.0, 1.0)
-        self.assertEquals(spline.control_point_vec_2at(3), -1.0, 2.0)
+        self.assertEquals(spline.control_point_vec2_at(0), 1.0, -1.0)
+        self.assertEquals(spline.control_point_vec2_at(1), 0.0, 0.0)
+        self.assertEquals(spline.control_point_vec2_at(2), -1.0, 1.0)
+        self.assertEquals(spline.control_point_vec2_at(3), -1.0, 2.0)
 
         # Second bezier segment.
-        self.assertEquals(spline.control_point_vec_2at(4), -1.0, 2.0)
-        self.assertEquals(spline.control_point_vec_2at(5), -1.0, 3.0)
-        self.assertEquals(spline.control_point_vec_2at(6), 0.0, 4.0)
-        self.assertEquals(spline.control_point_vec_2at(7), 1.0, 4.0)
+        self.assertEquals(spline.control_point_vec2_at(4), -1.0, 2.0)
+        self.assertEquals(spline.control_point_vec2_at(5), -1.0, 3.0)
+        self.assertEquals(spline.control_point_vec2_at(6), 0.0, 4.0)
+        self.assertEquals(spline.control_point_vec2_at(7), 1.0, 4.0)
 
         # Third bezier segment.
-        self.assertEquals(spline.control_point_vec_2at(8), 1.0, 4.0)
-        self.assertEquals(spline.control_point_vec_2at(9), 2.0, 4.0)
-        self.assertEquals(spline.control_point_vec_2at(10), 3.0, 3.0)
-        self.assertEquals(spline.control_point_vec_2at(11), 4.0, 3.0)
+        self.assertEquals(spline.control_point_vec2_at(8), 1.0, 4.0)
+        self.assertEquals(spline.control_point_vec2_at(9), 2.0, 4.0)
+        self.assertEquals(spline.control_point_vec2_at(10), 3.0, 3.0)
+        self.assertEquals(spline.control_point_vec2_at(11), 4.0, 3.0)
 
         # Forth bezier segment.
-        self.assertEquals(spline.control_point_vec_2at(12), 4.0, 3.0)
-        self.assertEquals(spline.control_point_vec_2at(13), 5.0, 3.0)
-        self.assertEquals(spline.control_point_vec_2at(14), 6.0, 4.0)
-        self.assertEquals(spline.control_point_vec_2at(15), 7.0, 5.0)
+        self.assertEquals(spline.control_point_vec2_at(12), 4.0, 3.0)
+        self.assertEquals(spline.control_point_vec2_at(13), 5.0, 3.0)
+        self.assertEquals(spline.control_point_vec2_at(14), 6.0, 4.0)
+        self.assertEquals(spline.control_point_vec2_at(15), 7.0, 5.0)
 
 
 

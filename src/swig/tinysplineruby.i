@@ -11,27 +11,17 @@
 %ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec4::operator=;
 
-%rename (inspect) tinyspline::BSpline::toString;
-%extend tinyspline::BSpline {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::DeBoorNet::toString;
-%extend tinyspline::DeBoorNet {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Domain::toString;
-%extend tinyspline::Domain {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Frame::toString;
-%extend tinyspline::Frame {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::FrameSeq::toString;
-%extend tinyspline::FrameSeq {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Morphism::toString;
-%extend tinyspline::Morphism {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Vec2::toString;
-%extend tinyspline::Vec2 {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Vec3::toString;
-%extend tinyspline::Vec3 {std::string to_s() { return $self->toString(); }}
-%rename (inspect) tinyspline::Vec4::toString;
-%extend tinyspline::Vec4 {std::string to_s() { return $self->toString(); }}
+%include "snake_case.swg"
 
-%rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
+%rename (inspect) tinyspline::BSpline::toString;
+%rename (inspect) tinyspline::DeBoorNet::toString;
+%rename (inspect) tinyspline::Domain::toString;
+%rename (inspect) tinyspline::Frame::toString;
+%rename (inspect) tinyspline::FrameSeq::toString;
+%rename (inspect) tinyspline::Morphism::toString;
+%rename (inspect) tinyspline::Vec2::toString;
+%rename (inspect) tinyspline::Vec3::toString;
+%rename (inspect) tinyspline::Vec4::toString;
 
 // Map std::vector<tinyspline::real> to Ruby array.
 %typemap(out) std::vector<tinyspline::real> * {

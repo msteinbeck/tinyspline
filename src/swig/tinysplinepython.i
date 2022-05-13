@@ -9,6 +9,8 @@
 %ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec4::operator=;
 
+%include "snake_case.swg"
+
 %rename (__repr__) tinyspline::BSpline::toString;
 %rename (__repr__) tinyspline::DeBoorNet::toString;
 %rename (__repr__) tinyspline::Domain::toString;
@@ -18,9 +20,6 @@
 %rename (__repr__) tinyspline::Vec2::toString;
 %rename (__repr__) tinyspline::Vec3::toString;
 %rename (__repr__) tinyspline::Vec4::toString;
-
-%rename("%(undercase)s", %$isfunction) "";
-%rename("%(undercase)s", %$ismember, %$not %$isconstructor, %$not %$isenumitem) "";
 
 // Map std::vector<tinyspline::real> to Python list.
 %typemap(out) std::vector<tinyspline::real> * (int size, PyObject *data) {

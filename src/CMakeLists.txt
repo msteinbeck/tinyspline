@@ -1402,14 +1402,17 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 
   # Python
   if(${TINYSPLINE_ENABLE_PYTHON})
-    if(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
-      # Map legacy variables.
-      if(DEFINED PYTHON_INCLUDE_DIR)
-        set(Python2_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR})
+    if(DEFINED PYTHON_INCLUDE_DIR OR DEFINED PYTHON_LIBRARY)
+      # Legacy behavior.
+      find_package(PythonLibs REQUIRED)
+      set(TINYSPLINE_PYTHON_FOUND ${PYTHONLIBS_FOUND})
+      set(TINYSPLINE_PYTHON_VERSION_STRING ${PYTHONLIBS_VERSION_STRING})
+      set(TINYSPLINE_PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
+      set(TINYSPLINE_PYTHON_LIBRARIES ${PYTHON_LIBRARIES})
+      if(${PYTHONLIBS_VERSION_STRING} MATCHES "^3.")
+        set(TINYSPLINE_PYTHON_DEFINES "-py3")
       endif()
-      if(DEFINED PYTHON_LIBRARY)
-        set(Python2_LIBRARIES ${PYTHON_LIBRARY})
-      endif()
+    elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "2")
       find_package(Python2 REQUIRED
         COMPONENTS Interpreter Development
         )
@@ -1418,13 +1421,6 @@ if(${TINYSPLINE_BINDING_REQUESTED})
       set(TINYSPLINE_PYTHON_INCLUDE_DIRS ${Python2_INCLUDE_DIRS})
       set(TINYSPLINE_PYTHON_LIBRARIES ${Python2_LIBRARIES})
     elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "3")
-      # Map legacy variables.
-      if(DEFINED PYTHON_INCLUDE_DIR)
-        set(Python3_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR})
-      endif()
-      if(DEFINED PYTHON_LIBRARY)
-        set(Python3_LIBRARIES ${PYTHON_LIBRARY})
-      endif()
       find_package(Python3 REQUIRED
         COMPONENTS Interpreter Development
         )
@@ -1434,13 +1430,6 @@ if(${TINYSPLINE_BINDING_REQUESTED})
       set(TINYSPLINE_PYTHON_LIBRARIES ${Python3_LIBRARIES})
       set(TINYSPLINE_PYTHON_DEFINES "-py3")
     elseif(${TINYSPLINE_PYTHON_VERSION} STREQUAL "ANY")
-      # Map legacy variables.
-      if(DEFINED PYTHON_INCLUDE_DIR)
-        set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR})
-      endif()
-      if(DEFINED PYTHON_LIBRARY)
-        set(Python_LIBRARIES ${PYTHON_LIBRARY})
-      endif()
       find_package(Python REQUIRED
         COMPONENTS Interpreter Development
         )

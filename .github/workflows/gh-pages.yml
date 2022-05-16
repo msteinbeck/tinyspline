@@ -26,4 +26,4 @@ jobs:
       if: ${{ github.ref == 'refs/heads/master' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: $GITHUB_WORKSPACE/tools/ci/docs/doxygen/html
+        publish_dir: ${{runner.workspace}}/tools/ci/docs/doxygen/html

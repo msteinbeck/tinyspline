@@ -1024,8 +1024,8 @@ endif()
 function (tinyspline_add_swig_library)
 	cmake_parse_arguments(ARGS
 		""
-		"TARGET;TYPE;LANG;OUTPUT;LIBS;NAME"
-		"SWIG_ARGS;FLAGS"
+                "TARGET;TYPE;LANG;OUTPUT;NAME"
+                "SWIG_ARGS;FLAGS;LIBS"
 		${ARGN})
 	set_source_files_properties("swig/${ARGS_TARGET}.i"
 		PROPERTIES CPLUSPLUS ON)

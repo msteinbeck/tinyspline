@@ -20,11 +20,12 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/tools/ci
         ./docs.sh
+        cp -a docs/doxygen/html/ $GITHUB_WORKSPACE/public
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       if: ${{ github.ref == 'refs/heads/master' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ${{runner.workspace}}/tools/ci/docs/doxygen/html
+        publish_dir: ./public
         force_orphan: true

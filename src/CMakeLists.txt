@@ -1451,6 +1451,8 @@ if(${TINYSPLINE_BINDING_REQUESTED})
       if(${Python_VERSION_MAJOR} VERSION_EQUAL 3)
         set(TINYSPLINE_PYTHON_DEFINES "-py3")
       endif()
+    else()
+      message(FATAL_ERROR "Python version is not supported")
     endif()
 
     include_directories(${TINYSPLINE_PYTHON_INCLUDE_DIRS})

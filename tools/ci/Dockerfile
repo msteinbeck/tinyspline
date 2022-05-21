@@ -39,6 +39,15 @@ RUN apt-get update &&                          \
         zip &&                                 \
     python2 -m pip install setuptools wheel && \
     python3 -m pip install setuptools wheel && \
+    wget -P /usr/local/src/doxygen \
+        https://sourceforge.net/projects/doxygen/files/rel-1.9.0/doxygen-1.9.0.src.tar.gz && \
+    tar -xf /usr/local/src/doxygen/doxygen-1.9.0.src.tar.gz \
+        -C /usr/local/src/doxygen \
+        --strip 1 && \
+    cd /usr/local/src/doxygen && \
+        cmake . && \
+        make && \
+        make install && \
     wget -P /usr/local/src/swig \
         http://prdownloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
     tar -xf /usr/local/src/swig/swig-4.0.2.tar.gz \

@@ -141,6 +141,7 @@ docker run \
 			gem build tinyspline.gemspec && \
 				chown $(id -u):$(id -g) *.gem && \
 				cp -a *.gem ${STORAGE}/linux64 && \
+				cp -a *.gemspec ${STORAGE}/linux64 && \
 		rm -rf ..?* .[!.]* * && \
 			PATH=/opt/linux/ruby24/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \

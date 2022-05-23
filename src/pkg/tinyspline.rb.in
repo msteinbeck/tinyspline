@@ -1,0 +1,3 @@
+ruby_version_array = RUBY_VERSION.split('.')
+require "@TINYSPLINE_RUBY_CMAKE_TARGET@" + ruby_version_array[0] + ruby_version_array[1]
+TinySpline = Kernel.const_get("@TINYSPLINE_RUBY_CMAKE_TARGET@".capitalize() + ruby_version_array[0] + ruby_version_array[1])

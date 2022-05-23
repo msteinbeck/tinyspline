@@ -1636,11 +1636,29 @@ if(${TINYSPLINE_BINDING_REQUESTED})
   if(${TINYSPLINE_ENABLE_RUBY})
     find_package(Ruby REQUIRED)
     include_directories(${RUBY_INCLUDE_DIRS})
+    set(TINYSPLINE_RUBY_LIB_NAME
+        "${TINYSPLINE_RUBY_CMAKE_TARGET}${RUBY_VERSION_MAJOR}${RUBY_VERSION_MINOR}"
+    )
+    configure_file(
+      "pkg/tinyspline.rb.in"
+      "${TINYSPLINE_RUBY_SOURCE_DIRECTORY}/tinyspline.rb" @ONLY
+    )
     tinyspline_add_swig_library(
       TARGET ${TINYSPLINE_RUBY_CMAKE_TARGET}
       LANG ruby
       OUTPUT ${TINYSPLINE_RUBY_SOURCE_DIRECTORY}
       LIBS ${RUBY_LIBRARY}
+      NAME ${TINYSPLINE_RUBY_LIB_NAME}
+      SWIG_ARGS -module ${TINYSPLINE_RUBY_LIB_NAME}
+    )
+    add_custom_command(
+      TARGET ${TINYSPLINE_RUBY_CMAKE_TARGET}
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        "${TINYSPLINE_RUBY_SOURCE_DIRECTORY}/tinyspline.rb"
+        "${TINYSPLINE_OUTPUT_DIRECTORY}"
+      BYPRODUCTS "${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.rb"
     )
   endif()
 endif()
@@ -1867,7 +1885,8 @@ file(REMOVE "${TINYSPLINE_BINARY_DIR}/tinyspline.gemspec")
 if(${TINYSPLINE_WITH_RUBY})
   set(TINYSPLINE_RUBY_REQ_VERSION "${RUBY_VERSION_MAJOR}.${RUBY_VERSION_MINOR}")
   set(TINYSPLINE_GEM_FILES
-      "Dir.glob(\"{${TINYSPLINE_LIB_DIR}}/*${TINYSPLINE_RUBY_CMAKE_TARGET}*\")"
+      "Dir.glob(\"{${TINYSPLINE_LIB_DIR}}/*${TINYSPLINE_RUBY_CMAKE_TARGET}*\") \
+<< \"${TINYSPLINE_LIB_DIR}/tinyspline.rb\""
   )
   foreach(lib ${TINYSPLINE_RUNTIME_LIBS})
     set(TINYSPLINE_GEM_FILES "${TINYSPLINE_GEM_FILES} \

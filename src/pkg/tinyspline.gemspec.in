@@ -10,6 +10,6 @@ Gem::Specification.new do |spec|
   spec.files       = @TINYSPLINE_GEM_FILES@
   spec.homepage    = '@TINYSPLINE_URL@'
   spec.license     = '@TINYSPLINE_LICENSE@'
-  spec.platform    = Gem::Platform.local
+  spec.platform    = '@TINYSPLINE_RUBY_PLATFORM@'
   spec.required_ruby_version = '~> @TINYSPLINE_RUBY_REQ_VERSION@'
 end

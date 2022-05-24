@@ -1639,6 +1639,11 @@ if(${TINYSPLINE_BINDING_REQUESTED})
     set(TINYSPLINE_RUBY_LIB_NAME
         "${TINYSPLINE_RUBY_CMAKE_TARGET}${RUBY_VERSION_MAJOR}${RUBY_VERSION_MINOR}"
     )
+    execute_process(
+      COMMAND ${RUBY_EXECUTABLE} -e "puts Gem::Platform.local.to_s()"
+      OUTPUT_VARIABLE TINYSPLINE_RUBY_PLATFORM
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
     configure_file(
       "pkg/tinyspline.rb.in"
       "${TINYSPLINE_RUBY_SOURCE_DIRECTORY}/tinyspline.rb" @ONLY

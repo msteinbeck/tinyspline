@@ -186,6 +186,30 @@ RUN apt-get update &&                          \
             LDFLAGS=-Wl,-rpath=/opt/linux/ruby27/lib && \
         make && \
         make install && \
+    wget -P /usr/local/src/ruby30 \
+        https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.4.tar.gz && \
+    tar -xf /usr/local/src/ruby30/ruby-3.0.4.tar.gz \
+        -C /usr/local/src/ruby30 \
+        --strip 1 && \
+    cd /usr/local/src/ruby30 && \
+        ./configure \
+            --prefix=/opt/linux/ruby30 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby30/lib && \
+        make && \
+        make install && \
+    wget -P /usr/local/src/ruby31 \
+        https://cache.ruby-lang.org/pub/ruby/3.1/ruby-3.1.2.tar.gz && \
+    tar -xf /usr/local/src/ruby31/ruby-3.1.2.tar.gz \
+        -C /usr/local/src/ruby31 \
+        --strip 1 && \
+    cd /usr/local/src/ruby31 && \
+        ./configure \
+            --prefix=/opt/linux/ruby31 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby31/lib && \
+        make && \
+        make install && \
     wget -P /usr/local/src/lua54 \
         https://sourceforge.net/projects/luabinaries/files/5.4.2/Linux%20Libraries/lua-5.4.2_Linux54_64_lib.tar.gz && \
     mkdir -p /opt/linux/lua54 && \

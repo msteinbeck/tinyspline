@@ -216,23 +216,31 @@ docker run \
 				chown $(id -u):$(id -g) *.gem && \
 				cp -a *.gem ${STORAGE}/linux64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			PATH=/opt/linux/ruby30/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/linux/python39/include/python3.9 \
-				-DPYTHON_LIBRARY=/opt/linux/python39/lib/libpython3.9.so && \
+				-DPYTHON_LIBRARY=/opt/linux/python39/lib/libpython3.9.so \
+				-DTINYSPLINE_ENABLE_RUBY=True && \
 			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/linux64 && \
 		rm -rf ..?* .[!.]* * && \
-			cmake .. \
+			PATH=/opt/linux/ruby31/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/linux/python310/include/python3.10 \
-				-DPYTHON_LIBRARY=/opt/linux/python310/lib/libpython3.10.so && \
+				-DPYTHON_LIBRARY=/opt/linux/python310/lib/libpython3.10.so \
+				-DTINYSPLINE_ENABLE_RUBY=True && \
 			/opt/linux/python310/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/linux64 && \
 		popd && \
 	mkdir -p ${STORAGE}/wasm && \
 	chown $(id -u):$(id -g) ${STORAGE}/wasm && \

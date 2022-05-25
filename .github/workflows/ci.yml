@@ -264,7 +264,7 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: gem build *.gem
+      run: gem build *.gemspec
 
     - name: Deploy
       uses: actions/upload-artifact@v2

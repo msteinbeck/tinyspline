@@ -259,7 +259,7 @@ jobs:
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: |
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
+        CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

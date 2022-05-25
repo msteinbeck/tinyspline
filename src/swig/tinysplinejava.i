@@ -46,6 +46,7 @@
 	import java.io.InputStream;
 	import java.io.OutputStream;
 	import java.nio.file.Path;
+	import java.nio.file.Paths;
 	import java.nio.file.Files;
 	import java.nio.file.attribute.PosixFilePermission;
 	import java.util.ArrayList;
@@ -80,6 +81,12 @@
 		throw new Error(String.format(msg, args), t);
 	}
 
+	private static void exception(String msg,
+	                              Object... args)
+	throws Exception {
+		throw new Exception(String.format(msg, args));
+	}
+
 	static {
 		File tmpDir = createTmpDir();
 		log("Temporary directory is: %s", tmpDir);
@@ -93,18 +100,46 @@
 
 		log("Reading libraries from properties file");
 		List<String> libsToCopy = runtimeLibs(prop);
-		libsToCopy.add(nativeLib(prop));
+		String nativeLib = nativeLib(prop);
+		libsToCopy.add(nativeLib);
 		log("Libraries to be loaded: %s", libsToCopy);
 
 		// Copy libraries.
 		Map<String, File> libs = new HashMap<>();
 		for (String lib : libsToCopy) {
-			log("Copying: %s ...", lib, tmpDir);
+			log("Copying: %s ...", lib);
 			libs.put(lib,
 			         copyResource(platform + "/" + lib,
 			                      lib,
 			                      tmpDir));
 			log("... done");
+			if (lib.equals(nativeLib) &&
+			    platform.contains("macosx")) {
+				log("Trying to add rpath ...");
+				try {
+					String javaHome = System.getProperty("java.home");
+					if (javaHome == null)
+						exception("Property 'java.home' is null");
+					Path jhl = Paths.get(javaHome, "lib");
+					log("... %s", jhl);
+					if (!Files.exists(jhl))
+						exception("%s does not exist", jhl);
+					Process proc = Runtime.getRuntime().exec(new String[] {
+							"install_name_tool",
+							"-add_rpath",
+							jhl.toString(),
+							libs.get(lib).getPath()
+						});
+					int code = proc.waitFor();
+					if (code != 0)
+						exception("'install_name_tool' failed with exit code: %d",
+						          code);
+					log("... done");
+				} catch (Exception e) {
+					log("... error: %s", e.getMessage());
+					log("... continue");
+				}
+			}
 		}
 
 		// Load libraries.
@@ -226,7 +261,9 @@
 		}
 	}
 
-	private static File copyResource(String res, String name, File outDir) {
+	private static File copyResource(String res,
+	                                 String name,
+	                                 File outDir) {
 		InputStream in = null;
 		OutputStream out = null;
 		try {

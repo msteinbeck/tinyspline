@@ -231,6 +231,48 @@ jobs:
         path: ${{runner.workspace}}/build/dist/*.whl
         if-no-files-found: error
 
+  ruby:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        ruby: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Install System Tools
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+            choco install swig
+        fi
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: |
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: gem build *.gem
+
+    - name: Deploy
+      uses: actions/upload-artifact@v2
+      with:
+        name: ruby-${{ matrix.ruby }}-${{ matrix.os }}_amd64
+        path: ${{runner.workspace}}/build/*.gem
+        if-no-files-found: error
+
   uwp:
     needs: build
     runs-on: windows-latest

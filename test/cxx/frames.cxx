@@ -11,7 +11,7 @@ assert_equals(CuTest *tc,
 	real tan = f1.tangent().distance(f2.tangent());
 	CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
 	real norm = f1.normal().distance(f2.normal());
-	CuAssertDblEquals(tc, 0, tan, POINT_EPSILON);
+	CuAssertDblEquals(tc, 0, norm, POINT_EPSILON);
 	real binorm = f1.binormal().distance(f2.binormal());
 	CuAssertDblEquals(tc, 0, binorm, POINT_EPSILON);
 }

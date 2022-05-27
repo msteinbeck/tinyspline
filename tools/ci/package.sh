@@ -234,7 +234,7 @@ do
 			| xargs -0 -I{} basename {} .gemspec)
 		rbs=$(find * -iname '*.rb' | sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
-		libs=$(find * -iname '*.so' -or -iname '*.dll' \
+		libs=$(find * -iname '*.so' -or -iname '*.dll' -or -iname '*.bundle' \
 			| sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
 		sed -i "s/${pkgn}\([0-9]\+\)/${pkgn}/g" ./*.gemspec

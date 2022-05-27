@@ -214,7 +214,35 @@ find "${WINDOWS_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"
 
 # Ruby
-find "${LINUX_X86_64}" -name '*.gem' -print0 | \
-	xargs -0 -I{} cp {} "${OUTPUT}"
-find "${MACOSX_X86_64}" -name '*.gem' -print0 | \
-	xargs -0 -I{} cp {} "${OUTPUT}"
+GEM_TMP_DIR="${SCRIPT_DIR}/gem"
+GEM_PLATFORMS=( "${LINUX_X86_64}" "${MACOSX_X86_64}" "${WINDOWS_X86_64}" )
+for platform in "${GEM_PLATFORMS[@]}"
+do
+	p=$(basename "${platform}")
+	GEM_PLATFORM_TMP_DIR="${GEM_TMP_DIR}/${p}"
+	mkdir -p "${GEM_PLATFORM_TMP_DIR}"
+	find "${platform}" -name '*.gem' -print0 | \
+		xargs -0 -I{} tar -xf {} data.tar.gz \
+			--to-command="tar -C ${GEM_PLATFORM_TMP_DIR} -xzf -"
+	if ! ls "${GEM_PLATFORM_TMP_DIR}/lib"/*.rb >/dev/null 2>&1; then
+		continue
+	fi
+	find "${platform}" -name '*.gemspec' -print0 | \
+		xargs -0 -I{} cp {} "${GEM_PLATFORM_TMP_DIR}"
+	pushd "${GEM_PLATFORM_TMP_DIR}"
+		pkgn=$(find . -iname '*.gemspec' -print0 \
+			| xargs -0 -I{} basename {} .gemspec)
+		rbs=$(find * -iname '*.rb' | sed 's/.*/"&",/g' \
+			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
+		libs=$(find * -iname '*.so' -or -iname '*.dll' \
+			| sed 's/.*/"&",/g' \
+			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
+		sed -i "s/${pkgn}\([0-9]\+\)/${pkgn}/g" ./*.gemspec
+		sed -i '/Gem::Specification/,$!d' ./*.gemspec
+		sed -i '/required_ruby_version/d' ./*.gemspec
+		sed -i "s~files\([[:space:]]*\)=.*~files\1= [${rbs}, ${libs}]~" ./*.gemspec
+		gem build *.gemspec
+	popd
+	find "${GEM_PLATFORM_TMP_DIR}" -name '*.gem' -print0 | \
+		xargs -0 -I{} cp {} "${OUTPUT}"
+done

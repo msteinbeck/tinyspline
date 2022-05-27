@@ -312,7 +312,7 @@ jobs:
         if-no-files-found: error
 
   package:
-    needs: [docker, lua, macos, python, uwp]
+    needs: [docker, lua, macos, python, ruby, uwp]
     runs-on: ubuntu-latest
 
     steps:

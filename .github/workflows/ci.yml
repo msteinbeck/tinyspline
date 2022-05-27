@@ -270,7 +270,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ruby-${{ matrix.ruby }}-${{ matrix.os }}_amd64
-        path: ${{runner.workspace}}/build/*.gem
+        path: |
+          ${{runner.workspace}}/build/*.gem
+          ${{runner.workspace}}/build/*.gemspec
         if-no-files-found: error
 
   uwp:
@@ -331,7 +333,7 @@ jobs:
         mv actions/docker/* build
         mkdir -p build/macosx64
         find actions -name '*win_amd64.whl' -exec mv {} build/windows64 \;
-        find actions -name '*darwin*.gem' -exec mv {} build/macosx64 \;
+        find actions -name '*darwin*.gem' -exec mv {} build/macosx64 \; -printf "%h\n" | xargs -I[] find [] -name '*.gemspec' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*go.zip' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.jar' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;

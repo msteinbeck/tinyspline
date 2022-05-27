@@ -331,6 +331,7 @@ jobs:
         mv actions/docker/* build
         mkdir -p build/macosx64
         find actions -name '*win_amd64.whl' -exec mv {} build/windows64 \;
+        find actions/macos_amd64 -name '*.gem' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*go.zip' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.jar' -exec mv {} build/macosx64 \;
         find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;

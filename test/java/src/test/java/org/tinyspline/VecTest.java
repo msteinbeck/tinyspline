@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
-import static org.tinyspline.tinysplinejavaConstants.TS_KNOT_EPSILON;
+import static org.tinyspline.tinysplinejavaConstants.TS_POINT_EPSILON;
 
 public class VecTest {
 

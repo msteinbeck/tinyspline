@@ -21,7 +21,7 @@ public class VecTest {
         // Then
         assertThat(values.stream().mapToDouble(Double::doubleValue).toArray())
                 .containsExactly(new double[] { 1.0, 2.0 },
-                        offset(TS_KNOT_EPSILON));
+                        offset(TS_POINT_EPSILON));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class VecTest {
         // Then
         assertThat(values.stream().mapToDouble(Double::doubleValue).toArray())
                 .containsExactly(new double[] { 3.0, 2.0, 1.0 },
-                        offset(TS_KNOT_EPSILON));
+                        offset(TS_POINT_EPSILON));
     }
 
     @Test
@@ -49,6 +49,6 @@ public class VecTest {
         // Then
         assertThat(values.stream().mapToDouble(Double::doubleValue).toArray())
                 .containsExactly(new double[] { 1.0, 3.0, 2.0, 4.0 },
-                        offset(TS_KNOT_EPSILON));
+                        offset(TS_POINT_EPSILON));
     }
 }

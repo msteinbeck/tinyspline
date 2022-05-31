@@ -116,7 +116,7 @@ func TestVec_TestValuesVec2(t *testing.T) {
 
 	// Then
 	expected := []float64{1.0, 2.0}
-	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
+	assert.InDeltaSlice(t, expected, values, ts.TS_POINT_EPSILON)
 }
 
 func TestVec_TestValuesVec3(t *testing.T) {
@@ -128,7 +128,7 @@ func TestVec_TestValuesVec3(t *testing.T) {
 
 	// Then
 	expected := []float64{3.0, 2.0, 1.0}
-	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
+	assert.InDeltaSlice(t, expected, values, ts.TS_POINT_EPSILON)
 }
 
 func TestVec_TestValuesVec4(t *testing.T) {
@@ -140,5 +140,5 @@ func TestVec_TestValuesVec4(t *testing.T) {
 
 	// Then
 	expected := []float64{1.0, 3.0, 2.0, 4.0}
-	assert.InDeltaSlice(t, expected, values, ts.TS_KNOT_EPSILON)
+	assert.InDeltaSlice(t, expected, values, ts.TS_POINT_EPSILON)
 }

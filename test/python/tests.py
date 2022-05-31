@@ -9,6 +9,12 @@ def assertKnotsAlmostEqual(exp, act, tc):
     for i in range(len(exp)):
         tc.assertAlmostEqual(exp[i], act[i], delta=TS_KNOT_EPSILON)
 
+def assertPts1dAlmostEqual(exp, act, tc):
+    if len(exp) != len(act):
+        tc.fail("length does not match")
+    for i in range(len(exp)):
+        tc.assertAlmostEqual(exp[i], act[i], delta=TS_POINT_EPSILON)
+
 
 
 class TestEnums(unittest.TestCase):
@@ -123,7 +129,7 @@ class TestVec(unittest.TestCase):
         values = vec.values
 
         # Then
-        assertKnotsAlmostEqual([1, 2], values, self)
+        assertPts1dAlmostEqual([1, 2], values, self)
 
     def testValuesVec3(self):
         # Given
@@ -133,7 +139,7 @@ class TestVec(unittest.TestCase):
         values = vec.values
 
         # Then
-        assertKnotsAlmostEqual([3, 2, 1], values, self)
+        assertPts1dAlmostEqual([3, 2, 1], values, self)
 
     def testValuesVec4(self):
         # Given
@@ -143,7 +149,7 @@ class TestVec(unittest.TestCase):
         values = vec.values
 
         # Then
-        assertKnotsAlmostEqual([1, 3, 2, 4], values, self)
+        assertPts1dAlmostEqual([1, 3, 2, 4], values, self)
 
 
 

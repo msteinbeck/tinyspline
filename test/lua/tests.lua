@@ -131,7 +131,7 @@ function TestVec:testValuesVec2()
    values = vec.values
 
    -- Then
-   lu.assertAlmostEquals({ 1, 2 }, values, ts.TS_KNOT_EPSILON)
+   lu.assertAlmostEquals({ 1, 2 }, values, ts.TS_POINT_EPSILON)
 end
 
 function TestVec:testValuesVec3()
@@ -142,7 +142,7 @@ function TestVec:testValuesVec3()
    values = vec.values
 
    -- Then
-   lu.assertAlmostEquals({ 3, 2, 1 }, values, ts.TS_KNOT_EPSILON)
+   lu.assertAlmostEquals({ 3, 2, 1 }, values, ts.TS_POINT_EPSILON)
 end
 
 function TestVec:testValuesVec4()
@@ -153,7 +153,7 @@ function TestVec:testValuesVec4()
    values = vec.values
 
    -- Then
-   lu.assertAlmostEquals({ 1, 3, 2, 4 }, values, ts.TS_KNOT_EPSILON)
+   lu.assertAlmostEquals({ 1, 3, 2, 4 }, values, ts.TS_POINT_EPSILON)
 end
 
 -- end TestVec

@@ -17,7 +17,7 @@ public class VecTest
 
         // Then
         Assert.That(values, Is.EqualTo(new List<double> { 1, 2 })
-              .Within(tinysplinecsharp.TS_KNOT_EPSILON));
+              .Within(tinysplinecsharp.TS_POINT_EPSILON));
     }
 
     [Test]
@@ -31,7 +31,7 @@ public class VecTest
 
         // Then
         Assert.That(values, Is.EqualTo(new List<double> { 3, 2, 1 })
-              .Within(tinysplinecsharp.TS_KNOT_EPSILON));
+              .Within(tinysplinecsharp.TS_POINT_EPSILON));
     }
 
     [Test]
@@ -45,6 +45,6 @@ public class VecTest
 
         // Then
         Assert.That(values, Is.EqualTo(new List<double> { 1, 3, 2, 4 })
-              .Within(tinysplinecsharp.TS_KNOT_EPSILON));
+              .Within(tinysplinecsharp.TS_POINT_EPSILON));
     }
 }

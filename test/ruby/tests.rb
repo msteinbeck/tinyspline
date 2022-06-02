@@ -1,6 +1,8 @@
 require "test/unit"
 require "tinyspline"
 
+puts "Running tests on: #{RUBY_VERSION}"
+
 
 
 def assert_knots_in_delta(exp, act)

@@ -160,4 +160,5 @@ end
 
 
 
+print("Running tests on: ".._VERSION)
 os.exit( lu.run() )

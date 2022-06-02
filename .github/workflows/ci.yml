@@ -531,3 +531,41 @@ jobs:
     - name: Run Tests
       shell: bash
       run: python $GITHUB_WORKSPACE/test/python/tests.py
+
+  test-ruby:
+    needs: [package]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        ruby: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Download Packages
+      uses: actions/download-artifact@v2
+      with:
+        path: packages
+
+    - name: Install Package
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/packages/tinyspline
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            find . -name "*linux*.gem" -exec gem install {} \;
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+            find . -name "*windows*.gem" -exec gem install {} \;
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+            find . -name "*darwin*.gem" -exec gem install {} \;
+        fi
+
+    - name: Run Tests
+      shell: bash
+      run: |
+        cd $GITHUB_WORKSPACE/test/ruby
+        bundle install
+        ruby tests.rb

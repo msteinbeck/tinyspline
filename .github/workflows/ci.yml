@@ -247,6 +247,8 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+    - uses: egor-tensin/setup-mingw@v2
+      if: matrix.os == 'windows-latest'
 
     - name: Install System Tools
       shell: bash

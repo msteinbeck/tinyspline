@@ -236,7 +236,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [windows-latest, macos-latest]
         ruby: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
 
     steps:
@@ -259,6 +259,9 @@ jobs:
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          cmake $GITHUB_WORKSPACE -G "MinGW Makefiles"
+        fi
         CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
 
     - name: Build

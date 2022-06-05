@@ -264,7 +264,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: powershell
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -G "MinGW Makefiles"
+      run: cmake $env:GITHUB_WORKSPACE -G "MinGW Makefiles"
 
     - name: Configure CMake (All)
       shell: bash

@@ -260,14 +260,16 @@ jobs:
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Configure CMake
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: powershell
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -G "MinGW Makefiles"
+
+    - name: Configure CMake (All)
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          cmake $GITHUB_WORKSPACE -G "MinGW Makefiles" -A x64
-        fi
-        CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
+      run: CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

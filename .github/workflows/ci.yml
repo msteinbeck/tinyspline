@@ -254,7 +254,7 @@ jobs:
       shell: bash
       run: |
         if [ "$RUNNER_OS" == "Windows" ]; then
-            choco install swig
+            choco install swig ninja
         fi
 
     - name: Create Build Environment
@@ -264,7 +264,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: powershell
       working-directory: ${{runner.workspace}}/build
-      run: cmake $env:GITHUB_WORKSPACE -G "MinGW Makefiles"
+      run: cmake $env:GITHUB_WORKSPACE -G "Ninja"
 
     - name: Configure CMake (All)
       shell: bash

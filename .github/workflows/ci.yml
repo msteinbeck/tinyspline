@@ -236,37 +236,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [macos-latest]
         ruby: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
-        exclude:
-          - os: windows-latest
-            ruby: '2.3'
 
     steps:
     - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - uses: egor-tensin/setup-mingw@v2
-      if: matrix.os == 'windows-latest'
-
-    - name: Install System Tools
-      shell: bash
-      run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-            choco install swig ninja
-        fi
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Configure CMake (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: powershell
-      working-directory: ${{runner.workspace}}/build
-      run: cmake $env:GITHUB_WORKSPACE -G "Ninja"
-
-    - name: Configure CMake (All)
+    - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True

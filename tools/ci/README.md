@@ -1,6 +1,6 @@
 ### Build Docker Image
 ```shell
-docker build -t tinyspline/build-deps:latest - < Dockerfile
+docker build -t tinyspline/build-deps:latest -f Dockerfile .
 ```
 
 ### Release Docker Image

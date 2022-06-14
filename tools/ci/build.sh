@@ -14,10 +14,6 @@ docker build -t ${IMAGE_NAME} -f - "${ROOT_DIR}" <<-END
 	WORKDIR /tinyspline
 END
 
-MINGW_LIBS="\
-/usr/lib/gcc/x86_64-w64-mingw32/6.3-win32/libstdc++-6.dll\
-\;/usr/lib/gcc/x86_64-w64-mingw32/6.3-win32/libgcc_s_seh-1.dll"
-
 docker run \
 	--rm \
 	--volume "${VOLUME}:${STORAGE}" \
@@ -256,14 +252,10 @@ docker run \
 		popd && \
 	mkdir -p ${STORAGE}/windows64 && \
 	chown $(id -u):$(id -g) ${STORAGE}/windows64 && \
+		export CMAKE_TOOLCHAIN_FILE=/opt/windows-x86_64/toolchain-mingw64.cmake && \
 		mkdir windows64 && pushd windows64 && \
-			CC=x86_64-w64-mingw32-gcc-win32 \
-			CXX=x86_64-w64-mingw32-g++-win32 \
-			JAVA_HOME=/opt/wincross/java \
 			cmake .. \
-				-DCMAKE_SYSTEM_NAME=Windows \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_CSHARP=True \
 				-DTINYSPLINE_ENABLE_DLANG=True \
 				-DTINYSPLINE_ENABLE_GO=True \
@@ -286,15 +278,11 @@ docker run \
 				chown $(id -u):$(id -g) pom.xml && \
 				cp -a pom.xml ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
-			CC=x86_64-w64-mingw32-gcc-win32 \
-			CXX=x86_64-w64-mingw32-g++-win32 \
 			cmake .. \
-				-DCMAKE_SYSTEM_NAME=Windows \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/opt/wincross/lua51/include \
-				-DLUA_LIBRARY=/opt/wincross/lua51/liblua5.1.a && \
+				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua51/include \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua51/liblua5.1.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -302,15 +290,11 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
-			CC=x86_64-w64-mingw32-gcc-win32 \
-			CXX=x86_64-w64-mingw32-g++-win32 \
 			cmake .. \
-				-DCMAKE_SYSTEM_NAME=Windows \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/opt/wincross/lua52/include \
-				-DLUA_LIBRARY=/opt/wincross/lua52/liblua52.a && \
+				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua52/include \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua52/liblua52.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -318,15 +302,11 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
-			CC=x86_64-w64-mingw32-gcc-win32 \
-			CXX=x86_64-w64-mingw32-g++-win32 \
 			cmake .. \
-				-DCMAKE_SYSTEM_NAME=Windows \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/opt/wincross/lua53/include \
-				-DLUA_LIBRARY=/opt/wincross/lua53/liblua53.a && \
+				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua53/include \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua53/liblua53.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
@@ -334,15 +314,11 @@ docker run \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
-			CC=x86_64-w64-mingw32-gcc-win32 \
-			CXX=x86_64-w64-mingw32-g++-win32 \
 			cmake .. \
-				-DCMAKE_SYSTEM_NAME=Windows \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_RUNTIME_LIBRARIES=${MINGW_LIBS} \
 				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/opt/wincross/lua54/include \
-				-DLUA_LIBRARY=/opt/wincross/lua54/liblua54.a && \
+				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua54/include \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua54/liblua54.a && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \

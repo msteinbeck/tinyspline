@@ -19,7 +19,7 @@ RUN apt-get update &&                          \
         git                                    \
         graphviz                               \
         libtool                                \
-        libfltk1.3-dev                         \
+        libfltk1.3-dev fluid                   \
         lua5.1 liblua5.1-dev                   \
         lua5.2 liblua5.2-dev                   \
         lua5.3 liblua5.3-dev                   \

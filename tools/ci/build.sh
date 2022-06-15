@@ -136,6 +136,7 @@ docker run \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
 			gem build tinyspline.gemspec && \
 				chown $(id -u):$(id -g) *.gem && \
+				chown $(id -u):$(id -g) *.gemspec && \
 				cp -a *.gem ${STORAGE}/linux64 && \
 				cp -a *.gemspec ${STORAGE}/linux64 && \
 		rm -rf ..?* .[!.]* * && \
@@ -282,49 +283,83 @@ docker run \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua51/include \
-				-DLUA_LIBRARY=/opt/windows-x86_64/lua51/liblua5.1.a && \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua51/liblua5.1.a \
+				-DTINYSPLINE_ENABLE_RUBY=True \
+				-DRuby_EXECUTABLE=/opt/linux/ruby26/bin/ruby \
+				-DRuby_INCLUDE_DIR=/opt/windows-x86_64/ruby26/include/ruby-2.6.0 \
+				-DRuby_CONFIG_INCLUDE_DIR=/opt/windows-x86_64/ruby26/include/ruby-2.6.0/x64-mingw32 \
+				-DRuby_LIBRARY=/opt/windows-x86_64/ruby26/bin/x64-msvcrt-ruby260.dll && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				chown $(id -u):$(id -g) *.gemspec && \
+				cp -a *.gem ${STORAGE}/windows64 && \
+				cp -a *.gemspec ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua52/include \
-				-DLUA_LIBRARY=/opt/windows-x86_64/lua52/liblua52.a && \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua52/liblua52.a \
+				-DTINYSPLINE_ENABLE_RUBY=True \
+				-DRuby_EXECUTABLE=/opt/linux/ruby27/bin/ruby \
+				-DRuby_INCLUDE_DIR=/opt/windows-x86_64/ruby27/include/ruby-2.7.0 \
+				-DRuby_CONFIG_INCLUDE_DIR=/opt/windows-x86_64/ruby27/include/ruby-2.7.0/x64-mingw32 \
+				-DRuby_LIBRARY=/opt/windows-x86_64/ruby27/bin/x64-msvcrt-ruby270.dll && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua53/include \
-				-DLUA_LIBRARY=/opt/windows-x86_64/lua53/liblua53.a && \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua53/liblua53.a \
+				-DTINYSPLINE_ENABLE_RUBY=True \
+				-DRuby_EXECUTABLE=/opt/linux/ruby30/bin/ruby \
+				-DRuby_INCLUDE_DIR=/opt/windows-x86_64/ruby30/include/ruby-3.0.0 \
+				-DRuby_CONFIG_INCLUDE_DIR=/opt/windows-x86_64/ruby30/include/ruby-3.0.0/x64-mingw32 \
+				-DRuby_LIBRARY=/opt/windows-x86_64/ruby30/bin/x64-msvcrt-ruby300.dll && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/windows64 && \
 		rm -rf ..?* .[!.]* * && \
 			cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_LUA=True \
 				-DLUA_INCLUDE_DIR=/opt/windows-x86_64/lua54/include \
-				-DLUA_LIBRARY=/opt/windows-x86_64/lua54/liblua54.a && \
+				-DLUA_LIBRARY=/opt/windows-x86_64/lua54/liblua54.a \
+				-DTINYSPLINE_ENABLE_RUBY=True \
+				-DRuby_EXECUTABLE=/opt/linux/ruby31/bin/ruby \
+				-DRuby_INCLUDE_DIR=/opt/windows-x86_64/ruby31/include/ruby-3.1.0 \
+				-DRuby_CONFIG_INCLUDE_DIR=/opt/windows-x86_64/ruby31/include/ruby-3.1.0/x64-mingw-ucrt \
+				-DRuby_LIBRARY=/opt/windows-x86_64/ruby31/bin/x64-ucrt-ruby310.dll && \
 			sed -i '/supported_platforms/,/}/d' *.rockspec && \
 			sed -i '/dependencies/,/}/d' *.rockspec && \
 			luarocks make --pack-binary-rock && \
 				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/windows64 && \
 		popd"
 
 docker rmi ${IMAGE_NAME}

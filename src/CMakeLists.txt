@@ -1648,11 +1648,34 @@ if(${TINYSPLINE_BINDING_REQUESTED})
     set(TINYSPLINE_RUBY_LIB_NAME
         "${TINYSPLINE_RUBY_CMAKE_TARGET}${RUBY_VERSION_MAJOR}${RUBY_VERSION_MINOR}"
     )
-    execute_process(
-      COMMAND ${RUBY_EXECUTABLE} -e "puts Gem::Platform.local.to_s()"
-      OUTPUT_VARIABLE TINYSPLINE_RUBY_PLATFORM
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
+    # In order to make packaging easier, we determine the Ruby platform
+    # identifier by running a simple Ruby script. This doesn't work very well
+    # with cross compilation though. Thus, we handle some cases explicitly.
+    set(TINYSPLINE_RUBY_PLATFORM "")
+    if(${TINYSPLINE_PLATFORM_IS_WINDOWS})
+      # Handle regular Windows builds and cross compilation to Windows.
+      if(MINGW)
+        if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
+          set(TINYSPLINE_RUBY_PLATFORM "x86-mingw32")
+        elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")
+          set(TINYSPLINE_RUBY_PLATFORM "x64-mingw32")
+        endif()
+      elseif(MSVC)
+        if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86")
+          set(TINYSPLINE_RUBY_PLATFORM "x86-mswin32")
+        elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")
+          set(TINYSPLINE_RUBY_PLATFORM "x64-mswin64")
+        endif()
+      endif()
+    endif()
+    if(TINYSPLINE_RUBY_PLATFORM STREQUAL "")
+      # Handle all other platforms. Doesn't work with cross compilation.
+      execute_process(
+        COMMAND ${RUBY_EXECUTABLE} -e "puts Gem::Platform.local.to_s()"
+        OUTPUT_VARIABLE TINYSPLINE_RUBY_PLATFORM
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+    endif()
     configure_file(
       "pkg/tinyspline.rb.in"
       "${TINYSPLINE_RUBY_SOURCE_DIRECTORY}/tinyspline.rb" @ONLY

@@ -529,8 +529,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         ruby: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+        exclude:
+          - os: windows-latest
+            ruby: 2.3
+          - os: windows-latest
+            ruby: 2.4
+          - os: windows-latest
+            ruby: 2.5
 
     steps:
     - uses: actions/checkout@v2
@@ -550,7 +557,7 @@ jobs:
         if [ "$RUNNER_OS" == "Linux" ]; then
             find . -name "*linux*.gem" -exec gem install {} \;
         elif [ "$RUNNER_OS" == "Windows" ]; then
-            find . -name "*windows*.gem" -exec gem install {} \;
+            find . -name "*mingw*.gem" -exec gem install {} \;
         elif [ "$RUNNER_OS" == "macOS" ]; then
             find . -name "*darwin*.gem" -exec gem install {} \;
         fi

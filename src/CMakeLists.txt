@@ -1224,8 +1224,8 @@ function(tinyspline_add_swig_library)
       PROPERTY SUFFIX ".dylib"
     )
   endif()
-  # Fix library suffix for Ruby.
-  if(${ARGS_LANG} STREQUAL "ruby")
+  # Fix library suffix for Ruby on Windows.
+  if(${ARGS_LANG} STREQUAL "ruby" AND ${TINYSPLINE_PLATFORM_IS_WINDOWS})
     set_property(
       TARGET ${ARGS_TARGET}
       APPEND

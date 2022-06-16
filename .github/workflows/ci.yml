@@ -257,7 +257,7 @@ jobs:
         CONFIG_DIR=$(ruby -e "puts(RbConfig::CONFIG['rubyarchhdrdir'])")
         LIBRARY=$(ruby -e "puts(RbConfig::CONFIG['libdir'])")
         LIBRARY=$LIBRARY/$(ruby -e "puts(RbConfig::CONFIG['LIBRUBY'])")
-        CXXFLAGS=-Wno-reserved-user-defined-literal cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True -DRuby_EXECUTABLE="$RUBY_EXECUTABLE" -DRuby_INCLUDE_DIR="$INCLUDE_DIR" -DRuby_CONFIG_INCLUDE_DIR="$CONFIG_DIR" -DRuby_LIBRARY="$LIBRARY"
+        CXXFLAGS="-Wno-reserved-user-defined-literal -fms-extensions" cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_RUBY=True -DRuby_EXECUTABLE="$RUBY_EXECUTABLE" -DRuby_INCLUDE_DIR="$INCLUDE_DIR" -DRuby_CONFIG_INCLUDE_DIR="$CONFIG_DIR" -DRuby_LIBRARY="$LIBRARY"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

@@ -1278,15 +1278,10 @@ tinyspline::BSpline::setControlPointVec4At(size_t idx, Vec4 &cp)
 	std::vector<real> vals(dimension());
 	for (size_t i = 0; i < vals.size(); i++)
 		vals[i] = (real) 0.0;
-	switch (vals.size()) {
-		case 4: vals[3] = cp.w();
-		// fall through
-		case 3: vals[2] = cp.z();
-		// fall through
-		case 2: vals[1] = cp.y();
-		// fall through
-		case 1: vals[0] = cp.x();
-	}
+	if (vals.size() >= 4) vals[3] = cp.w();
+	if (vals.size() >= 3) vals[2] = cp.z();
+	if (vals.size() >= 2) vals[1] = cp.y();
+	if (vals.size() >= 1) vals[0] = cp.x();
 	tsStatus status;
 	if (ts_bspline_set_control_point_at(&spline,
 	                                    idx,

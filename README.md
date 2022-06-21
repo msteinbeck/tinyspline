@@ -74,7 +74,7 @@ PyPI (Python):
 python -m pip install tinyspline
 ```
 
-On macOS, you may need to change the path to Python in
+On macOS, you probably need to change the path to Python in
 `_tinysplinepython.so` via `install_name_tool`.
 
 #### Compiling From Source

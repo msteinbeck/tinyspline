@@ -337,6 +337,7 @@ jobs:
         find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;
         find actions -name '*macosx-x86_64.rock' -exec mv {} build/macosx64 \;
         find actions -name '*macosx*_x86_64.whl' -exec mv {} build/macosx64 \;
+        find actions -name '*macosx*_universal2.whl' -exec mv {} build/macosx64 \;
         tree .
 
     - name: Create Releases

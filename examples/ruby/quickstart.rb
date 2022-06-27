@@ -2,7 +2,7 @@ require 'tinyspline'
 
 # Create a cubic spline with 7 control points in 2D using
 # a clamped knot vector. This call is equivalent to:
-# spline = Tinysplineruby::BSpline.new(7, 2, 3, TinySpline::BSpline::Clamped)
+# spline = TinySpline::BSpline.new(7, 2, 3, TinySpline::BSpline::Clamped)
 spline = TinySpline::BSpline.new(7)
 
 # Setup control points.

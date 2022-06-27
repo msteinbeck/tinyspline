@@ -47,12 +47,12 @@ https://conan.io/center/tinyspline
 
 NuGet (C#):
 ```xml
-<PackageReference Include="tinyspline" version="0.4.0.1" />
+<PackageReference Include="tinyspline" Version="0.5.0.1" />
 ```
 
 Go:
 ```bash
-go get github.com/tinyspline/go@v0.4.0
+go get github.com/tinyspline/go@v0.5.0
 ```
 
 Luarocks (Lua):
@@ -65,7 +65,7 @@ Maven (Java):
 <dependency>
    <groupId>org.tinyspline</groupId>
    <artifactId>tinyspline</artifactId>
-   <version>0.4.0-1</version>
+   <version>0.5.0-1</version>
 </dependency>
 ```
 
@@ -76,6 +76,11 @@ python -m pip install tinyspline
 
 On macOS, you probably need to change the path to Python in
 `_tinysplinepython.so` via `install_name_tool`.
+
+RubyGems (Ruby):
+```bash
+gem install tinyspline --pre
+```
 
 #### Compiling From Source
 

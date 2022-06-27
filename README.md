@@ -119,7 +119,7 @@ plt.plot(vec2.x, vec2.y, 'ro')
 
 # Draw tangent at knot 0.7.
 pos = spline(0.7).result_vec2() # operator () -> eval
-der = spline.derive()(0.7).result_vec2().norm() * 200
+der = spline.derive()(0.7).result_vec2().normalize() * 200
 s = (pos - der)
 t = (pos + der)
 plt.plot([s.x, t.x], [s.y, t.y])

@@ -17,8 +17,10 @@ do
 	then
 		LIB_DIR=$(dirname ${LIB})
 		LIB_NAME=$(basename ${LIB})
+		echo "Replacing ${LIB} with @rpath/${LIB_NAME}"
 		@CMAKE_INSTALL_NAME_TOOL@ \
 			-change ${LIB} @rpath/${LIB_NAME} ${1}
+		echo "Adding ${LIB_DIR} to rpath"
 		@CMAKE_INSTALL_NAME_TOOL@ \
 			-add_rpath ${LIB_DIR} ${1}
 	fi

@@ -10,8 +10,10 @@ fi
 LIBS=($(@CMAKE_OTOOL@ -L ${1} | tail -n +2 | cut -d' ' -f1))
 for LIB in "${LIBS[@]}"
 do
-	if [[ ${LIB} == /opt/local/* || ${LIB} == *"HOMEBREW_PREFIX"* || \
-		${LIB} == *"HOMEBREW_CELLAR"* ]]
+	if [[ ${LIB} == /opt/local/* || \
+	      ${LIB} == *"HOMEBREW_PREFIX"* || \
+	      ${LIB} == *"HOMEBREW_CELLAR"* || \
+	      ${LIB} == /Users/runner/hostedtoolcache/* ]]
 	then
 		LIB_DIR=$(dirname ${LIB})
 		LIB_NAME=$(basename ${LIB})

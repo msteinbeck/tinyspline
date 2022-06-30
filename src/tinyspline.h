@@ -21,7 +21,7 @@
 #elif defined(SWIG)
 #define TS_DEPRECATED
 #else
-#warning "WARNING: TS_DEPRECATED is not supported by compiler"
+#warning "WARNING: TS_DEPRECATED is not supported by the compiler"
 #define TS_DEPRECATED
 #endif
 /*! @} */

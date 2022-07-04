@@ -108,7 +108,8 @@ docker run \
 				chown $(id -u):$(id -g) tinysplinedlang.tar.gz && \
 				cp -a tinysplinedlang.tar.gz ${STORAGE}/linux64 && \
 			cmake --build . --target tinysplinego && \
-				cp -a tinyspline-go.zip ${STORAGE}/linux64 && \
+				chown $(id -u):$(id -g) *go.zip && \
+				cp -a *go.zip ${STORAGE}/linux64 && \
 			mvn package && \
 				chown $(id -u):$(id -g) target/*.jar && \
 				cp -a target/*.jar ${STORAGE}/linux64 && \
@@ -116,6 +117,8 @@ docker run \
 				cp -a pom.xml ${STORAGE}/linux64 && \
 			cmake --build . --target tinysplineoctave && \
 			cmake --build . --target tinysplinephp && \
+				chown $(id -u):$(id -g) php*.zip && \
+				cp -a php*.zip ${STORAGE}/linux64 && \
 			cmake --build . --target tinyspliner && \
 		rm -rf ..?* .[!.]* * && \
 			cmake .. \

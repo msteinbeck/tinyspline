@@ -205,6 +205,10 @@ do
 		xargs -0 -I{} cp {} "${OUTPUT}"
 done
 
+# PHP
+find "${LINUX_X86_64}" -name 'php*.zip' -print0 | \
+	xargs -0 -I{} cp {} "${OUTPUT}"
+
 # Python
 find "${LINUX_X86_64}" -name '*.whl' -print0 | \
 	xargs -0 -I{} cp {} "${OUTPUT}"

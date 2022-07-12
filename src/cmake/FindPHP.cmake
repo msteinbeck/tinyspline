@@ -48,11 +48,13 @@
 #  PHP_EXTENSIONS_INCLUDE_DIR - Directory containing PHP extension headers.
 #  PHP_INCLUDE_DIRS           - Include directives for PHP development.
 #  PHP_VERSION_STRING         - PHP version string.
-#  PHP_VERSION_NUMBER         - PHP version number in PHP's "vernum" format.
+#  PHP_VERSION_MAJOR          - PHP major version.
+#  PHP_VERSION_MINOR          - PHP minor version.
 #  PHP_FOUND                  - Set to TRUE if all of the above has been found.
 #
 # This file has been modified to include the option to specify a "Zend" component
-# and find Zend headers.  © Nightwave Studios, 2017.
+# which, if set, forces this module to search for the Zend headers and to fail if
+# the headers could not be found.  © Nightwave Studios, 2017.
 # ~~~
 
 find_program(PHP_CONFIG_EXECUTABLE NAMES php-config)
@@ -88,11 +90,11 @@ if(PHP_CONFIG_EXECUTABLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 
-  execute_process(
-    COMMAND ${PHP_CONFIG_EXECUTABLE} --vernum
-    OUTPUT_VARIABLE PHP_VERSION_NUMBER
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
+  string(REPLACE "." ";" PHP_VERSION_MAJOR ${PHP_VERSION_STRING})
+  list(GET PHP_VERSION_MAJOR 0 PHP_VERSION_MAJOR)
+
+  string(REPLACE "." ";" PHP_VERSION_MINOR ${PHP_VERSION_STRING})
+  list(GET PHP_VERSION_MINOR 1 PHP_VERSION_MINOR)
 endif()
 
 mark_as_advanced(
@@ -101,8 +103,9 @@ mark_as_advanced(
   PHP_EXTENSIONS_DIR
   PHP_EXTENSIONS_INCLUDE_DIR
   PHP_INCLUDE_DIRS
-  PHP_VERSION_NUMBER
   PHP_VERSION_STRING
+  PHP_VERSION_MAJOR
+  PHP_VERSION_MINOR
 )
 
 if(PHP_FIND_COMPONENTS)
@@ -126,13 +129,14 @@ find_package_handle_standard_args(
   PHP
   FOUND_VAR PHP_FOUND
   REQUIRED_VARS
-    PHP_EXECUTABLE
     PHP_CONFIG_EXECUTABLE
+    PHP_EXECUTABLE
     PHP_EXTENSIONS_DIR
     PHP_EXTENSIONS_INCLUDE_DIR
     PHP_INCLUDE_DIRS
-    PHP_VERSION_NUMBER
     PHP_VERSION_STRING
+    PHP_VERSION_MAJOR
+    PHP_VERSION_MINOR
   VERSION_VAR PHP_VERSION_STRING
   HANDLE_COMPONENTS
 )

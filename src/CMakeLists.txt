@@ -1272,7 +1272,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
     )
   endif()
 
-  find_package(SWIG 3.0.1 REQUIRED)
+  find_package(SWIG 4.0.1 REQUIRED)
   include(${SWIG_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -1308,9 +1308,6 @@ if(${TINYSPLINE_BINDING_REQUESTED})
 
   # C#
   if(${TINYSPLINE_ENABLE_CSHARP})
-    if(${SWIG_VERSION} VERSION_LESS 4.0.1)
-      message(FATAL_ERROR "C# requires Swig 4.0.1 or later")
-    endif()
     tinyspline_add_swig_library(
       TARGET ${TINYSPLINE_CSHARP_CMAKE_TARGET}
       LANG csharp
@@ -1513,22 +1510,15 @@ if(${TINYSPLINE_BINDING_REQUESTED})
   # Octave
   if(${TINYSPLINE_ENABLE_OCTAVE})
     find_package(Octave REQUIRED)
-    if((${OCTAVE_VERSION_STRING} VERSION_GREATER 4.2 OR ${OCTAVE_VERSION_STRING}
-                                                        VERSION_EQUAL 4.2)
-       AND ${SWIG_VERSION} VERSION_LESS 3.0.12
+    include_directories(${OCTAVE_INCLUDE_DIRS})
+    tinyspline_add_swig_library(
+      TARGET ${TINYSPLINE_OCTAVE_CMAKE_TARGET}
+      LANG octave
+      OUTPUT ${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY}
+      LIBS ${OCTAVE_LIBRARIES}
+      NAME ${TINYSPLINE_PACKAGE_NAME}
+      SWIG_ARGS -module ${TINYSPLINE_PACKAGE_NAME}
     )
-      message(FATAL_ERROR "Octave 4.2 requires Swig 3.0.12 or later")
-    else()
-      include_directories(${OCTAVE_INCLUDE_DIRS})
-      tinyspline_add_swig_library(
-        TARGET ${TINYSPLINE_OCTAVE_CMAKE_TARGET}
-        LANG octave
-        OUTPUT ${TINYSPLINE_OCTAVE_SOURCE_DIRECTORY}
-        LIBS ${OCTAVE_LIBRARIES}
-        NAME ${TINYSPLINE_PACKAGE_NAME}
-        SWIG_ARGS -module ${TINYSPLINE_PACKAGE_NAME}
-      )
-    endif()
   endif()
 
   # PHP

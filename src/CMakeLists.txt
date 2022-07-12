@@ -1524,28 +1524,14 @@ if(${TINYSPLINE_BINDING_REQUESTED})
   # PHP
   if(${TINYSPLINE_ENABLE_PHP})
     find_package(
-      PHP
+      PHP 7
       COMPONENTS Zend
       REQUIRED
     )
-    if(${PHP_VERSION_NUMBER} VERSION_GREATER_EQUAL 7 AND ${SWIG_VERSION}
-                                                         VERSION_LESS 3.0.11
-    )
-      message(FATAL_ERROR "PHP 7 (and later) requires Swig 3.0.11 or later")
-    endif()
-    if(${SWIG_VERSION} VERSION_GREATER_EQUAL 4.0.0 AND ${PHP_VERSION_NUMBER}
-                                                       VERSION_LESS_EQUAL 5
-    )
-      message(FATAL_ERROR "Swig 4 does not support PHP 5 anymore")
-    endif()
-    set(TINYSPLINE_PHP_VERSION "php7")
-    if(${PHP_VERSION_NUMBER} VERSION_LESS_EQUAL 5)
-      set(TINYSPLINE_PHP_VERSION "php5")
-    endif()
     include_directories(${PHP_INCLUDE_DIRS})
     tinyspline_add_swig_library(
       TARGET ${TINYSPLINE_PHP_CMAKE_TARGET}
-      LANG ${TINYSPLINE_PHP_VERSION}
+      LANG "php7" # earlier versions are not supported anymore
       OUTPUT ${TINYSPLINE_PHP_SOURCE_DIRECTORY}
       FLAGS ${PHP_INCLUDE_DIRS}
     )
@@ -1574,7 +1560,7 @@ if(${TINYSPLINE_BINDING_REQUESTED})
       POST_BUILD
       COMMAND
         ${CMAKE_COMMAND} -E tar "cvf"
-        "${TINYSPLINE_BINARY_DIR}/php_tinyspline-${TINYSPLINE_VERSION}.zip"
+        "${TINYSPLINE_BINARY_DIR}/php_tinyspline-${TINYSPLINE_VERSION}-${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.zip"
         --format=zip -- .
       WORKING_DIRECTORY "${TINYSPLINE_PHP_SOURCE_DIRECTORY}/pkg"
     )

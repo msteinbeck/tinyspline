@@ -1,110 +1,138 @@
-# - Find PHP
-# This module finds if PHP is installed and determines where the include files
-# and libraries are. 
+# FindPHP
+# ~~~
 #
-# Note, unlike the FindPHP4 module, this module uses the php-config script to
-# determine information about the installed PHP configuration.  For Linux
-# distributions, this script is normally installed as part of some php-dev or
-# php-devel package. See http://php.net/manual/en/install.pecl.php-config.php
-# for php-config documentation.
+# Finds PHP and the Zend framework (nowadays also known as Laminas).
+#
+# This module is based on the work of Paul Colby:
+# https://github.com/pcolby/cmake-modules/blob/main/FindPHP.cmake
+#
+# License: ======================================================================
+#
+# Copyright (c) 2013, Paul Colby
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# *  Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# *  Redistributions in binary form must reproduce the above copyright notice, this
+#   list of conditions and the following disclaimer in the documentation and/or
+#   other materials provided with the distribution.
+#
+# *  Neither the name of the pcolby nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# ===============================================================================
+#
+# The module has been modified to include the option to specify a "Zend"
+# component in order to find the Zend headers.  © Nightwave Studios, 2017.
 #
 # This module defines:
-#  PHP_EXECUTABLE             - full path to the php binary
-#  PHP_CONFIG_EXECUTABLE      - full path to the php-config binary
-#  PHP_EXTENSIONS_DIR         - directory containing PHP extensions
-#  PHP_EXTENSIONS_INCLUDE_DIR - directory containing PHP extension headers
-#  PHP_INCLUDE_DIRS           - include directives for PHP development
-#  PHP_VERSION_NUMBER         - PHP version number in PHP's "vernum" format eg 50303
-#  PHP_VERSION_STRING         - PHP version string eg 5.3.3-1ubuntu9.3
-#  PHP_FOUND                  - set to TRUE if all of the above has been found.
-#
-
-#=============================================================================
-# Copyright 2011-2012 Paul Colby
-#
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file LICENSE.md for details.
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
-#=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-#  License text for the above reference.)
+#  PHP_CONFIG_EXECUTABLE      - Full path to the ``php-config`` binary.
+#  PHP_EXECUTABLE             - Full path to the ``php`` binary.
+#  PHP_EXTENSIONS_DIR         - Directory containing PHP extensions.
+#  PHP_EXTENSIONS_INCLUDE_DIR - Directory containing PHP extension headers.
+#  PHP_INCLUDE_DIRS           - Include directives for PHP development.
+#  PHP_VERSION_STRING         - PHP version string.
+#  PHP_VERSION_NUMBER         - PHP version number in PHP's "vernum" format.
+#  PHP_FOUND                  - Set to TRUE if all of the above has been found.
 #
 # This file has been modified to include the option to specify a "Zend" component
 # and find Zend headers.  © Nightwave Studios, 2017.
-#
+# ~~~
 
-find_program(PHP_CONFIG_EXECUTABLE NAMES php-config5 php-config4 php-config)
+find_program(PHP_CONFIG_EXECUTABLE NAMES php-config)
 
 if(PHP_CONFIG_EXECUTABLE)
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --php-binary
-		OUTPUT_VARIABLE PHP_EXECUTABLE
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --php-binary
+    OUTPUT_VARIABLE PHP_EXECUTABLE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --extension-dir
-		OUTPUT_VARIABLE PHP_EXTENSIONS_DIR
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --extension-dir
+    OUTPUT_VARIABLE PHP_EXTENSIONS_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --include-dir
-		OUTPUT_VARIABLE PHP_EXTENSIONS_INCLUDE_DIR
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --include-dir
+    OUTPUT_VARIABLE PHP_EXTENSIONS_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --includes
-		OUTPUT_VARIABLE PHP_INCLUDE_DIRS
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --includes
+    OUTPUT_VARIABLE PHP_INCLUDE_DIRS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --vernum
-		OUTPUT_VARIABLE PHP_VERSION_NUMBER
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --version
+    OUTPUT_VARIABLE PHP_VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
-	execute_process(COMMAND
-		${PHP_CONFIG_EXECUTABLE} --version
-		OUTPUT_VARIABLE PHP_VERSION_STRING
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${PHP_CONFIG_EXECUTABLE} --vernum
+    OUTPUT_VARIABLE PHP_VERSION_NUMBER
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 endif()
 
 mark_as_advanced(
-	PHP_CONFIG_EXECUTABLE
-	PHP_EXECUTABLE
-	PHP_EXTENSIONS_DIR
-	PHP_EXTENSIONS_INCLUDE_DIR
-	PHP_INCLUDE_DIRS
-	PHP_VERSION_NUMBER
-	PHP_VERSION_STRING)
+  PHP_CONFIG_EXECUTABLE
+  PHP_EXECUTABLE
+  PHP_EXTENSIONS_DIR
+  PHP_EXTENSIONS_INCLUDE_DIR
+  PHP_INCLUDE_DIRS
+  PHP_VERSION_NUMBER
+  PHP_VERSION_STRING
+)
 
 if(PHP_FIND_COMPONENTS)
-	foreach(component ${PHP_FIND_COMPONENTS})
-		if(component STREQUAL "Zend")
-			find_path(PHP_ZEND_HEADER
-				NAMES "zend.h"
-				PATHS "${PHP_EXTENSIONS_INCLUDE_DIR}/*")
-			if(PHP_ZEND_HEADER)
-				set(PHP_Zend_FOUND TRUE)
-			endif()
-			unset(PHP_ZEND_HEADER)
-		endif()
-	endforeach()
+  foreach(component ${PHP_FIND_COMPONENTS})
+    if(component STREQUAL "Zend")
+      find_path(
+        PHP_ZEND_HEADER
+        NAMES "zend.h"
+        PATHS "${PHP_EXTENSIONS_INCLUDE_DIR}/*"
+      )
+      if(PHP_ZEND_HEADER)
+        set(PHP_Zend_FOUND TRUE)
+      endif()
+      unset(PHP_ZEND_HEADER)
+    endif()
+  endforeach()
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PHP
-	FOUND_VAR
-		PHP_FOUND
-	REQUIRED_VARS
-		PHP_EXECUTABLE
-		PHP_CONFIG_EXECUTABLE
-		PHP_EXTENSIONS_DIR
-		PHP_EXTENSIONS_INCLUDE_DIR
-		PHP_INCLUDE_DIRS
-		PHP_VERSION_NUMBER
-		PHP_VERSION_STRING
-	VERSION_VAR
-		PHP_VERSION_STRING
-	HANDLE_COMPONENTS)
+find_package_handle_standard_args(
+  PHP
+  FOUND_VAR PHP_FOUND
+  REQUIRED_VARS
+    PHP_EXECUTABLE
+    PHP_CONFIG_EXECUTABLE
+    PHP_EXTENSIONS_DIR
+    PHP_EXTENSIONS_INCLUDE_DIR
+    PHP_INCLUDE_DIRS
+    PHP_VERSION_NUMBER
+    PHP_VERSION_STRING
+  VERSION_VAR PHP_VERSION_STRING
+  HANDLE_COMPONENTS
+)

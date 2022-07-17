@@ -1,0 +1,10 @@
+# Ignore everything ...
+*
+
+# ... except of
+!docs
+!examples
+!res
+!src
+!test
+!CMakeLists.txt

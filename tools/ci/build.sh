@@ -10,7 +10,7 @@ mkdir -p "${VOLUME}"
 
 docker build -t ${IMAGE_NAME} -f - "${ROOT_DIR}" <<-END
 	FROM tinyspline/build-deps:latest
-	COPY src/. /tinyspline
+	COPY . /tinyspline
 	WORKDIR /tinyspline
 END
 

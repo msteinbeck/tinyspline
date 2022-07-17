@@ -266,6 +266,9 @@ docker run \
 				-DTINYSPLINE_ENABLE_JAVA=True \
 				-DJava_JAVAC_EXECUTABLE=/usr/bin/javac \
 				-DJava_JAR_EXECUTABLE=/usr/bin/jar && \
+			cmake --build . --target demo && \
+				chown $(id -u):$(id -g) examples/cxx/fltk/demo.exe && \
+				cp -a examples/cxx/fltk/demo.exe ${STORAGE}/windows64 && \
 			cmake --build . --target tinysplinecsharp && \
 				nuget pack && \
 				chown $(id -u):$(id -g) *.nupkg && \

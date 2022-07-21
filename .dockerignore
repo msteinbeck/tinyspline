@@ -1,10 +1,12 @@
 # Ignore everything ...
 *
 
-# ... except of
+# ... except of:
 !docs
 !examples
 !res
 !src
 !test
 !CMakeLists.txt
+!README.md
+!LICENSE

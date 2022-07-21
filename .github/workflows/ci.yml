@@ -169,6 +169,9 @@ jobs:
         dotnet pack *.csproj
         cmake --build . --target tinysplinego
         mvn package
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          otool -L lib/*tinysplinejava*
+        fi
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -222,7 +225,11 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: python setup.py bdist_wheel
+      run: |
+        python setup.py bdist_wheel
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          otool -L lib/*tinysplinepython*
+        fi
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -262,7 +269,11 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: gem build *.gemspec
+      run: |
+        gem build *.gemspec
+        if [ "$RUNNER_OS" == "macOS" ]; then
+          otool -L lib/*tinysplineruby*
+        fi
 
     - name: Deploy
       uses: actions/upload-artifact@v2

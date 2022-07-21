@@ -1,0 +1,19 @@
+function tinyspline_split (str, sep)
+  local res = {}
+  for s in string.gmatch(str, "([^"..sep.."]+)")
+    do table.insert(res, s)
+  end
+  return res
+end
+
+function tinyspline_major ()
+  return tinyspline_split(tinyspline_split(_VERSION, " ")[2], ".")[1]
+end
+
+function tinyspline_minor ()
+  return tinyspline_split(tinyspline_split(_VERSION, " ")[2], ".")[2]
+end
+
+return require("@TINYSPLINE_LUA_CMAKE_TARGET@"
+               .. tinyspline_major()
+               .. tinyspline_minor())

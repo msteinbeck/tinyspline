@@ -1479,6 +1479,10 @@ if(${TINYSPLINE_BINDING_REQUESTED})
     set(TINYSPLINE_LUA_LIB_NAME
         "${TINYSPLINE_LUA_CMAKE_TARGET}${LUA_VERSION_MAJOR}${LUA_VERSION_MINOR}"
     )
+    configure_file(
+      "pkg/tinyspline.lua.in"
+      "${TINYSPLINE_LUA_SOURCE_DIRECTORY}/tinyspline.lua" @ONLY
+    )
     tinyspline_add_swig_library(
       TARGET ${TINYSPLINE_LUA_CMAKE_TARGET}
       LANG lua
@@ -1486,6 +1490,15 @@ if(${TINYSPLINE_BINDING_REQUESTED})
       LIBS ${LUA_LIBRARIES}
       NAME ${TINYSPLINE_LUA_LIB_NAME}
       SWIG_ARGS -module ${TINYSPLINE_LUA_LIB_NAME}
+    )
+    add_custom_command(
+      TARGET ${TINYSPLINE_LUA_CMAKE_TARGET}
+      POST_BUILD
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        "${TINYSPLINE_LUA_SOURCE_DIRECTORY}/tinyspline.lua"
+        "${TINYSPLINE_OUTPUT_DIRECTORY}"
+      BYPRODUCTS "${TINYSPLINE_OUTPUT_DIRECTORY}/tinyspline.lua"
     )
   endif()
 
@@ -1762,6 +1775,9 @@ endif()
 
 # Luarocks
 if(${TINYSPLINE_WITH_LUA})
+  set(TINYSPLINE_LUAROCKS_INSTALL_LUA
+      "\"${TINYSPLINE_LIB_DIR}/tinyspline.lua\""
+  )
   set(TINYSPLINE_LUAROCKS_INSTALL_LIB
       "${TINYSPLINE_LIB_DIR}/${TINYSPLINE_LUA_LIB_NAME}"
   )

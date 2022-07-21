@@ -81,12 +81,6 @@
 		throw new Error(String.format(msg, args), t);
 	}
 
-	private static void exception(String msg,
-	                              Object... args)
-	throws Exception {
-		throw new Exception(String.format(msg, args));
-	}
-
 	static {
 		File tmpDir = createTmpDir();
 		log("Temporary directory is: %s", tmpDir);

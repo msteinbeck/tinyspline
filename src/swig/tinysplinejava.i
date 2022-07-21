@@ -113,33 +113,6 @@
 			                      lib,
 			                      tmpDir));
 			log("... done");
-			if (lib.equals(nativeLib) &&
-			    platform.contains("macosx")) {
-				log("Trying to add rpath ...");
-				try {
-					String javaHome = System.getProperty("java.home");
-					if (javaHome == null)
-						exception("Property 'java.home' is null");
-					Path jhl = Paths.get(javaHome, "lib");
-					log("... %s", jhl);
-					if (!Files.exists(jhl))
-						exception("%s does not exist", jhl);
-					Process proc = Runtime.getRuntime().exec(new String[] {
-							"install_name_tool",
-							"-add_rpath",
-							jhl.toString(),
-							libs.get(lib).getPath()
-						});
-					int code = proc.waitFor();
-					if (code != 0)
-						exception("'install_name_tool' failed with exit code: %d",
-						          code);
-					log("... done");
-				} catch (Exception e) {
-					log("... error: %s", e.getMessage());
-					log("... continue");
-				}
-			}
 		}
 
 		// Load libraries.

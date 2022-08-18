@@ -582,7 +582,6 @@ jobs:
         fi
 
     - name: Run Tests
-      shell: bash
       run: |
         cd $GITHUB_WORKSPACE/test/ruby
         bundle install

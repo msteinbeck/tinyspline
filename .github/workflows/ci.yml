@@ -563,6 +563,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
 
     - name: Download Packages
       uses: actions/download-artifact@v2
@@ -584,5 +585,4 @@ jobs:
     - name: Run Tests
       run: |
         cd $GITHUB_WORKSPACE/test/ruby
-        bundle install
         ruby tests.rb

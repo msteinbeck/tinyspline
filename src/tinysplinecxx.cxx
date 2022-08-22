@@ -1432,6 +1432,8 @@ tinyspline::BSpline
 tinyspline::Morphism::eval(real t)
 {
 	tsStatus status;
+	if (t <= 0) return m_origin;
+	if (t >= 1) return m_target;
 	if (ts_bspline_morph(&m_originAligned.spline,
 			     &m_targetAligned.spline,
 			     t, m_epsilon,

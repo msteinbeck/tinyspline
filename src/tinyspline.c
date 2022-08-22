@@ -1185,9 +1185,9 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
  */
 tsError
 ts_int_bspline_find_knot(const tsBSpline *spline,
-                         tsReal knot,
-                         size_t *index,
-                         size_t *multiplicity,
+                         tsReal *knot, /* in: knot; out: actual knot */
+                         size_t *idx,  /* out: index of `knot' */
+                         size_t *mult, /* out: multiplicity of `knot' */
                          tsStatus *status)
 {
 	const size_t deg = ts_bspline_degree(spline);
@@ -1197,42 +1197,44 @@ ts_int_bspline_find_knot(const tsBSpline *spline,
 	size_t low, high;
 
 	ts_bspline_domain(spline, &min, &max);
-	if (knot < min && !ts_knots_equal(knot, min)) {
+	if (*knot < min && !ts_knots_equal(*knot, min)) {
 		TS_RETURN_2(status, TS_U_UNDEFINED,
 		            "knot (%f) < min(domain) (%f)",
-		            knot, min)
+		            *knot, min)
 	}
-	if (knot > max && !ts_knots_equal(knot, max)) {
+	if (*knot > max && !ts_knots_equal(*knot, max)) {
 		TS_RETURN_2(status, TS_U_UNDEFINED,
 		            "knot (%f) > max(domain) (%f)",
-		            knot, max)
+		            *knot, max)
 	}
 
 	/* Based on 'The NURBS Book' (Les Piegl and Wayne Tiller). */
-	if (ts_knots_equal(knot, knots[num_knots - 1])) {
-		*index = num_knots - 1;
+	if (ts_knots_equal(*knot, knots[num_knots - 1])) {
+		*idx = num_knots - 1;
 	} else {
 		low = 0;
 		high = num_knots - 1;
-		*index = (low+high) / 2;
-		while (knot < knots[*index] || knot >= knots[*index + 1]) {
-			if (knot < knots[*index])
-				high = *index;
+		*idx = (low+high) / 2;
+		while (*knot < knots[*idx] || *knot >= knots[*idx + 1]) {
+			if (*knot < knots[*idx])
+				high = *idx;
 			else
-				low = *index;
-			*index = (low+high) / 2;
+				low = *idx;
+			*idx = (low+high) / 2;
 		}
 	}
 
 	/* Handle floating point errors. */
-	while (*index < num_knots - 1 && /* there is a next knot */
-	       ts_knots_equal(knot, knots[*index + 1])) {
-		(*index)++;
+	while (*idx < num_knots - 1 && /* there is a next knot */
+	       ts_knots_equal(*knot, knots[*idx + 1])) {
+		(*idx)++;
 	}
+	if (ts_knots_equal(*knot, knots[*idx]))
+		*knot = knots[*idx]; /* set actual knot */
 
 	/* Calculate knot's multiplicity. */
-	for (*multiplicity = deg + 1; *multiplicity > 0 ; (*multiplicity)--) {
-		if (ts_knots_equal(knot, knots[*index - (*multiplicity-1)]))
+	for (*mult = deg + 1; *mult > 0 ; (*mult)--) {
+		if (ts_knots_equal(*knot, knots[*idx - (*mult-1)]))
 			break;
 	}
 
@@ -1258,7 +1260,6 @@ ts_int_bspline_eval_woa(const tsBSpline *spline,
 	size_t k;        /**< Index of \p u. */
 	size_t s;        /**< Multiplicity of \p u. */
 
-	tsReal uk;       /**< The actual used u. */
 	size_t from;     /**< Offset used to copy values. */
 	size_t fst;      /**< First affected control point, inclusive. */
 	size_t lst;      /**< Last affected control point, inclusive. */
@@ -1283,12 +1284,10 @@ ts_int_bspline_eval_woa(const tsBSpline *spline,
 	/* 1. */
 	k = s = 0;
 	TS_CALL_ROE(err, ts_int_bspline_find_knot(
-	            spline, u, &k, &s, status))
+	            spline, &u, &k, &s, status))
 
 	/* 2. */
-	uk = knots[k];  /* Ensures that with any precision of  */
-	net->pImpl->u = /* tsReal the knot vector stays valid. */
-		ts_knots_equal(u, uk) ? uk : u;
+	net->pImpl->u = u;
 	net->pImpl->k = k;
 	net->pImpl->s = s;
 	net->pImpl->h = deg < s ? 0 : deg-s; /* prevent underflow */

@@ -1611,9 +1611,6 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			              frames[0].normal,
 			              frames[0].normal);
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
-			ts_vec3_cross(frames[0].tangent,
-			              frames[0].normal,
-			              frames[0].normal);
 		} else {
 			/* Never trust user input! */
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);

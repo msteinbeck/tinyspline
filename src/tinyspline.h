@@ -1733,7 +1733,7 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
  * @return TS_SUCCESS
  * 	On success.
  * @return TS_U_UNDEFINED
- * 	If \p spline is not defined at knot value \p u.
+ * 	If \p spline is not defined at \p knot.
  * @return TS_MALLOC
  * 	If allocating memory failed.
  */

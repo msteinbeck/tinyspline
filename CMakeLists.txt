@@ -7,6 +7,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(TINYSPLINE_BUILD_EXAMPLES "Build TinySpline examples." ON)
 option(TINYSPLINE_BUILD_TESTS "Build TinySpline tests." ON)
 option(TINYSPLINE_BUILD_DOCS "Build TinySpline documentation." ON)
+option(TINYSPLINE_JSON_SUPPORT "Build TinySpline with JSON support." ON)
 
 if(NOT DEFINED TINYSPLINE_OUTPUT_DIRECTORY)
   set(TINYSPLINE_OUTPUT_DIRECTORY

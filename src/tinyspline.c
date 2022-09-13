@@ -1,6 +1,9 @@
 #define TINYSPLINE_EXPORT
 #include "tinyspline.h"
-#include "parson.h" /* serialization */
+
+#ifndef NO_JSON
+# include "parson.c" /* serialization */
+#endif
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h>   /* fabs, sqrt, acos */
@@ -2607,6 +2610,7 @@ ts_bspline_morph(const tsBSpline *origin,
 
 
 
+#ifndef NO_JSON
 /*! @name Serialization and Persistence
  *
  * @{
@@ -2841,12 +2845,14 @@ ts_int_bspline_parse_json(const JSON_Value *spline_value,
 		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
 }
+#endif
 
 tsError
 ts_bspline_to_json(const tsBSpline *spline,
                    char **json,
                    tsStatus *status)
 {
+#ifndef NO_JSON
 	tsError err;
 	JSON_Value *value = NULL;
 	*json = NULL;
@@ -2856,6 +2862,12 @@ ts_bspline_to_json(const tsBSpline *spline,
 	if (!*json)
 		TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	TS_RETURN_SUCCESS(status)
+#else
+	(void)spline;
+	(void)json;
+	(void)status;
+	return TS_NOT_SUPPORTED;
+#endif
 }
 
 tsError
@@ -2863,6 +2875,7 @@ ts_bspline_parse_json(const char *json,
                       tsBSpline *spline,
                       tsStatus *status)
 {
+#ifndef NO_JSON
 	tsError err;
 	JSON_Value *value = NULL;
 	ts_int_bspline_init(spline);
@@ -2878,6 +2891,12 @@ ts_bspline_parse_json(const char *json,
 		if (value)
 			json_value_free(value);
 	TS_END_TRY_RETURN(err)
+#else
+	(void)spline;
+	(void)json;
+	(void)status;
+	return TS_NOT_SUPPORTED;
+#endif
 }
 
 tsError
@@ -2885,6 +2904,7 @@ ts_bspline_save(const tsBSpline *spline,
                 const char *path,
                 tsStatus *status)
 {
+#ifndef NO_JSON
 	tsError err;
 	JSON_Status json_status;
 	JSON_Value *value = NULL;
@@ -2894,6 +2914,12 @@ ts_bspline_save(const tsBSpline *spline,
 	if (json_status != JSONSuccess)
 		TS_RETURN_0(status, TS_IO_ERROR, "unexpected io error")
 	TS_RETURN_SUCCESS(status)
+#else
+	(void)spline;
+	(void)path;
+	(void)status;
+	return TS_NOT_SUPPORTED;
+#endif
 }
 
 tsError
@@ -2901,6 +2927,7 @@ ts_bspline_load(const char *path,
                 tsBSpline *spline,
                 tsStatus *status)
 {
+#ifndef NO_JSON
 	tsError err;
 	FILE *file = NULL;
 	JSON_Value *value = NULL;
@@ -2926,6 +2953,12 @@ ts_bspline_load(const char *path,
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)
+#else
+	(void)path;
+	(void)spline;
+	(void)status;
+	return TS_NOT_SUPPORTED;
+#endif
 }
 /*! @} */
 

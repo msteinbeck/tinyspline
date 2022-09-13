@@ -465,7 +465,10 @@ typedef enum
 	TS_NO_RESULT = -14,
 
 	/** Unexpected number of points. */
-	TS_NUM_POINTS = -15
+	TS_NUM_POINTS = -15,
+
+	/** Unsupported operation. */
+	TS_NOT_SUPPORTED = -16
 } tsError;
 
 /**

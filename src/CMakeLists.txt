@@ -903,7 +903,6 @@ set(TINYSPLINE_CXX_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # TINYSPLINE_C_SOURCE_FILES
 list(APPEND TINYSPLINE_C_SOURCE_FILES
      "${CMAKE_CURRENT_SOURCE_DIR}/tinyspline.c"
-     "${CMAKE_CURRENT_SOURCE_DIR}/parson.c"
 )
 
 # TINYSPLINE_CXX_SOURCE_FILES
@@ -931,6 +930,9 @@ list(JOIN TINYSPLINE_C_INSTALL_CMAKE_CONFIG_DIR "/"
 
 add_library(tinyspline ${TINYSPLINE_C_SOURCE_FILES})
 target_compile_definitions(tinyspline PUBLIC ${TINYSPLINE_C_DEFINITIONS})
+if (NOT TINYSPLINE_JSON_SUPPORT)
+  target_compile_definitions(tinyspline PRIVATE NO_JSON)
+endif()
 set_target_properties(
   tinyspline
   PROPERTIES OUTPUT_NAME "${TINYSPLINE_C_LIBRARY_OUTPUT_NAME}"
@@ -1025,6 +1027,9 @@ if(TINYSPLINE_ENABLE_CXX)
     endif()
     add_library(${target} ${TINYSPLINE_CXX_SOURCE_FILES})
     target_compile_definitions(${target} PUBLIC ${TINYSPLINE_CXX_DEFINITIONS})
+    if (NOT TINYSPLINE_JSON_SUPPORT)
+      target_compile_definitions(${target} PRIVATE NO_JSON)
+    endif()
     set_target_properties(
       ${target}
       PROPERTIES OUTPUT_NAME ${name}

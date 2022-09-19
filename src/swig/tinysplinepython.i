@@ -12,6 +12,7 @@
 %include "snake_case.swg"
 
 %rename (__repr__) tinyspline::BSpline::toString;
+%rename (__repr__) tinyspline::ChordLengths::toString;
 %rename (__repr__) tinyspline::DeBoorNet::toString;
 %rename (__repr__) tinyspline::Domain::toString;
 %rename (__repr__) tinyspline::Frame::toString;

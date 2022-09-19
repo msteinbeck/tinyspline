@@ -1688,6 +1688,58 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 	TS_END_TRY_RETURN(err)
 }
 
+
+tsError
+ts_bspline_chord_lenghts(const tsBSpline *spline,
+                         const tsReal *knots,
+                         size_t num,
+                         tsReal *lengths,
+                         tsStatus *status)
+{
+	tsError err;
+	tsReal dist, lst_knot, cur_knot;
+	size_t i, dim = ts_bspline_dimension(spline);
+	tsDeBoorNet lst = ts_deboornet_init();
+	tsDeBoorNet cur = ts_deboornet_init();
+	tsDeBoorNet tmp = ts_deboornet_init();
+
+	if (num == 0) TS_RETURN_SUCCESS(status);
+
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_int_deboornet_new(
+		        spline, &lst, status))
+		TS_CALL(try, err, ts_int_deboornet_new(
+		        spline, &cur, status))
+
+		/* num >= 1 */
+		TS_CALL(try, err, ts_int_bspline_eval_woa(
+		        spline, knots[0], &lst, status));
+		lengths[0] = (tsReal) 0.0;
+
+		for (i = 1; i < num; i++) {
+			TS_CALL(try, err, ts_int_bspline_eval_woa(
+			        spline, knots[i], &cur, status));
+			lst_knot = ts_deboornet_knot(&lst);
+			cur_knot = ts_deboornet_knot(&cur);
+			if (cur_knot < lst_knot) {
+				TS_THROW_1(try, err, status, TS_KNOTS_DECR,
+				            "decreasing knot at index: %lu",
+				            (unsigned long) i)
+			}
+			dist = ts_distance(ts_deboornet_result_ptr(&lst),
+			                   ts_deboornet_result_ptr(&cur),
+			                   dim);
+			lengths[i] = lengths[i-1] + dist;
+			ts_deboornet_move(&lst, &tmp);
+			ts_deboornet_move(&cur, &lst);
+			ts_deboornet_move(&tmp, &cur);
+		}
+	TS_FINALLY
+		ts_deboornet_free(&lst);
+		ts_deboornet_free(&cur);
+	TS_END_TRY_RETURN(err)
+}
+
 void
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
                             size_t num,

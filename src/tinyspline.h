@@ -2003,6 +2003,44 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
                        tsStatus *status);
 
 /**
+ * Computes the cumulative chord lengths of the points of the given
+ * knots. Note that the first length (i.e., <tt>lengths[0]</tt>) is
+ * always \c 0, even if the minimum of the domain of \p spline is less
+ * than the first knot (i.e., <tt>knots[0]</tt>). Also, the returned
+ * lengths may be inaccurate if \p spline is discontinuous (i.e., the
+ * multiplicity of one of the interior knots is equal to the order of
+ * \p spline) with unequal evaluation points---in such case only the
+ * first result of the evaluation in included in the calculation.
+ *
+ * @pre \p knots and \p lengths have length \p num.
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] knots
+ * 	The knots to evaluate \p spline at.
+ * @param[in] num
+ * 	Number of knots in \p knots.
+ * @param[out] lengths
+ * 	The cumulative chord lengths. <tt>lengths[i]</tt> is the length of \p
+ * 	spline at knot <tt>i</tt> (<tt>knots[i]</tt>).
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_U_UNDEFINED
+ * 	If \p spline is not defined at one of the knots in \p knots.
+ * @return TS_KNOTS_DECR
+ * 	If \p knots is not monotonically increasing.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
+tsError TINYSPLINE_API
+ts_bspline_chord_lenghts(const tsBSpline *spline,
+                         const tsReal *knots,
+                         size_t num,
+                         tsReal *lengths,
+                         tsStatus *status);
+
+/**
  * Generates a sequence of \p num knots with uniform distribution. \e Uniform
  * means that consecutive knots have the same distance.
  *

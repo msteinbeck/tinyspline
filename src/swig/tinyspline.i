@@ -52,6 +52,18 @@
 	knots,
 	knots,
 	setKnots);
+%attributeval(tinyspline::ChordLengths,
+	tinyspline::BSpline,
+	spline,
+	spline);
+%attributeval(tinyspline::ChordLengths,
+	std::vector<tinyspline::real>,
+	knots,
+	knots);
+%attributeval(tinyspline::ChordLengths,
+	std::vector<tinyspline::real>,
+	values,
+	values);
 %attribute(tinyspline::Domain,
 	tinyspline::real,
 	min,

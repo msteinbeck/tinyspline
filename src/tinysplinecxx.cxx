@@ -1224,6 +1224,25 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 	return knots;
 }
 
+tinyspline::ChordLengths
+tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
+{
+	tsStatus status;
+	size_t num = std_real_vector_read(knots)size();
+	real *knotsArr = new real[num];
+	real *lengths = new real[num];
+	std::copy(std_real_vector_read(knots)begin(),
+	          std_real_vector_read(knots)end(),
+	          knotsArr);
+	if (ts_bspline_chord_lenghts(&spline,
+	                             knotsArr,
+	                             num,
+	                             lengths,
+	                             &status))
+		throw std::runtime_error(status.message);
+	return ChordLengths(*this, knotsArr, lengths, num);
+}
+
 std::string tinyspline::BSpline::toJson() const
 {
 	char *json;
@@ -1473,6 +1492,132 @@ std::string tinyspline::Morphism::toString() const
 	oss << "Morphism{"
 	    << "buffer: " << m_buffer.toString()
 	    << ", epsilon: " << epsilon()
+	    << "}";
+	return oss.str();
+}
+/*! @} */
+
+
+
+/*! @name ChordLenghts
+ * @{
+ */
+tinyspline::ChordLengths::ChordLengths()
+: m_spline(),
+  m_knots(nullptr),
+  m_chordLenghts(nullptr),
+  m_size(0)
+{}
+
+tinyspline::ChordLengths::ChordLengths(const BSpline &spline,
+                                       real* knots,
+                                       real* chordLengths,
+                                       size_t size)
+: m_spline(spline),
+  m_knots(knots),
+  m_chordLenghts(chordLengths),
+  m_size(size)
+{}
+
+tinyspline::ChordLengths::ChordLengths(const ChordLengths &other)
+: m_spline(other.m_spline),
+  m_knots(nullptr),
+  m_chordLenghts(nullptr),
+  m_size(other.m_size)
+{
+	m_knots = new real[m_size];
+	std::copy(other.m_knots,
+	          other.m_knots + m_size,
+	          m_knots);
+	m_chordLenghts = new real[m_size];
+	std::copy(other.m_chordLenghts,
+	          other.m_chordLenghts + m_size,
+	          m_chordLenghts);
+}
+
+tinyspline::ChordLengths::ChordLengths(ChordLengths &&other)
+: m_spline(),
+  m_knots(nullptr),
+  m_chordLenghts(nullptr),
+  m_size(0)
+{
+	*this = std::move(other);
+}
+
+tinyspline::ChordLengths::~ChordLengths()
+{
+	delete [] m_knots;
+	delete [] m_chordLenghts;
+	m_size = 0;
+}
+
+tinyspline::ChordLengths &
+tinyspline::ChordLengths::operator=(const ChordLengths &other)
+{
+	if (&other != this) {
+		real *knots = new real[other.m_size];
+		std::copy(other.m_knots,
+		          other.m_knots + other.m_size,
+		          knots);
+		real *chordLengths = new real[other.m_size];
+		std::copy(other.m_chordLenghts,
+		          other.m_chordLenghts + other.m_size,
+		          chordLengths);
+		delete [] m_knots;
+		delete [] m_chordLenghts;
+		m_spline = other.m_spline;
+		m_knots = knots;
+		m_chordLenghts = chordLengths;
+		m_size = other.m_size;
+	}
+	return *this;
+}
+
+tinyspline::ChordLengths &
+tinyspline::ChordLengths::operator=(ChordLengths &&other)
+{
+	if (&other != this) {
+		delete [] m_knots;
+		delete [] m_chordLenghts;
+		m_spline = other.m_spline;
+		m_knots = other.m_knots;
+		m_chordLenghts = other.m_chordLenghts;
+		m_size = other.m_size;
+		other.m_spline = BSpline();
+		other.m_knots = nullptr;
+		other.m_chordLenghts = nullptr;
+		other.m_size = 0;
+	}
+	return *this;
+}
+
+tinyspline::BSpline
+tinyspline::ChordLengths::spline() const
+{
+	return m_spline;
+}
+
+std::vector<tinyspline::real>
+tinyspline::ChordLengths::knots() const
+{
+	return std::vector<real>(m_knots,
+	                         m_knots + m_size);
+}
+
+std::vector<tinyspline::real>
+tinyspline::ChordLengths::values() const
+{
+	return std::vector<real>(m_chordLenghts,
+	                         m_chordLenghts + m_size);
+}
+
+std::string
+tinyspline::ChordLengths::toString() const
+{
+	std::ostringstream oss;
+	oss << "ChordLengths{"
+	    << "spline: " << m_spline.toString()
+	    << ", values: " << m_size
 	    << "}";
 	return oss.str();
 }

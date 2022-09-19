@@ -355,6 +355,7 @@ public:
 
 
 class Morphism;
+class ChordLengths;
 class TINYSPLINECXX_API BSpline {
 public:
 	enum Type { Opened, Clamped, Beziers };
@@ -415,6 +416,7 @@ public:
 	FrameSeq computeRMF(std_real_vector_in knots,
 	                    Vec3 *firstNormal = nullptr) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
+	ChordLengths chordLenghts(std_real_vector_in knots) const;
 
 	/* Serialization */
 	std::string toJson() const;
@@ -489,6 +491,38 @@ private:
 	real m_epsilon;
 	BSpline m_originAligned, m_targetAligned;
 	BSpline m_buffer;
+};
+/*! @} */
+
+
+
+/*! @name Reparametrization by Arc Length
+ * @{
+ */
+class TINYSPLINECXX_API ChordLengths {
+public:
+	ChordLengths();
+	ChordLengths(const ChordLengths &other);
+	ChordLengths(ChordLengths &&other);
+	virtual ~ChordLengths();
+
+	ChordLengths &operator=(const ChordLengths &other);
+	ChordLengths &operator=(ChordLengths &&other);
+
+	BSpline spline() const;
+	std::vector<real> knots() const;
+	std::vector<real> values() const;
+
+	std::string toString() const;
+private:
+	BSpline m_spline;
+	real *m_knots, *m_chordLenghts;
+	size_t m_size;
+	ChordLengths(const BSpline &spline,
+	             real *knots,
+	             real *chordLenghts,
+	             size_t size);
+	friend class BSpline;
 };
 /*! @} */
 

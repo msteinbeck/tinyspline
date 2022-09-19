@@ -199,6 +199,7 @@
 %ignore tsFrame;
 %ignore tsStatus;
 %ignore tinyspline::BSpline::BSpline(BSpline &&);
+%ignore tinyspline::ChordLengths::ChordLengths(ChordLengths &&);
 %ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
 %ignore tinyspline::FrameSeq::FrameSeq(FrameSeq &&);
 

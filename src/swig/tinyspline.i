@@ -64,14 +64,6 @@
 	std::vector<tinyspline::real>,
 	values,
 	values);
-%attribute(tinyspline::Domain,
-	tinyspline::real,
-	min,
-	min);
-%attribute(tinyspline::Domain,
-	tinyspline::real,
-	max,
-	max);
 %attribute(tinyspline::DeBoorNet,
 	tinyspline::real,
 	knot,
@@ -100,6 +92,14 @@
 	std::vector<tinyspline::real>,
 	result,
 	result);
+%attribute(tinyspline::Domain,
+	tinyspline::real,
+	min,
+	min);
+%attribute(tinyspline::Domain,
+	tinyspline::real,
+	max,
+	max);
 %attributeval(tinyspline::Frame,
 	tinyspline::Vec3,
 	position,

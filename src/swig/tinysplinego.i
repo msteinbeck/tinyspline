@@ -13,6 +13,7 @@
 %ignore tinyspline::Vec4::operator*;
 
 %rename (string) tinyspline::BSpline::toString;
+%rename (string) tinyspline::ChordLengths::toString;
 %rename (string) tinyspline::DeBoorNet::toString;
 %rename (string) tinyspline::Domain::toString;
 %rename (string) tinyspline::Frame::toString;

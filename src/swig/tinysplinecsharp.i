@@ -74,6 +74,7 @@
 	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
 
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
+%csmethodmodifiers tinyspline::ChordLengths::toString "public override";
 %csmethodmodifiers tinyspline::DeBoorNet::toString "public override";
 %csmethodmodifiers tinyspline::Domain::toString "public override";
 %csmethodmodifiers tinyspline::Frame::toString "public override";

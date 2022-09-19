@@ -5,6 +5,7 @@
 %include "snake_case.swg"
 
 %rename (inspect) tinyspline::BSpline::toString;
+%rename (inspect) tinyspline::ChordLengths::toString;
 %rename (inspect) tinyspline::DeBoorNet::toString;
 %rename (inspect) tinyspline::Domain::toString;
 %rename (inspect) tinyspline::Frame::toString;

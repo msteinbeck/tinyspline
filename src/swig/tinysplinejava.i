@@ -20,6 +20,7 @@
 %javamethodmodifiers tinyspline::Vec4::norm "@Deprecated public";
 
 %javamethodmodifiers tinyspline::BSpline::toString "@Override public";
+%javamethodmodifiers tinyspline::ChordLengths::toString "@Override public";
 %javamethodmodifiers tinyspline::DeBoorNet::toString "@Override public";
 %javamethodmodifiers tinyspline::Domain::toString "@Override public";
 %javamethodmodifiers tinyspline::Frame::toString "@Override public";

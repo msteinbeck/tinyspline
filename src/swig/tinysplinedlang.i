@@ -1,6 +1,7 @@
 %module tinysplinedlang
 
 %dmethodmodifiers tinyspline::BSpline::toString "override public";
+%dmethodmodifiers tinyspline::ChordLengths::toString "override public";
 %dmethodmodifiers tinyspline::DeBoorNet::toString "override public";
 %dmethodmodifiers tinyspline::Domain::toString "override public";
 %dmethodmodifiers tinyspline::Frame::toString "override public";

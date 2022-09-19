@@ -1,7 +1,5 @@
 %module tinysplineruby
 
-%ignore tsFrame;
-
 %include "snake_case.swg"
 
 %rename (inspect) tinyspline::BSpline::toString;

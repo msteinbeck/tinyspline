@@ -3,16 +3,6 @@
 %ignore ts_bspline_insert_knot;
 %ignore ts_deboornet_result;
 
-%ignore tinyspline::BSpline::operator=;
-%ignore tinyspline::ChordLengths::operator=;
-%ignore tinyspline::DeBoorNet::operator=;
-%ignore tinyspline::Domain::operator=;
-%ignore tinyspline::Frame::operator=;
-%ignore tinyspline::FrameSeq::operator=;
-%ignore tinyspline::Vec2::operator=;
-%ignore tinyspline::Vec3::operator=;
-%ignore tinyspline::Vec4::operator=;
-
 // Map std::vector<tinyspline::real> to R vector.
 %typemap(scoerceout) std::vector<tinyspline::real> * %{ %}
 %typemap(out) std::vector<tinyspline::real> * {

@@ -1,15 +1,5 @@
 %module tinysplineoctave
 
-%ignore tinyspline::BSpline::operator=;
-%ignore tinyspline::ChordLengths::operator=;
-%ignore tinyspline::DeBoorNet::operator=;
-%ignore tinyspline::Domain::operator=;
-%ignore tinyspline::Frame::operator=;
-%ignore tinyspline::FrameSeq::operator=;
-%ignore tinyspline::Vec2::operator=;
-%ignore tinyspline::Vec3::operator=;
-%ignore tinyspline::Vec4::operator=;
-
 %include "snake_case.swg"
 
 // Map std::vector<tinyspline::real> to Octave vector.

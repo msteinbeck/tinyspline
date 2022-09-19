@@ -4,15 +4,8 @@
 %include "enums.swg"
 
 %ignore tinyspline::BSpline::operator();
-%ignore tinyspline::BSpline::operator=;
-%ignore tinyspline::ChordLengths::operator=;
-%ignore tinyspline::DeBoorNet::operator=;
-%ignore tinyspline::Domain::operator=;
-%ignore tinyspline::Frame::operator=;
-%ignore tinyspline::FrameSeq::operator=;
 %ignore tinyspline::Morphism::operator();
 
-%ignore tinyspline::Vec2::operator=;
 %ignore tinyspline::Vec2::operator+;
 %ignore tinyspline::Vec2::operator-;
 %ignore tinyspline::Vec2::operator*;
@@ -33,7 +26,6 @@
 	{ return vec.Multiply(val); }
 }
 
-%ignore tinyspline::Vec3::operator=;
 %ignore tinyspline::Vec3::operator+;
 %ignore tinyspline::Vec3::operator-;
 %ignore tinyspline::Vec3::operator*;
@@ -54,7 +46,6 @@
 	{ return vec.Multiply(val); }
 }
 
-%ignore tinyspline::Vec4::operator=;
 %ignore tinyspline::Vec4::operator+;
 %ignore tinyspline::Vec4::operator-;
 %ignore tinyspline::Vec4::operator*;

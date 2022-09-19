@@ -199,9 +199,19 @@
 %ignore tsFrame;
 %ignore tsStatus;
 %ignore tinyspline::BSpline::BSpline(BSpline &&);
+%ignore tinyspline::BSpline::operator=;
 %ignore tinyspline::ChordLengths::ChordLengths(ChordLengths &&);
+%ignore tinyspline::ChordLengths::operator=;
 %ignore tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&);
+%ignore tinyspline::DeBoorNet::operator=;
+%ignore tinyspline::Domain::operator=;
+%ignore tinyspline::Frame::operator=;
 %ignore tinyspline::FrameSeq::FrameSeq(FrameSeq &&);
+%ignore tinyspline::FrameSeq::operator=;
+%ignore tinyspline::Vec2::operator=;
+%ignore tinyspline::Vec3::operator=;
+%ignore tinyspline::Vec4::operator=;
+
 
 %{
 	#include "tinyspline.h"

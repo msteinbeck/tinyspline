@@ -1,6 +1,7 @@
 %module tinysplinelua
 
 %ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::ChordLengths::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 

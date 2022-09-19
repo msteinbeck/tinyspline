@@ -4,6 +4,7 @@
 %ignore ts_deboornet_result;
 
 %ignore tinyspline::BSpline::operator=;
+%ignore tinyspline::ChordLengths::operator=;
 %ignore tinyspline::DeBoorNet::operator=;
 %ignore tinyspline::Domain::operator=;
 %ignore tinyspline::Frame::operator=;

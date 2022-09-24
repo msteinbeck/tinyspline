@@ -65,7 +65,7 @@ M.DISABLE_DEEP_ANALYSIS = false
 -- set EXPORT_ASSERT_TO_GLOBALS to have all asserts visible as global values
 -- EXPORT_ASSERT_TO_GLOBALS = true
 
--- we need to keep a copy of the script args before it is overriden
+-- we need to keep a copy of the script args before it is overridden
 local cmdline_argv = rawget(_G, "arg")
 
 M.FAILURE_PREFIX = 'LuaUnit test FAILURE: ' -- prefix string for failed tests
@@ -626,7 +626,7 @@ function M.adjust_err_msg_with_iter( err_msg, iter_msg )
         if match then
             err_msg = err_msg:gsub( match, match .. iter_msg )
         else
-            -- no file:line: infromation, just add the iteration info at the beginning of the line
+            -- no file:line: information, just add the iteration info at the beginning of the line
             err_msg = iter_msg .. err_msg
         end
     end
@@ -641,7 +641,7 @@ local function tryMismatchFormatting( table_a, table_b, doDeepAnalysis, margin )
     Arguments:
     * table_a, table_b: tables to be compared
     * doDeepAnalysis:
-        M.DEFAULT_DEEP_ANALYSIS: (the default if not specified) perform deep analysis only for big lists and big dictionnaries
+        M.DEFAULT_DEEP_ANALYSIS: (the default if not specified) perform deep analysis only for big lists and big dictionaries
         M.FORCE_DEEP_ANALYSIS  : always perform deep analysis
         M.DISABLE_DEEP_ANALYSIS: never perform deep analysis
     * margin: supplied only for almost equality
@@ -1206,7 +1206,7 @@ local _recursion_cache_MT = {
 local function _is_table_equals(actual, expected, cycleDetectTable, marginForAlmostEqual)
     --[[Returns true if both table are equal.
 
-    If argument marginForAlmostEqual is suppied, number comparison is done using alomstEqual instead 
+    If argument marginForAlmostEqual is supplied, number comparison is done using alomstEqual instead 
     of strict equality.
 
     cycleDetectTable is an internal argument used during recursion on tables.
@@ -2476,7 +2476,7 @@ local function nopCallable()
     return nopCallable
 end
 
-local NilOutput = { __class__ = 'NilOuptut' } -- class
+local NilOutput = { __class__ = 'NilOutput' } -- class
 local NilOutput_MT = { __index = nopCallable } -- metatable
 
 function NilOutput.new(runner)
@@ -3118,7 +3118,7 @@ end
     function M.LuaUnit.expandOneClass( result, className, classInstance )
         --[[
         Input: a list of { name, instance }, a class name, a class instance
-        Ouptut: modify result to add all test method instance in the form:
+        Output: modify result to add all test method instance in the form:
         { className.methodName, classInstance }
         ]]
         for methodName, methodInstance in sortedPairs(classInstance) do
@@ -3437,7 +3437,7 @@ end
 
 -- class LuaUnit
 
--- For compatbility with LuaUnit v2
+-- For compatibility with LuaUnit v2
 M.run = M.LuaUnit.run
 M.Run = M.LuaUnit.run
 

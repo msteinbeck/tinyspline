@@ -512,6 +512,10 @@ public:
 	BSpline spline() const;
 	std::vector<real> knots() const;
 	std::vector<real> values() const;
+	size_t size() const;
+
+	real lengthToKnot(real len) const;
+	real tToKnot(real t) const;
 
 	std::string toString() const;
 private:

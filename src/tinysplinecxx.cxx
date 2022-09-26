@@ -1234,7 +1234,7 @@ tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
 	std::copy(std_real_vector_read(knots)begin(),
 	          std_real_vector_read(knots)end(),
 	          knotsArr);
-	if (ts_bspline_chord_lenghts(&spline,
+	if (ts_bspline_chord_lengths(&spline,
 	                             knotsArr,
 	                             num,
 	                             lengths,
@@ -1609,6 +1609,46 @@ tinyspline::ChordLengths::values() const
 {
 	return std::vector<real>(m_chordLenghts,
 	                         m_chordLenghts + m_size);
+}
+
+size_t
+tinyspline::ChordLengths::size() const
+{
+	return m_size;
+}
+
+tinyspline::real
+tinyspline::ChordLengths::lengthToKnot(real len) const
+{
+	tsStatus status;
+	real knot;
+	size_t idx;
+	if (ts_chord_lengths_length_to_knot(m_knots,
+	                               m_chordLenghts,
+	                               m_size,
+	                               len,
+	                               &knot,
+	                               &idx,
+	                               &status))
+		throw std::runtime_error(status.message);
+	return knot;
+}
+
+tinyspline::real
+tinyspline::ChordLengths::tToKnot(real t) const
+{
+	tsStatus status;
+	real knot;
+	size_t idx;
+	if (ts_chord_lengths_t_to_knot(m_knots,
+	                               m_chordLenghts,
+	                               m_size,
+	                               t,
+	                               &knot,
+	                               &idx,
+	                               &status))
+		throw std::runtime_error(status.message);
+	return knot;
 }
 
 std::string

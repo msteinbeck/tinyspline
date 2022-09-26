@@ -2034,7 +2034,7 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
  * 	If memory allocation failed.
  */
 tsError TINYSPLINE_API
-ts_bspline_chord_lenghts(const tsBSpline *spline,
+ts_bspline_chord_lengths(const tsBSpline *spline,
                          const tsReal *knots,
                          size_t num,
                          tsReal *lengths,
@@ -2855,6 +2855,105 @@ ts_vec_mul(const tsReal *x,
            size_t dim,
            tsReal val,
            tsReal *out);
+/*! @} */
+
+
+
+/*! @name Chord Length Method
+ *
+ * Functions for processing the cumulative chord lengths of a spline
+ * as computed by ::ts_bspline_chord_lenghts.
+ *
+ * @{
+ */
+/**
+ * Maps \p len to a knot, \c k, such that <tt>ts_bspline_eval(..., k ...)</tt>
+ * yields a point whose length, with respect to <tt>knots[0]</tt>, is close to
+ * \p len. Note that \p len is clamped to the domain of \p lengths. The domain
+ * of the result, \p knot, is <tt>[knots[0], knots[num-1]]</tt>. In addition to
+ * the mapped knot, the index, \p idx, such that <tt>knots[idx] <= len</tt> is
+ * computed.
+ *
+ * The precision of the mapping depends on the resolution of \p knots and \p
+ * lengths. That is, the more chord lengths were computed, the more precise the
+ * length-to-knot-mapping becomes. Generally, \c 200 chord lengths yields a
+ * quite precise mapping (subpixel accuracy). For very, very high precision
+ * requirements, \c 500 chord lengths should be sufficient.
+ *
+ * Returns ::TS_NO_RESULT if \p num is \c 0.
+ *
+ * @pre
+ * 	\p lengths is monotonically increasing and contains only non-negative
+ * 	values (distances cannot be negative).
+ * @param[in] knots
+ * 	Knots that were passed to ::ts_bspline_chord_lengths.
+ * @param[in] lengths
+ * 	Cumulative chord lengths as computed by ::ts_bspline_chord_lengths.
+ * @param[in] num
+ * 	Number of values in \p knots and \p lengths.
+ * @param[in] len
+ * 	Length to be mapped. Clamped to the domain of \p lengths.
+ * @param[out] knot
+ * 	A knot, such that <tt>ts_bspline_eval(..., knot ...)</tt> yields a
+ * 	point whose length, with respect to <tt>knots[0]</tt>, is close to \p
+ * 	len.
+ * @param[out] idx
+ * 	The index such that <tt>knots[idx] <= len</tt>.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NO_RESULT
+ * 	If \p num is \c 0.
+ */
+tsError
+ts_chord_lengths_length_to_knot(const tsReal *knots,
+                                const tsReal *lengths,
+                                size_t num,
+                                tsReal len,
+                                tsReal *knot,
+                                size_t *idx,
+                                tsStatus *status);
+
+/**
+ * Same as ::ts_chord_lengths_length_to_knot, except that this function takes a
+ * chord length parameter, \p t, with domain [0, 1] (clamped), which indicates
+ * the to be evaluated relative proportion of the total length
+ * (<tt>lengths[num-1]</tt>).
+ *
+ * @pre
+ * 	\p lengths is monotonically increasing and contains only non-negative
+ * 	values (distances cannot be negative).
+ * @param[in] knots
+ * 	Knots that were passed to ::ts_bspline_chord_lengths.
+ * @param[in] lengths
+ * 	Cumulative chord lengths as computed by ::ts_bspline_chord_lengths.
+ * @param[in] num
+ * 	Number of values in \p knots and \p lengths.
+ * @param[in] t
+ * 	Chord length parameter (relative proportion of the total length).
+ * 	Clamped to the domain [0, 1].
+ * @param[out] knot
+ * 	A knot, such that <tt>ts_bspline_eval(..., knot ...)</tt> yields a
+ * 	point whose length, with respect to <tt>knots[0]</tt>, is close to
+ * 	<tt>t * lengths[num-1]<tt>
+ * @param[out] idx
+ * 	The index such that <tt>knots[idx] <= <tt>t * lengths[num-1]<tt>.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NO_RESULT
+ * 	If \p num is \c 0.
+ */
+tsError TINYSPLINE_API
+ts_chord_lengths_t_to_knot(const tsReal *knots,
+                           const tsReal *lengths,
+                           size_t num,
+                           tsReal t,
+                           tsReal *knot,
+                           size_t *idx,
+                           tsStatus *status);
 /*! @} */
 
 

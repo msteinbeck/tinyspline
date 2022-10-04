@@ -1611,6 +1611,15 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
 			              frames[0].normal,
 			              frames[0].normal);
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);
+			/* In 2D (and lower), the normal is expected to extend
+			   sideways. In 3D (and higher), the normal is expected
+			   to extend upwards. The following cross product
+			   changes the normal from sideways to upwards. */
+			if (ts_bspline_dimension(spline) >= 3) {
+				ts_vec3_cross(frames[0].tangent,
+				              frames[0].normal,
+				              frames[0].normal);
+			}
 		} else {
 			/* Never trust user input! */
 			ts_vec_norm(frames[0].normal, 3, frames[0].normal);

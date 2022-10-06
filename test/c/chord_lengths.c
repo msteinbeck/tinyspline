@@ -44,7 +44,8 @@ void
 chord_lengths_num_0(CuTest *tc)
 {
 	___SETUP___
-	tsReal knots[0], lengths[0], knot;
+	/* MSVC cannot cannot allocate an array of constant size 0. */
+	tsReal knots[1], lengths[1], knot;
 	tsStatus stat;
 
 	___GIVEN___

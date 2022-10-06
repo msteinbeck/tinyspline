@@ -1,6 +1,7 @@
 #include <testutils.h>
 
-void chord_lengths_line(CuTest *tc)
+void
+chord_lengths_line(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline line = ts_bspline_init();
@@ -39,7 +40,8 @@ void chord_lengths_line(CuTest *tc)
 	ts_bspline_free(&line);
 }
 
-void chord_lengths_num_0(CuTest *tc)
+void
+chord_lengths_num_0(CuTest *tc)
 {
 	___SETUP___
 	tsReal knots[0], lengths[0], knot;
@@ -61,7 +63,8 @@ void chord_lengths_num_0(CuTest *tc)
 	___TEARDOWN___
 }
 
-void chord_lengths_num_1(CuTest *tc)
+void
+chord_lengths_num_1(CuTest *tc)
 {
 	___SETUP___
 	tsReal knots[1], lengths[1], knot;
@@ -84,7 +87,8 @@ void chord_lengths_num_1(CuTest *tc)
 	___TEARDOWN___
 }
 
-void chord_lengths_too_short(CuTest *tc)
+void
+chord_lengths_too_short(CuTest *tc)
 {
 	___SETUP___
 	tsReal knots[2], lengths[2], knot;
@@ -108,7 +112,8 @@ void chord_lengths_too_short(CuTest *tc)
 	___TEARDOWN___
 }
 
-CuSuite* get_chord_lengths_suite()
+CuSuite *
+get_chord_lengths_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, chord_lengths_line);

@@ -211,8 +211,7 @@ ts_bspline_control_points(const tsBSpline *spline,
 {
 	const size_t size = ts_bspline_sof_control_points(spline);
 	*ctrlp = (tsReal*) malloc(size);
-	if (!*ctrlp)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!*ctrlp) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*ctrlp, ts_int_bspline_access_ctrlp(spline), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -286,8 +285,7 @@ ts_bspline_knots(const tsBSpline *spline,
 {
 	const size_t size = ts_bspline_sof_knots(spline);
 	*knots = (tsReal*) malloc(size);
-	if (!*knots)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!*knots) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*knots, ts_int_bspline_access_knots(spline), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -362,8 +360,7 @@ ts_bspline_set_knots_varargs(tsBSpline *spline,
 		TS_CALL(try, err, ts_bspline_set_knots(
 		        spline, values, status))
 	TS_FINALLY
-		if (values)
-			free(values);
+		if (values) free(values);
 	TS_END_TRY_RETURN(err)
 }
 
@@ -389,8 +386,7 @@ ts_bspline_set_knot_at(tsBSpline *spline,
 		        spline, knots, status))
 	TS_CATCH(err)
 		/* If knots is not NULL, oldKnot contains the correct value. */
-		if (knots)
-			knots[index] = oldKnot;
+		if (knots) knots[index] = oldKnot;
 	TS_END_TRY_RETURN(err)
 }
 /*! @} */
@@ -496,8 +492,7 @@ ts_bspline_new(size_t num_control_points,
 	}
 
 	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
-	if (!spline->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!spline->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	spline->pImpl->deg = degree;
 	spline->pImpl->dim = dimension;
@@ -551,13 +546,11 @@ ts_bspline_copy(const tsBSpline *src,
                 tsStatus *status)
 {
 	size_t size;
-	if (src == dest)
-		TS_RETURN_SUCCESS(status)
+	if (src == dest) TS_RETURN_SUCCESS(status)
 	ts_int_bspline_init(dest);
 	size = ts_int_bspline_sof_state(src);
 	dest->pImpl = (struct tsBSplineImpl *) malloc(size);
-	if (!dest->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!dest->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -566,8 +559,7 @@ void
 ts_bspline_move(tsBSpline *src,
                 tsBSpline *dest)
 {
-	if (src == dest)
-		return;
+	if (src == dest) return;
 	dest->pImpl = src->pImpl;
 	ts_int_bspline_init(src);
 }
@@ -575,8 +567,7 @@ ts_bspline_move(tsBSpline *src,
 void
 ts_bspline_free(tsBSpline *spline)
 {
-	if (spline->pImpl)
-		free(spline->pImpl);
+	if (spline->pImpl) free(spline->pImpl);
 	ts_int_bspline_init(spline);
 }
 /*! @} */
@@ -649,8 +640,7 @@ ts_deboornet_points(const tsDeBoorNet *net,
 {
 	const size_t size = ts_deboornet_sof_points(net);
 	*points = (tsReal*) malloc(size);
-	if (!*points)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!*points) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*points, ts_int_deboornet_access_points(net), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -687,8 +677,7 @@ ts_deboornet_result(const tsDeBoorNet *net,
 {
 	const size_t size = ts_deboornet_sof_result(net);
 	*result = (tsReal*) malloc(size);
-	if (!*result)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!*result) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(*result, ts_int_deboornet_access_result(net), size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -726,8 +715,7 @@ ts_int_deboornet_new(const tsBSpline *spline,
 	const size_t sof_net = sof_impl * sof_points_vec;
 
 	net->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
-	if (!net->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!net->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	net->pImpl->u = 0.f;
 	net->pImpl->k = 0;

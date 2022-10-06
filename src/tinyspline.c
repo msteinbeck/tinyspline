@@ -741,8 +741,7 @@ ts_int_deboornet_new(const tsBSpline *spline,
 void
 ts_deboornet_free(tsDeBoorNet *net)
 {
-	if (net->pImpl)
-		free(net->pImpl);
+	if (net->pImpl) free(net->pImpl);
 	ts_int_deboornet_init(net);
 }
 
@@ -752,13 +751,11 @@ ts_deboornet_copy(const tsDeBoorNet *src,
                   tsStatus *status)
 {
 	size_t size;
-	if (src == dest)
-		TS_RETURN_SUCCESS(status)
+	if (src == dest) TS_RETURN_SUCCESS(status)
 	ts_int_deboornet_init(dest);
 	size = ts_int_deboornet_sof_state(src);
 	dest->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
-	if (!dest->pImpl)
-		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	if (!dest->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
 }
@@ -767,8 +764,7 @@ void
 ts_deboornet_move(tsDeBoorNet *src,
                   tsDeBoorNet *dest)
 {
-	if (src == dest)
-		return;
+	if (src == dest) return;
 	dest->pImpl = src->pImpl;
 	ts_int_deboornet_init(src);
 }

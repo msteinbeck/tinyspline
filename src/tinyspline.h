@@ -2870,9 +2870,7 @@ ts_vec_mul(const tsReal *x,
  * Maps \p len to a knot, \c k, such that <tt>ts_bspline_eval(..., k ...)</tt>
  * yields a point whose length, with respect to <tt>knots[0]</tt>, is close to
  * \p len. Note that \p len is clamped to the domain of \p lengths. The domain
- * of the result, \p knot, is <tt>[knots[0], knots[num-1]]</tt>. In addition to
- * the mapped knot, the index, \p idx, such that <tt>knots[idx] <= len</tt> is
- * computed.
+ * of the result, \p knot, is <tt>[knots[0], knots[num-1]]</tt>.
  *
  * The precision of the mapping depends on the resolution of \p knots and \p
  * lengths. That is, the more chord lengths were computed, the more precise the
@@ -2897,8 +2895,6 @@ ts_vec_mul(const tsReal *x,
  * 	A knot, such that <tt>ts_bspline_eval(..., knot ...)</tt> yields a
  * 	point whose length, with respect to <tt>knots[0]</tt>, is close to \p
  * 	len.
- * @param[out] idx
- * 	The index such that <tt>knots[idx] <= len</tt>.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -2912,7 +2908,6 @@ ts_chord_lengths_length_to_knot(const tsReal *knots,
                                 size_t num,
                                 tsReal len,
                                 tsReal *knot,
-                                size_t *idx,
                                 tsStatus *status);
 
 /**
@@ -2937,8 +2932,6 @@ ts_chord_lengths_length_to_knot(const tsReal *knots,
  * 	A knot, such that <tt>ts_bspline_eval(..., knot ...)</tt> yields a
  * 	point whose length, with respect to <tt>knots[0]</tt>, is close to
  * 	<tt>t * lengths[num-1]<tt>
- * @param[out] idx
- * 	The index such that <tt>knots[idx] <= <tt>t * lengths[num-1]<tt>.
  * @param[out] status
  * 	The status of this function. May be NULL.
  * @return TS_SUCCESS
@@ -2952,7 +2945,6 @@ ts_chord_lengths_t_to_knot(const tsReal *knots,
                            size_t num,
                            tsReal t,
                            tsReal *knot,
-                           size_t *idx,
                            tsStatus *status);
 /*! @} */
 

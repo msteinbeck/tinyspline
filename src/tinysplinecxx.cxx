@@ -1622,13 +1622,11 @@ tinyspline::ChordLengths::lengthToKnot(real len) const
 {
 	tsStatus status;
 	real knot;
-	size_t idx;
 	if (ts_chord_lengths_length_to_knot(m_knots,
 	                               m_chordLenghts,
 	                               m_size,
 	                               len,
 	                               &knot,
-	                               &idx,
 	                               &status))
 		throw std::runtime_error(status.message);
 	return knot;
@@ -1639,13 +1637,11 @@ tinyspline::ChordLengths::tToKnot(real t) const
 {
 	tsStatus status;
 	real knot;
-	size_t idx;
 	if (ts_chord_lengths_t_to_knot(m_knots,
 	                               m_chordLenghts,
 	                               m_size,
 	                               t,
 	                               &knot,
-	                               &idx,
 	                               &status))
 		throw std::runtime_error(status.message);
 	return knot;

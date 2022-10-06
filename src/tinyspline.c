@@ -1756,6 +1756,7 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 {
 	size_t i;
 	tsReal min, max;
+	if (num == 0) return;
 	ts_bspline_domain(spline, &min, &max);
 	for (i = 0; i < num; i++) {
 		knots[i] = max - min;
@@ -1763,7 +1764,7 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 		knots[i] += min;
 	}
 	/* Set knots[0] after knots[num - 1] to ensure that
-	 * knots[0] = min if num is 1. */
+	   knots[0] = min if num is 1. */
 	knots[num - 1] = max;
 	knots[0] = min;
 }
@@ -3189,11 +3190,10 @@ ts_chord_lengths_length_to_knot(const tsReal *knots,
                                 size_t num,
                                 tsReal len,
                                 tsReal *knot,
-                                size_t *idx,
                                 tsStatus *status)
 {
 	tsReal numer, denom, r, r_hat;
-	size_t low, high;
+	size_t idx, low, high;
 
 	/* Handle spacial cases. */
 	if (num == 0) { /* well... */
@@ -3219,30 +3219,31 @@ ts_chord_lengths_length_to_knot(const tsReal *knots,
 	/* From now on: i) `len' is less than the last chord length in
 	   `lengths' and ii) `lengths' contains at least two values. Hence, the
 	   index (`idx') determined by the following binary search cannot be
-	   the last index (i.e., `idx <= num - 2`). It is therefore safe to
-	   access `knots' and `lengths' at index `idx + 1`. */
+	   the last index in `knots' and `lengths', respectively (i.e., `idx <=
+	   num - 2`). It is therefore safe to access `knots' and `lengths' at
+	   index `idx + 1`. */
 
 	/* Binary search. Similar to how locating a knot within a knot vector
 	   is implemented in ::ts_int_bspline_find_knot. */
 	low = 0;
 	high = num - 1;
-	*idx = (low+high) / 2;
-	while (len < lengths[*idx] || len >= lengths[(*idx) + 1]) {
-		if (len < lengths[*idx]) high = *idx;
-		else                     low  = *idx;
-		*idx = (low+high) / 2;
+	idx = (low+high) / 2;
+	while (len < lengths[idx] || len >= lengths[(idx) + 1]) {
+		if (len < lengths[idx]) high = idx;
+		else                     low  = idx;
+		idx = (low+high) / 2;
 	}
 
 	/* Determine `knot' by linear interpolation. */
-	denom = lengths[(*idx) + 1] - lengths[*idx];
+	denom = lengths[(idx) + 1] - lengths[idx];
 	if (denom < TS_LENGTH_ZERO) { /* segment is too short */
-		*knot = knots[*idx];
+		*knot = knots[idx];
 		TS_RETURN_SUCCESS(status)
 	}
-	numer = len - lengths[*idx];
+	numer = len - lengths[idx];
 	r = numer / denom; /* denom >= TS_LENGTH_ZERO */
 	r_hat = (tsReal) 1.0 - r;
-	*knot = r * knots[(*idx) + 1] + r_hat * knots[*idx];
+	*knot = r * knots[(idx) + 1] + r_hat * knots[idx];
 	TS_RETURN_SUCCESS(status)
 }
 
@@ -3252,18 +3253,16 @@ ts_chord_lengths_t_to_knot(const tsReal *knots,
                            size_t num,
                            tsReal t,
                            tsReal *knot,
-                           size_t *idx,
                            tsStatus *status)
 {
 	/* Delegate error handling.  If `num' is `0`,
-	 * `ts_chord_lengths_length_to_knot' doesn't read `len' at all. */
+	  `ts_chord_lengths_length_to_knot' doesn't read `len' at all. */
 	tsReal len = num == 0 ? 0 : t * lengths[num - 1];
 	return ts_chord_lengths_length_to_knot(knots,
 	                                       lengths,
 	                                       num,
 	                                       len,
 	                                       knot,
-	                                       idx,
 	                                       status);
 }
 /*! @} */

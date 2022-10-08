@@ -469,8 +469,7 @@ private:
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:
 	Domain()
-	: m_min(TS_DOMAIN_DEFAULT_MIN),
-	  m_max(TS_DOMAIN_DEFAULT_MAX)
+	: Domain(TS_DOMAIN_DEFAULT_MIN, TS_DOMAIN_DEFAULT_MAX)
 	{}
 	void setMin(real) { cannotWrite(); }
 	void setMax(real) { cannotWrite(); }
@@ -850,6 +849,16 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 		.function("toString", &FrameSeq::toString)
 	;
 
+	// Utility Classes
+	value_object<Domain>("Domain")
+		.field("min",
+		       &Domain::min,
+		       &Domain::setMin)
+		.field("max",
+		       &Domain::max,
+		       &Domain::setMax)
+	;
+
 	value_object<DeBoorNet>("DeBoorNet")
 		.field("knot",
 		       &DeBoorNet::knot,
@@ -872,11 +881,6 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 		.field("result",
 		       &DeBoorNet::result,
 		       &DeBoorNet::setResult)
-	;
-
-	value_object<Domain>("Domain")
-		.field("min", &Domain::min, &Domain::setMin)
-		.field("max", &Domain::max, &Domain::setMax)
 	;
 
 	class_<BSpline>("BSpline")

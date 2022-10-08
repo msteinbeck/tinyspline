@@ -380,9 +380,8 @@ public:
 
 /*! @name Spline Framing
  *
- * Object-oriented representation of ::tsFrame (::Frame) and sequences of
- * ::tsFrame (::FrameSeq). Instances of ::FrameSeq are created by
- * ::BSpline::computeRMF.
+ * Wrapper classes for ::tsFrame (::Frame) and sequences of ::tsFrame
+ * (::FrameSeq). Instances of ::FrameSeq are created by ::BSpline::computeRMF.
  *
  * @{
  */
@@ -452,14 +451,11 @@ private:
  */
 class TINYSPLINECXX_API Domain {
 public:
-	/* Constructors & Destructors */
 	Domain(real min, real max);
 
-	/* Accessors */
 	real min() const;
 	real max() const;
 
-	/* Debug */
 	std::string toString() const;
 
 private:
@@ -479,18 +475,21 @@ public:
 
 
 
+/*! @name DeBoorNet
+ *
+ * Wrapper class for ::tsDeBoorNet.
+ *
+ * @{
+ */
 class TINYSPLINECXX_API DeBoorNet {
 public:
-	/* Constructors & Destructors */
 	DeBoorNet(const DeBoorNet &other);
 	DeBoorNet(DeBoorNet &&other);
 	virtual ~DeBoorNet();
 
-	/* Operators */
 	DeBoorNet & operator=(const DeBoorNet &other);
 	DeBoorNet & operator=(DeBoorNet &&other);
 
-	/* Accessors */
 	real knot() const;
 	size_t index() const;
 	size_t multiplicity() const;
@@ -544,7 +543,6 @@ public:
 	*/
 	Vec4 resultVec4(size_t idx = 0) const;
 
-	/* Debug */
 	std::string toString() const;
 
 private:
@@ -567,6 +565,7 @@ public:
 	void setResult(std::vector<real>) { cannotWrite(); }
 #endif
 };
+/*! @} */
 
 
 

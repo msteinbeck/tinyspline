@@ -2146,7 +2146,7 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  * @param[in] epsilon
  * 	The maximum distance of discontinuous points. If negative,
  * 	discontinuity is ignored and the derivative is computed based on the
- * 	first result of the corresponding ::tsDeboorNet.
+ * 	first result of the corresponding ::tsDeBoorNet.
  * @param[out] deriv
  *	The derivative of \p spline.
  * @param[out] status

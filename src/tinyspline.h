@@ -2063,13 +2063,13 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  *
  * A transformation modifies the internal state of a spline, e.g., its number
  * of control points, the structure of its knot vector, its degree, and so
- * on. It should be noted that some transformation modify a spline's state
- * without changing its shape (e.g., ::ts_bspline_elevate). All transformations
- * specify at least three parameters: i) an input spline (the spline to be
- * transformed), ii) an output spline (the spline which receives the result of
- * the transformation), and iii) a ::tsStatus (output parameter for error
- * handling). Along with these parameters, additional parameters may be
- * necessary to i) calculate a certain transformation (such as
+ * on. It should be noted that some transformations modify the state of a
+ * spline without changing its shape (e.g., ::ts_bspline_elevate_degree). All
+ * transformations specify at least three parameters: i) an input spline (the
+ * spline to be transformed), ii) an output spline (the spline which receives
+ * the result of the transformation), and iii) a ::tsStatus (output parameter
+ * for error handling). Along with these parameters, additional parameters may
+ * be necessary to i) calculate a certain transformation (such as
  * ::ts_bspline_tension) or ii) to store additional results (such as
  * ::ts_bspline_insert_knot). Unless stated otherwise, the order of the
  * parameters of a transformation \c t is:

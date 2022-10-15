@@ -2329,7 +2329,7 @@ ts_bspline_to_beziers(const tsBSpline *spline,
  * instance.
  *
  * @param[in] spline
- * 	The spline to elevate.
+ * 	The spline to be elevated.
  * @param[in] amount
  * 	How often to elevate the degree of \p spline.
  * @param[in] epsilon
@@ -2337,8 +2337,9 @@ ts_bspline_to_beziers(const tsBSpline *spline,
  * 	a sequence of bezier curves (see ::ts_bspline_to_beziers). After degree
  * 	elevation, the split points of the bezier curves are merged again. This
  * 	parameter is used to distinguish between the split points of the
- * 	decomposition process and the wanted discontinuity points. A viable
- * 	default value is ::TS_POINT_EPSILON.
+ * 	decomposition process and discontinuity points that should be retained.
+ * 	A viable default value is ::TS_POINT_EPSILON. If negative, the resulting
+ * 	spline, \p elevated, forms a sequence of bezier curves.
  * @param[out] elevated
  * 	The elevated spline.
  * @param[out] status

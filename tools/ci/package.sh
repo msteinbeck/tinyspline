@@ -82,6 +82,7 @@ find "${LINUX_X86_64}" -name '*.nupkg' -print0 | \
 # Fix file permissions set by `dotnet pack'.
 find "${NUPKG_TMP_DIR}" -type f -exec chmod 644 -- {} +
 # Add 'lib' prefix to the native library of the Linux/OSX .so file.
+# shellcheck disable=SC1004,SC2016
 find  "${SCRIPT_DIR}/nuget/runtimes/" \
 	-name 'tinyspline*.so' \
 	-exec /bin/bash -c \
@@ -89,6 +90,7 @@ find  "${SCRIPT_DIR}/nuget/runtimes/" \
 		 BASENAME=$( basename "${0}" ) && \
 		 mv "${0}" "${DIRNAME}/lib${BASENAME}"' {} \;
 # See https://github.com/NuGet/Home/issues/5956
+# shellcheck disable=SC1004,SC2016
 find  "${SCRIPT_DIR}/nuget/runtimes/" \
 	-name '*\%2B*' \
 	-exec /bin/bash -c \

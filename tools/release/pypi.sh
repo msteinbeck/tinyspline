@@ -8,5 +8,5 @@ WHL_DIR="${SCRIPT_DIR}/tinyspline"
 mkdir -p "${TMP_DIR}"
 for file in "${WHL_DIR}"/*.whl; do
     BASENAME=$( basename "${file}" )
-    cp "${file}" "${TMP_DIR}/${BASENAME/linux/manylinux2010}"
+    cp "${file}" "${TMP_DIR}/${BASENAME/linux/manylinux_2_24}"
 done

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 SCRIPT_DIR=$( cd "$(dirname "$0")"; pwd -P)
@@ -15,6 +15,6 @@ pushd "${TMP_DIR}"
              --detach-sign \
              --output "${file}.asc" "${file}"
     done
-    zip -r "${SIGNED_ZIP_FILE}" *
+    zip -r "${SIGNED_ZIP_FILE}" ./*
 popd
-rm -r ${TMP_DIR}
+rm -r "${TMP_DIR}"

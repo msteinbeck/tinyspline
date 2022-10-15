@@ -146,7 +146,7 @@ pushd "${JAVA_ZIP_TMP_DIR}"
 popd
 
 # Javascript
-cp -a ${WASM}/*.tgz ${OUTPUT}
+cp -a "${WASM}"/*.tgz "${OUTPUT}"
 
 # Lua
 LUAROCKS_TMP_DIR="${SCRIPT_DIR}/luarocks"
@@ -173,9 +173,9 @@ do
 		do
 			mv "$file" "${file/${pkgv}/}"
 		done
-		luas=$(find * -iname '*.lua' | sed 's/.*/"&",/g' \
+		luas=$(find . -iname '*.lua' | sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
-		libs=$(find * -iname '*.so' -or -iname '*.dll' \
+		libs=$(find . -iname '*.so' -or -iname '*.dll' \
 			| sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
 		sed -i "s/${pkgn}${pkgv}/${pkgn}/g" ./*.rockspec
@@ -185,7 +185,7 @@ do
 		sed -i "s~lua[[:space:]]\{1,\}=[[:space:]]\{1,\}{.*}~lua = { ${luas} }~" ./*.rockspec
 		sed -i "s~lib[[:space:]]\{1,\}=[[:space:]]\{1,\}{.*}~lib = { ${libs} }~" ./*.rockspec
 		luarocks make --pack-binary-rock
-		os=$(find * -name '*.rock' | rev | cut -d. -f2 \
+		os=$(find . -name '*.rock' | rev | cut -d. -f2 \
 			| rev | cut -d- -f1)
 		if [[ ${p} = *"linux"* ]]; then
 			for file in ./*.rock; do
@@ -236,16 +236,16 @@ do
 	pushd "${GEM_PLATFORM_TMP_DIR}"
 		pkgn=$(find . -iname '*.gemspec' -print0 \
 			| xargs -0 -I{} basename {} .gemspec)
-		rbs=$(find * -iname '*.rb' | sed 's/.*/"&",/g' \
+		rbs=$(find . -iname '*.rb' | sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
-		libs=$(find * -iname '*.so' -or -iname '*.dll' -or -iname '*.bundle' \
+		libs=$(find . -iname '*.so' -or -iname '*.dll' -or -iname '*.bundle' \
 			| sed 's/.*/"&",/g' \
 			| sed ':a;N;$!ba;s/\n/ /g' | sed '$s/,$//')
 		sed -i "s/${pkgn}\([0-9]\+\)/${pkgn}/g" ./*.gemspec
 		sed -i '/Gem::Specification/,$!d' ./*.gemspec
 		sed -i '/required_ruby_version/d' ./*.gemspec
 		sed -i "s~files\([[:space:]]*\)=.*~files\1= [${rbs}, ${libs}]~" ./*.gemspec
-		gem build *.gemspec
+		gem build ./*.gemspec
 	popd
 	find "${GEM_PLATFORM_TMP_DIR}" -name '*.gem' -print0 | \
 		xargs -0 -I{} cp {} "${OUTPUT}"

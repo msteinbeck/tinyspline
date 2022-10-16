@@ -146,6 +146,34 @@ chordlengths_default_ctor(CuTest *tc)
 	delete defaultCtor;
 }
 
+void
+chordlengths_empty_map(CuTest *tc)
+{
+	// Given
+	BSpline spline;
+	ChordLengths empty = spline.chordLenghts({});
+
+	// When/Then
+	try {
+		empty.tToKnot((real) 0.0);
+		CuFail(tc, "expected exception");
+	} catch(std::exception &exc) {}
+}
+
+void
+chordlengths_default_map(CuTest *tc)
+{
+	// Given
+	ChordLengths *defaultCtor = new ChordLengths();
+
+	// When/Then
+	try {
+		defaultCtor->tToKnot((real) 0.0);
+		CuFail(tc, "expected exception");
+	} catch(std::exception &exc) {}
+	delete defaultCtor;
+}
+
 CuSuite *
 get_chordlengths_suite()
 {
@@ -155,5 +183,7 @@ get_chordlengths_suite()
 	SUITE_ADD_TEST(suite, chordlengths_copy_assign);
 	SUITE_ADD_TEST(suite, chordlengths_move_assign);
 	SUITE_ADD_TEST(suite, chordlengths_default_ctor);
+	SUITE_ADD_TEST(suite, chordlengths_empty_map);
+	SUITE_ADD_TEST(suite, chordlengths_default_map);
 	return suite;
 }

@@ -1510,8 +1510,8 @@ tinyspline::ChordLengths::ChordLengths()
 {}
 
 tinyspline::ChordLengths::ChordLengths(const BSpline &spline,
-                                       real* knots,
-                                       real* chordLengths,
+                                       real *knots,
+                                       real *chordLengths,
                                        size_t size)
 : m_spline(spline),
   m_knots(knots),

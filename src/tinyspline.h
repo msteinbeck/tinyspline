@@ -2042,7 +2042,7 @@ ts_bspline_chord_lengths(const tsBSpline *spline,
 
 /**
  * Generates a sequence of \p num knots with uniform distribution. \e Uniform
- * means that consecutive knots have the same distance.
+ * means that consecutive knots in \p knots have the same distance.
  *
  * @param[in] spline
  * 	The spline to query.
@@ -2055,6 +2055,37 @@ void TINYSPLINE_API
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
                             size_t num,
                             tsReal *knots);
+
+/**
+ * Generates a sequence of \p num knots with equidistant distribution. \e
+ * Equidistant means that evaluated points (of consecutive knots in \p knots)
+ * have the same distance along the spline. This is also known as
+ * 'reparametrization by arc length'.
+ *
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] num
+ * 	Number of knots in \p knots.
+ * @param[out] knots
+ * 	Stores the generated knot sequence.
+ * @param[in] num_samples
+ * 	Number of samples used for the 'reparametrization by arc length'.
+ * 	\c 200 yields a quite precise mapping (subpixel accuracy). For very,
+ * 	very high precision requirements, \c 500 should be sufficient. If \c 0,
+ * 	the default value \c 200 is used as fallback.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
+tsError TINYSPLINE_API
+ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
+                                size_t num,
+                                tsReal *knots,
+                                size_t num_samples,
+                                tsStatus *status);
 /*! @} */
 
 

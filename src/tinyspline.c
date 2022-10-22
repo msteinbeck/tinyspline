@@ -1752,6 +1752,40 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 	knots[num - 1] = max;
 	knots[0] = min;
 }
+
+tsError
+ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
+                                size_t num,
+                                tsReal *knots,
+                                size_t num_samples,
+                                tsStatus *status)
+{
+	tsError err;
+	tsReal *samples = NULL, *lengths = NULL, t, knot;
+	size_t i;
+
+	if (num == 0) TS_RETURN_SUCCESS(status);
+	if (num_samples == 0) num_samples = 200;
+
+	samples = (tsReal *) malloc(2 * num_samples * sizeof(tsReal));
+	if (!samples) TS_RETURN_0(status, TS_MALLOC, "out of memory");
+	ts_bspline_uniform_knot_seq(spline, num_samples, samples);
+	lengths = samples + num_samples;
+	TS_TRY(try, err, status)
+		TS_CALL(try, err, ts_bspline_chord_lengths(
+		        spline, samples, num_samples, lengths, status))
+		for (i = 0; i < num; i++) {
+			t = (tsReal) i / (num - 1);
+			TS_CALL(try, err, ts_chord_lengths_t_to_knot(
+			        samples, lengths, num_samples, t, &knot,
+			        status))
+			knots[i] = knot;
+		}
+	TS_FINALLY
+		free(samples); /* cannot be NULL */
+		/* free(lengths); NO! */
+	TS_END_TRY_RETURN(err)
+}
 /*! @} */
 
 

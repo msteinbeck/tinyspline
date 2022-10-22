@@ -1224,6 +1224,21 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 	return knots;
 }
 
+tinyspline::std_real_vector_out
+tinyspline::BSpline::equidistantKnotSeq(size_t num) const
+{
+	tsStatus status;
+	std_real_vector_init(knots)(num);
+	real *knots_ptr = std_real_vector_read(knots)data();
+	if (ts_bspline_equidistant_knot_seq(&spline,
+	                                    num,
+	                                    knots_ptr,
+	                                    0,
+	                                    &status))
+		throw std::runtime_error(status.message);
+	return knots;
+}
+
 tinyspline::ChordLengths
 tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
 {

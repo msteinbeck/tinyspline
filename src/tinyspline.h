@@ -2058,8 +2058,8 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 
 /**
  * Generates a sequence of \p num knots with equidistant distribution. \e
- * Equidistant means that evaluated points (of consecutive knots in \p knots)
- * have the same distance along the spline. This is also known as
+ * Equidistant means that the points evaluated from consecutive knots in \p
+ * knots have the same distance along the spline. This is also known as
  * 'reparametrization by arc length'.
  *
  * @param[in] spline

@@ -2069,7 +2069,7 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
  * @param[out] knots
  * 	Stores the generated knot sequence.
  * @param[in] num_samples
- * 	Number of samples used for the 'reparametrization by arc length'.
+ * 	Number of knots to be sampled for the 'reparametrization by arc length'.
  * 	\c 200 yields a quite precise mapping (subpixel accuracy). For very,
  * 	very high precision requirements, \c 500 should be sufficient. If \c 0,
  * 	the default value \c 200 is used as fallback.

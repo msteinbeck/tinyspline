@@ -2092,26 +2092,25 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
 
 /*! @name Transformation Functions
  *
- * A transformation modifies the internal state of a spline, e.g., its number
- * of control points, the structure of its knot vector, its degree, and so
- * on. It should be noted that some transformations modify the state of a
- * spline without changing its shape (e.g., ::ts_bspline_elevate_degree). All
- * transformations specify at least three parameters: i) an input spline (the
- * spline to be transformed), ii) an output spline (the spline which receives
- * the result of the transformation), and iii) a ::tsStatus (output parameter
- * for error handling). Along with these parameters, additional parameters may
- * be necessary to i) calculate a certain transformation (such as
- * ::ts_bspline_tension) or ii) to store additional results (such as
- * ::ts_bspline_insert_knot). Unless stated otherwise, the order of the
- * parameters of a transformation \c t is:
+ * Transformations modify the internal state of a spline---e.g., the number of
+ * control points, the structure of the knot vector, the degree, and so on. Some
+ * transformations modify the state of a spline without changing its shape
+ * (e.g., ::ts_bspline_elevate_degree). All transformations specify at least
+ * three parameters: i) an input spline (the spline to be transformed), ii) an
+ * output spline (the spline which receives the result of the transformation),
+ * and iii) a ::tsStatus object (output parameter for error handling). Along
+ * with these parameters, additional parameters may be necessary to i) calculate
+ * the transformation (such as ::ts_bspline_tension) and ii) store additional
+ * results (such as ::ts_bspline_insert_knot). Unless stated otherwise, the
+ * order of the parameters of a transformation function, \c t, is:
  *
  *     t(input, [additional_input], output, [additional_output], status)
  *
- * \b Note: None of the transformations releases the memory of the output
- * spline before assigning the transformation result to it. Thus, when using
- * the same output spline multiple times, make sure to release its memory
- * before each call (after the first one). If not, severe memory leaks are to
- * be expected:
+ * \b Note: Transformation functions do not releases the memory of the output
+ * spline before assigning the result of the transformation to it. Thus, when
+ * using the same output spline multiple times, make sure to release its memory
+ * before each call (after the first one). If not, severe memory leaks are to be
+ * expected:
  *
  *     tsBSpline in = ...                   // an arbitrary spline
  *     tsBSpline out = ts_bspline_init();   // stores the result
@@ -2123,10 +2122,10 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
  *
  * It is possible to pass a spline as input and output argument at the same
  * time. In this case, the called transformation uses a temporary buffer to
- * store the working data and result. If the transformation succeeds, the
- * memory of the supplied spline is released and the transformation result is
- * assigned to it. So even if a transformation fails, the internal state of the
- * supplied splines stays intact (i.e., it remains unchanged).
+ * store the working data. If the transformation succeeds, the memory of the
+ * supplied spline is released and the result is assigned to it. So even if a
+ * transformation fails, the internal state of the supplied splines stays intact
+ * (i.e., it remains unchanged).
  *
  * \b Note: It is not necessary to release the memory of a spline which is
  * passed as input and output argument at the same time before calling the next

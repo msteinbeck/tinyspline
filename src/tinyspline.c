@@ -1761,8 +1761,7 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
                                 tsStatus *status)
 {
 	tsError err;
-	tsReal *samples = NULL, *lengths = NULL, t, knot;
-	size_t i;
+	tsReal *samples = NULL, *lengths = NULL;
 
 	if (num == 0) TS_RETURN_SUCCESS(status);
 	if (num_samples == 0) num_samples = 200;
@@ -1774,13 +1773,8 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
 	TS_TRY(try, err, status)
 		TS_CALL(try, err, ts_bspline_chord_lengths(
 		        spline, samples, num_samples, lengths, status))
-		for (i = 0; i < num; i++) {
-			t = (tsReal) i / (num - 1);
-			TS_CALL(try, err, ts_chord_lengths_t_to_knot(
-			        samples, lengths, num_samples, t, &knot,
-			        status))
-			knots[i] = knot;
-		}
+		TS_CALL(try, err, ts_chord_lengths_equidistant_knot_seq(
+		        samples, lengths, num_samples, num, knots, status))
 	TS_FINALLY
 		free(samples); /* cannot be NULL */
 		/* free(lengths); NO! */
@@ -3282,6 +3276,27 @@ ts_chord_lengths_t_to_knot(const tsReal *knots,
 	                                       len,
 	                                       knot,
 	                                       status);
+}
+
+tsError
+ts_chord_lengths_equidistant_knot_seq(const tsReal *knots,
+                                      const tsReal *lengths,
+                                      size_t num,
+                                      size_t num_knot_seq,
+                                      tsReal *knot_seq,
+                                      tsStatus *status)
+{
+	tsError err;
+	size_t i;
+	tsReal t, knot;
+	TS_TRY(try, err, status)
+		for (i = 0; i < num_knot_seq; i++) {
+			t = (tsReal) i / (num - 1);
+			TS_CALL(try, err, ts_chord_lengths_t_to_knot(
+			        knots, lengths, num, t, &knot, status))
+			knot_seq[i] = knot;
+		}
+	TS_END_TRY_RETURN(err)
 }
 /*! @} */
 

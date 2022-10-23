@@ -2057,10 +2057,10 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
                             tsReal *knots);
 
 /**
- * Generates a sequence of \p num knots with equidistant distribution. \e
- * Equidistant means that the points evaluated from consecutive knots in \p
- * knots have the same distance along the spline. This is also known as
- * 'reparametrization by arc length'.
+ * Short-cut function for ::ts_chord_lengths_equidistant_knot_seq. The ordering
+ * of the parameters (in particular, \p num_samples after \p knots) is aligned
+ * to ::ts_bspline_uniform_knot_seq so that it is easier for users to replace
+ * one call with the other.
  *
  * @param[in] spline
  * 	The spline to query.
@@ -2894,7 +2894,7 @@ ts_vec_mul(const tsReal *x,
 /*! @name Chord Length Method
  *
  * Functions for processing the cumulative chord lengths of a spline
- * as computed by ::ts_bspline_chord_lenghts.
+ * as computed by ::ts_bspline_chord_lengths.
  *
  * @{
  */
@@ -2978,6 +2978,40 @@ ts_chord_lengths_t_to_knot(const tsReal *knots,
                            tsReal t,
                            tsReal *knot,
                            tsStatus *status);
+
+/**
+ * Generates a sequence of \p num_knot_seq knots with equidistant distribution.
+ * \e Equidistant means that the points evaluated from consecutive knots in \p
+ * knot_seq have the same distance along the spline. This is also known as
+ * 'reparametrization by arc length'.
+ *
+ * @pre
+ * 	\p lengths is monotonically increasing and contains only non-negative
+ * 	values (distances cannot be negative).
+ * @param[in] knots
+ * 	Knots that were passed to ::ts_bspline_chord_lengths.
+ * @param[in] lengths
+ * 	Cumulative chord lengths as computed by ::ts_bspline_chord_lengths.
+ * @param[in] num
+ * 	Number of values in \p knots and \p lengths.
+ * @param[in] num_knot_seq
+ * 	Number of knots in \p knot_seq.
+ * @param[out] knot_seq
+ * 	Stores the generated knot sequence.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_NO_RESULT
+ * 	If \p num is \c 0.
+ */
+tsError TINYSPLINE_API
+ts_chord_lengths_equidistant_knot_seq(const tsReal *knots,
+                                      const tsReal *lengths,
+                                      size_t num,
+                                      size_t num_knot_seq,
+                                      tsReal *knot_seq,
+                                      tsStatus *status);
 /*! @} */
 
 

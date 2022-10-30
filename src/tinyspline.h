@@ -2010,7 +2010,7 @@ ts_bspline_compute_rmf(const tsBSpline *spline,
  * lengths may be inaccurate if \p spline is discontinuous (i.e., the
  * multiplicity of one of the interior knots is equal to the order of
  * \p spline) with unequal evaluation points---in such case only the
- * first result of the evaluation in included in the calculation.
+ * first result of the evaluation is included in the calculation.
  *
  * @pre \p knots and \p lengths have length \p num.
  * @param[in] spline

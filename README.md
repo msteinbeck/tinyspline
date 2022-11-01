@@ -24,9 +24,13 @@ MIT License - see the LICENSE file in the source distribution.
 - Evaluation
   - Knots
   - Sampling (multiple knots at once)
+  - Equidistant points
   - Components (find y for given x)
+- Reparametrization by arc length
+  - Mapping length <-> knot
 - Knot insertion (refinement)
 - Bézier curve decomposition
+  - (Also know as subdivision)
 - Derivative
 - Degree elevation
 - Computation of rotation minimizing frames

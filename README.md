@@ -27,7 +27,7 @@ MIT License - see the LICENSE file in the source distribution.
   - Equidistant points
   - Components (find y for given x)
 - Reparametrization by arc length
-  - Mapping length <-> knot
+  - Mapping length <--> knot
 - Knot insertion (refinement)
 - Bézier curve decomposition
   - (Also know as subdivision)

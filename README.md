@@ -30,7 +30,7 @@ MIT License - see the LICENSE file in the source distribution.
   - Mapping length <--> knot
 - Knot insertion (refinement)
 - Bézier curve decomposition
-  - (Also known as subdivision)
+  - (also known as subdivision)
 - Derivative
 - Degree elevation
 - Computation of rotation minimizing frames

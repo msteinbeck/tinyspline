@@ -1225,7 +1225,8 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 }
 
 tinyspline::std_real_vector_out
-tinyspline::BSpline::equidistantKnotSeq(size_t num) const
+tinyspline::BSpline::equidistantKnotSeq(size_t num,
+                                        size_t numSamples) const
 {
 	tsStatus status;
 	std_real_vector_init(knots)(num);
@@ -1233,7 +1234,7 @@ tinyspline::BSpline::equidistantKnotSeq(size_t num) const
 	if (ts_bspline_equidistant_knot_seq(&spline,
 	                                    num,
 	                                    knots_ptr,
-	                                    0,
+	                                    numSamples,
 	                                    &status))
 		throw std::runtime_error(status.message);
 	return knots;
@@ -1256,6 +1257,12 @@ tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
 	                             &status))
 		throw std::runtime_error(status.message);
 	return ChordLengths(*this, knotsArr, lengths, num);
+}
+
+tinyspline::ChordLengths
+tinyspline::BSpline::chordLenghts(size_t numSamples) const
+{
+	return chordLenghts(uniformKnotSeq(numSamples));
 }
 
 std::string tinyspline::BSpline::toJson() const

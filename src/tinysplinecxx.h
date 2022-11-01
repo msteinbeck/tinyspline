@@ -632,8 +632,10 @@ public:
 	FrameSeq computeRMF(std_real_vector_in knots,
 	                    Vec3 *firstNormal = nullptr) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
-	std_real_vector_out equidistantKnotSeq(size_t num = 100) const;
+	std_real_vector_out equidistantKnotSeq(size_t num = 100,
+	                                       size_t numSamples = 0) const;
 	ChordLengths chordLenghts(std_real_vector_in knots) const;
+	ChordLengths chordLenghts(size_t numSamples = 200) const;
 
 	/* Serialization */
 	std::string toJson() const;

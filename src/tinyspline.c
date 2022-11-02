@@ -1747,8 +1747,8 @@ ts_bspline_uniform_knot_seq(const tsBSpline *spline,
 		knots[i] *= (tsReal) i / (num - 1);
 		knots[i] += min;
 	}
-	/* Set knots[0] after knots[num - 1] to ensure that
-	   knots[0] = min if num is 1. */
+	/* Set `knots[0]` after `knots[num - 1]` to ensure
+	   that `knots[0] = min` if `num` is `1'. */
 	knots[num - 1] = max;
 	knots[0] = min;
 }
@@ -3289,13 +3289,19 @@ ts_chord_lengths_equidistant_knot_seq(const tsReal *knots,
 	tsError err;
 	size_t i;
 	tsReal t, knot;
+	if (num_knot_seq == 0) TS_RETURN_SUCCESS(status)
 	TS_TRY(try, err, status)
 		for (i = 0; i < num_knot_seq; i++) {
-			t = (tsReal) i / (num - 1);
+			t = (tsReal) i / (num_knot_seq - 1);
 			TS_CALL(try, err, ts_chord_lengths_t_to_knot(
 			        knots, lengths, num, t, &knot, status))
 			knot_seq[i] = knot;
 		}
+		/* Set `knot_seq[0]` after `knot_seq[num_knot_seq - 1]` to
+		   ensure that `knot_seq[0] = min` if `num_knot_seq` is
+		   `1'. Note that `num_knot_seq` and `num` can't be `0'. */
+		knot_seq[num_knot_seq - 1] = knots[num - 1];
+		knot_seq[0] = knots[0];
 	TS_END_TRY_RETURN(err)
 }
 /*! @} */

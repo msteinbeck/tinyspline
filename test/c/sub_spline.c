@@ -55,6 +55,7 @@ sub_spline_equal_knots(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
+	tsStatus stat;
 
 	___GIVEN___
 	C(ts_bspline_new(1, 1, 0, TS_CLAMPED, &spline, &status))
@@ -64,11 +65,10 @@ sub_spline_equal_knots(CuTest *tc)
 	                      (tsReal) 0.5,
 	                      (tsReal) 0.5,
 	                      &spline,
-	                      &status);
+	                      &stat);
 
 	___THEN___
-	CuAssertIntEquals(tc, TS_NO_RESULT, status.code);
-	status.code = TS_SUCCESS;
+	CuAssertIntEquals(tc, TS_NO_RESULT, stat.code);
 
 	___TEARDOWN___
 	ts_bspline_free(&spline);
@@ -79,6 +79,7 @@ sub_spline_undefined_knot_lower(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
+	tsStatus stat;
 
 	___GIVEN___
 	C(ts_bspline_new(1, 1, 0, TS_OPENED, &spline, &status))
@@ -88,11 +89,10 @@ sub_spline_undefined_knot_lower(CuTest *tc)
 	                      (tsReal) -1.0,
 	                      (tsReal) 0.5,
 	                      &spline,
-	                      &status);
+	                      &stat);
 
 	___THEN___
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, status.code);
-	status.code = TS_SUCCESS;
+	CuAssertIntEquals(tc, TS_U_UNDEFINED, stat.code);
 
 	___TEARDOWN___
 	ts_bspline_free(&spline);
@@ -103,6 +103,7 @@ sub_spline_undefined_knot_upper(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
+	tsStatus stat;
 
 	___GIVEN___
 	C(ts_bspline_new(1, 1, 0, TS_OPENED, &spline, &status))
@@ -112,11 +113,10 @@ sub_spline_undefined_knot_upper(CuTest *tc)
 	                      (tsReal) 0.5,
 	                      (tsReal) 2.0,
 	                      &spline,
-	                      &status);
+	                      &stat);
 
 	___THEN___
-	CuAssertIntEquals(tc, TS_U_UNDEFINED, status.code);
-	status.code = TS_SUCCESS;
+	CuAssertIntEquals(tc, TS_U_UNDEFINED, stat.code);
 
 	___TEARDOWN___
 	ts_bspline_free(&spline);
@@ -277,7 +277,7 @@ sub_spline_clamped_domain_min_max(CuTest *tc)
 		 50.0,  100.0,  /* P1 */
 		100.0,   50.0,  /* P2 */
 		128.0,    0.0,  /* P3 */
-		2560.0, -50.0,  /* P4 */
+		256.0,  -50.0,  /* P4 */
 		512.0,  275.0,  /* P5 */
 		600.0,   30.0,  /* P6 */
 		700.0,   85.0)) /* P7 */

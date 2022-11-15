@@ -17,42 +17,42 @@ assert_equal_shape_eps(CuTest *tc,
 		dim = ts_bspline_dimension(s2);
 
 	TS_TRY(try, status.code, &status)
-	for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
-		/* Eval s1. */
-		ts_bspline_domain(s1, &min, &max);
-		knot = (tsReal)k / TS_MAX_NUM_KNOTS;
-		knot = ( (max - min) * knot ) + min;
-		TS_CALL(try, status.code, ts_bspline_eval(
-		        s1, knot, &net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-		        &net, &s1val, &status))
+		for (k = 0; k < TS_MAX_NUM_KNOTS; k++) {
+			/* Eval s1. */
+			ts_bspline_domain(s1, &min, &max);
+			knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+			knot = ( (max - min) * knot ) + min;
+			TS_CALL(try, status.code, ts_bspline_eval(
+			        s1, knot, &net, &status))
+			TS_CALL(try, status.code, ts_deboornet_result(
+			        &net, &s1val, &status))
+			ts_deboornet_free(&net);
+
+			/* Eval s2. */
+			ts_bspline_domain(s2, &min, &max);
+			knot = (tsReal)k / TS_MAX_NUM_KNOTS;
+			knot = ( (max - min) * knot ) + min;
+			TS_CALL(try, status.code, ts_bspline_eval(
+			        s2, knot, &net, &status))
+			TS_CALL(try, status.code, ts_deboornet_result(
+			        &net, &s2val, &status))
+			ts_deboornet_free(&net);
+
+			/* Compare results. */
+			dist = ts_distance(s1val, s2val, dim);
+			CuAssertDblEquals(tc, 0, dist, (tsReal) eps);
+
+			/* Clean up. */
+			free(s1val);
+			free(s2val);
+			s1val = s2val = NULL;
+		}
+	TS_CATCH(status.code)
+		CuFail(tc, status.message);
+	TS_FINALLY
 		ts_deboornet_free(&net);
-
-		/* Eval s2. */
-		ts_bspline_domain(s2, &min, &max);
-		knot = (tsReal)k / TS_MAX_NUM_KNOTS;
-		knot = ( (max - min) * knot ) + min;
-		TS_CALL(try, status.code, ts_bspline_eval(
-		        s2, knot, &net, &status))
-		TS_CALL(try, status.code, ts_deboornet_result(
-		        &net, &s2val, &status))
-		ts_deboornet_free(&net);
-
-		/* Compare results. */
-		dist = ts_distance(s1val, s2val, dim);
-		CuAssertDblEquals(tc, 0, dist, (tsReal) eps);
-
-		/* Clean up. */
 		free(s1val);
 		free(s2val);
-		s1val = s2val = NULL;
-	}
-	TS_CATCH(status.code)
-	CuFail(tc, status.message);
-	TS_FINALLY
-	ts_deboornet_free(&net);
-	free(s1val);
-	free(s2val);
 	TS_END_TRY
 }
 

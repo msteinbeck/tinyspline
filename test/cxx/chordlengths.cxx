@@ -157,7 +157,7 @@ chordlengths_empty_map(CuTest *tc)
 	try {
 		empty.tToKnot((real) 0.0);
 		CuFail(tc, "expected exception");
-	} catch(std::exception &exc) {}
+	} catch(std::exception) {}
 }
 
 void
@@ -170,7 +170,7 @@ chordlengths_default_map(CuTest *tc)
 	try {
 		defaultCtor->tToKnot((real) 0.0);
 		CuFail(tc, "expected exception");
-	} catch(std::exception &exc) {}
+	} catch(std::exception) {}
 	delete defaultCtor;
 }
 

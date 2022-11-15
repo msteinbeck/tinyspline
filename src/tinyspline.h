@@ -2041,6 +2041,41 @@ ts_bspline_chord_lengths(const tsBSpline *spline,
                          tsStatus *status);
 
 /**
+ * Extracts a sub-spline from \p spline with respect to the given domain
+ * <tt>[knot0, knot1]</tt>. The knots \p knot0 and \p knot1 must lie within the
+ * domain of \p spline and must not be equal according to
+ * ::ts_knots_equal. However, \p knot0 can be greater than \p knot1. In this
+ * case, the control points of the sub-spline are reversed.
+
+ * @param[in] spline
+ * 	The spline to query.
+ * @param[in] knot0
+ * 	Lower bound of the domain of the queried sub-spline if \p knot0 is less
+ * 	than \p knot1. Upper bound otherwise.
+ * @param[in] knot1
+ * 	Upper bound of the domain of the queried sub-spline if \p knot1 is
+ * 	greater than \p knot0. Lower bound otherwise.
+ * @param[out] sub
+ * 	The queried sub-spline.
+ * @param[out] status
+ * 	The status of this function. May be NULL.
+ * @return TS_SUCCESS
+ * 	On success.
+ * @return TS_U_UNDEFINED
+ * 	If \p spline is not defined at \p knot0 or \p knot1.
+ * @return TS_NO_RESULT
+ * 	If \p knot0 and \p knot1 are equal according to ::ts_knots_equal.
+ * @return TS_MALLOC
+ * 	If memory allocation failed.
+ */
+tsError TINYSPLINE_API
+ts_bspline_sub_spline(const tsBSpline *spline,
+                      tsReal knot0,
+                      tsReal knot1,
+                      tsBSpline *sub,
+                      tsStatus *status);
+
+/**
  * Generates a sequence of \p num knots with uniform distribution. \e Uniform
  * means that consecutive knots in \p knots have the same distance.
  *
@@ -2094,7 +2129,7 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
  *
  * Transformations modify the internal state of a spline---e.g., the number of
  * control points, the structure of the knot vector, the degree, and so on. Some
- * transformations modify the state of a spline without changing its shape
+ * transformations modify the state without changing the shape of the spline
  * (e.g., ::ts_bspline_elevate_degree). All transformations specify at least
  * three parameters: i) an input spline (the spline to be transformed), ii) an
  * output spline (the spline which receives the result of the transformation),

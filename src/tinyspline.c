@@ -1733,6 +1733,140 @@ ts_bspline_chord_lengths(const tsBSpline *spline,
 	TS_END_TRY_RETURN(err)
 }
 
+
+tsError
+ts_bspline_sub_spline(const tsBSpline *spline,
+                      tsReal knot0,
+                      tsReal knot1,
+                      tsBSpline *sub,
+                      tsStatus *status)
+{
+	int reverse; /* reverse `spline`? (if `knot0 > knot1`) */
+	tsReal *tmp = NULL; /* a buffer to swap control points */
+	tsReal min, max; /* domain of `spline` */
+	size_t dim, deg, order; /* properties of `spline` (and `sub`) */
+	tsBSpline worker; /* stores the result of the `split' operations */
+	tsReal *ctrlp, *knots; /* control points and knots of `worker` */
+	size_t k0, k1; /* indices returned by the `split' operations */
+	size_t c0, c1; /* indices of the control points to be moved */
+	size_t nc, nk; /* number of control points and knots of `sub` */
+	size_t i; /* for various needs */
+	tsError err; /* for local try-catch block */
+
+	/* Make sure that `worker` points to `NULL'. This allows us to call
+	 * `ts_bspline_free` in `TS_CATCH` without further checks. Also, `NULL'
+	 * serves as an indicator of whether `ts_bspline_split` has been called
+	 * on `spline` at least once (if not, `worker` needs to be initialized
+	 * manually). */
+	ts_int_bspline_init(&worker);
+	INIT_OUT_BSPLINE(spline, sub)
+
+	ts_bspline_domain(spline, &min, &max);
+	dim = ts_bspline_dimension(spline);
+	deg = ts_bspline_degree(spline);
+	order = ts_bspline_order(spline);
+
+	/* Cannot create valid knot vector from empty domain. */
+	if (ts_knots_equal(knot0, knot1)) {
+		TS_RETURN_0(status,
+		            TS_NO_RESULT,
+		            "empty domain")
+	}
+
+	/* Check for `reverse mode'. Reverse mode means that the copied sequence
+	 * of (sub) control points need to be reversed, forming a `backwards'
+	 * spline. */
+	reverse = knot0 > knot1;
+	if (reverse) { /* swap `knot0` and `knot1` */
+		tmp = (tsReal *) malloc(dim * sizeof(tsReal));
+		if (!tmp) TS_RETURN_0(status, TS_MALLOC, "out of memory");
+		*tmp = knot0; /* `tmp` can  hold at least one value */
+		knot0 = knot1;
+		knot1 = *tmp;
+	}
+
+	TS_TRY(try, err, status)
+		if (!ts_knots_equal(knot0 , min)) {
+			TS_CALL(try , err, ts_bspline_split(
+			        spline, knot0, &worker, &k0, status))
+		} else { k0 = deg; }
+		if (!ts_knots_equal(knot1, max)) {
+			TS_CALL(try , err, ts_bspline_split(
+			        /* If `NULL', the split operation
+			           above was not called. */
+			        !worker.pImpl ? spline : &worker,
+			        knot1, &worker, &k1, status))
+		} else {
+			k1 = ts_bspline_num_knots(
+			        /* If `NULL', the split operation
+			           above was not called. */
+			        !worker.pImpl ? spline : &worker) - 1;
+		}
+
+		/* Set up `worker`. */
+		if (!worker.pImpl) { /* => no split applied */
+			TS_CALL(try, err, ts_bspline_copy(
+			        spline, &worker, status))
+			/* Needed in `reverse mode'. */
+			ctrlp = ts_int_bspline_access_ctrlp(&worker);
+			knots = ts_int_bspline_access_knots(&worker);
+			nc = ts_bspline_num_control_points(&worker);
+		} else {
+			c0 = (k0-deg) * dim;
+			c1 = (k1-order) * dim;
+			nc = ((c1-c0) / dim) + 1;
+			nk = (k1-k0) + order;
+
+			/* Also needed in `reverse mode'. */
+			ctrlp = ts_int_bspline_access_ctrlp(&worker);
+			knots = ts_int_bspline_access_knots(&worker);
+
+			/* Move control points. */
+			memmove(ctrlp,
+			        ctrlp + c0,
+			        nc * dim * sizeof(tsReal));
+			/* Move knots. */
+			memmove(ctrlp + nc * dim,
+			        knots + (k0-deg),
+			        nk * sizeof(tsReal));
+
+			/* Remove superfluous control points and knots from
+			 * the memory of `worker`. */
+			worker.pImpl->n_knots = nk;
+			worker.pImpl->n_ctrlp = nc;
+			i = ts_int_bspline_sof_state(&worker);
+			worker.pImpl = realloc(worker.pImpl, i);
+			if (worker.pImpl == NULL) { /* unlikely to fail */
+				TS_THROW_0(try, err, status, TS_MALLOC,
+				           "out of memory")
+			}
+		}
+
+		/* Reverse control points (if necessary). */
+		if (reverse) {
+			for (i = 0; i < nc / 2; i++) {
+				memcpy(tmp,
+				       ctrlp  +     i      * dim,
+				       dim * sizeof(tsReal));
+				memmove(ctrlp +     i      * dim,
+				        ctrlp + (nc-1 - i) * dim,
+				        dim * sizeof(tsReal));
+				memcpy(ctrlp  + (nc-1 - i) * dim,
+				       tmp,
+				       dim * sizeof(tsReal));
+			}
+		}
+
+		/* Move `worker' to output parameter. */
+		if (spline == sub) ts_bspline_free(sub);
+		ts_bspline_move(&worker, sub);
+	TS_CATCH(err)
+		ts_bspline_free(&worker);
+	TS_FINALLY
+		if (tmp) free(tmp);
+	TS_END_TRY_RETURN(err)
+}
+
 void
 ts_bspline_uniform_knot_seq(const tsBSpline *spline,
                             size_t num,
@@ -1817,8 +1951,7 @@ ts_int_bspline_resize(const tsBSpline *spline,
 
 	tsError err;
 
-	if (n == 0)
-		return ts_bspline_copy(spline, resized, status);
+	if (n == 0) return ts_bspline_copy(spline, resized, status);
 
 	INIT_OUT_BSPLINE(spline, resized)
 	TS_CALL_ROE(err, ts_bspline_new(

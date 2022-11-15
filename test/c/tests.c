@@ -21,6 +21,7 @@ CuSuite* get_rmf_suite();
 CuSuite* get_vector_suite();
 CuSuite* get_chord_lengths_suite();
 CuSuite* get_copy_suite();
+CuSuite* get_sub_spline_suite();
 
 int main()
 {
@@ -49,6 +50,7 @@ int main()
 	CuSuiteAddSuite(suite, get_vector_suite());
 	CuSuiteAddSuite(suite, get_chord_lengths_suite());
 	CuSuiteAddSuite(suite, get_copy_suite());
+	CuSuiteAddSuite(suite, get_sub_spline_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

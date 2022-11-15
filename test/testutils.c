@@ -67,7 +67,7 @@ assert_equal_shape(CuTest *tc,
 tsReal
 ts_distance_varargs(CuTest *tc,
                     size_t dim,
-                    tsReal *x,
+                    const tsReal *x,
                     double first,
                     ...)
 {

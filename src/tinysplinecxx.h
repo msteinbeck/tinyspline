@@ -631,6 +631,7 @@ public:
 	bool isClosed(real epsilon = TS_POINT_EPSILON) const;
 	FrameSeq computeRMF(std_real_vector_in knots,
 	                    Vec3 *firstNormal = nullptr) const;
+	BSpline subSpline(real knot0, real knot1) const;
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 	std_real_vector_out equidistantKnotSeq(size_t num = 100,
 	                                       size_t numSamples = 0) const;

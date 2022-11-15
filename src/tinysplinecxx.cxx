@@ -1215,6 +1215,21 @@ tinyspline::BSpline::computeRMF(std_real_vector_in knots,
 	return seq;
 }
 
+
+tinyspline::BSpline
+tinyspline::BSpline::subSpline(real knot0, real knot1) const
+{
+	tsBSpline data = ts_bspline_init();
+	tsStatus status;
+	if (ts_bspline_sub_spline(&spline,
+	                          knot0,
+	                          knot1,
+	                          &data,
+	                          &status))
+		throw std::runtime_error(status.message);
+	return BSpline(data);
+}
+
 tinyspline::std_real_vector_out
 tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {

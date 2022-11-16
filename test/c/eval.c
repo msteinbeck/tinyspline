@@ -308,6 +308,28 @@ eval_near_miss_knot(CuTest *tc)
 	ts_deboornet_free(&net);
 }
 
+void
+eval_issue_222(CuTest *tc)
+{
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	tsDeBoorNet net = ts_deboornet_init();
+
+	___GIVEN___
+	C(ts_bspline_new(7, 2, 3, TS_CLAMPED, &spline, &status))
+
+	___WHEN___
+	C(ts_bspline_eval(&spline, (tsReal) (0.0 - 0.00001), &net, &status))
+	/* No infinite loop. */
+
+	___THEN___
+	CuAssertDblEquals(tc, 0.0, ts_deboornet_knot(&net), TS_KNOT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+	ts_deboornet_free(&net);
+}
+
 CuSuite *
 get_eval_suite()
 {
@@ -320,5 +342,6 @@ get_eval_suite()
 	SUITE_ADD_TEST(suite, eval_two_points);
 	SUITE_ADD_TEST(suite, eval_undefined_knot);
 	SUITE_ADD_TEST(suite, eval_near_miss_knot);
+	SUITE_ADD_TEST(suite, eval_issue_222);
 	return suite;
 }

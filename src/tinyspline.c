@@ -1181,12 +1181,16 @@ ts_int_bspline_find_knot(const tsBSpline *spline,
 	size_t low, high;
 
 	ts_bspline_domain(spline, &min, &max);
-	if (*knot < min && !ts_knots_equal(*knot, min)) {
-		TS_RETURN_2(status, TS_U_UNDEFINED,
-		            "knot (%f) < min(domain) (%f)",
-		            *knot, min)
+	if (*knot < min) {
+		/* Avoid infinite loop (issue #222) */
+		if (ts_knots_equal(*knot, min)) *knot = min;
+		else {
+			TS_RETURN_2(status, TS_U_UNDEFINED,
+			            "knot (%f) < min(domain) (%f)",
+			            *knot, min)
+		}
 	}
-	if (*knot > max && !ts_knots_equal(*knot, max)) {
+	else if (*knot > max && !ts_knots_equal(*knot, max)) {
 		TS_RETURN_2(status, TS_U_UNDEFINED,
 		            "knot (%f) > max(domain) (%f)",
 		            *knot, max)

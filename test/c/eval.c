@@ -1,6 +1,7 @@
 #include <testutils.h>
 
-void eval_domain_min(CuTest *tc)
+void
+eval_domain_min(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -40,7 +41,8 @@ void eval_domain_min(CuTest *tc)
 	free(result);
 }
 
-void eval_domain_max(CuTest *tc)
+void
+eval_domain_max(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -80,7 +82,8 @@ void eval_domain_max(CuTest *tc)
 	free(result);
 }
 
-void eval_001(CuTest *tc)
+void
+eval_001(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -119,7 +122,8 @@ void eval_001(CuTest *tc)
 	free(result);
 }
 
-void eval_002(CuTest *tc)
+void
+eval_002(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -158,7 +162,8 @@ void eval_002(CuTest *tc)
 	free(result);
 }
 
-void eval_003(CuTest *tc)
+void
+eval_003(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -197,7 +202,8 @@ void eval_003(CuTest *tc)
 	free(result);
 }
 
-void eval_two_points(CuTest *tc)
+void
+eval_two_points(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -239,7 +245,8 @@ void eval_two_points(CuTest *tc)
 	free(result);
 }
 
-void eval_undefined_knot(CuTest *tc)
+void
+eval_undefined_knot(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -271,7 +278,8 @@ void eval_undefined_knot(CuTest *tc)
 	ts_deboornet_free(&net);
 }
 
-void eval_near_miss_knot(CuTest *tc)
+void
+eval_near_miss_knot(CuTest *tc)
 {
 	___SETUP___
 	tsBSpline spline = ts_bspline_init();
@@ -300,7 +308,8 @@ void eval_near_miss_knot(CuTest *tc)
 	ts_deboornet_free(&net);
 }
 
-CuSuite* get_eval_suite()
+CuSuite *
+get_eval_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, eval_domain_min);

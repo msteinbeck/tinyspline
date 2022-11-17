@@ -734,6 +734,7 @@ public:
 	std::vector<real> values() const;
 	size_t size() const;
 
+	real arcLength() const;
 	real lengthToKnot(real len) const;
 	real tToKnot(real t) const;
 

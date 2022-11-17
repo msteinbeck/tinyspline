@@ -1655,6 +1655,12 @@ tinyspline::ChordLengths::size() const
 }
 
 tinyspline::real
+tinyspline::ChordLengths::arcLength() const
+{
+	return m_size == 0 ? 0 : m_chordLengths[m_size - 1];
+}
+
+tinyspline::real
 tinyspline::ChordLengths::lengthToKnot(real len) const
 {
 	tsStatus status;

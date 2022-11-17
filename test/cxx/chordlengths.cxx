@@ -54,7 +54,7 @@ chordlengths_copy_ctor(CuTest *tc)
 			400, -400
 		});
 	std::vector<real> knots = spline.uniformKnotSeq(100);
-	ChordLengths lengths = spline.chordLenghts(knots);
+	ChordLengths lengths = spline.chordLengths(knots);
 
 	// When
 	ChordLengths copy(lengths);
@@ -75,7 +75,7 @@ chordlengths_move_ctor(CuTest *tc)
 			400, -400
 		});
 	std::vector<real> knots = spline.uniformKnotSeq(100);
-	ChordLengths lengths = spline.chordLenghts(knots);
+	ChordLengths lengths = spline.chordLengths(knots);
 	ChordLengths toBeMoved(lengths);
 
 	// When
@@ -96,8 +96,8 @@ chordlengths_copy_assign(CuTest *tc)
 			300, -300,
 			400, -400
 		});
-	ChordLengths lengths = spline.chordLenghts(spline.uniformKnotSeq(100));
-	ChordLengths copy = spline.chordLenghts(spline.uniformKnotSeq(50));
+	ChordLengths lengths = spline.chordLengths(spline.uniformKnotSeq(100));
+	ChordLengths copy = spline.chordLengths(spline.uniformKnotSeq(50));
 	CuAssertTrue(tc, lengths.size() != copy.size());
 
 	// When
@@ -118,9 +118,9 @@ chordlengths_move_assign(CuTest *tc)
 			300, -300,
 			400, -400
 		});
-	ChordLengths lengths = spline.chordLenghts(spline.uniformKnotSeq(100));
+	ChordLengths lengths = spline.chordLengths(spline.uniformKnotSeq(100));
 	ChordLengths toBeMoved(lengths);
-	ChordLengths move = spline.chordLenghts(spline.uniformKnotSeq(50));
+	ChordLengths move = spline.chordLengths(spline.uniformKnotSeq(50));
 	CuAssertTrue(tc, lengths.size() != move.size());
 
 	// When
@@ -136,7 +136,7 @@ chordlengths_default_ctor(CuTest *tc)
 	// Given
 	BSpline spline;
 	std::vector<real> knots;
-	ChordLengths empty = spline.chordLenghts(knots);
+	ChordLengths empty = spline.chordLengths(knots);
 
 	// When
 	ChordLengths *defaultCtor = new ChordLengths();
@@ -151,7 +151,7 @@ chordlengths_empty_map(CuTest *tc)
 {
 	// Given
 	BSpline spline;
-	ChordLengths empty = spline.chordLenghts({});
+	ChordLengths empty = spline.chordLengths({});
 
 	// When/Then
 	try {

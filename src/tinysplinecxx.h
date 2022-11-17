@@ -635,8 +635,8 @@ public:
 	std_real_vector_out uniformKnotSeq(size_t num = 100) const;
 	std_real_vector_out equidistantKnotSeq(size_t num = 100,
 	                                       size_t numSamples = 0) const;
-	ChordLengths chordLenghts(std_real_vector_in knots) const;
-	ChordLengths chordLenghts(size_t numSamples = 200) const;
+	ChordLengths chordLengths(std_real_vector_in knots) const;
+	ChordLengths chordLengths(size_t numSamples = 200) const;
 
 	/* Serialization */
 	std::string toJson() const;
@@ -740,11 +740,11 @@ public:
 	std::string toString() const;
 private:
 	BSpline m_spline;
-	real *m_knots, *m_chordLenghts;
+	real *m_knots, *m_chordLengths;
 	size_t m_size;
 	ChordLengths(const BSpline &spline,
 	             real *knots,
-	             real *chordLenghts,
+	             real *chordLengths,
 	             size_t size);
 	friend class BSpline;
 };

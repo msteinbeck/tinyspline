@@ -1256,7 +1256,7 @@ tinyspline::BSpline::equidistantKnotSeq(size_t num,
 }
 
 tinyspline::ChordLengths
-tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
+tinyspline::BSpline::chordLengths(std_real_vector_in knots) const
 {
 	tsStatus status;
 	size_t num = std_real_vector_read(knots)size();
@@ -1275,9 +1275,9 @@ tinyspline::BSpline::chordLenghts(std_real_vector_in knots) const
 }
 
 tinyspline::ChordLengths
-tinyspline::BSpline::chordLenghts(size_t numSamples) const
+tinyspline::BSpline::chordLengths(size_t numSamples) const
 {
-	return chordLenghts(uniformKnotSeq(numSamples));
+	return chordLengths(uniformKnotSeq(numSamples));
 }
 
 std::string tinyspline::BSpline::toJson() const
@@ -1542,7 +1542,7 @@ std::string tinyspline::Morphism::toString() const
 tinyspline::ChordLengths::ChordLengths()
 : m_spline(),
   m_knots(nullptr),
-  m_chordLenghts(nullptr),
+  m_chordLengths(nullptr),
   m_size(0)
 {}
 
@@ -1552,30 +1552,30 @@ tinyspline::ChordLengths::ChordLengths(const BSpline &spline,
                                        size_t size)
 : m_spline(spline),
   m_knots(knots),
-  m_chordLenghts(chordLengths),
+  m_chordLengths(chordLengths),
   m_size(size)
 {}
 
 tinyspline::ChordLengths::ChordLengths(const ChordLengths &other)
 : m_spline(other.m_spline),
   m_knots(nullptr),
-  m_chordLenghts(nullptr),
+  m_chordLengths(nullptr),
   m_size(other.m_size)
 {
 	m_knots = new real[m_size];
 	std::copy(other.m_knots,
 	          other.m_knots + m_size,
 	          m_knots);
-	m_chordLenghts = new real[m_size];
-	std::copy(other.m_chordLenghts,
-	          other.m_chordLenghts + m_size,
-	          m_chordLenghts);
+	m_chordLengths = new real[m_size];
+	std::copy(other.m_chordLengths,
+	          other.m_chordLengths + m_size,
+	          m_chordLengths);
 }
 
 tinyspline::ChordLengths::ChordLengths(ChordLengths &&other)
 : m_spline(),
   m_knots(nullptr),
-  m_chordLenghts(nullptr),
+  m_chordLengths(nullptr),
   m_size(0)
 {
 	*this = std::move(other);
@@ -1584,7 +1584,7 @@ tinyspline::ChordLengths::ChordLengths(ChordLengths &&other)
 tinyspline::ChordLengths::~ChordLengths()
 {
 	delete [] m_knots;
-	delete [] m_chordLenghts;
+	delete [] m_chordLengths;
 	m_size = 0;
 }
 
@@ -1597,14 +1597,14 @@ tinyspline::ChordLengths::operator=(const ChordLengths &other)
 		          other.m_knots + other.m_size,
 		          knots);
 		real *chordLengths = new real[other.m_size];
-		std::copy(other.m_chordLenghts,
-		          other.m_chordLenghts + other.m_size,
+		std::copy(other.m_chordLengths,
+		          other.m_chordLengths + other.m_size,
 		          chordLengths);
 		delete [] m_knots;
-		delete [] m_chordLenghts;
+		delete [] m_chordLengths;
 		m_spline = other.m_spline;
 		m_knots = knots;
-		m_chordLenghts = chordLengths;
+		m_chordLengths = chordLengths;
 		m_size = other.m_size;
 	}
 	return *this;
@@ -1615,14 +1615,14 @@ tinyspline::ChordLengths::operator=(ChordLengths &&other)
 {
 	if (&other != this) {
 		delete [] m_knots;
-		delete [] m_chordLenghts;
+		delete [] m_chordLengths;
 		m_spline = other.m_spline;
 		m_knots = other.m_knots;
-		m_chordLenghts = other.m_chordLenghts;
+		m_chordLengths = other.m_chordLengths;
 		m_size = other.m_size;
 		other.m_spline = BSpline();
 		other.m_knots = nullptr;
-		other.m_chordLenghts = nullptr;
+		other.m_chordLengths = nullptr;
 		other.m_size = 0;
 	}
 	return *this;
@@ -1644,8 +1644,8 @@ tinyspline::ChordLengths::knots() const
 std::vector<tinyspline::real>
 tinyspline::ChordLengths::values() const
 {
-	return std::vector<real>(m_chordLenghts,
-	                         m_chordLenghts + m_size);
+	return std::vector<real>(m_chordLengths,
+	                         m_chordLengths + m_size);
 }
 
 size_t
@@ -1660,7 +1660,7 @@ tinyspline::ChordLengths::lengthToKnot(real len) const
 	tsStatus status;
 	real knot;
 	if (ts_chord_lengths_length_to_knot(m_knots,
-	                               m_chordLenghts,
+	                               m_chordLengths,
 	                               m_size,
 	                               len,
 	                               &knot,
@@ -1675,7 +1675,7 @@ tinyspline::ChordLengths::tToKnot(real t) const
 	tsStatus status;
 	real knot;
 	if (ts_chord_lengths_t_to_knot(m_knots,
-	                               m_chordLenghts,
+	                               m_chordLengths,
 	                               m_size,
 	                               t,
 	                               &knot,

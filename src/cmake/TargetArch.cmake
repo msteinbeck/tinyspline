@@ -32,7 +32,11 @@
 
 set(archdetect_c_code "
 #if defined(__aarch64__) || defined(_M_ARM64)
-	#error cmake_ARCH arm64
+	#if defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(TARGET_CPU_X86_64)
+		#error cmake_ARCH universal2
+	#else
+		#error cmake_ARCH arm64
+	#endif
 #elif defined(__arm__) || defined(__TARGET_ARCH_ARM) || defined(_M_ARM)
 	#error cmake_ARCH arm
 #elif defined(__i386) || defined(__i386__) || defined(_M_IX86)

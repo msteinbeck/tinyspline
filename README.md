@@ -29,6 +29,7 @@ MIT License - see the LICENSE file in the source distribution.
 - Reparametrization by arc length
   - Mapping length <--> knot
 - Knot insertion (refinement)
+- Sub-spline extraction
 - Bézier curve decomposition
   - (also known as subdivision)
 - Derivative

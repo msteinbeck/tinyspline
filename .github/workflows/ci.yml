@@ -535,6 +535,7 @@ jobs:
         elif [ "$RUNNER_OS" == "Windows" ]; then
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*win*.whl" -exec python -m pip install {} \;
         elif [ "$RUNNER_OS" == "macOS" ]; then
+            export SYSTEM_VERSION_COMPAT=0
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" | while read f; do mv -v "$f" "${f/11_0/10_15}"; done
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" -exec python -m pip install {} \;
         fi

@@ -183,6 +183,123 @@ jobs:
           ${{runner.workspace}}/build/target/*.jar
         if-no-files-found: error
 
+  macos-universal:
+    needs: build
+    runs-on: [macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          cmake $GITHUB_WORKSPACE -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
+
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
+          dotnet pack *.csproj
+          cmake --build . --target tinysplinego
+          mvn package
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            otool -L lib/*tinysplinejava*
+          fi
+
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos_universal
+          path: |
+            ${{runner.workspace}}/build/*.nupkg
+            ${{runner.workspace}}/build/tinyspline-go.zip
+            ${{runner.workspace}}/build/target/*.jar
+          if-no-files-found: error
+
+  macos-silicon:
+    needs: build
+    runs-on: [ macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          cmake $GITHUB_WORKSPACE -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
+
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
+          dotnet pack *.csproj
+          cmake --build . --target tinysplinego
+          mvn package
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            otool -L lib/*tinysplinejava*
+          fi
+
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos_silicon
+          path: |
+            ${{runner.workspace}}/build/*.nupkg
+            ${{runner.workspace}}/build/tinyspline-go.zip
+            ${{runner.workspace}}/build/target/*.jar
+          if-no-files-found: error
+
+  macos-intel:
+    needs: build
+    runs-on: [ macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          export JAVA_HOME=$JAVA_HOME_8_X64
+          cmake $GITHUB_WORKSPACE -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
+
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        shell: bash
+        run: |
+          cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
+          dotnet pack *.csproj
+          cmake --build . --target tinysplinego
+          mvn package
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            otool -L lib/*tinysplinejava*
+          fi
+
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos_intel
+          path: |
+            ${{runner.workspace}}/build/*.nupkg
+            ${{runner.workspace}}/build/tinyspline-go.zip
+            ${{runner.workspace}}/build/target/*.jar
+          if-no-files-found: error
+
   python:
     needs: build
     runs-on: ${{ matrix.os }}

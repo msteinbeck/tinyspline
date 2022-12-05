@@ -84,5 +84,17 @@ function(target_architecture output_var)
 		set(ARCH unknown)
 	endif()
 
+	# Checking if the CMAKE_OSX_ARCHITECTURES list contains x86_64 and arm64
+	# In that case the lib should be compiled to universal-2
+	list(LENGTH CMAKE_OSX_ARCHITECTURES OSX_ARCH_LENGTH)
+	if (OSX_ARCH_LENGTH EQUAL 2)
+		list(FIND CMAKE_OSX_ARCHITECTURES "x86_64" OSX_X86_INDEX)
+		list(FIND CMAKE_OSX_ARCHITECTURES "arm64" OSX_ARM64_INDEX)
+		if((${OSX_ARM64_INDEX} GREATER -1) AND (${OSX_X86_INDEX} GREATER -1))
+			set (ARCH "universal-2")
+		endif()
+	endif()
+
+
 	set(${output_var} "${ARCH}" PARENT_SCOPE)
 endfunction()

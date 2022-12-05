@@ -1834,11 +1834,12 @@ if(DEFINED TINYSPLINE_CSHARP_FRAMEWORK_VERSION)
   else()
     message(FATAL_ERROR "Unable to determine NuGet RID (platform)")
   endif()
+
+
   if(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm")
     set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm")
-    # If tinysplines should be build as a osx-universal
-  elseif ("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "arm64;x86_64")
-      set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-universal2")
+  elseif (${TINYSPLINE_PLATFORM_ARCH} STREQUAL "universal-2")
+    set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-universal2")
   elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "arm64")
     set(TINYSPLINE_NUGET_RID "${TINYSPLINE_NUGET_RID}-arm64")
   elseif(${TINYSPLINE_PLATFORM_ARCH} STREQUAL "x86_64")

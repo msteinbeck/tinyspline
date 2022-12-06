@@ -197,8 +197,7 @@ jobs:
         shell: bash
         working-directory: ${{runner.workspace}}/build
         run: |
-          export JAVA_HOME=$JAVA_HOME_8_X64
-          cmake $GITHUB_WORKSPACE -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
+          cmake $GITHUB_WORKSPACE -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True
 
       - name: Build
         working-directory: ${{runner.workspace}}/build

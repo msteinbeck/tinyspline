@@ -203,13 +203,9 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         shell: bash
         run: |
-          cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
+          cmake --build . --target tinysplinecsharp --config $BUILD_TYPE
           dotnet pack *.csproj
           cmake --build . --target tinysplinego
-          mvn package
-          if [ "$RUNNER_OS" == "macOS" ]; then
-            otool -L lib/*tinysplinejava*
-          fi
 
       - name: Deploy
         uses: actions/upload-artifact@v2
@@ -218,7 +214,6 @@ jobs:
           path: |
             ${{runner.workspace}}/build/*.nupkg
             ${{runner.workspace}}/build/tinyspline-go.zip
-            ${{runner.workspace}}/build/target/*.jar
           if-no-files-found: error
 
   macos-silicon:

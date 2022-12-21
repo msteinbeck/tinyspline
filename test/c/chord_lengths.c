@@ -40,11 +40,15 @@ chord_lengths_line(CuTest *tc)
 	ts_bspline_free(&line);
 }
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4102)
+#endif
 void
 chord_lengths_num_0(CuTest *tc)
 {
 	___SETUP___
-	/* MSVC cannot cannot allocate an array of constant size 0. */
+	/* MSVC cannot allocate an array of constant size 0. */
 	tsReal knots[1], lengths[1], knot;
 	tsStatus stat;
 
@@ -63,6 +67,9 @@ chord_lengths_num_0(CuTest *tc)
 
 	___TEARDOWN___
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 void
 chord_lengths_num_1(CuTest *tc)

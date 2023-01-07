@@ -1236,16 +1236,6 @@ function(tinyspline_add_swig_library)
       )
     endif()
   endif()
-  # Fix library suffix for C# on macOS.
-  if(${ARGS_LANG} STREQUAL "csharp" AND ${TINYSPLINE_PLATFORM_NAME} STREQUAL
-                                        "macosx"
-  )
-    set_property(
-      TARGET ${ARGS_TARGET}
-      APPEND
-      PROPERTY SUFFIX ".dylib"
-    )
-  endif()
   # Fix library suffix for Ruby on Windows.
   if(${ARGS_LANG} STREQUAL "ruby" AND ${TINYSPLINE_PLATFORM_IS_WINDOWS})
     set_property(

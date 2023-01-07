@@ -1,12 +1,12 @@
 TinySpline uses the CMake build system to compile and package its interfaces.
 The following compiler suites are tested: GCC, Clang, and MSVC. In order to
-create the bindings, Swig (4.0.1 or later) must be available. Each binding may
+create the bindings, Swig (4.1.0 or later) must be installed. Each binding may
 have additional dependencies that are necessary to compile the native library
 of the target language. The following table gives an overview:
 
 Language | Dependencies to Generate Source | (Relative) Output Directory
 -------- | ------------------------------- | ---------------------------
-C#       |                                 | csharp
+C#       | -                               | csharp
 D        | -                               | dlang
 Golang   | -                               | go
 Java     | Java Development Kit            | java/org/tinyspline

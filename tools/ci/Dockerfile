@@ -20,6 +20,7 @@ RUN apt-get update &&                          \
         graphviz                               \
         libtool                                \
         libfltk1.3-dev fluid                   \
+        libpcre2-dev                           \
         lua5.1 liblua5.1-dev                   \
         lua5.2 liblua5.2-dev                   \
         lua5.3 liblua5.3-dev                   \
@@ -51,8 +52,8 @@ RUN apt-get update &&                          \
         make && \
         make install && \
     wget -P /usr/local/src/swig \
-        http://prdownloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
-    tar -xf /usr/local/src/swig/swig-4.0.2.tar.gz \
+        http://prdownloads.sourceforge.net/swig/swig-4.1.1.tar.gz && \
+    tar -xf /usr/local/src/swig/swig-4.1.1.tar.gz \
         -C /usr/local/src/swig \
         --strip 1 && \
     cd /usr/local/src/swig && \
@@ -74,19 +75,6 @@ RUN apt-get update &&                          \
     wget -P /usr/local/src/ndk23b \
         https://dl.google.com/android/repository/android-ndk-r23b-linux.zip && \
     unzip -d /opt/android /usr/local/src/ndk23b/android-ndk-r23b-linux.zip && \
-    wget -P /usr/local/src/python36 \
-        https://www.python.org/ftp/python/3.6.12/Python-3.6.12.tar.xz && \
-    tar -xf /usr/local/src/python36/Python-3.6.12.tar.xz \
-        -C /usr/local/src/python36 \
-        --strip 1 && \
-    cd /usr/local/src/python36 && \
-        ./configure \
-            --prefix=/opt/linux/python36 \
-            --enable-shared \
-            LDFLAGS=-Wl,-rpath=/opt/linux/python36/lib && \
-        make && \
-        make install && \
-        /opt/linux/python36/bin/python3 -m pip install wheel && \
     wget -P /usr/local/src/python37 \
         https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tar.xz && \
     tar -xf /usr/local/src/python37/Python-3.7.9.tar.xz \
@@ -140,6 +128,20 @@ RUN apt-get update &&                          \
         make install && \
         wget https://files.pythonhosted.org/packages/27/d6/003e593296a85fd6ed616ed962795b2f87709c3eee2bca4f6d0fe55c6d00/wheel-0.37.1-py2.py3-none-any.whl && \
         /opt/linux/python310/bin/python3 -m pip install wheel-0.37.1-py2.py3-none-any.whl && \
+    wget -P /usr/local/src/python311 \
+        https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz && \
+    tar -xf /usr/local/src/python311/Python-3.11.1.tar.xz \
+        -C /usr/local/src/python311 \
+        --strip 1 && \
+    cd /usr/local/src/python311 && \
+        ./configure \
+            --prefix=/opt/linux/python311 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/python311/lib && \
+        make && \
+        make install && \
+        wget https://files.pythonhosted.org/packages/27/d6/003e593296a85fd6ed616ed962795b2f87709c3eee2bca4f6d0fe55c6d00/wheel-0.37.1-py2.py3-none-any.whl && \
+        /opt/linux/python311/bin/python3 -m pip install wheel-0.37.1-py2.py3-none-any.whl && \
     wget -P /usr/local/src/ruby24 \
         https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
     tar -xf /usr/local/src/ruby24/ruby-2.4.10.tar.gz \
@@ -212,6 +214,18 @@ RUN apt-get update &&                          \
             LDFLAGS=-Wl,-rpath=/opt/linux/ruby31/lib && \
         make && \
         make install && \
+    wget -P /usr/local/src/ruby32 \
+        https://cache.ruby-lang.org/pub/ruby/3.2/ruby-3.2.0.tar.gz && \
+    tar -xf /usr/local/src/ruby32/ruby-3.2.0.tar.gz \
+        -C /usr/local/src/ruby32 \
+        --strip 1 && \
+    cd /usr/local/src/ruby32 && \
+        ./configure \
+            --prefix=/opt/linux/ruby32 \
+            --enable-shared \
+            LDFLAGS=-Wl,-rpath=/opt/linux/ruby32/lib && \
+        make && \
+        make install && \
     wget -P /usr/local/src/lua54 \
         https://sourceforge.net/projects/luabinaries/files/5.4.2/Linux%20Libraries/lua-5.4.2_Linux54_64_lib.tar.gz && \
     mkdir -p /opt/linux/lua54 && \
@@ -262,6 +276,9 @@ RUN mkdir -p /opt/windows-x86_64/archives                       && \
     wget -O archives/ruby31.7z https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.1.2-1/rubyinstaller-3.1.2-1-x64.7z && \
     7z x archives/ruby31.7z -oruby31                            && \
     cd ruby31/ruby* && mv * .. && cd ../..                      && \
+    wget -O archives/ruby32.7z https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.0-1/rubyinstaller-3.2.0-1-x64.7z && \
+    7z x archives/ruby32.7z -oruby32                            && \
+    cd ruby32/ruby* && mv * .. && cd ../..                      && \
     rm -rf archives
 
 # Run environment.

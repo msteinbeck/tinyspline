@@ -771,7 +771,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(TINYSPLINE_BINDING_CXX_FLAGS "${TINYSPLINE_BINDING_CXX_FLAGS} -w")
   if(${TINYSPLINE_PLATFORM_NAME} STREQUAL "macosx")
     set(TINYSPLINE_BINDING_LINKER_FLAGS
-        "${TINYSPLINE_BINDING_LINKER_FLAGS} -undefined dynamic_lookup"
+        "${TINYSPLINE_BINDING_LINKER_FLAGS} -undefined dynamic_lookup -Wl,-no_fixup_chains"
     )
   endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")

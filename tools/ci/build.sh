@@ -149,46 +149,6 @@ docker run \
 				-DLUA_INCLUDE_DIR=/usr/include/lua5.2 \
 				-DLUA_LIBRARY=/usr/lib/x86_64-linux-gnu/liblua5.2.so \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
-				-DPYTHON_INCLUDE_DIR=/usr/include/python3.5m \
-				-DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.5m.so \
-				-DTINYSPLINE_ENABLE_RUBY=True && \
-			sed -i '/dependencies/,/}/d' *.rockspec && \
-			luarocks make --pack-binary-rock && \
-				chown $(id -u):$(id -g) *.rock && \
-				cp -a *.rock ${STORAGE}/linux64 && \
-			python3 setup.py bdist_wheel && \
-				chown $(id -u):$(id -g) dist/*.whl && \
-				cp -a dist/*.whl ${STORAGE}/linux64 && \
-			gem build tinyspline.gemspec && \
-				chown $(id -u):$(id -g) *.gem && \
-				cp -a *.gem ${STORAGE}/linux64 && \
-		rm -rf ..?* .[!.]* * && \
-			PATH=/opt/linux/ruby25/bin:$PATH cmake .. \
-				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/usr/include/lua5.3 \
-				-DLUA_LIBRARY=/usr/lib/x86_64-linux-gnu/liblua5.3.so \
-				-DTINYSPLINE_ENABLE_PYTHON=True \
-				-DPYTHON_INCLUDE_DIR=/opt/linux/python36/include/python3.6m \
-				-DPYTHON_LIBRARY=/opt/linux/python36/lib/libpython3.6m.so \
-				-DTINYSPLINE_ENABLE_RUBY=True && \
-			sed -i '/dependencies/,/}/d' *.rockspec && \
-			luarocks make --pack-binary-rock && \
-				chown $(id -u):$(id -g) *.rock && \
-				cp -a *.rock ${STORAGE}/linux64 && \
-			/opt/linux/python36/bin/python3 setup.py bdist_wheel && \
-				chown $(id -u):$(id -g) dist/*.whl && \
-				cp -a dist/*.whl ${STORAGE}/linux64 && \
-			gem build tinyspline.gemspec && \
-				chown $(id -u):$(id -g) *.gem && \
-				cp -a *.gem ${STORAGE}/linux64 && \
-		rm -rf ..?* .[!.]* * && \
-			PATH=/opt/linux/ruby26/bin:$PATH cmake .. \
-				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_ENABLE_LUA=True \
-				-DLUA_INCLUDE_DIR=/opt/linux/lua54/include \
-				-DLUA_LIBRARY=/opt/linux/lua54/liblua54.so \
-				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/linux/python37/include/python3.7m \
 				-DPYTHON_LIBRARY=/opt/linux/python37/lib/libpython3.7m.so \
 				-DTINYSPLINE_ENABLE_RUBY=True && \
@@ -203,13 +163,53 @@ docker run \
 				chown $(id -u):$(id -g) *.gem && \
 				cp -a *.gem ${STORAGE}/linux64 && \
 		rm -rf ..?* .[!.]* * && \
-			PATH=/opt/linux/ruby27/bin:$PATH cmake .. \
+			PATH=/opt/linux/ruby25/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/usr/include/lua5.3 \
+				-DLUA_LIBRARY=/usr/lib/x86_64-linux-gnu/liblua5.3.so \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
 				-DPYTHON_INCLUDE_DIR=/opt/linux/python38/include/python3.8 \
 				-DPYTHON_LIBRARY=/opt/linux/python38/lib/libpython3.8.so \
 				-DTINYSPLINE_ENABLE_RUBY=True && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/linux64 && \
 			/opt/linux/python38/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/linux64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/linux64 && \
+		rm -rf ..?* .[!.]* * && \
+			PATH=/opt/linux/ruby26/bin:$PATH cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_LUA=True \
+				-DLUA_INCLUDE_DIR=/opt/linux/lua54/include \
+				-DLUA_LIBRARY=/opt/linux/lua54/liblua54.so \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/linux/python39/include/python3.9 \
+				-DPYTHON_LIBRARY=/opt/linux/python39/lib/libpython3.9.so \
+				-DTINYSPLINE_ENABLE_RUBY=True && \
+			sed -i '/dependencies/,/}/d' *.rockspec && \
+			luarocks make --pack-binary-rock && \
+				chown $(id -u):$(id -g) *.rock && \
+				cp -a *.rock ${STORAGE}/linux64 && \
+			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
+				chown $(id -u):$(id -g) dist/*.whl && \
+				cp -a dist/*.whl ${STORAGE}/linux64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/linux64 && \
+		rm -rf ..?* .[!.]* * && \
+			PATH=/opt/linux/ruby27/bin:$PATH cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_PYTHON=True \
+				-DPYTHON_INCLUDE_DIR=/opt/linux/python310/include/python3.10 \
+				-DPYTHON_LIBRARY=/opt/linux/python310/lib/libpython3.10.so \
+				-DTINYSPLINE_ENABLE_RUBY=True && \
+			/opt/linux/python310/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
 			gem build tinyspline.gemspec && \
@@ -219,10 +219,10 @@ docker run \
 			PATH=/opt/linux/ruby30/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
 				-DTINYSPLINE_ENABLE_PYTHON=True \
-				-DPYTHON_INCLUDE_DIR=/opt/linux/python39/include/python3.9 \
-				-DPYTHON_LIBRARY=/opt/linux/python39/lib/libpython3.9.so \
+				-DPYTHON_INCLUDE_DIR=/opt/linux/python311/include/python3.11 \
+				-DPYTHON_LIBRARY=/opt/linux/python311/lib/libpython3.11.so \
 				-DTINYSPLINE_ENABLE_RUBY=True && \
-			/opt/linux/python39/bin/python3 setup.py bdist_wheel && \
+			/opt/linux/python311/bin/python3 setup.py bdist_wheel && \
 				chown $(id -u):$(id -g) dist/*.whl && \
 				cp -a dist/*.whl ${STORAGE}/linux64 && \
 			gem build tinyspline.gemspec && \
@@ -231,13 +231,14 @@ docker run \
 		rm -rf ..?* .[!.]* * && \
 			PATH=/opt/linux/ruby31/bin:$PATH cmake .. \
 				-DCMAKE_BUILD_TYPE=Release \
-				-DTINYSPLINE_ENABLE_PYTHON=True \
-				-DPYTHON_INCLUDE_DIR=/opt/linux/python310/include/python3.10 \
-				-DPYTHON_LIBRARY=/opt/linux/python310/lib/libpython3.10.so \
 				-DTINYSPLINE_ENABLE_RUBY=True && \
-			/opt/linux/python310/bin/python3 setup.py bdist_wheel && \
-				chown $(id -u):$(id -g) dist/*.whl && \
-				cp -a dist/*.whl ${STORAGE}/linux64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/linux64 && \
+		rm -rf ..?* .[!.]* * && \
+			PATH=/opt/linux/ruby32/bin:$PATH cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_RUBY=True && \
 			gem build tinyspline.gemspec && \
 				chown $(id -u):$(id -g) *.gem && \
 				cp -a *.gem ${STORAGE}/linux64 && \
@@ -363,6 +364,17 @@ docker run \
 				for r in ./*.rock; do mv \$r \${r/linux/windows}; done && \
 				chown $(id -u):$(id -g) *.rock && \
 				cp -a *.rock ${STORAGE}/windows64 && \
+			gem build tinyspline.gemspec && \
+				chown $(id -u):$(id -g) *.gem && \
+				cp -a *.gem ${STORAGE}/windows64 && \
+		rm -rf ..?* .[!.]* * && \
+			cmake .. \
+				-DCMAKE_BUILD_TYPE=Release \
+				-DTINYSPLINE_ENABLE_RUBY=True \
+				-DRuby_EXECUTABLE=/opt/linux/ruby32/bin/ruby \
+				-DRuby_INCLUDE_DIR=/opt/windows-x86_64/ruby32/include/ruby-3.2.0 \
+				-DRuby_CONFIG_INCLUDE_DIR=/opt/windows-x86_64/ruby32/include/ruby-3.2.0/x64-mingw-ucrt \
+				-DRuby_LIBRARY=/opt/windows-x86_64/ruby32/bin/x64-ucrt-ruby320.dll && \
 			gem build tinyspline.gemspec && \
 				chown $(id -u):$(id -g) *.gem && \
 				cp -a *.gem ${STORAGE}/windows64 && \

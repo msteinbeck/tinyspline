@@ -90,6 +90,16 @@ function(target_architecture output_var)
   # Get rid of the value marker, leaving just the architecture name.
   string(REPLACE "cmake_ARCH " "" ARCH "${ARCH}")
 
+  # Check for macOS universal2.
+  list(LENGTH CMAKE_OSX_ARCHITECTURES OSX_ARCH_LENGTH)
+  if(OSX_ARCH_LENGTH EQUAL 2)
+    list(FIND CMAKE_OSX_ARCHITECTURES "x86_64" OSX_X86_INDEX)
+    list(FIND CMAKE_OSX_ARCHITECTURES "arm64" OSX_ARM64_INDEX)
+    if((${OSX_X86_INDEX} GREATER -1) AND (${OSX_ARM64_INDEX} GREATER -1))
+      set(ARCH "universal2")
+    endif()
+  endif()
+
   # If we are compiling for an unknown architecture, the following variable
   # should already be set to "unknown". If the variable is empty (e.g., due to a
   # typo in the code), then explicitly set it to "unknown".

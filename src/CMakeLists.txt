@@ -274,25 +274,30 @@ set_directory_properties(
 
 # ##############################################################################
 # Host- and platform-related constants.
+# ~~~
 #
-# TINYSPLINE_HOST_IS_WINDOWS True if host is Windows. False otherwise.
+# TINYSPLINE_HOST_IS_WINDOWS
+#   True if host is Windows. False otherwise.
 #
-# TINYSPLINE_PLATFORM_NAME Name of target platform in lowercase. Supported
-# values are: 'android', linux', 'macosx', 'windows', 'uwp' (Universal Windows
-# Platform), 'wasm' (WebAssembly), and 'undefined' (fallback).
+# TINYSPLINE_PLATFORM_NAME
+#   Name of target platform in lowercase. Supported values are: 'android',
+#   'linux', 'macosx', 'windows', 'uwp' (Universal Windows Platform), 'wasm'
+#   (WebAssembly), and 'undefined' (fallback).
 #
-# TINYSPLINE_PLATFORM_IS_WINDOWS True if target platform is Windows. False
-# otherwise.
+# TINYSPLINE_PLATFORM_IS_WINDOWS
+#   True if target platform is Windows. False otherwise.
 #
-# TINYSPLINE_PLATFORM_ARCH Architecture of target platform. Supported values
-# are: 'arm', 'arm64', 'x86', 'x86_64', 'ia64', 'any' (usually only with
-# 'wasm'), and 'unknown' (fallback).
+# TINYSPLINE_PLATFORM_ARCH
+#   Architecture of target platform. Supported values are: 'arm', 'arm64',
+#   'x86', 'x86_64', 'ia64', 'universal2', 'any' (usually only with 'wasm'),
+#    and 'unknown' (fallback).
 #
-# TINYSPLINE_PLATFORM Platform (target) specific identifier, e.g.
-# 'linux-x86_64'.
+# TINYSPLINE_PLATFORM
+#   Platform (target) specific identifier, e.g., 'linux-x86_64'.
 #
-# TINYSPLINE_MACOSX_TO_MACOSX True if host and target is macosx. False
-# otherwise.
+# TINYSPLINE_MACOSX_TO_MACOSX
+#   True if host and target is macosx. False otherwise.
+# ~~~
 # ##############################################################################
 # Host
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")

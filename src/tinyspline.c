@@ -3124,16 +3124,14 @@ ts_bspline_load(const char *path,
 		}
 		value = json_parse_file(path);
 		if (!value) {
-			TS_RETURN_0(status, TS_PARSE_ERROR,
-			            "invalid json input")
+			TS_THROW_0(try, err, status, TS_PARSE_ERROR,
+			           "invalid json input")
 		}
 		TS_CALL(try, err, ts_int_bspline_parse_json(
 		        value, spline, status))
 	TS_FINALLY
-		if (file)
-			fclose(file);
-		if (value)
-			json_value_free(value);
+		if (file) fclose(file);
+		if (value) json_value_free(value);
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_END_TRY_RETURN(err)

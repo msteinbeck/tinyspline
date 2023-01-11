@@ -1250,8 +1250,12 @@ tinyspline::BSpline::equidistantKnotSeq(size_t num,
 	                                    num,
 	                                    knots_ptr,
 	                                    numSamples,
-	                                    &status))
+	                                    &status)) {
+#ifdef SWIG
+		delete knots;
+#endif
 		throw std::runtime_error(status.message);
+	}
 	return knots;
 }
 

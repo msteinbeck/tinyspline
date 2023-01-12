@@ -21,9 +21,11 @@ docker run \
 	${IMAGE_NAME} /bin/bash -c \
 	"mkdir build && pushd build && \
 		cmake ${SRC_DIR} && \
-		cmake --build . --target docs && \
+		cmake --build . --target docs coverage && \
 		chown -R $(id -u):$(id -g) docs && \
+		chown -R $(id -u):$(id -g) coverage && \
 		cp -a docs/doxygen ${STORAGE}/doxygen && \
+		cp -a coverage ${STORAGE}/doxygen/html && \
 	popd"
 
 docker rmi ${IMAGE_NAME}

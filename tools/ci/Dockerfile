@@ -18,6 +18,7 @@ RUN apt-get update &&                          \
         gcc-arm-linux-gnueabihf                \
         git                                    \
         graphviz                               \
+        lcov                                   \
         libtool                                \
         libfltk1.3-dev fluid                   \
         libpcre2-dev                           \

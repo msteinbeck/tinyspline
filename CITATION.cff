@@ -9,8 +9,8 @@ preferred-citation:
     - family-names: "Koschke"
       given-names: "Rainer"
       orcid: "orcid.org/0000-0003-4094-3444"
-  title: "TinySpline: {A} Small, yet Powerful Library for Interpolating, Transforming, and Querying NURBS, B-Splines, and B{\'{e}}zier Curves}"
-  booktitle: "28th {IEEE} International Conference on Software Analysis, Evolution and Reengineering, {SANER} 2021, Honolulu, HI, USA, March 9-12, 2021"
+  title: "TinySpline: A Small, yet Powerful Library for Interpolating, Transforming, and Querying NURBS, B-Splines, and Bézier Curves"
+  booktitle: "2021 IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)"
   start: 572
   end: 576
   publisher: "IEEE"

@@ -138,7 +138,7 @@ Result:
 If you use TinySpline in your research, please cite it as below.
 
 ```
-@INPROCEEDINGS{9425950,
+@INPROCEEDINGS{Steinbeck:SANER:21,
   author =       {Steinbeck, Marcel and Koschke, Rainer},
   booktitle =    {2021 IEEE International Conference on Software
                   Analysis, Evolution and Reengineering (SANER)},
@@ -154,16 +154,14 @@ If you use TinySpline in your research, please cite it as below.
 Other publications:
 
 ```
-@INPROCEEDINGS{9425950,
+@INPROCEEDINGS{Steinbeck:SANER:22,
   author =       {Steinbeck, Marcel and Koschke, Rainer},
-  booktitle =    {2021 IEEE International Conference on Software
-                  Analysis, Evolution and Reengineering (SANER)},
-  title =        {TinySpline: A Small, yet Powerful Library for
-                  Interpolating, Transforming, and Querying NURBS,
-                  B-Splines, and Bézier Curves},
-  year =         {2021},
-  pages =        {572-576},
-  doi =          {10.1109/SANER50967.2021.00068}
+  booktitle =    {2022 Working Conference on Software Visualization
+                  (VISSOFT)},
+  title =        {Edge Animation in Software Visualization},
+  year =         {2022},
+  pages =        {63-74},
+  doi =          {10.1109/VISSOFT55257.2022.00015}
 }
 ```
 

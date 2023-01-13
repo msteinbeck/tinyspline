@@ -17,4 +17,4 @@ preferred-citation:
   year: 2021
   month: 3
   doi: "10.1109/SANER50967.2021.00068"
-  url = "https://github.com/msteinbeck/tinyspline"
+  url: "https://github.com/msteinbeck/tinyspline"

@@ -13,7 +13,7 @@ preferred-citation:
   booktitle: "2021 IEEE International Conference on Software Analysis, Evolution and Reengineering (SANER)"
   start: 572
   end: 576
-  publisher: "IEEE"
+  publisher: "{IEEE}"
   year: 2021
   month: 3
   doi: "10.1109/SANER50967.2021.00068"

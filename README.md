@@ -92,11 +92,10 @@ See [BUILD.md](BUILD.md).
 
 ### Getting Started
 
-A variety of examples (unit tests) can be found in the [test](test)
-subdirectory. The [examples](examples) subdirectory contains at least one
-example for each interface (target language).
+A variety of examples (tests) can be found in the [test](test)
+subdirectory.
 
-The following listing shows a python example:
+The following listing shows a Python example:
 
 ```python
 from tinyspline import *
@@ -130,16 +129,54 @@ plt.plot([s.x, t.x], [s.y, t.y])
 
 plt.show()
 ```
-The resulting image:
+Result:
 
 ![Getting Started](res/getting_started.png)
 
+### Publications
+
+If you use TinySpline in your research, please cite it as below.
+
+```
+@INPROCEEDINGS{9425950,
+  author =       {Steinbeck, Marcel and Koschke, Rainer},
+  booktitle =    {2021 IEEE International Conference on Software
+                  Analysis, Evolution and Reengineering (SANER)},
+  title =        {TinySpline: A Small, yet Powerful Library for
+                  Interpolating, Transforming, and Querying NURBS,
+                  B-Splines, and Bézier Curves},
+  year =         {2021},
+  pages =        {572-576},
+  doi =          {10.1109/SANER50967.2021.00068}
+}
+```
+
+Other publications:
+
+```
+@INPROCEEDINGS{9425950,
+  author =       {Steinbeck, Marcel and Koschke, Rainer},
+  booktitle =    {2021 IEEE International Conference on Software
+                  Analysis, Evolution and Reengineering (SANER)},
+  title =        {TinySpline: A Small, yet Powerful Library for
+                  Interpolating, Transforming, and Querying NURBS,
+                  B-Splines, and Bézier Curves},
+  year =         {2021},
+  pages =        {572-576},
+  doi =          {10.1109/SANER50967.2021.00068}
+}
+```
+
 ### Theoretical Backgrounds
-[[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html) is a very good starting point for B-Splines.
+[[1]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-curve.html)
+is a very good starting point for B-Splines.
 
-[[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html) explains De Boor's Algorithm and gives some pseudo code.
+[[2]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/de-Boor.html)
+explains De Boor's Algorithm and gives some pseudo code.
 
-[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy) provides a good overview of NURBS with some mathematical background.
+[[3]](http://www.codeproject.com/Articles/996281/NURBS-curve-made-easy)
+provides a good overview of NURBS with some mathematical background.
 
-[[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html) is useful if you want to use NURBS in TinySpline.
+[[4]](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-def.html)
+is useful if you want to use NURBS in TinySpline.
 

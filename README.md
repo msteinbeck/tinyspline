@@ -10,6 +10,17 @@ library is written in ANSI C (C89) with a C++ wrapper for an object-oriented
 programming model. Based on the C++ wrapper, auto-generated bindings for C#, D,
 Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby are provided.
 
+### Table of Contents
+
+- [License](#license)
+- [Features](#features)
+- [Installation](#installation)
+  * [Pre-built Binaries](#pre-built-binaries)
+  * [Compiling From Source](#compiling-from-source)
+- [Getting Started](#getting-started)
+- [Publications](#publications)
+- [Theoretical Backgrounds](#theoretical-backgrounds)
+
 ### License
 MIT License - see the LICENSE file in the source distribution.
 

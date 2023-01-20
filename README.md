@@ -165,7 +165,7 @@ If you use TinySpline in your research, please cite it as below.
 Other publications:
 
 ```
-@INPROCEEDINGS{Steinbeck:SANER:22,
+@INPROCEEDINGS{Steinbeck:VISSOFT:22,
   author =       {Steinbeck, Marcel and Koschke, Rainer},
   booktitle =    {2022 Working Conference on Software Visualization
                   (VISSOFT)},

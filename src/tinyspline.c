@@ -953,7 +953,7 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 	const size_t len_points = num_points * dimension;
 	const size_t num_int_points = num_points - 2;
 	const size_t len_int_points = num_int_points * dimension;
-	tsReal *thomas, *a, *b, *c, *d;
+	tsReal *buffer, *a, *b, *c, *d;
 	size_t i, j, k, l;
 	tsError err;
 
@@ -970,26 +970,28 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 			points, num_points, dimension, spline, status);
 	}
 	/* `num_points` >= 3 */
-	thomas = NULL;
+	buffer = NULL;
 	TS_TRY(try, err, status)
-		thomas = (tsReal *) malloc(
+		buffer = (tsReal *) malloc(
 			/* `a', `b', `c' (note that `c' is equal to `a') */
 			2 * num_int_points * sizeof(tsReal) +
-			/* `d' and "result of the thomas algorithm" (which
-			   contains `num_points' points) */
+			/* At first: `d' Afterwards: The result of the thomas
+			 * algorithm including the first and last point to be
+			 * interpolated. */
 			num_points * dimension * sizeof(tsReal));
-		if (!thomas) {
+		if (!buffer) {
 			TS_THROW_0(try, err, status, TS_MALLOC,
 			           "out of memory")
 		}
 		/* The system of linear equations is taken from:
 		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
 		 *     pst-bspline-doc.pdf */
-		a = c = thomas;
+		a = c = buffer;
 		ts_arr_fill(a, num_int_points, 1);
 		b = a + num_int_points;
 		ts_arr_fill(b, num_int_points, 4);
-		d = b + num_int_points;
+		d = b + num_int_points /* shift to the beginning of `d' */
+		      + dimension; /* make space for the first point */
 		/* 6 * S_{i+1} */
 		for (i = 0; i < num_int_points; i++) {
 			for (j = 0; j < dimension; j++) {
@@ -1017,17 +1019,16 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 			        a, b, c, num_int_points, dimension, d,
 			        status))
 		}
-		memcpy(thomas, points, sof_ctrlp);
-		memmove(thomas + dimension, d, num_int_points * sof_ctrlp);
-		memcpy(thomas + (num_int_points+1) * dimension,
-		       points + (num_points-1) * dimension, sof_ctrlp);
+		memcpy(d - dimension, points, sof_ctrlp);
+		memcpy(d + num_int_points * dimension,
+		       points + (num_points-1) * dimension,
+		       sof_ctrlp);
 		TS_CALL(try, err, ts_int_relaxed_uniform_cubic_bspline(
-		        thomas, num_points, dimension, spline, status))
+		        d - dimension, num_points, dimension, spline, status))
 	TS_CATCH(err)
 		ts_bspline_free(spline);
 	TS_FINALLY
-		if (thomas)
-			free(thomas);
+		if (buffer) free(buffer);
 	TS_END_TRY_RETURN(err)
 }
 

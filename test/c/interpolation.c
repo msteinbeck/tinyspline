@@ -185,6 +185,75 @@ interpolation_issue32(CuTest *tc)
 	free(knots);
 }
 
+void interpolation_issue226(CuTest *tc)
+{
+	___SETUP___
+	tsBSpline spline = ts_bspline_init();
+	const tsReal *ctrlp;
+	tsReal dist;
+
+	___GIVEN___
+	tsReal points[9] = {
+		(tsReal) -30.1021881, (tsReal) 1.06910026, (tsReal) 13.1142778,
+		(tsReal) -30.2044067, (tsReal) 1.17131793, (tsReal) 13.1142778,
+		(tsReal) -30.3066235, (tsReal) 1.06910026, (tsReal) 13.1142778
+	};
+
+	___WHEN___
+	C(ts_bspline_interpolate_cubic_natural(points, 3, 3, &spline, &status))
+
+	___THEN___
+	CuAssertIntEquals(tc, 24, (int) ts_bspline_len_control_points(&spline));
+	ctrlp = ts_bspline_control_points_ptr(&spline);
+
+	/* First bezier. */
+	dist = ts_distance_varargs(tc, 3, ctrlp,
+	                           -30.1021881,
+	                           1.06910026,
+	                           13.1142778);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 3,
+	                           -30.136262014797236,
+	                           1.1202091283848326,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 6,
+	                           -30.170335032479358,
+	                           1.1713179649079948,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 9,
+	                           -30.204407600161467,
+	                           1.1713179649079948,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+
+	/* Second bezier. */
+	dist = ts_distance_varargs(tc, 3, ctrlp + 12,
+	                           -30.204407600161467,
+	                           1.1713179649079948,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 15,
+	                           -30.238480167843576,
+	                           1.1713179649079948,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 18,
+	                           -30.27255228552567,
+	                           1.1202091283848326,
+	                           13.114278190835936);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+	dist = ts_distance_varargs(tc, 3, ctrlp + 21,
+	                           -30.3066235,
+	                           1.06910026,
+	                           13.1142778);
+	CuAssertDblEquals(tc, 0, dist, POINT_EPSILON);
+
+	___TEARDOWN___
+	ts_bspline_free(&spline);
+}
+
 void
 interpolation_catmull_rom(CuTest *tc)
 {
@@ -314,6 +383,7 @@ CuSuite* get_interpolation_suite()
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, interpolation_cubic_natural);
 	SUITE_ADD_TEST(suite, interpolation_cubic_natural_single_point);
+	SUITE_ADD_TEST(suite, interpolation_issue226);
 	SUITE_ADD_TEST(suite, interpolation_issue32);
 	SUITE_ADD_TEST(suite, interpolation_catmull_rom);
 	SUITE_ADD_TEST(suite, interpolation_catmull_rom_single_point);

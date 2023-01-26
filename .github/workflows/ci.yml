@@ -129,13 +129,18 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: |
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_LUA=True -DLUA_INCLUDE_DIR="$GITHUB_WORKSPACE/.lua/include" -DLUA_LIBRARIES="$GITHUB_WORKSPACE/.lua/lib/liblua.a"
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_LUA=True -DLUA_INCLUDE_DIR="$GITHUB_WORKSPACE/.lua/include" -DLUA_LIBRARIES="$GITHUB_WORKSPACE/.lua/lib/liblua.a"
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: luarocks make --pack-binary-rock
+
+    - name: OTool
+      if: runner.os == 'macOS'
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: otool -L lib/*tinysplinelua*
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -147,9 +152,18 @@ jobs:
   macos:
     needs: build
     runs-on: [macos-latest]
+    strategy:
+      matrix:
+        arch: ["x86_64", "arm64", "x86_64;arm64"]
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-java@v3
+      if: matrix.arch == 'arm64'
+      with:
+        distribution: temurin
+        java-version: 11
+        architecture: aarch64
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -158,25 +172,35 @@ jobs:
       shell: bash
       working-directory: ${{runner.workspace}}/build
       run: |
-        export JAVA_HOME=$JAVA_HOME_8_X64
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True -DTINYSPLINE_ENABLE_JAVA=True
+        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" -DTINYSPLINE_ENABLE_CSHARP=True -DTINYSPLINE_ENABLE_GO=True
+        if [ "${{ matrix.arch }}" == "x86_64" ]; then
+           export JAVA_HOME=$JAVA_HOME_8_X64
+        fi
+        if [ "${{ matrix.arch }}" == "x86_64" ] || [ "${{ matrix.arch }}" == "arm64" ]; then
+           cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_JAVA=True -DJava_JAVAC_EXECUTABLE="$JAVA_HOME_8_X64/bin/javac" -DJava_JAR_EXECUTABLE="$JAVA_HOME_8_X64/bin/jar"
+        fi
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        cmake --build . --target tinysplinecsharp tinysplinejava --config $BUILD_TYPE
+        cmake --build . --target tinysplinecsharp --config $BUILD_TYPE
         dotnet pack *.csproj
         cmake --build . --target tinysplinego
-        mvn package
-        if [ "$RUNNER_OS" == "macOS" ]; then
-          otool -L lib/*tinysplinejava*
+        if [ -f "pom.xml" ]; then
+           JAVA_HOME=$JAVA_HOME_8_X64 mvn package
         fi
+
+    - name: OTool
+      if: matrix.arch == 'x86_64' || matrix.arch == 'arm64'
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: otool -L lib/*tinysplinejava*
 
     - name: Deploy
       uses: actions/upload-artifact@v2
       with:
-        name: macos_amd64
+        name: macos_${{ matrix.arch }}
         path: |
           ${{runner.workspace}}/build/*.nupkg
           ${{runner.workspace}}/build/tinyspline-go.zip
@@ -225,11 +249,13 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        python setup.py bdist_wheel
-        if [ "$RUNNER_OS" == "macOS" ]; then
-          otool -L lib/*tinysplinepython*
-        fi
+      run: python setup.py bdist_wheel
+
+    - name: OTool
+      if: runner.os == 'macOS'
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: otool -L lib/*tinysplinepython*
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -269,11 +295,13 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        gem build *.gemspec
-        if [ "$RUNNER_OS" == "macOS" ]; then
-          otool -L lib/*tinysplineruby*
-        fi
+      run: gem build *.gemspec
+
+    - name: OTool
+      if: runner.os == 'macOS'
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: otool -L lib/*tinysplineruby*
 
     - name: Deploy
       uses: actions/upload-artifact@v2
@@ -343,9 +371,9 @@ jobs:
         mkdir -p build/macosx64
         find actions -name '*win_amd64.whl' -exec mv {} build/windows64 \;
         find actions -name '*darwin*.gem' -exec mv {} build/macosx64 \; -printf "%h\n" | xargs -I[] find [] -name '*.gemspec' -exec mv {} build/macosx64 \;
-        find actions/macos_amd64 -name '*go.zip' -exec mv {} build/macosx64 \;
-        find actions/macos_amd64 -name '*.jar' -exec mv {} build/macosx64 \;
-        find actions/macos_amd64 -name '*.nupkg' -exec mv {} build/macosx64 \;
+        find actions/macos_x86_64 -name '*go.zip' -exec mv {} build/macosx64 \;
+        find actions/macos_x86_64 -name '*.jar' -exec mv {} build/macosx64 \;
+        find actions/macos_x86_64 -name '*.nupkg' -exec mv {} build/macosx64 \;
         find actions -name '*macosx-x86_64.rock' -exec mv {} build/macosx64 \;
         find actions -name '*macosx*_x86_64.whl' -exec mv {} build/macosx64 \;
         find actions -name '*macosx*_universal2.whl' -exec mv {} build/macosx64 \;
@@ -536,7 +564,6 @@ jobs:
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*win*.whl" -exec python -m pip install {} \;
         elif [ "$RUNNER_OS" == "macOS" ]; then
             export SYSTEM_VERSION_COMPAT=0
-            find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" | while read f; do mv -v "$f" "${f/11_0/10_15}"; done
             find . -name "*$(python -c "import platform; print(''.join(platform.python_version_tuple()[0:2]))")*macosx*.whl" -exec python -m pip install {} \;
         fi
 

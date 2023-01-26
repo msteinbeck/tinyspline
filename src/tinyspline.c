@@ -910,7 +910,7 @@ ts_int_relaxed_uniform_cubic_bspline(const tsReal *points,
 		memcpy(s, b, sof_ctrlp);
 		memcpy(s + (n-1)*dim, b + (n-1)*dim, sof_ctrlp);
 
-		/* set s_i = 1/6*b_i + 2/3*b_{i-1} + 1/6*b_{i+1}*/
+		/* set s_i = 1/6*b_{i-1} + 2/3*b_{i} + 1/6*b_{i+1}*/
 		for (i = 1; i < n-1; i++) {
 			for (d = 0; d < dim; d++) {
 				j = (i-1)*dim+d;

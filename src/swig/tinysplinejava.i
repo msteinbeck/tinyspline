@@ -186,13 +186,15 @@
 
 	private static String detectPlatform() {
 		String os = System.getProperty("os.name");
-		String arch = System.getProperty("sun.arch.data.model");
+		String arch = System.getProperty("os.arch");
 
-		if (os == null)
-			error("Could not detect operating system");
-		if (arch == null)
-			error("Could not detect architecture");
+		if (os == null) error("Could not detect operating system");
+		if (arch == null) error("Could not detect architecture");
 		os = os.toLowerCase();
+		if (arch.equals("aarch32")) arch = "arm32";
+		if (arch.equals("aarch64")) arch = "arm64";
+		if (arch.equals("x86_64"))  arch = "amd64";
+		if (arch.equals("x86-64"))  arch = "amd64";
 
 		String platform = "";
 		if (os.startsWith("linux"))        platform = "linux";
@@ -200,9 +202,15 @@
 		else if (os.startsWith("windows")) platform = "windows";
 		else error("Unsupported operating system: %s", os);
 
-		if (arch.equals("64"))      platform += "-x86_64";
-		else if (arch.equals("32")) platform += "-x86";
-		else error("Unsupported architecture: %s", arch);
+		if (arch.equals("x86"))        platform += "-x86";
+		else if (arch.equals("amd64")) platform += "-x86_64";
+		else if (arch.equals("arm32")) platform += "-arm32";
+		else if (arch.equals("arm64")) platform += "-arm64";
+		else {
+			log("Unknown architecture: %s ...", arch);
+			log("... assuming x86_64");
+			platform += "-x86_64";
+		}
 
 		return platform;
 	}

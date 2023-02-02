@@ -39,6 +39,7 @@
 	import java.io.FileOutputStream;
 	import java.io.IOException;
 	import java.io.InputStream;
+	import java.io.RandomAccessFile;
 	import java.nio.channels.FileChannel;
 	import java.nio.channels.FileLock;
 	import java.nio.file.Path;
@@ -225,17 +226,14 @@
 
 	private static String checksumOfFile(File file) {
 		FileInputStream stream = null;
-		FileLock lock = null;
 		try {
 			stream = new FileInputStream(file);
-			lock = acquireLock(stream.getChannel(), true);
 			return checksumOf(stream);
 		} catch (FileNotFoundException e) {
 			error(e, "%s does not exist", file.getName());
 		}
 		finally {
 			closeQuietly(stream);
-			releaseQuietly(lock);
 		}
 		throw new Error("<Unreachable>"); // for the compiler
 	}
@@ -248,16 +246,13 @@
 		} finally { closeQuietly(stream); }
 	}
 
-	private static FileLock acquireLock(FileChannel channel,
-	                                    boolean shared) {
+	private static FileLock acquireLock(RandomAccessFile file) {
 		FileLock lock = null;
+		FileChannel channel = file.getChannel();
 		for (int i = 1; i <= 5; i++) {
-			log("... acquiring %s lock (%d/5)...",
-			    shared ? "read" : "write", i);
+			log("... acquiring lock (%d/5) ...", i);
 			try {
-				lock = channel.tryLock(0,
-				                       Long.MAX_VALUE,
-				                       shared);
+				lock = channel.tryLock();
 				if (lock != null) break;
 				Thread.sleep(500); // milliseconds
 			} catch (Exception e) { /* ignored */ }
@@ -269,13 +264,6 @@
 		return lock;
 	}
 
-	private static void releaseQuietly(FileLock lock) {
-		if (lock != null) {
-			try { lock.release(); }
-			catch (IOException e) { /* ignored */ }
-		}
-	}
-
 	private static InputStream loadResource(String name) {
 		InputStream stream = tinysplinejavaJNI.class
 		                     .getResourceAsStream("/" + name);
@@ -283,10 +271,10 @@
 		return stream;
 	}
 
-	private static void closeQuietly(Closeable closeable) {
+	private static void closeQuietly(AutoCloseable closeable) {
 		if (closeable != null) {
 			try { closeable.close(); }
-			catch (IOException e) { /* ignored */ }
+			catch (Exception e) { /* ignored */ }
 		}
 	}
 
@@ -295,14 +283,24 @@
 	                                 File outDir) {
 		FileLock lock = null;
 		InputStream in = null;
-		FileOutputStream out = null;
-		File dest = new File(outDir, name);
+		RandomAccessFile out = null;
 		try {
 			log("Copying: %s ... ", name);
+			File dest = new File(outDir, name);
 
+			/* Check for existing file. Do not copy resource if
+			   file already exists and has a valid checksum. */
 			Path destPath = dest.toPath();
 			if (Files.exists(destPath)) {
 				log("... target already exists ...");
+				/* Must be created after the existence check
+				   because the initialization of a random
+				   access file creates the file if it doesn't
+				   already exist---hence, we would always enter
+				   this if branch. */
+				out = new RandomAccessFile(dest, "rw");
+				lock = acquireLock(out);
+
 				if (!Files.isRegularFile(destPath)) {
 					log("... but is not a file ...");
 					log("... panic");
@@ -313,17 +311,20 @@
 				String csFile = checksumOfFile(dest);
 				String csResource = checksumOfResource(res);
 				if (csFile.equals(csResource)) {
-					log("... checksum is valid ...");
+					log("... with matching checksum ...");
 					log("... success");
-					return dest;
+					return dest; // no need to copy resource
 				} else {
-					log("... checksum is invalid...");
+					log("... with invalid checksum ...");
 					log("... file will be overwritten ...");
 				}
+			} else {
+				/* This creates a new empty file. */
+				out = new RandomAccessFile(dest, "rw");
+				lock = acquireLock(out);
 			}
 
-			out = new FileOutputStream(dest);
-			lock = acquireLock(out.getChannel(), false);
+			/* Copy resource to target file. */
 			in = loadResource(res);
 			byte[] buffer = new byte[16384];
 			int read = -1;
@@ -332,13 +333,13 @@
 			log("... success");
 			return dest;
 		} catch (FileNotFoundException e) {
-			error(e, "Could not open %s", dest.getName());
+			error(e, "Error while opening target file");
 		} catch (IOException e) {
 			error(e, "Error while copying file");
 		} finally {
+			closeQuietly(lock);
 			closeQuietly(in);
 			closeQuietly(out);
-			releaseQuietly(lock);
 		}
 		throw new Error("<Unreachable>"); // for the compiler
 	}

@@ -491,6 +491,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/test/java
         mvn test
+        mvn test
 
   test-lua:
     needs: [package]

@@ -34,33 +34,44 @@
 %pragma(java) jniclassimports=%{
 	import java.io.Closeable;
 	import java.io.File;
+	import java.io.FileInputStream;
+	import java.io.FileNotFoundException;
 	import java.io.FileOutputStream;
 	import java.io.IOException;
 	import java.io.InputStream;
-	import java.io.OutputStream;
+	import java.nio.channels.FileChannel;
+	import java.nio.channels.FileLock;
 	import java.nio.file.Path;
 	import java.nio.file.Paths;
 	import java.nio.file.Files;
-	import java.nio.file.attribute.PosixFilePermission;
-	import java.util.ArrayList;
+	import java.security.MessageDigest;
+	import java.security.NoSuchAlgorithmException;
 	import java.util.Arrays;
 	import java.util.HashMap;
-	import java.util.HashSet;
 	import java.util.Iterator;
 	import java.util.List;
 	import java.util.Map;
 	import java.util.Properties;
-	import java.util.Set;
 	import java.util.stream.Collectors;
 	import java.util.logging.Logger;
+
+	import static java.security.MessageDigest.getInstance;
 %}
 
 %pragma(java) jniclasscode=%{
 	private static Logger log = Logger.getLogger(tinysplinejavaJNI.class.getName());
+	private static String accumulatedLogMsg = "";
 
 	private static void log(String msg,
 	                        Object... args) {
+		msg = accumulatedLogMsg += msg;
 		log.fine(String.format(msg, args));
+		accumulatedLogMsg = "";
+	}
+
+	private static void logNN(String msg,
+	                          Object... args) {
+		accumulatedLogMsg += String.format(msg, args);
 	}
 
 	private static void error(String msg,
@@ -75,31 +86,23 @@
 	}
 
 	static {
-		File tmpDir = createTmpDir();
-		log("Temporary directory is: %s", tmpDir);
-
-		// Determine the libraries to be loaded.
 		String platform = detectPlatform();
-		log("Detected platform: %s", platform);
-
-		log("Loading platform specific properties file");
-		Properties prop = loadProperties(platform);
+		Properties properties = loadProperties(platform);
+		String nativeLib = nativeLib(properties);
+		File storage = createLibStorage(platform + "/" + nativeLib);
 
 		log("Reading libraries from properties file");
-		List<String> libsToCopy = runtimeLibs(prop);
-		String nativeLib = nativeLib(prop);
+		List<String> libsToCopy = runtimeLibs(properties);
 		libsToCopy.add(nativeLib);
 		log("Libraries to be loaded: %s", libsToCopy);
 
 		// Copy libraries.
 		Map<String, File> libs = new HashMap<>();
 		for (String lib : libsToCopy) {
-			log("Copying: %s ...", lib);
 			libs.put(lib,
 			         copyResource(platform + "/" + lib,
 			                      lib,
-			                      tmpDir));
-			log("... done");
+			                      storage));
 		}
 
 		// Load libraries.
@@ -111,15 +114,13 @@
 				String lib = it.next();
 				File file = libs.get(lib);
 				try {
-					log("Trying to load: %s ...", lib);
+					logNN("Trying to load: %s ... ", lib);
 					System.load(file.getAbsolutePath());
-					log("... successfully loaded: %s", lib);
+					log("success");
 					it.remove();
 					progress = true;
 				} catch (UnsatisfiedLinkError e) {
-					log("... %s could not be loaded yet. Message: %s",
-					    lib,
-					    e.getMessage());
+					log("%s", lib, e.getMessage());
 				} catch (Exception e) {
 					error(e, "Unexpected error while loading: %s", lib);
 				}
@@ -127,61 +128,10 @@
 		} while (progress);
 
 		// Check for missing libraries.
-		if (!libs.isEmpty())
-			error("Could not load libraries: %s", libs.keySet());
-	}
-
-	private static File createTmpDir() {
-		log("Creating temporary directory ...");
-
-		final Path tmpDir;
-		try {
-			log("... using prefix: tinyspline ...");
-			tmpDir = Files.createTempDirectory("tinyspline");
-		} catch (Exception e) {
-			error(e, "Could not create directory");
-			// Just for the compiler.
-			throw new Error("<Unreachable>");
+		if (!libs.isEmpty()) {
+			error("Could not load libraries: %s",
+			      libs.keySet());
 		}
-
-		log("... setting permissions ...");
-		Set<PosixFilePermission> perms = new HashSet<>();
-		perms.add(PosixFilePermission.OWNER_READ);
-		perms.add(PosixFilePermission.OWNER_WRITE);
-		perms.add(PosixFilePermission.OWNER_EXECUTE);
-		try {
-			Files.setPosixFilePermissions(tmpDir, perms);
-		} catch (UnsupportedOperationException e) {
-			log("... posix permissions are not supported ...");
-			log("... falling back to default permission system ...");
-			tmpDir.toFile().setReadable(true, true);
-			tmpDir.toFile().setWritable(true, true);
-			tmpDir.toFile().setExecutable(true, true);
-		} catch (Exception e) {
-			error(e, "Could not set permissions");
-		}
-
-		log("... adding shutdown hook ...");
-		Runtime.getRuntime().addShutdownHook(new Thread(
-			new Runnable() {
-				@Override
-				public void run() {
-					try { delete(tmpDir.toFile()); }
-					catch (Exception e) {}
-				}
-
-				private void delete(File file) {
-					if (file.isDirectory()) {
-						Arrays.stream(file.listFiles())
-						      .forEach(this::delete);
-					}
-					try { Files.delete(file.toPath()); }
-					catch (IOException e) { /* ignored */ }
-				}
-			}));
-
-		log("... done");
-		return tmpDir.toFile();
 	}
 
 	private static String detectPlatform() {
@@ -212,14 +162,125 @@
 			platform += "-x86_64";
 		}
 
+		log("Detected platform: %s", platform);
 		return platform;
 	}
 
-	private static InputStream loadResource(String path) {
-		InputStream is = tinysplinejavaJNI.class
-		                 .getResourceAsStream("/" + path);
-		if (is == null) error("Missing resource: %s", path);
-		return is;
+	private static File createLibStorage(String keyResource) {
+		log("Creating library storage ...");
+		InputStream stream = null;
+		try {
+			stream = loadResource(keyResource);
+			String checksum = checksumOf(stream);
+			log("... with checksum: %s ...", checksum);
+			String home = System.getProperty("user.home");
+			if (home == null) error("User home directory not set");
+			Path storage = Paths.get(home, ".tinyspline", checksum);
+			if (Files.exists(storage)) {
+				log("... storage already exists ...");
+				if (Files.isDirectory(storage)) {
+					log("... and is a directory ...");
+				} else {
+					log("... but is not a directory ...");
+					log("... panic");
+					error("%s is not a directory", storage);
+				}
+			} else { Files.createDirectories(storage); }
+			log("... success");
+			log("Library storage: %s", storage.toString());
+			return storage.toFile();
+		} catch (IOException e) {
+			error(e, "Could not create directory");
+		} finally {
+			closeQuietly(stream);
+		}
+		throw new Error("<Unreachable>"); // for the compiler
+	}
+
+	private static String checksumOf(InputStream stream) {
+		try {
+			MessageDigest algo = getInstance("MD5");
+			byte[] buffer = new byte[16384];
+			int read = -1;
+			do { read = stream.read(buffer);
+			     if (read > 0) algo.update(buffer, 0, read);
+			} while (read != -1);
+
+			buffer = algo.digest();
+			int val;
+			StringBuilder checksum = new StringBuilder();
+			for (int i = 0; i < buffer.length; i++) {
+				val = (buffer[i] & 0xff) + 0x100;
+				checksum.append(Integer.toString(val, 16)
+				                       .substring(1));
+			}
+			return checksum.toString();
+		} catch (NoSuchAlgorithmException e) {
+			error(e, "Could not load algorithm: MD5");
+		} catch (IOException e) {
+			error(e, "Could not create checksum from stream");
+		}
+		throw new Error("<Unreachable>"); // for the compiler
+	}
+
+	private static String checksumOfFile(File file) {
+		FileInputStream stream = null;
+		FileLock lock = null;
+		try {
+			stream = new FileInputStream(file);
+			lock = acquireLock(stream.getChannel(), true);
+			return checksumOf(stream);
+		} catch (FileNotFoundException e) {
+			error(e, "%s does not exist", file.getName());
+		}
+		finally {
+			closeQuietly(stream);
+			releaseQuietly(lock);
+		}
+		throw new Error("<Unreachable>"); // for the compiler
+	}
+
+	private static String checksumOfResource(String name) {
+		InputStream stream = null;
+		try {
+			stream = loadResource(name);
+			return checksumOf(stream);
+		} finally { closeQuietly(stream); }
+	}
+
+	private static FileLock acquireLock(FileChannel channel,
+	                                    boolean shared) {
+		FileLock lock = null;
+		for (int i = 1; i <= 5; i++) {
+			log("... acquiring %s lock (%d/5)...",
+			    shared ? "read" : "write", i);
+			try {
+				lock = channel.tryLock(0,
+				                       Long.MAX_VALUE,
+				                       shared);
+				if (lock != null) break;
+				Thread.sleep(500); // milliseconds
+			} catch (Exception e) { /* ignored */ }
+		}
+		if (lock == null) {
+			log("... giving up; panic");
+			error("Could not acquire lock");
+		}
+		return lock;
+	}
+
+	private static void releaseQuietly(FileLock lock) {
+		if (lock != null) {
+			try { lock.release(); }
+			catch (IOException e) { /* ignored */ }
+		}
+	}
+
+	private static InputStream loadResource(String name) {
+		InputStream stream = tinysplinejavaJNI.class
+		                     .getResourceAsStream("/" + name);
+		if (stream == null) error("Missing resource: %s", name);
+		return stream;
 	}
 
 	private static void closeQuietly(Closeable closeable) {
@@ -232,59 +293,87 @@
 	private static File copyResource(String res,
 	                                 String name,
 	                                 File outDir) {
+		FileLock lock = null;
 		InputStream in = null;
-		OutputStream out = null;
+		FileOutputStream out = null;
+		File dest = new File(outDir, name);
 		try {
-			in = loadResource(res);
-			File dest = new File(outDir, name);
+			log("Copying: %s ... ", name);
+
+			Path destPath = dest.toPath();
+			if (Files.exists(destPath)) {
+				log("... target already exists ...");
+				if (!Files.isRegularFile(destPath)) {
+					log("... but is not a file ...");
+					log("... panic");
+					error("%s is not a file", destPath);
+				}
+				log("... and is a file ...");
+
+				String csFile = checksumOfFile(dest);
+				String csResource = checksumOfResource(res);
+				if (csFile.equals(csResource)) {
+					log("... checksum is valid ...");
+					log("... success");
+					return dest;
+				} else {
+					log("... checksum is invalid...");
+					log("... file will be overwritten ...");
+				}
+			}
+
 			out = new FileOutputStream(dest);
+			lock = acquireLock(out.getChannel(), false);
+			in = loadResource(res);
 			byte[] buffer = new byte[16384];
 			int read = -1;
 			while((read = in.read(buffer)) != -1)
 				out.write(buffer, 0, read);
+			log("... success");
 			return dest;
-		} catch (Exception e) {
-			error(e, "Could not copy resource: %s", res);
-			// Just for the compiler.
-			throw new Error("<Unreachable>");
+		} catch (FileNotFoundException e) {
+			error(e, "Could not open %s", dest.getName());
+		} catch (IOException e) {
+			error(e, "Error while copying file");
 		} finally {
 			closeQuietly(in);
 			closeQuietly(out);
+			releaseQuietly(lock);
 		}
+		throw new Error("<Unreachable>"); // for the compiler
 	}
 
 	private static Properties loadProperties(String platform) {
-		Properties prop = new Properties();
 		String file = platform + "/libs.properties";
-		InputStream is = null;
+		InputStream stream = null;
 		try {
-			is = loadResource(file);
-			prop.load(is);
-		} catch (Exception e) {
-			error(e,
-			      "Could not load properties file: %s",
-			      file);
+			logNN("Loading properties file: %s ... ", file);
+			Properties properties = new Properties();
+			stream = loadResource(file);
+			properties.load(stream);
+			log("success");
+			return properties;
+		} catch (IOException e) {
+			error(e, "Error while loading properties file");
 		} finally {
-			closeQuietly(is);
+			closeQuietly(stream);
 		}
-		return prop;
+		throw new Error("<Unreachable>"); // for the compiler
 	}
 
-	private static String nativeLib(Properties prop) {
+	private static String nativeLib(Properties properties) {
 		String key = "native";
-		String nat = prop.getProperty(key);
-		if (nat == null)
-			error("Missing property: %s", key);
-		else if (nat.trim().isEmpty())
-			error("Blank property: %s", key);
+		String nat = properties.getProperty(key);
+		if (nat == null) error("Missing property: %s", key);
+		nat = nat.trim();
+		if (nat.isEmpty()) error("Value of %s is empty", key);
 		return nat;
 	}
 
-	private static List<String> runtimeLibs(Properties prop) {
+	private static List<String> runtimeLibs(Properties properties) {
 		String key = "runtime";
-		String libs = prop.getProperty(key);
-		if (libs == null)
-			error("Missing property: %s", key);
+		String libs = properties.getProperty(key);
+		if (libs == null) error("Missing property: %s", key);
 		return Arrays.stream(libs.split(","))
 			.map(String::trim)
 			.filter(l -> !l.isEmpty())

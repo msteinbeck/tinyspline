@@ -492,7 +492,7 @@ jobs:
         cd $GITHUB_WORKSPACE/test/java
         mvn test
         mvn test
-        find  ~/.tinyspline -type f -exec echo "invalidate" >> {} \;
+        find  ~/.tinyspline/ -type f -exec bash -c 'cat "$1" "$1" > "$1"' find-sh {} \;
         mvn test
 
   test-lua:

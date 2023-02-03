@@ -40,6 +40,7 @@
 	import java.io.IOException;
 	import java.io.InputStream;
 	import java.io.RandomAccessFile;
+	import java.nio.channels.Channels;
 	import java.nio.channels.FileChannel;
 	import java.nio.channels.FileLock;
 	import java.nio.file.Path;
@@ -224,25 +225,16 @@
 		throw new Error("<Unreachable>"); // for the compiler
 	}
 
-	private static String checksumOfFile(File file) {
-		FileInputStream stream = null;
-		try {
-			stream = new FileInputStream(file);
-			return checksumOf(stream);
-		} catch (FileNotFoundException e) {
-			error(e, "%s does not exist", file.getName());
-		}
-		finally {
-			closeQuietly(stream);
-		}
-		throw new Error("<Unreachable>"); // for the compiler
+	private static String checksumOfFile(RandomAccessFile file) {
+		FileChannel channel = file.getChannel();
+		InputStream stream = Channels.newInputStream(channel);
+		return checksumOf(stream);
 	}
 
 	private static String checksumOfResource(String name) {
 		InputStream stream = null;
-		try {
-			stream = loadResource(name);
-			return checksumOf(stream);
+		try { stream = loadResource(name);
+		      return checksumOf(stream);
 		} finally { closeQuietly(stream); }
 	}
 
@@ -308,7 +300,7 @@
 				}
 				log("... and is a file ...");
 
-				String csFile = checksumOfFile(dest);
+				String csFile = checksumOfFile(out);
 				String csResource = checksumOfResource(res);
 				if (csFile.equals(csResource)) {
 					log("... with matching checksum ...");
@@ -317,6 +309,8 @@
 				} else {
 					log("... with invalid checksum ...");
 					log("... file will be overwritten ...");
+					out.seek(0); // restore file pointer
+					out.setLength(0); // clear file
 				}
 			} else {
 				/* This creates a new empty file. */

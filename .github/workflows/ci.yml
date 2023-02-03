@@ -492,6 +492,8 @@ jobs:
         cd $GITHUB_WORKSPACE/test/java
         mvn test
         mvn test
+        find  ~/.tinyspline -type f -exec echo "invalidate" >> {} \;
+        mvn test
 
   test-lua:
     needs: [package]

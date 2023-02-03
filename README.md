@@ -135,7 +135,7 @@ s = pos - der
 t = pos + der
 plt.plot([s.x, t.x], [s.y, t.y])
 
-# Draw normals with equidistant distribution.
+# Draw 15 normals with equidistant distribution.
 knots = spline.equidistant_knot_seq(15)
 frames = spline.compute_rmf(knots)
 for i in range(frames.size()):

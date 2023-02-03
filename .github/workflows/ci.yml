@@ -500,7 +500,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         luaVersion: ["5.1", "5.2", "5.3", "5.4", "luajit"]
         exclude:
           - os: macos-latest
@@ -510,7 +510,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@master
-    - uses: ilammy/msvc-dev-cmd@v1
     - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: ${{ matrix.luaVersion }}

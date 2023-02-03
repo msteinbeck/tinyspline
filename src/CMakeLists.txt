@@ -84,7 +84,7 @@ set(TINYSPLINE_LICENSE_URL
 )
 
 set(TINYSPLINE_VERSION
-    "0.6.0"
+    "0.7.0"
     CACHE INTERNAL ""
 )
 

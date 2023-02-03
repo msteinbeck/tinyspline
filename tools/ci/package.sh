@@ -104,6 +104,10 @@ popd
 
 # Go
 GO_TMP_DIR="${SCRIPT_DIR}/go"
+if [ -d "${ACTIONS}" ]; then
+	find "${ACTIONS}" -name '*go.zip' -print0 | \
+		xargs -0 -I{} unzip -d "${GO_TMP_DIR}" -o {}
+fi
 find "${LINUX_X86_64}" -name '*go.zip' -print0 | \
 	xargs -0 -I{} unzip -d "${GO_TMP_DIR}" -o {}
 find "${MACOSX_X86_64}" -name '*go.zip' -print0 | \
@@ -124,6 +128,12 @@ find "${LINUX_X86_64}" -name '*sources.jar' -print0 | \
 find "${LINUX_X86_64}" -name 'pom.xml' -print0 | \
 	xargs -0 -I{} cp {} "${JAVA_ZIP_TMP_DIR}"
 JAR_TMP_DIR="${SCRIPT_DIR}/jar"
+if [ -d "${ACTIONS}" ]; then
+	find "${ACTIONS}" \( -name '*.jar' \
+		-and -not -name '*javadoc*' \
+		-and -not -name '*sources*' \) \
+		-print0 | xargs -0 -I{} unzip -d "${JAR_TMP_DIR}" -o {}
+fi
 find "${WINDOWS_X86_64}" \( -name '*.jar' \
 	-and -not -name '*javadoc*' \
 	-and -not -name '*sources*' \) \

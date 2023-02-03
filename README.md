@@ -62,12 +62,12 @@ https://conan.io/center/tinyspline
 
 NuGet (C#):
 ```xml
-<PackageReference Include="tinyspline" Version="0.5.0.1" />
+<PackageReference Include="tinyspline" Version="0.6.0.1" />
 ```
 
 Go:
 ```bash
-go get github.com/tinyspline/go@v0.5.0
+go get github.com/tinyspline/go@v0.6.0
 ```
 
 Luarocks (Lua):
@@ -80,7 +80,7 @@ Maven (Java):
 <dependency>
    <groupId>org.tinyspline</groupId>
    <artifactId>tinyspline</artifactId>
-   <version>0.5.0-1</version>
+   <version>0.6.0-1</version>
 </dependency>
 ```
 
@@ -89,12 +89,9 @@ PyPI (Python):
 python -m pip install tinyspline
 ```
 
-On macOS, you probably need to change the path to Python in
-`_tinysplinepython.so` via `install_name_tool`.
-
 RubyGems (Ruby):
 ```bash
-gem install tinyspline --pre
+gem install tinyspline
 ```
 
 #### Compiling From Source
@@ -134,9 +131,20 @@ plt.plot(vec2.x, vec2.y, 'ro')
 # Draw tangent at knot 0.7.
 pos = spline(0.7).result_vec2() # operator () -> eval
 der = spline.derive()(0.7).result_vec2().normalize() * 200
-s = (pos - der)
-t = (pos + der)
+s = pos - der
+t = pos + der
 plt.plot([s.x, t.x], [s.y, t.y])
+
+# Draw normals with equidistant distribution.
+knots = spline.equidistant_knot_seq(15)
+frames = spline.compute_rmf(knots)
+for i in range(frames.size()):
+    pos = frames.at(i).position
+    nor = pos + frames.at(i).normal * 20
+    # You can also fetch the tangent and binormal:
+    #     frames.at(i).tangent
+    #     frames.at(i).binormal
+    plt.plot([pos.x, nor.x], [pos.y, nor.y], 'g')
 
 plt.show()
 ```

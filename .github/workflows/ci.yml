@@ -358,7 +358,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: tools/ci/actions
 
@@ -410,7 +410,7 @@ jobs:
         dotnet-version: '6.0.x'
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 
@@ -441,7 +441,7 @@ jobs:
         go-version: ${{ matrix.go }}
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 
@@ -474,7 +474,7 @@ jobs:
         java-version: ${{ matrix.java }}
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 
@@ -516,7 +516,7 @@ jobs:
     - uses: leafo/gh-actions-luarocks@v4
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 
@@ -553,7 +553,7 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 
@@ -597,7 +597,7 @@ jobs:
         bundler-cache: true
 
     - name: Download Packages
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: packages
 

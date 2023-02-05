@@ -731,6 +731,7 @@ public:
 	BSpline spline() const;
 	std::vector<real> knots() const;
 	std::vector<real> lengths() const;
+	TS_DEPRECATED std::vector<real> values() const;
 	size_t size() const;
 
 	real arcLength() const;

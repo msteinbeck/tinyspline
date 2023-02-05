@@ -18,6 +18,7 @@
 %javamethodmodifiers tinyspline::Vec2::norm "@Deprecated public";
 %javamethodmodifiers tinyspline::Vec3::norm "@Deprecated public";
 %javamethodmodifiers tinyspline::Vec4::norm "@Deprecated public";
+%javamethodmodifiers tinyspline::ChordLengths::values "@Deprecated public";
 
 %javamethodmodifiers tinyspline::BSpline::toString "@Override public";
 %javamethodmodifiers tinyspline::ChordLengths::toString "@Override public";

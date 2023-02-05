@@ -72,6 +72,8 @@
 	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
 %csattributes tinyspline::Vec4::norm
 	"[System.ObsoleteAttribute(\"Call Normalize instead\", false)]";
+%csattributes tinyspline::ChordLengths::values
+	"[System.ObsoleteAttribute(\"Call Lengths instead\", false)]";
 
 %csmethodmodifiers tinyspline::BSpline::toString "public override";
 %csmethodmodifiers tinyspline::ChordLengths::toString "public override";

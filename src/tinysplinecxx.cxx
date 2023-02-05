@@ -1652,6 +1652,12 @@ tinyspline::ChordLengths::lengths() const
 	                         m_lengths + m_size);
 }
 
+std::vector<tinyspline::real>
+tinyspline::ChordLengths::values() const
+{
+	return lengths();
+}
+
 size_t
 tinyspline::ChordLengths::size() const
 {

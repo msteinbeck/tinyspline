@@ -740,11 +740,11 @@ public:
 	std::string toString() const;
 private:
 	BSpline m_spline;
-	real *m_knots, *m_chordLengths;
+	real *m_knots, *m_lengths;
 	size_t m_size;
 	ChordLengths(const BSpline &spline,
 	             real *knots,
-	             real *chordLengths,
+	             real *lengths,
 	             size_t size);
 	friend class BSpline;
 };

@@ -1546,40 +1546,40 @@ std::string tinyspline::Morphism::toString() const
 tinyspline::ChordLengths::ChordLengths()
 : m_spline(),
   m_knots(nullptr),
-  m_chordLengths(nullptr),
+  m_lengths(nullptr),
   m_size(0)
 {}
 
 tinyspline::ChordLengths::ChordLengths(const BSpline &spline,
                                        real *knots,
-                                       real *chordLengths,
+                                       real *lengths,
                                        size_t size)
 : m_spline(spline),
   m_knots(knots),
-  m_chordLengths(chordLengths),
+  m_lengths(lengths),
   m_size(size)
 {}
 
 tinyspline::ChordLengths::ChordLengths(const ChordLengths &other)
 : m_spline(other.m_spline),
   m_knots(nullptr),
-  m_chordLengths(nullptr),
+  m_lengths(nullptr),
   m_size(other.m_size)
 {
 	m_knots = new real[m_size];
 	std::copy(other.m_knots,
 	          other.m_knots + m_size,
 	          m_knots);
-	m_chordLengths = new real[m_size];
-	std::copy(other.m_chordLengths,
-	          other.m_chordLengths + m_size,
-	          m_chordLengths);
+	m_lengths = new real[m_size];
+	std::copy(other.m_lengths,
+	          other.m_lengths + m_size,
+	          m_lengths);
 }
 
 tinyspline::ChordLengths::ChordLengths(ChordLengths &&other)
 : m_spline(),
   m_knots(nullptr),
-  m_chordLengths(nullptr),
+  m_lengths(nullptr),
   m_size(0)
 {
 	*this = std::move(other);
@@ -1588,7 +1588,7 @@ tinyspline::ChordLengths::ChordLengths(ChordLengths &&other)
 tinyspline::ChordLengths::~ChordLengths()
 {
 	delete [] m_knots;
-	delete [] m_chordLengths;
+	delete [] m_lengths;
 	m_size = 0;
 }
 
@@ -1600,15 +1600,15 @@ tinyspline::ChordLengths::operator=(const ChordLengths &other)
 		std::copy(other.m_knots,
 		          other.m_knots + other.m_size,
 		          knots);
-		real *chordLengths = new real[other.m_size];
-		std::copy(other.m_chordLengths,
-		          other.m_chordLengths + other.m_size,
-		          chordLengths);
+		real *lengths = new real[other.m_size];
+		std::copy(other.m_lengths,
+		          other.m_lengths + other.m_size,
+		          lengths);
 		delete [] m_knots;
-		delete [] m_chordLengths;
+		delete [] m_lengths;
 		m_spline = other.m_spline;
 		m_knots = knots;
-		m_chordLengths = chordLengths;
+		m_lengths = lengths;
 		m_size = other.m_size;
 	}
 	return *this;
@@ -1619,14 +1619,14 @@ tinyspline::ChordLengths::operator=(ChordLengths &&other)
 {
 	if (&other != this) {
 		delete [] m_knots;
-		delete [] m_chordLengths;
+		delete [] m_lengths;
 		m_spline = other.m_spline;
 		m_knots = other.m_knots;
-		m_chordLengths = other.m_chordLengths;
+		m_lengths = other.m_lengths;
 		m_size = other.m_size;
 		other.m_spline = BSpline();
 		other.m_knots = nullptr;
-		other.m_chordLengths = nullptr;
+		other.m_lengths = nullptr;
 		other.m_size = 0;
 	}
 	return *this;
@@ -1648,8 +1648,8 @@ tinyspline::ChordLengths::knots() const
 std::vector<tinyspline::real>
 tinyspline::ChordLengths::values() const
 {
-	return std::vector<real>(m_chordLengths,
-	                         m_chordLengths + m_size);
+	return std::vector<real>(m_lengths,
+	                         m_lengths + m_size);
 }
 
 size_t
@@ -1661,7 +1661,7 @@ tinyspline::ChordLengths::size() const
 tinyspline::real
 tinyspline::ChordLengths::arcLength() const
 {
-	return m_size == 0 ? 0 : m_chordLengths[m_size - 1];
+	return m_size == 0 ? 0 : m_lengths[m_size - 1];
 }
 
 tinyspline::real
@@ -1670,7 +1670,7 @@ tinyspline::ChordLengths::lengthToKnot(real len) const
 	tsStatus status;
 	real knot;
 	if (ts_chord_lengths_length_to_knot(m_knots,
-	                               m_chordLengths,
+	                               m_lengths,
 	                               m_size,
 	                               len,
 	                               &knot,
@@ -1685,7 +1685,7 @@ tinyspline::ChordLengths::tToKnot(real t) const
 	tsStatus status;
 	real knot;
 	if (ts_chord_lengths_t_to_knot(m_knots,
-	                               m_chordLengths,
+	                               m_lengths,
 	                               m_size,
 	                               t,
 	                               &knot,

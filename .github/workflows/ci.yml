@@ -243,6 +243,9 @@ jobs:
             cmake $GITHUB_WORKSPACE -A x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
         else
             LIBRARY=($INCLUDE_DIR/../../lib/*.dylib)
+            if [ "${{ matrix.python }}" == "3.11" ]; then
+               cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+            fi
         fi
         cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTINYSPLINE_ENABLE_PYTHON=True -DPYTHON_INCLUDE_DIR="$INCLUDE_DIR" -DPYTHON_LIBRARY="$LIBRARY"
 

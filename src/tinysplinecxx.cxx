@@ -143,12 +143,6 @@ tinyspline::Vec2::normalize() const
 	return vec;
 }
 
-tinyspline::Vec2
-tinyspline::Vec2::norm() const
-{
-	return normalize();
-}
-
 tinyspline::real
 tinyspline::Vec2::magnitude() const
 {
@@ -303,12 +297,6 @@ tinyspline::Vec3::normalize() const
 	Vec3 vec;
 	ts_vec_norm(m_vals, 3, vec.m_vals);
 	return vec;
-}
-
-tinyspline::Vec3
-tinyspline::Vec3::norm() const
-{
-	return normalize();
 }
 
 tinyspline::real
@@ -471,12 +459,6 @@ tinyspline::Vec4::normalize() const
 	Vec4 vec;
 	ts_vec_norm(m_vals, 4, vec.m_vals);
 	return vec;
-}
-
-tinyspline::Vec4
-tinyspline::Vec4::norm() const
-{
-	return normalize();
 }
 
 tinyspline::real

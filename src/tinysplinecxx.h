@@ -129,7 +129,6 @@ public:
 	Vec2 subtract(const Vec2 &other) const;
 	Vec2 multiply(real scalar) const;
 	Vec2 normalize() const;
-	TS_DEPRECATED Vec2 norm() const;
 	real magnitude() const;
 	real dot(const Vec2 &other) const;
 	real angle(const Vec2 &other) const;
@@ -168,7 +167,6 @@ public:
 	Vec3 multiply(real scalar) const;
 	Vec3 cross(const Vec3 &other) const;
 	Vec3 normalize() const;
-	TS_DEPRECATED Vec3 norm() const;
 	real magnitude() const;
 	real dot(const Vec3 &other) const;
 	real angle(const Vec3 &other) const;
@@ -208,7 +206,6 @@ public:
 	Vec4 subtract(const Vec4 &other) const;
 	Vec4 multiply(real scalar) const;
 	Vec4 normalize() const;
-	TS_DEPRECATED Vec4 norm() const;
 	real magnitude() const;
 	real dot(const Vec4 &other) const;
 	real angle(const Vec4 &other) const;

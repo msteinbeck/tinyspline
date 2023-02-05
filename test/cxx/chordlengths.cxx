@@ -29,7 +29,7 @@ assert_equals(CuTest *tc,
 	}
 
 	// Values
-	vector<real> lengths1 = cl2.lengths();
+	vector<real> lengths1 = cl1.lengths();
 	vector<real> lengths2 = cl2.lengths();
 	CuAssertIntEquals(tc,
 	                  (int) lengths1.size(),

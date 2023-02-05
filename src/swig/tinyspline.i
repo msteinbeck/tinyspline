@@ -62,6 +62,10 @@
 	knots);
 %attributeval(tinyspline::ChordLengths,
 	std::vector<tinyspline::real>,
+	lengths,
+	lengths);
+%attributeval(tinyspline::ChordLengths,
+	std::vector<tinyspline::real>,
 	values,
 	values);
 %attribute(tinyspline::DeBoorNet,

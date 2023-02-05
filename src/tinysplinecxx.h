@@ -730,7 +730,7 @@ public:
 
 	BSpline spline() const;
 	std::vector<real> knots() const;
-	std::vector<real> values() const;
+	std::vector<real> lengths() const;
 	size_t size() const;
 
 	real arcLength() const;

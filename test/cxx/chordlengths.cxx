@@ -29,15 +29,15 @@ assert_equals(CuTest *tc,
 	}
 
 	// Values
-	vector<real> values1 = cl2.values();
-	vector<real> values2 = cl2.values();
+	vector<real> lengths1 = cl2.lengths();
+	vector<real> lengths2 = cl2.lengths();
 	CuAssertIntEquals(tc,
-	                  (int) values1.size(),
-	                  (int) values2.size());
-	for (size_t i = 0; i < values1.size(); i++) {
+	                  (int) lengths1.size(),
+	                  (int) lengths2.size());
+	for (size_t i = 0; i < lengths1.size(); i++) {
 		CuAssertDblEquals(tc,
-		                  values1[i],
-		                  values2[i],
+		                  lengths1[i],
+		                  lengths2[i],
 		                  POINT_EPSILON);
 	}
 }

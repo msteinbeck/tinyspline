@@ -1646,7 +1646,7 @@ tinyspline::ChordLengths::knots() const
 }
 
 std::vector<tinyspline::real>
-tinyspline::ChordLengths::values() const
+tinyspline::ChordLengths::lengths() const
 {
 	return std::vector<real>(m_lengths,
 	                         m_lengths + m_size);

@@ -174,6 +174,32 @@ chordlengths_default_map(CuTest *tc)
 	delete defaultCtor;
 }
 
+void
+chordlengths_equidistantKnotSeq(CuTest *tc)
+{
+	// Given
+	BSpline spline = BSpline(4);
+	spline.setControlPoints({
+			100, 100,
+			200, 130,
+			300, -50,
+			400, 0});
+
+	// When
+	std::vector<real> knotsExp = spline.equidistantKnotSeq(100, 200);
+	std::vector<real> knotsAct = spline.chordLengths(200)
+	                                   .equidistantKnotSeq(100);
+
+	// Then
+	CuAssertIntEquals(tc, knotsExp.size(), knotsAct.size());
+	for (int i = 0; i < knotsExp.size(); i++) {
+		double dist = (double) ts_distance(&knotsExp[i],
+		                                   &knotsAct[i],
+		                                   1);
+		CuAssertDblEquals(tc, 0.0, dist, TS_POINT_EPSILON);
+	}
+}
+
 CuSuite *
 get_chordlengths_suite()
 {
@@ -185,5 +211,6 @@ get_chordlengths_suite()
 	SUITE_ADD_TEST(suite, chordlengths_default_ctor);
 	SUITE_ADD_TEST(suite, chordlengths_empty_map);
 	SUITE_ADD_TEST(suite, chordlengths_default_map);
+	SUITE_ADD_TEST(suite, chordlengths_equidistantKnotSeq);
 	return suite;
 }

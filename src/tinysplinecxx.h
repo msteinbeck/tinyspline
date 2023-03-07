@@ -734,6 +734,7 @@ public:
 	real arcLength() const;
 	real lengthToKnot(real len) const;
 	real tToKnot(real t) const;
+	std_real_vector_out equidistantKnotSeq(size_t num = 100) const;
 
 	std::string toString() const;
 private:

@@ -1682,6 +1682,26 @@ tinyspline::ChordLengths::tToKnot(real t) const
 	return knot;
 }
 
+tinyspline::std_real_vector_out
+tinyspline::ChordLengths::equidistantKnotSeq(size_t num) const
+{
+	tsStatus status;
+	std_real_vector_init(knots)(num);
+	real *knots_ptr = std_real_vector_read(knots)data();
+	if (ts_chord_lengths_equidistant_knot_seq(m_knots,
+	                                          m_lengths,
+	                                          m_size,
+	                                          num,
+	                                          knots_ptr,
+	                                          &status)) {
+#ifdef SWIG
+		delete knots;
+#endif
+		throw std::runtime_error(status.message);
+	}
+	return knots;
+}
+
 std::string
 tinyspline::ChordLengths::toString() const
 {

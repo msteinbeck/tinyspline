@@ -1667,6 +1667,10 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
  * @param[in] alpha
  * 	Knot parameterization: 0 => uniform, 0.5 => centripetal, 1 => chordal.
  * 	The input value is clamped to the domain [0, 1].
+ * @param[in] tension
+ * 	Specifies the "tightness" of the interpolated spline. See:
+ * 	https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
+ * 	for more details. The input value is clamped to the domain [0, 1].
  * @param[in] first
  * 	The first control point of the catmull-rom sequence. If NULL, an
  * 	appropriate point is generated based on the first two points in
@@ -1703,6 +1707,7 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
                                    size_t num_points,
                                    size_t dimension,
                                    tsReal alpha,
+                                   tsReal tension,
                                    const tsReal *first,
                                    const tsReal *last,
                                    tsReal epsilon,

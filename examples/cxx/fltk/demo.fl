@@ -156,10 +156,18 @@ interpolation->redraw();}
             xywh {670 130 210 25} type Horizontal align 4 value 0.5
             code0 {interpolationAlpha->value(interpolation->alpha());}
           }
+          Fl_Value_Slider interpolationTension {
+            label tension
+            callback {interpolation->tension(((Fl_Slider *)o)->value());
+interpolation->redraw();}
+            xywh {670 159 210 25} type Horizontal align 4
+            code0 {interpolationTension->value(interpolation->tension());}
+          }
           Fl_Button interpolationReset {
             label Reset
             callback {interpolation->reset();
 interpolationAlpha->value(interpolation->alpha());
+interpolationTension->value(interpolation->tension());
 interpolation->redraw();}
             xywh {735 221 145 25}
           }

@@ -588,6 +588,7 @@ public:
 	static BSpline interpolateCatmullRom(std_real_vector_in points,
 	                                     size_t dimension,
 	                                     real alpha = (real) 0.5,
+	                                     real tension = (real) 0.0,
 	                                     std::vector<real> *first = nullptr,
 	                                     std::vector<real> *last = nullptr,
 	                                     real epsilon = TS_POINT_EPSILON);

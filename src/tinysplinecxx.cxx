@@ -932,6 +932,7 @@ tinyspline::BSpline
 tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
                                            size_t dimension,
                                            real alpha,
+                                           real tension,
                                            std::vector<real> *first,
                                            std::vector<real> *last,
                                            real epsilon)
@@ -951,8 +952,8 @@ tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
 	if (ts_bspline_interpolate_catmull_rom(
 			std_real_vector_read(points)data(),
 			std_real_vector_read(points)size()/dimension,
-			dimension, alpha, fst, lst, epsilon, &data,
-			&status))
+			dimension, alpha, tension, fst, lst, epsilon,
+			&data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }

@@ -18,11 +18,13 @@ public:
 		m_points.push_back(tinyspline::Vec2(300, 400));
 		m_points.push_back(tinyspline::Vec2(170, 430));
 		m_alpha = 0.5;
+		m_tension = 0.0;
 	}
 
 	Interpolation(int X, int Y, int W, int H, const char *L = NULL)
 	: Fl_Widget(X, Y, W, H, L), m_points(), m_selected(-1),
-	  m_drawCubicNatural(true), m_drawCatmullRom(true), m_alpha()
+	  m_drawCubicNatural(true), m_drawCatmullRom(true), m_alpha(),
+	  m_tension()
 	{
 		reset();
 	}
@@ -45,7 +47,10 @@ public:
 		}
 		else if (type == CATMULL_ROM) {
 			spline = tinyspline::BSpline::
-			         interpolateCatmullRom(points, 2, m_alpha);
+			         interpolateCatmullRom(points,
+			                               2,
+			                               m_alpha,
+			                               m_tension);
 			color = FL_DARK_BLUE;
 			style = FL_DASH;
 		}
@@ -151,9 +156,19 @@ public:
 		m_alpha = alpha;
 	}
 
+	tinyspline::real tension() const
+	{
+		return m_tension;
+	}
+
+	void tension(double tension)
+	{
+		m_tension = tension;
+	}
+
 private:
 	std::vector<tinyspline::Vec2> m_points;
 	int m_selected;
 	bool m_drawCubicNatural, m_drawCatmullRom;
-	tinyspline::real m_alpha;
+	tinyspline::real m_alpha, m_tension;
 };

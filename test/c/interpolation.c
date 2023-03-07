@@ -291,7 +291,7 @@ interpolation_catmull_rom(CuTest *tc)
 
 	___WHEN___
 	C(ts_bspline_interpolate_catmull_rom(
-		points, 7, 2, 0.5, NULL, NULL,
+		  points, 7, 2, 0.5, 0.0, NULL, NULL,
 		POINT_EPSILON, &spline, &status))
 
 	___THEN___
@@ -333,7 +333,7 @@ interpolation_catmull_rom_single_point(CuTest *tc)
 
 	___WHEN___
 	C(ts_bspline_interpolate_catmull_rom(
-		ctrlp, 1, 2, 0.5, NULL, NULL,
+		  ctrlp, 1, 2, 0.5, 0.0, NULL, NULL,
 		POINT_EPSILON, &spline, &status))
 
 	___THEN___
@@ -364,7 +364,7 @@ interpolation_catmull_rom_same_point(CuTest *tc)
 
 	___WHEN___
 	C(ts_bspline_interpolate_catmull_rom(
-		ctrlp, 3, 2, 0.5, NULL, NULL,
+		  ctrlp, 3, 2, 0.5, 0.0, NULL, NULL,
 		(tsReal) 0.2, &spline, &status))
 
 	___THEN___

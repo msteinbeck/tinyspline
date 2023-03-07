@@ -1037,6 +1037,7 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
                                    size_t num_points,
                                    size_t dimension,
                                    tsReal alpha,
+                                   tsReal tension,
                                    const tsReal *first,
                                    const tsReal *last,
                                    tsReal epsilon,
@@ -1065,6 +1066,8 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		TS_RETURN_0(status, TS_NUM_POINTS, "num(points) == 0")
 	if (alpha < (tsReal) 0.0) alpha = (tsReal) 0.0;
 	if (alpha > (tsReal) 1.0) alpha = (tsReal) 1.0;
+	if (tension < (tsReal) 0.0) tension = (tsReal) 0.0;
+	if (tension > (tsReal) 1.0) tension = (tsReal) 1.0;
 
 	/* Copy `points` to `cr_ctrlp`. Add space for `first` and `last`. */
 	cr_ctrlp = (tsReal *) malloc((num_points + 2) * sof_ctrlp);
@@ -1147,10 +1150,12 @@ ts_bspline_interpolate_catmull_rom(const tsReal *points,
 		d2 = (t2-t1) / (t3-t1);
 
 		for (d = 0; d < dimension; d++) {
-			m1 = (t2-t1)*(c1*(p1[d]-p0[d])/(t1-t0)
-			              + c2*(p2[d]-p1[d])/(t2-t1));
-			m2 = (t2-t1)*(d1*(p2[d]-p1[d])/(t2-t1)
-			              + d2*(p3[d]-p2[d])/(t3-t2));
+			m1 = ((tsReal) 1.0 - tension) * (t2-t1) *
+				(c1*(p1[d]-p0[d])/(t1-t0) +
+				 c2*(p2[d]-p1[d])/(t2-t1));
+			m2 = ((tsReal) 1.0 - tension) * (t2-t1) *
+				(d1*(p2[d]-p1[d])/(t2-t1) +
+				 d2*(p3[d]-p2[d])/(t3-t2));
 			bs_ctrlp[((i*4 + 0) * dimension) + d] = p1[d];
 			bs_ctrlp[((i*4 + 1) * dimension) + d] = p1[d] + m1/3;
 			bs_ctrlp[((i*4 + 2) * dimension) + d] = p2[d] - m2/3;

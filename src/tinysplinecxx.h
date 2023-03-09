@@ -671,7 +671,7 @@ public:
 	std::string toString() const;
 
 private:
-	tsBSpline spline;
+	tsBSpline m_spline;
 
 	/* Constructors & Destructors */
 	explicit BSpline(tsBSpline &data);

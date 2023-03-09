@@ -842,44 +842,44 @@ tinyspline::DeBoorNet::toString() const
  * @{
  */
 tinyspline::BSpline::BSpline(tsBSpline &data)
-: spline(ts_bspline_init())
+: m_spline(ts_bspline_init())
 {
-	ts_bspline_move(&data, &spline);
+	ts_bspline_move(&data, &m_spline);
 }
 
 tinyspline::BSpline::BSpline()
-: spline(ts_bspline_init())
+: m_spline(ts_bspline_init())
 {
 	tsStatus status;
 	if (ts_bspline_new_with_control_points(1,
 	                                       3,
 	                                       0,
 	                                       TS_CLAMPED,
-	                                       &spline,
+	                                       &m_spline,
 	                                       &status,
 	                                       0.0, 0.0, 0.0))
 		throw std::runtime_error(status.message);
 }
 
 tinyspline::BSpline::BSpline(const tinyspline::BSpline &other)
-: spline(ts_bspline_init())
+: m_spline(ts_bspline_init())
 {
 	tsStatus status;
-	if (ts_bspline_copy(&other.spline, &spline, &status))
+	if (ts_bspline_copy(&other.m_spline, &m_spline, &status))
 		throw std::runtime_error(status.message);
 }
 
 tinyspline::BSpline::BSpline(BSpline &&other)
-: spline(ts_bspline_init())
+: m_spline(ts_bspline_init())
 {
-	ts_bspline_move(&other.spline, &spline);
+	ts_bspline_move(&other.m_spline, &m_spline);
 }
 
 tinyspline::BSpline::BSpline(size_t numControlPoints,
                              size_t dimension,
                              size_t degree,
                              Type type)
-: spline(ts_bspline_init())
+: m_spline(ts_bspline_init())
 {
 	tsBSplineType c_type = TS_CLAMPED;
 	switch (type) {
@@ -900,14 +900,14 @@ tinyspline::BSpline::BSpline(size_t numControlPoints,
 	                   dimension,
 	                   degree,
 	                   c_type,
-	                   &spline,
+	                   &m_spline,
 	                   &status))
 		throw std::runtime_error(status.message);
 }
 
 tinyspline::BSpline::~BSpline()
 {
-	ts_bspline_free(&spline);
+	ts_bspline_free(&m_spline);
 }
 
 tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
@@ -986,10 +986,10 @@ tinyspline::BSpline::operator=(const BSpline &other)
 	if (&other != this) {
 		tsBSpline data = ts_bspline_init();
 		tsStatus status;
-		if (ts_bspline_copy(&other.spline, &data, &status))
+		if (ts_bspline_copy(&other.m_spline, &data, &status))
 			throw std::runtime_error(status.message);
-		ts_bspline_free(&spline);
-		ts_bspline_move(&data, &spline);
+		ts_bspline_free(&m_spline);
+		ts_bspline_move(&data, &m_spline);
 	}
 	return *this;
 }
@@ -998,8 +998,8 @@ tinyspline::BSpline &
 tinyspline::BSpline::operator=(BSpline &&other)
 {
 	if (&other != this) {
-		ts_bspline_free(&spline);
-		ts_bspline_move(&other.spline, &spline);
+		ts_bspline_free(&m_spline);
+		ts_bspline_move(&other.m_spline, &m_spline);
 	}
 	return *this;
 }
@@ -1013,26 +1013,26 @@ tinyspline::BSpline::operator()(real knot) const
 size_t
 tinyspline::BSpline::degree() const
 {
-	return ts_bspline_degree(&spline);
+	return ts_bspline_degree(&m_spline);
 }
 
 size_t
 tinyspline::BSpline::order() const
 {
-	return ts_bspline_order(&spline);
+	return ts_bspline_order(&m_spline);
 }
 
 size_t
 tinyspline::BSpline::dimension() const
 {
-	return ts_bspline_dimension(&spline);
+	return ts_bspline_dimension(&m_spline);
 }
 
 std::vector<tinyspline::real>
 tinyspline::BSpline::controlPoints() const
 {
-	const real *ctrlps = ts_bspline_control_points_ptr(&spline);
-	const size_t len = ts_bspline_len_control_points(&spline);
+	const real *ctrlps = ts_bspline_control_points_ptr(&m_spline);
+	const size_t len = ts_bspline_len_control_points(&m_spline);
 	return std::vector<real>(ctrlps, ctrlps + len);
 }
 
@@ -1055,7 +1055,7 @@ tinyspline::BSpline::controlPointVec4At(size_t idx) const
 {
 	const real *ctrlp;
 	tsStatus status;
-	if (ts_bspline_control_point_at_ptr(&spline,
+	if (ts_bspline_control_point_at_ptr(&m_spline,
 	                                    idx,
 	                                    &ctrlp,
 	                                    &status))
@@ -1068,8 +1068,8 @@ tinyspline::BSpline::controlPointVec4At(size_t idx) const
 std::vector<tinyspline::real>
 tinyspline::BSpline::knots() const
 {
-	const real *knots = ts_bspline_knots_ptr(&spline);
-	size_t num = ts_bspline_num_knots(&spline);
+	const real *knots = ts_bspline_knots_ptr(&m_spline);
+	size_t num = ts_bspline_num_knots(&m_spline);
 	return std::vector<real>(knots, knots + num);
 }
 
@@ -1078,7 +1078,7 @@ tinyspline::BSpline::knotAt(size_t idx) const
 {
 	real knot;
 	tsStatus status;
-	if (ts_bspline_knot_at(&spline, idx, &knot, &status))
+	if (ts_bspline_knot_at(&m_spline, idx, &knot, &status))
 		throw std::runtime_error(status.message);
 	return knot;
 }
@@ -1086,7 +1086,7 @@ tinyspline::BSpline::knotAt(size_t idx) const
 size_t
 tinyspline::BSpline::numControlPoints() const
 {
-	return ts_bspline_num_control_points(&spline);
+	return ts_bspline_num_control_points(&m_spline);
 }
 
 tinyspline::DeBoorNet
@@ -1094,7 +1094,7 @@ tinyspline::BSpline::eval(real knot) const
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	if (ts_bspline_eval(&spline, knot, &net, &status))
+	if (ts_bspline_eval(&m_spline, knot, &net, &status))
 		throw std::runtime_error(status.message);
 	return tinyspline::DeBoorNet(net);
 }
@@ -1106,7 +1106,7 @@ tinyspline::BSpline::evalAll(std_real_vector_in knots) const
 	const real *knots_ptr = std_real_vector_read(knots)data();
 	tinyspline::real *points;
 	tsStatus status;
-	if (ts_bspline_eval_all(&spline,
+	if (ts_bspline_eval_all(&m_spline,
 	                        knots_ptr,
 	                        num_knots,
 	                        &points,
@@ -1126,7 +1126,7 @@ tinyspline::BSpline::sample(size_t num) const
 	tinyspline::real *points;
 	size_t actualNum;
 	tsStatus status;
-	if (ts_bspline_sample(&spline,
+	if (ts_bspline_sample(&m_spline,
 	                      num,
 	                      &points,
 	                      &actualNum,
@@ -1150,7 +1150,7 @@ tinyspline::BSpline::bisect(real value,
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	if (ts_bspline_bisect(&spline,
+	if (ts_bspline_bisect(&m_spline,
 	                      value,
 	                      epsilon,
 	                      persnickety,
@@ -1167,7 +1167,7 @@ tinyspline::Domain
 tinyspline::BSpline::domain() const
 {
 	real min, max;
-	ts_bspline_domain(&spline, &min, &max);
+	ts_bspline_domain(&m_spline, &min, &max);
 	return Domain(min, max);
 }
 
@@ -1176,7 +1176,7 @@ tinyspline::BSpline::isClosed(real epsilon) const
 {
 	int closed = 0;
 	tsStatus status;
-	if (ts_bspline_is_closed(&spline, epsilon, &closed, &status))
+	if (ts_bspline_is_closed(&m_spline, epsilon, &closed, &status))
 		throw std::runtime_error(status.message);
 	return closed == 1;
 }
@@ -1195,7 +1195,7 @@ tinyspline::BSpline::computeRMF(std_real_vector_in knots,
 		             firstNormal->y(),
 		             firstNormal->z());
 	}
-	if (ts_bspline_compute_rmf(&spline,
+	if (ts_bspline_compute_rmf(&m_spline,
 	                           knots_ptr,
 	                           num,
 	                           firstNormal != nullptr,
@@ -1212,7 +1212,7 @@ tinyspline::BSpline::subSpline(real knot0, real knot1) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_sub_spline(&spline,
+	if (ts_bspline_sub_spline(&m_spline,
 	                          knot0,
 	                          knot1,
 	                          &data,
@@ -1226,7 +1226,7 @@ tinyspline::BSpline::uniformKnotSeq(size_t num) const
 {
 	std_real_vector_init(knots)(num);
 	real *knots_ptr = std_real_vector_read(knots)data();
-	ts_bspline_uniform_knot_seq(&spline, num, knots_ptr);
+	ts_bspline_uniform_knot_seq(&m_spline, num, knots_ptr);
 	return knots;
 }
 
@@ -1237,7 +1237,7 @@ tinyspline::BSpline::equidistantKnotSeq(size_t num,
 	tsStatus status;
 	std_real_vector_init(knots)(num);
 	real *knots_ptr = std_real_vector_read(knots)data();
-	if (ts_bspline_equidistant_knot_seq(&spline,
+	if (ts_bspline_equidistant_knot_seq(&m_spline,
 	                                    num,
 	                                    knots_ptr,
 	                                    numSamples,
@@ -1260,7 +1260,7 @@ tinyspline::BSpline::chordLengths(std_real_vector_in knots) const
 	std::copy(std_real_vector_read(knots)begin(),
 	          std_real_vector_read(knots)end(),
 	          knotsArr);
-	if (ts_bspline_chord_lengths(&spline,
+	if (ts_bspline_chord_lengths(&m_spline,
 	                             knotsArr,
 	                             num,
 	                             lengths,
@@ -1280,7 +1280,7 @@ tinyspline::BSpline::toJson() const
 {
 	char *json;
 	tsStatus status;
-	if (ts_bspline_to_json(&spline, &json, &status))
+	if (ts_bspline_to_json(&m_spline, &json, &status))
 		throw std::runtime_error(status.message);
 	std::string string(json);
 	std::free(json);
@@ -1291,7 +1291,7 @@ void
 tinyspline::BSpline::save(std::string path) const
 {
 	tsStatus status;
-	if (ts_bspline_save(&spline, path.c_str(), &status))
+	if (ts_bspline_save(&m_spline, path.c_str(), &status))
 		throw std::runtime_error(status.message);
 }
 
@@ -1299,7 +1299,7 @@ void
 tinyspline::BSpline::setControlPoints(
 	const std::vector<tinyspline::real> &ctrlp)
 {
-	size_t expected = ts_bspline_len_control_points(&spline);
+	size_t expected = ts_bspline_len_control_points(&m_spline);
 	size_t actual = ctrlp.size();
 	if (expected != actual) {
 		std::ostringstream oss;
@@ -1308,7 +1308,7 @@ tinyspline::BSpline::setControlPoints(
 		throw std::runtime_error(oss.str());
 	}
 	tsStatus status;
-	if (ts_bspline_set_control_points(&spline, ctrlp.data(), &status))
+	if (ts_bspline_set_control_points(&m_spline, ctrlp.data(), &status))
 		throw std::runtime_error(status.message);
 }
 
@@ -1337,7 +1337,7 @@ tinyspline::BSpline::setControlPointVec4At(size_t idx, Vec4 &cp)
 	if (vals.size() >= 2) vals[1] = cp.y();
 	if (vals.size() >= 1) vals[0] = cp.x();
 	tsStatus status;
-	if (ts_bspline_set_control_point_at(&spline,
+	if (ts_bspline_set_control_point_at(&m_spline,
 	                                    idx,
 	                                    vals.data(),
 	                                    &status))
@@ -1347,7 +1347,7 @@ tinyspline::BSpline::setControlPointVec4At(size_t idx, Vec4 &cp)
 void
 tinyspline::BSpline::setKnots(const std::vector<real> &knots)
 {
-	size_t expected = ts_bspline_num_knots(&spline);
+	size_t expected = ts_bspline_num_knots(&m_spline);
 	size_t actual = knots.size();
 	if (expected != actual) {
 		std::ostringstream oss;
@@ -1356,7 +1356,7 @@ tinyspline::BSpline::setKnots(const std::vector<real> &knots)
 		throw std::runtime_error(oss.str());
 	}
 	tsStatus status;
-	if (ts_bspline_set_knots(&spline,
+	if (ts_bspline_set_knots(&m_spline,
 	                         knots.data(),
 	                         &status))
 		throw std::runtime_error(status.message);
@@ -1366,7 +1366,7 @@ void
 tinyspline::BSpline::setKnotAt(size_t idx, real knot)
 {
 	tsStatus status;
-	if (ts_bspline_set_knot_at(&spline, idx, knot, &status))
+	if (ts_bspline_set_knot_at(&m_spline, idx, knot, &status))
 		throw std::runtime_error(status.message);
 }
 
@@ -1376,7 +1376,7 @@ tinyspline::BSpline::insertKnot(real knot, size_t num) const
 	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_insert_knot(&spline, knot, num, &data, &k, &status))
+	if (ts_bspline_insert_knot(&m_spline, knot, num, &data, &k, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1387,7 +1387,7 @@ tinyspline::BSpline::split(real knot) const
 	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_split(&spline, knot, &data, &k, &status))
+	if (ts_bspline_split(&m_spline, knot, &data, &k, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1397,7 +1397,7 @@ tinyspline::BSpline::tension(real beta) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_tension(&spline, beta, &data, &status))
+	if (ts_bspline_tension(&m_spline, beta, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1407,7 +1407,7 @@ tinyspline::BSpline::toBeziers() const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_to_beziers(&spline, &data, &status))
+	if (ts_bspline_to_beziers(&m_spline, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1418,7 +1418,7 @@ tinyspline::BSpline::derive(size_t num,
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_derive(&spline, num, eps, &data, &status))
+	if (ts_bspline_derive(&m_spline, num, eps, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1429,7 +1429,7 @@ tinyspline::BSpline::elevateDegree(size_t amount,
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_elevate_degree(&spline, amount, eps, &data, &status))
+	if (ts_bspline_elevate_degree(&m_spline, amount, eps, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
@@ -1441,13 +1441,13 @@ tinyspline::BSpline::alignWith(const BSpline &other,
 {
 	tsBSpline data = ts_bspline_init();
 	tsBSpline deleteIf_Other_And_OtherAligned_AreDifferent =
-		otherAligned.spline;
+		otherAligned.m_spline;
 	tsStatus status;
-	if (ts_bspline_align(&spline,
-	                     &other.spline,
+	if (ts_bspline_align(&m_spline,
+	                     &other.m_spline,
 	                     eps,
 	                     &data,
-	                     &otherAligned.spline, &status))
+	                     &otherAligned.m_spline, &status))
 		throw std::runtime_error(status.message);
 	if (&other != &otherAligned)
 		ts_bspline_free(&deleteIf_Other_And_OtherAligned_AreDifferent);
@@ -1470,7 +1470,7 @@ std::string tinyspline::BSpline::toString() const
 	    << ", degree: " << degree()
 	    << ", domain: [" << d.min() << ", " << d.max() << "]"
 	    << ", control points: " << numControlPoints()
-	    << ", knots: " << ts_bspline_num_knots(&spline)
+	    << ", knots: " << ts_bspline_num_knots(&m_spline)
 	    << "}";
 	return oss.str();
 }
@@ -1498,10 +1498,10 @@ tinyspline::Morphism::eval(real t)
 	tsStatus status;
 	if (t <= 0) return m_origin;
 	if (t >= 1) return m_target;
-	if (ts_bspline_morph(&m_originAligned.spline,
-			     &m_targetAligned.spline,
+	if (ts_bspline_morph(&m_originAligned.m_spline,
+			     &m_targetAligned.m_spline,
 			     t, m_epsilon,
-			     &m_buffer.spline, &status)) {
+			     &m_buffer.m_spline, &status)) {
 		throw std::runtime_error(status.message);
 	}
 	return m_buffer;

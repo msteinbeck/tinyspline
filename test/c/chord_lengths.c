@@ -40,6 +40,50 @@ chord_lengths_line(CuTest *tc)
 	ts_bspline_free(&line);
 }
 
+void
+chord_lengths_equidistant_knot_seq_cubic_line(CuTest *tc)
+{
+	___SETUP___
+	tsBSpline line = ts_bspline_init();
+	tsReal knots[200], lengths[200], *points = NULL;
+	tsReal arc_length, exp_dist, dist;
+
+	___GIVEN___
+	C(ts_bspline_new_with_control_points(
+		4, 2, 3, TS_CLAMPED, &line, &status,
+		0.0, 0.0,    /* P1 */
+		1.0, 1.0,    /* P2 */
+		10.0, 10.0,  /* P3 */
+		30.0, 30.0)) /* P4 */
+	ts_bspline_uniform_knot_seq(&line, 200, knots);
+	ts_bspline_chord_lengths(&line, knots, 200, lengths, &status);
+	arc_length = lengths[199];
+	CuAssertDblEquals(tc, 42.426407, arc_length, POINT_EPSILON);
+	exp_dist = arc_length / (tsReal) 4.0; /* 5 - 1 */
+
+	___WHEN___
+	ts_bspline_equidistant_knot_seq(&line, 5, knots, 200, &status);
+	ts_bspline_eval_all(&line, knots, 5, &points, &status);
+
+	___THEN___
+	/* P1 -- P2 */
+	dist = ts_distance(&points[0], &points[2], 2);
+	CuAssertDblEquals(tc, exp_dist, dist, 0.001);
+	/* P2 -- P3 */
+	dist = ts_distance(&points[2], &points[4], 2);
+	CuAssertDblEquals(tc, exp_dist, dist, 0.001);
+	/* P3 -- P4 */
+	dist = ts_distance(&points[4], &points[6], 2);
+	CuAssertDblEquals(tc, exp_dist, dist, 0.001);
+	/* P4 -- P5 */
+	dist = ts_distance(&points[6], &points[8], 2);
+	CuAssertDblEquals(tc, exp_dist, dist, 0.001);
+
+	___TEARDOWN___
+	ts_bspline_free(&line);
+	if (points) free(points);
+}
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4102)
@@ -125,6 +169,7 @@ get_chord_lengths_suite()
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, chord_lengths_line);
+	SUITE_ADD_TEST(suite, chord_lengths_equidistant_knot_seq_cubic_line);
 	SUITE_ADD_TEST(suite, chord_lengths_num_0);
 	SUITE_ADD_TEST(suite, chord_lengths_num_1);
 	SUITE_ADD_TEST(suite, chord_lengths_too_short);

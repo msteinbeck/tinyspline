@@ -610,7 +610,7 @@ public:
 	Vec3 controlPointVec3At(size_t idx) const;
 	Vec4 controlPointVec4At(size_t idx) const;
 	std::vector<real> knots() const;
-	real knotAt(size_t index) const;
+	real knotAt(size_t idx) const;
 
 	/* Query */
 	size_t numControlPoints() const;
@@ -644,7 +644,7 @@ public:
 	void setControlPointVec3At(size_t idx, Vec3 &cp);
 	void setControlPointVec4At(size_t idx, Vec4 &cp);
 	void setKnots(const std::vector<real> &knots);
-	void setKnotAt(size_t index, real knot);
+	void setKnotAt(size_t idx, real knot);
 
 	/* Transformations */
 	BSpline insertKnot(real u, size_t n) const;

@@ -1075,11 +1075,11 @@ tinyspline::BSpline::knots() const
 }
 
 tinyspline::real
-tinyspline::BSpline::knotAt(size_t index) const
+tinyspline::BSpline::knotAt(size_t idx) const
 {
 	real knot;
 	tsStatus status;
-	if (ts_bspline_knot_at(&spline, index, &knot, &status))
+	if (ts_bspline_knot_at(&spline, idx, &knot, &status))
 		throw std::runtime_error(status.message);
 	return knot;
 }
@@ -1296,7 +1296,8 @@ tinyspline::BSpline::save(std::string path) const
 		throw std::runtime_error(status.message);
 }
 
-void tinyspline::BSpline::setControlPoints(
+void
+tinyspline::BSpline::setControlPoints(
 	const std::vector<tinyspline::real> &ctrlp)
 {
 	size_t expected = ts_bspline_len_control_points(&spline);
@@ -1362,10 +1363,11 @@ tinyspline::BSpline::setKnots(const std::vector<real> &knots)
 		throw std::runtime_error(status.message);
 }
 
-void tinyspline::BSpline::setKnotAt(size_t index, tinyspline::real knot)
+void
+tinyspline::BSpline::setKnotAt(size_t idx, real knot)
 {
 	tsStatus status;
-	if (ts_bspline_set_knot_at(&spline, index, knot, &status))
+	if (ts_bspline_set_knot_at(&spline, idx, knot, &status))
 		throw std::runtime_error(status.message);
 }
 

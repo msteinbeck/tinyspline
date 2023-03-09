@@ -543,7 +543,7 @@ public:
 	std::string toString() const;
 
 private:
-	tsDeBoorNet net;
+	tsDeBoorNet m_net;
 
 	/* Constructors & Destructors */
 	explicit DeBoorNet(tsDeBoorNet &data);

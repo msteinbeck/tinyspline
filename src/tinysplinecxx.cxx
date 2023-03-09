@@ -700,28 +700,28 @@ tinyspline::Domain::toString() const
  * @{
  */
 tinyspline::DeBoorNet::DeBoorNet(tsDeBoorNet &data)
-: net(ts_deboornet_init())
+: m_net(ts_deboornet_init())
 {
-	ts_deboornet_move(&data, &net);
+	ts_deboornet_move(&data, &m_net);
 }
 
 tinyspline::DeBoorNet::DeBoorNet(const DeBoorNet &other)
-: net(ts_deboornet_init())
+: m_net(ts_deboornet_init())
 {
 	tsStatus status;
-	if (ts_deboornet_copy(&other.net, &net, &status))
+	if (ts_deboornet_copy(&other.m_net, &m_net, &status))
 		throw std::runtime_error(status.message);
 }
 
 tinyspline::DeBoorNet::DeBoorNet(DeBoorNet &&other)
-: net(ts_deboornet_init())
+: m_net(ts_deboornet_init())
 {
-	ts_deboornet_move(&other.net, &net);
+	ts_deboornet_move(&other.m_net, &m_net);
 }
 
 tinyspline::DeBoorNet::~DeBoorNet()
 {
-	ts_deboornet_free(&net);
+	ts_deboornet_free(&m_net);
 }
 
 tinyspline::DeBoorNet &
@@ -730,10 +730,10 @@ tinyspline::DeBoorNet::operator=(const DeBoorNet &other)
 	if (&other != this) {
 		tsDeBoorNet data = ts_deboornet_init();
 		tsStatus status;
-		if (ts_deboornet_copy(&other.net, &data, &status))
+		if (ts_deboornet_copy(&other.m_net, &data, &status))
 			throw std::runtime_error(status.message);
-		ts_deboornet_free(&net);
-		ts_deboornet_move(&data, &net);
+		ts_deboornet_free(&m_net);
+		ts_deboornet_move(&data, &m_net);
 	}
 	return *this;
 }
@@ -742,8 +742,8 @@ tinyspline::DeBoorNet &
 tinyspline::DeBoorNet::operator=(DeBoorNet && other)
 {
 	if (&other != this) {
-		ts_deboornet_free(&net);
-		ts_deboornet_move(&other.net, &net);
+		ts_deboornet_free(&m_net);
+		ts_deboornet_move(&other.m_net, &m_net);
 	}
 	return *this;
 }
@@ -751,46 +751,46 @@ tinyspline::DeBoorNet::operator=(DeBoorNet && other)
 tinyspline::real
 tinyspline::DeBoorNet::knot() const
 {
-	return ts_deboornet_knot(&net);
+	return ts_deboornet_knot(&m_net);
 }
 
 size_t
 tinyspline::DeBoorNet::index() const
 {
-	return ts_deboornet_index(&net);
+	return ts_deboornet_index(&m_net);
 }
 
 size_t
 tinyspline::DeBoorNet::multiplicity() const
 {
-	return ts_deboornet_multiplicity(&net);
+	return ts_deboornet_multiplicity(&m_net);
 }
 
 size_t
 tinyspline::DeBoorNet::numInsertions() const
 {
-	return ts_deboornet_num_insertions(&net);
+	return ts_deboornet_num_insertions(&m_net);
 }
 
 size_t
 tinyspline::DeBoorNet::dimension() const
 {
-	return ts_deboornet_dimension(&net);
+	return ts_deboornet_dimension(&m_net);
 }
 
 std::vector<tinyspline::real>
 tinyspline::DeBoorNet::points() const
 {
-	const real *points = ts_deboornet_points_ptr(&net);
-	size_t len = ts_deboornet_len_points(&net);
+	const real *points = ts_deboornet_points_ptr(&m_net);
+	size_t len = ts_deboornet_len_points(&m_net);
 	return std::vector<real>(points, points + len);
 }
 
 std::vector<tinyspline::real>
 tinyspline::DeBoorNet::result() const
 {
-	const real *result = ts_deboornet_result_ptr(&net);
-	size_t len = ts_deboornet_len_result(&net);
+	const real *result = ts_deboornet_result_ptr(&m_net);
+	size_t len = ts_deboornet_len_result(&m_net);
 	return std::vector<real>(result, result + len);
 }
 
@@ -811,9 +811,9 @@ tinyspline::DeBoorNet::resultVec3(size_t idx) const
 tinyspline::Vec4
 tinyspline::DeBoorNet::resultVec4(size_t idx) const
 {
-	if (idx >= ts_deboornet_num_result(&net))
+	if (idx >= ts_deboornet_num_result(&m_net))
 		throw std::out_of_range( "idx >= num(result)");
-	const real *result = ts_deboornet_result_ptr(&net);
+	const real *result = ts_deboornet_result_ptr(&m_net);
 	real vals[4];
 	ts_vec4_set(vals, result + idx * dimension(), dimension());
 	return Vec4(vals[0], vals[1], vals[2], vals[3]);
@@ -829,7 +829,7 @@ tinyspline::DeBoorNet::toString() const
 	    << ", multiplicity: " << multiplicity()
 	    << ", insertions: " << numInsertions()
 	    << ", dimension: " << dimension()
-	    << ", points: " << ts_deboornet_num_points(&net)
+	    << ", points: " << ts_deboornet_num_points(&m_net)
 	    << "}";
 	return oss.str();
 }

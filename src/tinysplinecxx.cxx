@@ -910,8 +910,9 @@ tinyspline::BSpline::~BSpline()
 	ts_bspline_free(&m_spline);
 }
 
-tinyspline::BSpline tinyspline::BSpline::interpolateCubicNatural(
-	std_real_vector_in points, size_t dimension)
+tinyspline::BSpline
+tinyspline::BSpline::interpolateCubicNatural(std_real_vector_in points,
+                                             size_t dimension)
 {
 	if (dimension == 0)
 		throw std::runtime_error("unsupported dimension: 0");
@@ -956,7 +957,8 @@ tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
+tinyspline::BSpline
+tinyspline::BSpline::parseJson(std::string json)
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
@@ -965,7 +967,8 @@ tinyspline::BSpline tinyspline::BSpline::parseJson(std::string json)
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::load(std::string path)
+tinyspline::BSpline
+tinyspline::BSpline::load(std::string path)
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;

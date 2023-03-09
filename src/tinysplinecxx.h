@@ -552,7 +552,7 @@ private:
 
 #ifdef TINYSPLINE_EMSCRIPTEN
 public:
-	DeBoorNet() : net(ts_deboornet_init()) {}
+	DeBoorNet() : m_net(ts_deboornet_init()) {}
 	void setKnot(real) { cannotWrite(); }
 	void setIndex(size_t) { cannotWrite(); }
 	void setMultiplicity(size_t) { cannotWrite(); }

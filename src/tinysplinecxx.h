@@ -566,6 +566,12 @@ public:
 
 
 
+/*! @name BSpline
+ *
+ * Wrapper class for ::tsBSpline.
+ *
+ * @{
+ */
 class Morphism;
 class ChordLengths;
 class TINYSPLINECXX_API BSpline {
@@ -647,18 +653,19 @@ public:
 	void setKnotAt(size_t idx, real knot);
 
 	/* Transformations */
-	BSpline insertKnot(real u, size_t n) const;
-	BSpline split(real u) const;
-	BSpline tension(real tension) const;
+	BSpline insertKnot(real knot, size_t num) const;
+	BSpline split(real knot) const;
+	BSpline tension(real beta) const;
 	BSpline toBeziers() const;
-	BSpline derive(size_t n = 1,
-		real epsilon = TS_POINT_EPSILON) const;
+	BSpline derive(size_t num = 1,
+	               real eps = TS_POINT_EPSILON) const;
 	BSpline elevateDegree(size_t amount,
-		real epsilon = TS_POINT_EPSILON) const;
-	BSpline alignWith(const BSpline &other, BSpline &otherAligned,
-		real epsilon = TS_POINT_EPSILON) const;
+	                      real eps = TS_POINT_EPSILON) const;
+	BSpline alignWith(const BSpline &other,
+	                  BSpline &otherAligned,
+	                  real eps = TS_POINT_EPSILON) const;
 	Morphism morphTo(const BSpline &other,
-		real epsilon = TS_POINT_EPSILON) const;
+	                 real eps = TS_POINT_EPSILON) const;
 
 	/* Debug */
 	std::string toString() const;
@@ -681,6 +688,7 @@ public:
 	BSpline derive2(size_t n, real eps) const { return derive(n, eps); }
 #endif
 };
+/*! @} */
 
 
 

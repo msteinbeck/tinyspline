@@ -837,11 +837,10 @@ tinyspline::DeBoorNet::toString() const
 
 
 
-/******************************************************************************
-*                                                                             *
-* BSpline                                                                     *
-*                                                                             *
-******************************************************************************/
+/*! @name BSpline
+ *
+ * @{
+ */
 tinyspline::BSpline::BSpline(tsBSpline &data)
 : spline(ts_bspline_init())
 {
@@ -1371,38 +1370,40 @@ tinyspline::BSpline::setKnotAt(size_t idx, real knot)
 		throw std::runtime_error(status.message);
 }
 
-tinyspline::BSpline tinyspline::BSpline::insertKnot(tinyspline::real u,
-	size_t n) const
+tinyspline::BSpline
+tinyspline::BSpline::insertKnot(real knot, size_t num) const
 {
 	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_insert_knot(&spline, u, n, &data, &k, &status))
+	if (ts_bspline_insert_knot(&spline, knot, num, &data, &k, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::split(tinyspline::real u) const
+tinyspline::BSpline
+tinyspline::BSpline::split(real knot) const
 {
 	tsBSpline data = ts_bspline_init();
 	size_t k;
 	tsStatus status;
-	if (ts_bspline_split(&spline, u, &data, &k, &status))
+	if (ts_bspline_split(&spline, knot, &data, &k, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::tension(
-	tinyspline::real tension) const
+tinyspline::BSpline
+tinyspline::BSpline::tension(real beta) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_tension(&spline, tension, &data, &status))
+	if (ts_bspline_tension(&spline, beta, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::toBeziers() const
+tinyspline::BSpline
+tinyspline::BSpline::toBeziers() const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
@@ -1411,47 +1412,53 @@ tinyspline::BSpline tinyspline::BSpline::toBeziers() const
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::derive(size_t n, real epsilon) const
+tinyspline::BSpline
+tinyspline::BSpline::derive(size_t num,
+                            real eps) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_derive(&spline, n, epsilon, &data, &status))
+	if (ts_bspline_derive(&spline, num, eps, &data, &status))
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::elevateDegree(
-	size_t amount, real epsilon) const
+tinyspline::BSpline
+tinyspline::BSpline::elevateDegree(size_t amount,
+                                   real eps) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsStatus status;
-	if (ts_bspline_elevate_degree(&spline, amount, epsilon,
-		&data, &status)) {
+	if (ts_bspline_elevate_degree(&spline, amount, eps, &data, &status))
 		throw std::runtime_error(status.message);
-	}
 	return BSpline(data);
 }
 
-tinyspline::BSpline tinyspline::BSpline::alignWith(
-	const BSpline &other, BSpline &otherAligned, real epsilon) const
+tinyspline::BSpline
+tinyspline::BSpline::alignWith(const BSpline &other,
+                               BSpline &otherAligned,
+                               real eps) const
 {
 	tsBSpline data = ts_bspline_init();
 	tsBSpline deleteIf_Other_And_OtherAligned_AreDifferent =
 		otherAligned.spline;
 	tsStatus status;
-	if (ts_bspline_align(&spline, &other.spline, epsilon, &data,
-		&otherAligned.spline, &status)) {
+	if (ts_bspline_align(&spline,
+	                     &other.spline,
+	                     eps,
+	                     &data,
+	                     &otherAligned.spline, &status))
 		throw std::runtime_error(status.message);
-	}
 	if (&other != &otherAligned)
 		ts_bspline_free(&deleteIf_Other_And_OtherAligned_AreDifferent);
 	return BSpline(data);
 }
 
-tinyspline::Morphism tinyspline::BSpline::morphTo(
-	const BSpline &other, real epsilon) const
+tinyspline::Morphism
+tinyspline::BSpline::morphTo(const BSpline &other,
+                             real eps) const
 {
-	return Morphism(*this, other, epsilon);
+	return Morphism(*this, other, eps);
 }
 
 std::string tinyspline::BSpline::toString() const
@@ -1467,6 +1474,7 @@ std::string tinyspline::BSpline::toString() const
 	    << "}";
 	return oss.str();
 }
+/*! @} */
 
 
 

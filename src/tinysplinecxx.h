@@ -599,7 +599,7 @@ public:
 	/* Operators */
 	BSpline & operator=(const BSpline &other);
 	BSpline & operator=(BSpline &&other);
-	DeBoorNet operator()(real u) const;
+	DeBoorNet operator()(real knot) const;
 
 	/* Accessors */
 	size_t degree() const;
@@ -614,7 +614,7 @@ public:
 
 	/* Query */
 	size_t numControlPoints() const;
-	DeBoorNet eval(real u) const;
+	DeBoorNet eval(real knot) const;
 	std_real_vector_out evalAll(std_real_vector_in knots) const;
 	std_real_vector_out sample(size_t num = 0) const;
 	DeBoorNet bisect(real value,

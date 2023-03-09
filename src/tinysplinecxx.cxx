@@ -1005,22 +1005,26 @@ tinyspline::BSpline::operator=(BSpline &&other)
 	return *this;
 }
 
-tinyspline::DeBoorNet tinyspline::BSpline::operator()(tinyspline::real u) const
+tinyspline::DeBoorNet
+tinyspline::BSpline::operator()(real knot) const
 {
-	return eval(u);
+	return eval(knot);
 }
 
-size_t tinyspline::BSpline::degree() const
+size_t
+tinyspline::BSpline::degree() const
 {
 	return ts_bspline_degree(&spline);
 }
 
-size_t tinyspline::BSpline::order() const
+size_t
+tinyspline::BSpline::order() const
 {
 	return ts_bspline_order(&spline);
 }
 
-size_t tinyspline::BSpline::dimension() const
+size_t
+tinyspline::BSpline::dimension() const
 {
 	return ts_bspline_dimension(&spline);
 }
@@ -1070,7 +1074,8 @@ tinyspline::BSpline::knots() const
 	return std::vector<real>(knots, knots + num);
 }
 
-tinyspline::real tinyspline::BSpline::knotAt(size_t index) const
+tinyspline::real
+tinyspline::BSpline::knotAt(size_t index) const
 {
 	real knot;
 	tsStatus status;
@@ -1079,16 +1084,18 @@ tinyspline::real tinyspline::BSpline::knotAt(size_t index) const
 	return knot;
 }
 
-size_t tinyspline::BSpline::numControlPoints() const
+size_t
+tinyspline::BSpline::numControlPoints() const
 {
 	return ts_bspline_num_control_points(&spline);
 }
 
-tinyspline::DeBoorNet tinyspline::BSpline::eval(tinyspline::real u) const
+tinyspline::DeBoorNet
+tinyspline::BSpline::eval(real knot) const
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
-	if (ts_bspline_eval(&spline, u, &net, &status))
+	if (ts_bspline_eval(&spline, knot, &net, &status))
 		throw std::runtime_error(status.message);
 	return tinyspline::DeBoorNet(net);
 }
@@ -1134,12 +1141,13 @@ tinyspline::BSpline::sample(size_t num) const
 	return vec;
 }
 
-tinyspline::DeBoorNet tinyspline::BSpline::bisect(real value,
-                                                  real epsilon,
-                                                  bool persnickety,
-                                                  size_t index,
-                                                  bool ascending,
-                                                  size_t maxIter) const
+tinyspline::DeBoorNet
+tinyspline::BSpline::bisect(real value,
+                            real epsilon,
+                            bool persnickety,
+                            size_t index,
+                            bool ascending,
+                            size_t maxIter) const
 {
 	tsDeBoorNet net = ts_deboornet_init();
 	tsStatus status;
@@ -1156,14 +1164,16 @@ tinyspline::DeBoorNet tinyspline::BSpline::bisect(real value,
 	return DeBoorNet(net);
 }
 
-tinyspline::Domain tinyspline::BSpline::domain() const
+tinyspline::Domain
+tinyspline::BSpline::domain() const
 {
 	real min, max;
 	ts_bspline_domain(&spline, &min, &max);
 	return Domain(min, max);
 }
 
-bool tinyspline::BSpline::isClosed(tinyspline::real epsilon) const
+bool
+tinyspline::BSpline::isClosed(real epsilon) const
 {
 	int closed = 0;
 	tsStatus status;
@@ -1266,7 +1276,8 @@ tinyspline::BSpline::chordLengths(size_t numSamples) const
 	return chordLengths(uniformKnotSeq(numSamples));
 }
 
-std::string tinyspline::BSpline::toJson() const
+std::string
+tinyspline::BSpline::toJson() const
 {
 	char *json;
 	tsStatus status;
@@ -1277,7 +1288,8 @@ std::string tinyspline::BSpline::toJson() const
 	return string;
 }
 
-void tinyspline::BSpline::save(std::string path) const
+void
+tinyspline::BSpline::save(std::string path) const
 {
 	tsStatus status;
 	if (ts_bspline_save(&spline, path.c_str(), &status))

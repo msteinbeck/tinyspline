@@ -2422,12 +2422,12 @@ ts_bspline_elevate_degree(const tsBSpline *spline,
                           tsStatus *status);
 
 /**
- * Modifies the splines \p s1 and \p s2 such that they have same degree and
- * number of control points/knots (without modifying the shape of \p s1 and
- * \p s2). The resulting splines are stored in \p s1_out and \p s2_out. If
- * \p s1 != \p s1_out, the internal state of \p s1 is not modified, that is,
- * \p s1_out is a new, independent ::tsBSpline instance. The same is true for
- * \p s2 and \p s2_out.
+ * Modifies the splines \p s1 and \p s2 such that they have same the degree and
+ * number of control points/knots (without modifying the shape of \p s1 and \p
+ * s2). The resulting splines are stored in \p s1_out and \p s2_out. If \p s1 !=
+ * \p s1_out, the internal state of \p s1 is not modified, that is, \p s1_out is
+ * a new, independent ::tsBSpline instance. The same is true for \p s2 and \p
+ * s2_out.
  *
  * @param[in] s1
  * 	The spline which is to be aligned with \p s2.
@@ -2968,7 +2968,7 @@ ts_vec_mul(const tsReal *x,
  * @return TS_NO_RESULT
  * 	If \p num is \c 0.
  */
-tsError
+tsError TINYSPLINE_API
 ts_chord_lengths_length_to_knot(const tsReal *knots,
                                 const tsReal *lengths,
                                 size_t num,

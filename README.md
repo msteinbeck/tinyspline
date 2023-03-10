@@ -158,9 +158,11 @@ Result:
 The latest Doxygen documentation can be found at:
 https://msteinbeck.github.io/tinyspline/
 
-The documentation of the C interface is quite extensive and also
-serves as an entry point for the C++ interface documentation (as well
-as for the bindings created from the C++ interface).
+The documentation of the C interface
+(https://msteinbeck.github.io/tinyspline/tinyspline_8h.html) is quite
+extensive and also serves as an entry point for the C++ interface
+documentation (as well as the documentation for the bindings created
+from the C++ interface).
 
 ### Publications
 

@@ -18,6 +18,7 @@ Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby are provided.
   * [Pre-built Binaries](#pre-built-binaries)
   * [Compiling From Source](#compiling-from-source)
 - [Getting Started](#getting-started)
+- [Documentation](#documentation)
 - [Publications](#publications)
 - [Theoretical Backgrounds](#theoretical-backgrounds)
 
@@ -151,6 +152,15 @@ plt.show()
 Result:
 
 ![Getting Started](res/getting_started.png)
+
+### Documentation
+
+The latest Doxygen documentation can be found at:
+https://msteinbeck.github.io/tinyspline/
+
+The documentation of the C interface is quite extensive and also
+serves as an entry point for the C++ interface documentation (as well
+as for the bindings created from the C++ interface).
 
 ### Publications
 

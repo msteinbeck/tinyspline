@@ -15,7 +15,7 @@
 #pragma warning(disable:4232)
 /* function not inlined */
 #pragma warning(disable:4710)
-/* byte padding *//
+/* byte padding */
 #pragma warning(disable:4820)
 /* meaningless deprecation */
 #pragma warning(disable:4996)

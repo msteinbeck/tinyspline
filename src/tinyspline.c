@@ -15,7 +15,7 @@
 #pragma warning(disable:4232)
 /* function not inlined */
 #pragma warning(disable:4710)
-/* byte padding */
+/* byte padding *//
 #pragma warning(disable:4820)
 /* meaningless deprecation */
 #pragma warning(disable:4996)
@@ -1840,7 +1840,7 @@ ts_bspline_sub_spline(const tsBSpline *spline,
 			worker.pImpl->n_knots = nk;
 			worker.pImpl->n_ctrlp = nc;
 			i = ts_int_bspline_sof_state(&worker);
-			worker.pImpl = realloc(worker.pImpl, i);
+			worker.pImpl = (struct tsBSplineImpl*)realloc(worker.pImpl, i);
 			if (worker.pImpl == NULL) { /* unlikely to fail */
 				TS_THROW_0(try, err, status, TS_MALLOC,
 				           "out of memory")
@@ -2610,7 +2610,7 @@ ts_bspline_elevate_degree(const tsBSpline *spline,
 		worker.pImpl->n_ctrlp = ts_bspline_num_knots(&worker) - order;
 		memmove(ts_int_bspline_access_knots(&worker),
 		        knots, ts_bspline_sof_knots(&worker));
-		worker.pImpl = realloc(worker.pImpl,
+		worker.pImpl = (struct tsBSplineImpl*)realloc(worker.pImpl,
 		                       ts_int_bspline_sof_state(&worker));
 		if (worker.pImpl == NULL) {
 			TS_THROW_0(try, err, status, TS_MALLOC,

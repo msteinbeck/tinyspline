@@ -2511,6 +2511,7 @@ ts_bspline_morph(const tsBSpline *origin,
 
 
 
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 /*! @name Serialization and Persistence
  *
  * The following functions can be used to serialize and persist (i.e., store
@@ -2629,7 +2630,7 @@ tsError TINYSPLINE_API
 ts_bspline_load(const char *path,
                 tsBSpline *spline,
                 tsStatus *status);
-
+#endif
 
 
 /*! @name Vector Math

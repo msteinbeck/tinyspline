@@ -62,6 +62,7 @@
  *
  * @{
  */
+#if !defined(TINYSPLINE_API)
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define TINYSPLINE_SHARED_EXPORT __declspec(dllexport)
 #define TINYSPLINE_SHARED_IMPORT __declspec(dllimport)
@@ -81,6 +82,7 @@
 #endif
 #else
 #define TINYSPLINE_API
+#endif
 #endif
 
 #ifdef	__cplusplus

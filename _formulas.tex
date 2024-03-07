@@ -1,0 +1,18 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage[utf8]{inputenc}
+\usepackage{newunicodechar}
+  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \newunicodechar{²}{${}^{2}$}% Superscript two
+  \newunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+\begin{eqnarray*} s'(u) &=& \sum_{i=0}^{n-1} N_{i+1,p-1}(u) * (P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1}) \\ &=& \sum_{i=1}^{n} N_{i,p-1}(u) * (P_{i} - P_{i-1}) * p / (u_{i+p}-u_{i}) \end{eqnarray*}
+\pagebreak
+
+\begin{eqnarray*} s'(u) &=& \sum_{i=0}^{n-1} N_{i,p-1}(u) * (P_{i+1} - P_{i}) * p / (u_{i+p+1}-u_{i+1}) \end{eqnarray*}
+\pagebreak
+
+\end{document}

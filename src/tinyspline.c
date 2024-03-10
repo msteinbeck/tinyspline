@@ -1,11 +1,14 @@
 #define TINYSPLINE_EXPORT
 #include "tinyspline.h"
+
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 #include "parson.h" /* serialization */
+#include <stdio.h>  /* FILE, fopen */
+#endif
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h>   /* fabs, sqrt, acos */
 #include <string.h> /* memcpy, memmove */
-#include <stdio.h>  /* FILE, fopen */
 #include <stdarg.h> /* varargs */
 
 /* Suppress some useless MSVC warnings. */
@@ -2818,7 +2821,7 @@ ts_bspline_morph(const tsBSpline *origin,
 /*! @} */
 
 
-
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 /*! @name Serialization and Persistence
  *
  * @{
@@ -3138,7 +3141,7 @@ ts_bspline_load(const char *path,
 	TS_END_TRY_RETURN(err)
 }
 /*! @} */
-
+#endif
 
 
 /*! @name Vector Math

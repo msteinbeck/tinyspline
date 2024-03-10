@@ -45,6 +45,7 @@ struct tsBSplineImpl
 	size_t n_ctrlp; /**< Number of control points. */
 	size_t n_knots; /**< Number of knots (n_ctrlp + deg + 1). */
 };
+typedef struct tsBSplineImpl tsBSplineImpl;
 
 /**
  * Stores the private data of ::tsDeBoorNet.
@@ -58,6 +59,7 @@ struct tsDeBoorNetImpl
 	size_t dim; /**< Dimensionality of the points (2D => x, y). */
 	size_t n_points; /** Number of points in `points'. */
 };
+typedef struct tsDeBoorNetImpl tsDeBoorNetImpl;
 
 void
 ts_int_bspline_init(tsBSpline *spline)
@@ -68,7 +70,7 @@ ts_int_bspline_init(tsBSpline *spline)
 size_t
 ts_int_bspline_sof_state(const tsBSpline *spline)
 {
-	return sizeof(struct tsBSplineImpl) +
+	return sizeof(tsBSplineImpl) +
 	       ts_bspline_sof_control_points(spline) +
 	       ts_bspline_sof_knots(spline);
 }
@@ -130,7 +132,7 @@ ts_int_deboornet_init(tsDeBoorNet *net)
 size_t
 ts_int_deboornet_sof_state(const tsDeBoorNet *net)
 {
-	return sizeof(struct tsDeBoorNetImpl) +
+	return sizeof(tsDeBoorNetImpl) +
 	       ts_deboornet_sof_points(net) +
 	       ts_deboornet_sof_result(net);
 }
@@ -468,7 +470,7 @@ ts_bspline_new(size_t num_control_points,
 	const size_t len_ctrlp = num_control_points * dimension;
 
 	const size_t sof_real = sizeof(tsReal);
-	const size_t sof_impl = sizeof(struct tsBSplineImpl);
+	const size_t sof_impl = sizeof(tsBSplineImpl);
 	const size_t sof_ctrlp_vec = len_ctrlp * sof_real;
 	const size_t sof_knots_vec = num_knots * sof_real;
 	const size_t sof_spline = sof_impl + sof_ctrlp_vec + sof_knots_vec;
@@ -491,7 +493,7 @@ ts_bspline_new(size_t num_control_points,
 		            (unsigned long) num_control_points)
 	}
 
-	spline->pImpl = (struct tsBSplineImpl *) malloc(sof_spline);
+	spline->pImpl = (tsBSplineImpl *) malloc(sof_spline);
 	if (!spline->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	spline->pImpl->deg = degree;
@@ -549,7 +551,7 @@ ts_bspline_copy(const tsBSpline *src,
 	if (src == dest) TS_RETURN_SUCCESS(status)
 	ts_int_bspline_init(dest);
 	size = ts_int_bspline_sof_state(src);
-	dest->pImpl = (struct tsBSplineImpl *) malloc(size);
+	dest->pImpl = (tsBSplineImpl *) malloc(size);
 	if (!dest->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
@@ -710,11 +712,11 @@ ts_int_deboornet_new(const tsBSpline *spline,
 	const size_t fixed_num_points = num_points < 2 ? 2 : num_points;
 
 	const size_t sof_real = sizeof(tsReal);
-	const size_t sof_impl = sizeof(struct tsDeBoorNetImpl);
+	const size_t sof_impl = sizeof(tsDeBoorNetImpl);
 	const size_t sof_points_vec = fixed_num_points * dim * sof_real;
 	const size_t sof_net = sof_impl + sof_points_vec;
 
-	net->pImpl = (struct tsDeBoorNetImpl *) malloc(sof_net);
+	net->pImpl = (tsDeBoorNetImpl *) malloc(sof_net);
 	if (!net->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 
 	net->pImpl->u = 0.f;
@@ -742,7 +744,7 @@ ts_deboornet_copy(const tsDeBoorNet *src,
 	if (src == dest) TS_RETURN_SUCCESS(status)
 	ts_int_deboornet_init(dest);
 	size = ts_int_deboornet_sof_state(src);
-	dest->pImpl = (struct tsDeBoorNetImpl *) malloc(size);
+	dest->pImpl = (tsDeBoorNetImpl *) malloc(size);
 	if (!dest->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
 	memcpy(dest->pImpl, src->pImpl, size);
 	TS_RETURN_SUCCESS(status)
@@ -1840,7 +1842,7 @@ ts_bspline_sub_spline(const tsBSpline *spline,
 			worker.pImpl->n_knots = nk;
 			worker.pImpl->n_ctrlp = nc;
 			i = ts_int_bspline_sof_state(&worker);
-			worker.pImpl = realloc(worker.pImpl, i);
+			worker.pImpl = (tsBSplineImpl*)realloc(worker.pImpl, i);
 			if (worker.pImpl == NULL) { /* unlikely to fail */
 				TS_THROW_0(try, err, status, TS_MALLOC,
 				           "out of memory")
@@ -2610,7 +2612,7 @@ ts_bspline_elevate_degree(const tsBSpline *spline,
 		worker.pImpl->n_ctrlp = ts_bspline_num_knots(&worker) - order;
 		memmove(ts_int_bspline_access_knots(&worker),
 		        knots, ts_bspline_sof_knots(&worker));
-		worker.pImpl = realloc(worker.pImpl,
+		worker.pImpl = (tsBSplineImpl*)realloc(worker.pImpl,
 		                       ts_int_bspline_sof_state(&worker));
 		if (worker.pImpl == NULL) {
 			TS_THROW_0(try, err, status, TS_MALLOC,

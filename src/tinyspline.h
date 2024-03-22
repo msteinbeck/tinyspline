@@ -90,7 +90,27 @@ extern "C" {
 #endif
 /*! @} */
 
+/*! @name Version Information
+ *
+ * @{
+ */
 
+/**
+ * Tinyspline Major Version
+ */
+extern int TS_VERSION_MAJOR;
+
+/**
+ * Tinyspline Minor Version
+ */
+extern int TS_VERSION_MINOR;
+
+/**
+ * Tinyspline Patch Version
+ */
+extern int TS_VERSION_PATCH;
+
+/*! @} */
 
 /*! @name Predefined Constants
  *

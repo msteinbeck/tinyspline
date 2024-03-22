@@ -1,6 +1,11 @@
 #define TINYSPLINE_EXPORT
-#include "tinyspline.h"
-#include "parson.h" /* serialization */
+
+/* Disable the warning about including tinyspline.. this is tinyspline! */
+#define TINYSPLINE_DISABLE_INT_HEADER_WARN
+#include "tinyspline_internal.h"
+#undef TINYSPLINE_DISABLE_INT_HEADER_WARN
+
+#include "parson.h"
 
 #include <stdlib.h> /* malloc, free */
 #include <math.h>   /* fabs, sqrt, acos */
@@ -27,7 +32,9 @@
 	if ((in) != (out))                     \
 		ts_int_bspline_init(out);
 
-
+int TS_VERSION_MAJOR = TINYSPLINE_VERSION_MAJOR; /* defined in CMake macro */
+int TS_VERSION_MINOR = TINYSPLINE_VERSION_MINOR; /* defined in CMake macro */
+int TS_VERSION_PATCH = TINYSPLINE_VERSION_PATCH; /* defined in CMake macro */
 
 /*! @name Internal Structs and Functions
  *
@@ -35,29 +42,6 @@
  *
  * @{
  */
-/**
- * Stores the private data of ::tsBSpline.
- */
-struct tsBSplineImpl
-{
-	size_t deg; /**< Degree of B-Spline basis function. */
-	size_t dim; /**< Dimensionality of the control points (2D => x, y). */
-	size_t n_ctrlp; /**< Number of control points. */
-	size_t n_knots; /**< Number of knots (n_ctrlp + deg + 1). */
-};
-
-/**
- * Stores the private data of ::tsDeBoorNet.
- */
-struct tsDeBoorNetImpl
-{
-	tsReal u; /**< The evaluated knot. */
-	size_t k; /**< The index [u_k, u_k+1) */
-	size_t s; /**< Multiplicity of u_k. */
-	size_t h; /**< Number of insertions required to obtain result. */
-	size_t dim; /**< Dimensionality of the points (2D => x, y). */
-	size_t n_points; /** Number of points in `points'. */
-};
 
 void
 ts_int_bspline_init(tsBSpline *spline)

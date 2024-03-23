@@ -9,6 +9,10 @@ the version of TinySpline used. Use these APIs are your own risk."
 
 #include "tinyspline.h"
 
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
 /*! @name Internal Structs and Functions
  *
  * Internal functions are prefixed with \e ts_int (int for internal).
@@ -126,5 +130,9 @@ tsError ts_int_bspline_insert_knot(
     tsBSpline *result,
     tsStatus *status
 );
+
+#ifdef	__cplusplus
+}
+#endif
 
 #endif

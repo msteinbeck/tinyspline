@@ -13,6 +13,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         shared: [On, Off]
         float: [On, Off]
+        serialization: [On, Off]
 
     steps:
     - uses: actions/checkout@v3
@@ -30,7 +31,12 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DTINYSPLINE_FLOAT_PRECISION=${{ matrix.float }}
+      run: |
+        cmake $GITHUB_WORKSPACE \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }} \
+          -DTINYSPLINE_FLOAT_PRECISION=${{ matrix.float }} \
+          -DTINYSPLINE_SERIALIZATION=${{ matrix.serialization }}
 
     - name: Configure Installation
       working-directory: ${{runner.workspace}}/build

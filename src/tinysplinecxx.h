@@ -597,8 +597,11 @@ public:
 	                                     std::vector<real> *first = nullptr,
 	                                     std::vector<real> *last = nullptr,
 	                                     real epsilon = TS_POINT_EPSILON);
+
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 	static BSpline parseJson(std::string json);
 	static BSpline load(std::string path);
+#endif
 
 	static bool knotsEqual(real x, real y);
 
@@ -640,9 +643,11 @@ public:
 	ChordLengths chordLengths(std_real_vector_in knots) const;
 	ChordLengths chordLengths(size_t numSamples = 200) const;
 
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 	/* Serialization */
 	std::string toJson() const;
 	void save(std::string path) const;
+#endif
 
 	/* Modifications */
 	void setControlPoints(const std::vector<real> &ctrlp);
@@ -907,7 +912,10 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .class_function("interpolateCatmullRom",
 			&BSpline::interpolateCatmullRom,
 			allow_raw_pointers())
+
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 	        .class_function("parseJson", &BSpline::parseJson)
+#endif
 
 	        .property("degree", &BSpline::degree)
 	        .property("order", &BSpline::order)
@@ -935,8 +943,10 @@ EMSCRIPTEN_BINDINGS(tinyspline) {
 	        .function("bisect", &BSpline::bisect)
 	        .function("isClosed", &BSpline::isClosed)
 
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 		/* Serialization */
 	        .function("toJson", &BSpline::toJson)
+#endif
 
 	        /* Transformations */
 	        .function("insertKnot", &BSpline::insertKnot)

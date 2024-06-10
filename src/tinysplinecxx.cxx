@@ -957,6 +957,7 @@ tinyspline::BSpline::interpolateCatmullRom(std_real_vector_in points,
 	return BSpline(data);
 }
 
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 tinyspline::BSpline
 tinyspline::BSpline::parseJson(std::string json)
 {
@@ -976,6 +977,7 @@ tinyspline::BSpline::load(std::string path)
 		throw std::runtime_error(status.message);
 	return BSpline(data);
 }
+#endif
 
 bool
 tinyspline::BSpline::knotsEqual(real x, real y)
@@ -1278,6 +1280,7 @@ tinyspline::BSpline::chordLengths(size_t numSamples) const
 	return chordLengths(uniformKnotSeq(numSamples));
 }
 
+#if !defined(TINYSPLINE_NO_SERIALIZATION)
 std::string
 tinyspline::BSpline::toJson() const
 {
@@ -1297,6 +1300,7 @@ tinyspline::BSpline::save(std::string path) const
 	if (ts_bspline_save(&m_spline, path.c_str(), &status))
 		throw std::runtime_error(status.message);
 }
+#endif
 
 void
 tinyspline::BSpline::setControlPoints(

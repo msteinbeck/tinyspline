@@ -984,8 +984,7 @@ ts_bspline_interpolate_cubic_natural(const tsReal *points,
 			           "out of memory")
 		}
 		/* The system of linear equations is taken from:
-		 *     http://www.bakoma-tex.com/doc/generic/pst-bspline/
-		 *     pst-bspline-doc.pdf */
+		 *     https://mirrors.ctan.org/graphics/pstricks/contrib/pst-bspline/pst-bspline-doc.pdf */
 		a = c = buffer;
 		ts_arr_fill(a, num_int_points, 1);
 		b = a + num_int_points;

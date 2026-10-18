@@ -1609,7 +1609,7 @@ ts_deboornet_free(tsDeBoorNet *net);
  *
  *     https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
  *     http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
- *     http://www.bakoma-tex.com/doc/generic/pst-bspline/pst-bspline-doc.pdf
+ *     https://mirrors.ctan.org/graphics/pstricks/contrib/pst-bspline/pst-bspline-doc.pdf
  *
  * The interpolated spline is a sequence of bezier curves connecting each point
  * in \p points. Each bezier curve is of degree \c 3 with dimensionality \p

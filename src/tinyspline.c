@@ -1359,13 +1359,24 @@ ts_bspline_eval_all(const tsBSpline *spline,
                     tsReal **points,
                     tsStatus *status)
 {
-	const size_t dim = ts_bspline_dimension(spline);
-	const size_t sof_point = dim * sizeof(tsReal);
-	const size_t sof_points = num * sof_point;
+	size_t dim, sof_point, sof_points;
 	tsDeBoorNet net = ts_deboornet_init();
 	tsReal *result;
 	size_t i;
 	tsError err;
+
+	dim = ts_bspline_dimension(spline);
+	if (dim > ((size_t) -1) / sizeof(tsReal)) {
+		*points = NULL;
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	}
+	sof_point = dim * sizeof(tsReal);
+	if (sof_point != 0 && num > ((size_t) -1) / sof_point) {
+		*points = NULL;
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	}
+	sof_points = num * sof_point;
+
 	TS_TRY(try, err, status)
 		*points = (tsReal *) malloc(sof_points);
 		if (!*points) {
@@ -1401,6 +1412,10 @@ ts_bspline_sample(const tsBSpline *spline,
 
 	num = num == 0 ? 100 : num;
 	*actual_num = num;
+	if (num > ((size_t) -1) / sizeof(tsReal)) {
+		*points = NULL;
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	}
 	knots = (tsReal *) malloc(num * sizeof(tsReal));
 	if (!knots) {
 		*points = NULL;
@@ -1904,6 +1919,9 @@ ts_bspline_equidistant_knot_seq(const tsBSpline *spline,
 
 	if (num == 0) TS_RETURN_SUCCESS(status);
 	if (num_samples == 0) num_samples = 200;
+	if (num_samples > ((size_t) -1) / (2 * sizeof(tsReal))) {
+		TS_RETURN_0(status, TS_MALLOC, "out of memory")
+	}
 
 	samples = (tsReal *) malloc(2 * num_samples * sizeof(tsReal));
 	if (!samples) TS_RETURN_0(status, TS_MALLOC, "out of memory");

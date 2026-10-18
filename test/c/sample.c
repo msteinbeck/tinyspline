@@ -165,6 +165,26 @@ void sample_default_num(CuTest *tc)
 	free(points);
 }
 
+void sample_overflow(CuTest *tc)
+{
+	tsBSpline spline = ts_bspline_init();
+	tsReal *points = NULL;
+	size_t num = ((size_t) -1) / sizeof(tsReal) + 1;
+	size_t actual_num = 0;
+	tsStatus status;
+	tsError err;
+
+	CuAssertIntEquals(tc, TS_SUCCESS, ts_bspline_new(
+		2, 2, 1, TS_CLAMPED, &spline, &status));
+
+	err = ts_bspline_sample(&spline, num, &points, &actual_num, &status);
+	CuAssertIntEquals(tc, TS_MALLOC, err);
+	CuAssertStrEquals(tc, "out of memory", status.message);
+	CuAssertPtrEquals(tc, NULL, points);
+
+	ts_bspline_free(&spline);
+}
+
 CuSuite* get_sample_suite()
 {
 	CuSuite* suite = CuSuiteNew();
@@ -173,5 +193,6 @@ CuSuite* get_sample_suite()
 	SUITE_ADD_TEST(suite, sample_num_3);
 	SUITE_ADD_TEST(suite, sample_compare_with_bisect);
 	SUITE_ADD_TEST(suite, sample_default_num);
+	SUITE_ADD_TEST(suite, sample_overflow);
 	return suite;
 }

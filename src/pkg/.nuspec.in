@@ -9,6 +9,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>@TINYSPLINE_SUMMARY@</summary>
 		<description>@TINYSPLINE_DESCRIPTION@</description>
+		<readme>docs\README.md</readme>
 		<copyright>@TINYSPLINE_LICENSE@</copyright>
 		<dependencies>
 			@TINYSPLINE_NUGET_DEPENDENCIES@
